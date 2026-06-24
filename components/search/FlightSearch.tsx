@@ -191,6 +191,20 @@ function AirportInput({
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
+  // Keeps the dropdown anchored to the input as the page scrolls — it's
+  // portaled with position:fixed (viewport coordinates), so without this
+  // it would stay frozen in place while the rest of the page scrolls past it.
+  useEffect(() => {
+    if (!open) return;
+    const reposition = () => calcDropPos();
+    window.addEventListener("scroll", reposition, true);
+    window.addEventListener("resize", reposition);
+    return () => {
+      window.removeEventListener("scroll", reposition, true);
+      window.removeEventListener("resize", reposition);
+    };
+  }, [open]);
+
   const handleFocus = () => { calcDropPos(); setFocused(true); setQuery(""); setOpen(true); };
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => { setQuery(e.target.value); calcDropPos(); setOpen(true); };
   const handleSelect = (city: City) => { onChange(city); setQuery(""); setOpen(false); setFocused(false); };

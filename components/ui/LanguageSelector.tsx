@@ -45,6 +45,20 @@ export default function LanguageSelector({ tone = "dark" }: { tone?: "dark" | "l
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
+  // Keeps the dropdown anchored to the button as the page scrolls — it's
+  // portaled with position:fixed (viewport coordinates), so without this
+  // it would stay frozen in place while the rest of the page scrolls past it.
+  useEffect(() => {
+    if (!open) return;
+    const reposition = () => calcPos();
+    window.addEventListener("scroll", reposition, true);
+    window.addEventListener("resize", reposition);
+    return () => {
+      window.removeEventListener("scroll", reposition, true);
+      window.removeEventListener("resize", reposition);
+    };
+  }, [open]);
+
   const matches = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return LANGUAGES;
