@@ -39,7 +39,7 @@ export default function TermsPage() {
       </div>
 
       <div className="mt-8 text-sm text-ink-muted font-light">
-        <p>{t("terms.contactLine")} <a href="mailto:legal@voyagesco.com" className="text-gold link-underline">legal@voyagesco.com</a></p>
+        <p>{t("terms.contactLine")} <a href="mailto:hello@voyagesco.com" className="text-gold link-underline">hello@voyagesco.com</a></p>
       </div>
     </div>
   );
