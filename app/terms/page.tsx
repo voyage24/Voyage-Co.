@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 
 export default function TermsPage() {
@@ -8,7 +9,13 @@ export default function TermsPage() {
     { title: "Acceptance of Terms", body: "By accessing or using Voyages & Co. (voyagesco.com), you agree to be bound by these Terms of Service. If you do not agree with any part of these terms, you may not use our services. These terms apply to all users, including members, prospective members, and partners." },
     { title: "Booking & Reservations", body: "All arrangements made through Voyages & Co. are subject to availability and confirmation by the respective travel partner. A booking is confirmed only when you receive a confirmation with a reference number. Prices quoted are subject to change until payment is completed." },
     { title: "Pricing & Payment", body: "Prices are quoted in the agreed currency, inclusive of applicable taxes unless stated otherwise. Voyages & Co. reserves the right to correct pricing errors. Payment terms are confirmed with your specialist at the time of booking." },
-    { title: "Cancellations & Refunds", body: "Cancellation and refund terms vary by partner and arrangement. Please refer to our Cancellation Policy for detailed information. Refunds, where applicable, are processed promptly to your original payment method." },
+    {
+      title: "Cancellations & Refunds",
+      bodyPre: "Cancellation and refund terms vary by partner and arrangement. Please refer to our ",
+      linkText: "Cancellation Policy",
+      linkHref: "/cancellations",
+      bodyPost: " for detailed information. Refunds, where applicable, are processed promptly to your original payment method.",
+    },
     { title: "Member Responsibilities", body: "You are responsible for ensuring all travel documents (passport, visa, identification) are valid and appropriate for your journey. Voyages & Co. is not liable for issues arising from incorrect or expired documents. You must be at least 18 years old to hold a membership." },
     { title: "Limitation of Liability", body: "Voyages & Co. acts as a curator and intermediary between members and travel partners. We are not responsible for the acts, errors, omissions or negligence of such partners. Our total liability in connection with any arrangement shall not exceed the amount paid for it." },
     { title: "Governing Law", body: "These Terms of Service are governed by the laws of India. Any disputes arising from these terms shall be subject to the exclusive jurisdiction of the courts of Pune, Maharashtra." },
@@ -33,7 +40,13 @@ export default function TermsPage() {
               <span className="w-7 h-7 rounded-full border border-gold/40 text-gold text-xs flex items-center justify-center font-medium shrink-0">{i + 1}</span>
               {s.title}
             </h2>
-            <p className="text-sm text-ink-muted leading-relaxed font-light">{s.body}</p>
+            <p className="text-sm text-ink-muted leading-relaxed font-light">
+              {s.linkHref ? (
+                <>{s.bodyPre}<Link href={s.linkHref as string} className="text-gold link-underline">{s.linkText}</Link>{s.bodyPost}</>
+              ) : (
+                s.body
+              )}
+            </p>
           </div>
         ))}
       </div>
