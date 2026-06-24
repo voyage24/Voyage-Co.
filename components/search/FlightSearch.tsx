@@ -547,7 +547,11 @@ export default function FlightSearch({
 }) {
   const router = useRouter();
   const { t } = useLanguage();
-  const [tripType, setTripType] = useState<"one-way" | "round-trip">("round-trip");
+  const [tripType, setTripType] = useState<"one-way" | "round-trip" | "multi-city">("round-trip");
+  const [legs, setLegs] = useState<{ from: City | null; to: City | null; date: Date | null }[]>([
+    { from: null, to: null, date: null },
+    { from: null, to: null, date: null },
+  ]);
   const [from, setFrom] = useState<City | null>(
     defaultFrom !== undefined ? defaultFrom : (CITIES.find(c => c.code === "DEL") ?? null)
   );
@@ -596,7 +600,7 @@ export default function FlightSearch({
 
   const swap = () => { const prevFrom = from; setFrom(to); setTo(prevFrom); };
 
-  const setTripTypeSafe = (nextType: "one-way" | "round-trip") => {
+  const setTripTypeSafe = (nextType: "one-way" | "round-trip" | "multi-city") => {
     setTripType(nextType);
     if (nextType === "one-way") setReturnDate(null);
   };
@@ -615,6 +619,32 @@ export default function FlightSearch({
     router.push(`/flights?${p.toString()}`);
   };
 
+  // Multi-city updates/adds/removes a leg, each with its own From/To/date.
+  const updateLeg = (i: number, patch: Partial<{ from: City | null; to: City | null; date: Date | null }>) =>
+    setLegs(prev => prev.map((leg, idx) => (idx === i ? { ...leg, ...patch } : leg)));
+  const addLeg = () => setLegs(prev => (prev.length < 6 ? [...prev, { from: null, to: null, date: null }] : prev));
+  const removeLeg = (i: number) => setLegs(prev => (prev.length > 2 ? prev.filter((_, idx) => idx !== i) : prev));
+
+  // The mock flight results page only models a single route, so a multi-city
+  // itinerary (which the results page can't represent) is instead handed to
+  // the concierge team as an enquiry — fitting for a bespoke travel atelier,
+  // where multi-leg routings are quoted by a specialist rather than self-served.
+  const multiCityComplete = legs.every(leg => leg.from && leg.to && leg.date);
+  const requestMultiCity = () => {
+    const lines = legs.map((leg, i) =>
+      `${i + 1}. ${leg.from!.name} (${leg.from!.code}) → ${leg.to!.name} (${leg.to!.code}) — ${fmtShort(leg.date!)}`
+    );
+    const message = [
+      t("flightSearch.multiCityMessageIntro"),
+      "",
+      ...lines,
+      "",
+      `${t("flightSearch.travellersClass")}: ${guests} ${t("flightSearch.pax")} · ${t(CABIN_LABEL_KEYS[cabin])}`,
+    ].join("\n");
+    const p = new URLSearchParams({ subject: t("contact.topicNewJourney"), message });
+    router.push(`/contact?${p.toString()}`);
+  };
+
   const fieldCls = "bg-panel border border-line rounded-xl px-4 py-3";
   const labelCls = "text-[10px] tracking-[0.14em] uppercase text-ink-faint mb-1 block font-medium truncate";
 
@@ -622,7 +652,7 @@ export default function FlightSearch({
     <div className="space-y-4">
       {/* Trip type */}
       <div className="flex gap-6">
-        {(["round-trip", "one-way"] as const).map(tripOption => (
+        {(["round-trip", "one-way", "multi-city"] as const).map(tripOption => (
           <label key={tripOption} className="flex items-center gap-2 cursor-pointer select-none">
             <input
               type="radio"
@@ -632,45 +662,100 @@ export default function FlightSearch({
               onChange={() => setTripTypeSafe(tripOption)}
               className="accent-gold w-3.5 h-3.5"
             />
-            <span className="text-xs font-light text-ink-muted capitalize">{t(tripOption === "round-trip" ? "flightSearch.roundTrip" : "flightSearch.oneWay")}</span>
+            <span className="text-xs font-light text-ink-muted capitalize">
+              {t(tripOption === "round-trip" ? "flightSearch.roundTrip" : tripOption === "one-way" ? "flightSearch.oneWay" : "flightSearch.multiCity")}
+            </span>
           </label>
         ))}
       </div>
 
-      <div className="flex flex-col lg:flex-row lg:flex-wrap gap-2">
-        {/* From / To */}
-        <div className="flex flex-1 min-w-0 bg-panel border border-line relative">
-          <div className="flex-1 px-4 py-3 min-w-0">
-            <AirportInput label={t("flightSearch.from")} value={from} onChange={setFrom} exclude={to?.code} />
-          </div>
-
-          {/* Dedicated column for the swap button — reserves real layout space so it
-              can never overlap the From/To text, unlike absolute positioning. */}
-          <div className="relative flex items-center justify-center w-14 shrink-0">
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-px h-8 bg-line" />
+      {/* Multi-city legs — each with its own From/To/date, since the mock
+          results page only models a single route, this gets handed to the
+          concierge as an itinerary request rather than self-served results. */}
+      {tripType === "multi-city" && (
+        <div className="space-y-2">
+          {legs.map((leg, i) => (
+            <div key={i} className="flex flex-col lg:flex-row gap-2">
+              <div className="flex flex-1 min-w-0 bg-panel border border-line relative">
+                <div className="flex-1 px-4 py-3 min-w-0">
+                  <AirportInput label={`${t("flightSearch.from")} ${i + 1}`} value={leg.from} onChange={c => updateLeg(i, { from: c })} exclude={leg.to?.code} />
+                </div>
+                <div className="w-px bg-line shrink-0 my-3" />
+                <div className="flex-1 px-4 py-3 min-w-0">
+                  <AirportInput label={`${t("flightSearch.to")} ${i + 1}`} value={leg.to} onChange={c => updateLeg(i, { to: c })} exclude={leg.from?.code} />
+                </div>
+              </div>
+              <div className={`${fieldCls} w-full lg:w-[200px] shrink-0`}>
+                <label className={labelCls}>{t("datePicker.departure")}</label>
+                <input
+                  type="date"
+                  value={leg.date ? toISO(leg.date) : ""}
+                  onChange={e => updateLeg(i, { date: e.target.value ? new Date(e.target.value) : null })}
+                  className="w-full bg-transparent text-sm text-ink focus:outline-none font-light cursor-pointer"
+                />
+              </div>
+              {legs.length > 2 && (
+                <button
+                  type="button"
+                  onClick={() => removeLeg(i)}
+                  className="shrink-0 self-center lg:self-stretch px-3 text-ink-faint hover:text-ink transition-colors"
+                  title={t("flightSearch.removeFlight")}
+                >
+                  <X size={16} />
+                </button>
+              )}
+            </div>
+          ))}
+          {legs.length < 6 && (
             <button
               type="button"
-              onClick={swap}
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 w-9 h-9 bg-panel-raised border border-line flex items-center justify-center hover:border-ink hover:text-ink transition-all shadow-card"
-              title={t("flightSearch.swapAirports")}
+              onClick={addLeg}
+              className="text-[11px] tracking-[0.14em] uppercase text-gold hover:underline"
             >
-              <ArrowLeftRight size={14} />
+              + {t("flightSearch.addAnotherFlight")}
             </button>
-          </div>
-
-          <div className="flex-1 px-4 py-3 min-w-0">
-            <AirportInput label={t("flightSearch.to")} value={to} onChange={setTo} exclude={from?.code} />
-          </div>
+          )}
         </div>
+      )}
 
-        {/* Dates */}
-        <DateRangeField
-          tripType={tripType}
-          departure={departure}
-          returnDate={returnDate}
-          onPickDeparture={setDeparture}
-          onPickReturn={setReturnDate}
-        />
+      <div className="flex flex-col lg:flex-row lg:flex-wrap gap-2">
+        {tripType !== "multi-city" && (
+          <>
+            {/* From / To */}
+            <div className="flex flex-1 min-w-0 bg-panel border border-line relative">
+              <div className="flex-1 px-4 py-3 min-w-0">
+                <AirportInput label={t("flightSearch.from")} value={from} onChange={setFrom} exclude={to?.code} />
+              </div>
+
+              {/* Dedicated column for the swap button — reserves real layout space so it
+                  can never overlap the From/To text, unlike absolute positioning. */}
+              <div className="relative flex items-center justify-center w-14 shrink-0">
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-px h-8 bg-line" />
+                <button
+                  type="button"
+                  onClick={swap}
+                  className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 w-9 h-9 bg-panel-raised border border-line flex items-center justify-center hover:border-ink hover:text-ink transition-all shadow-card"
+                  title={t("flightSearch.swapAirports")}
+                >
+                  <ArrowLeftRight size={14} />
+                </button>
+              </div>
+
+              <div className="flex-1 px-4 py-3 min-w-0">
+                <AirportInput label={t("flightSearch.to")} value={to} onChange={setTo} exclude={from?.code} />
+              </div>
+            </div>
+
+            {/* Dates */}
+            <DateRangeField
+              tripType={tripType}
+              departure={departure}
+              returnDate={returnDate}
+              onPickDeparture={setDeparture}
+              onPickReturn={setReturnDate}
+            />
+          </>
+        )}
 
         {/* Cabin & Pax */}
         <div ref={cabinRef} className="relative shrink-0">
@@ -737,19 +822,35 @@ export default function FlightSearch({
       </div>
 
       {/* Search button */}
-      <div className="flex items-center justify-between">
-        <p className="text-[11px] text-ink-faint font-light">
-          {from && to ? `${from.name} → ${to.name}` : t("flightSearch.selectOriginDestination")}
-        </p>
-        <button
-          type="button"
-          onClick={search}
-          disabled={!from || !to}
-          className="flex items-center gap-2 px-8 py-3 bg-ink hover:bg-ink/90 disabled:opacity-40 disabled:cursor-not-allowed text-page font-medium tracking-[0.12em] uppercase rounded-sm transition-all duration-200 text-xs hover:scale-105 active:scale-95 disabled:hover:scale-100"
-        >
-          <Search size={15} /> {t("flightSearch.searchFlights")}
-        </button>
-      </div>
+      {tripType === "multi-city" ? (
+        <div className="flex items-center justify-between">
+          <p className="text-[11px] text-ink-faint font-light">
+            {t("flightSearch.multiCityHint")}
+          </p>
+          <button
+            type="button"
+            onClick={requestMultiCity}
+            disabled={!multiCityComplete}
+            className="flex items-center gap-2 px-8 py-3 bg-ink hover:bg-ink/90 disabled:opacity-40 disabled:cursor-not-allowed text-page font-medium tracking-[0.12em] uppercase rounded-sm transition-all duration-200 text-xs hover:scale-105 active:scale-95 disabled:hover:scale-100"
+          >
+            <Search size={15} /> {t("flightSearch.requestItinerary")}
+          </button>
+        </div>
+      ) : (
+        <div className="flex items-center justify-between">
+          <p className="text-[11px] text-ink-faint font-light">
+            {from && to ? `${from.name} → ${to.name}` : t("flightSearch.selectOriginDestination")}
+          </p>
+          <button
+            type="button"
+            onClick={search}
+            disabled={!from || !to}
+            className="flex items-center gap-2 px-8 py-3 bg-ink hover:bg-ink/90 disabled:opacity-40 disabled:cursor-not-allowed text-page font-medium tracking-[0.12em] uppercase rounded-sm transition-all duration-200 text-xs hover:scale-105 active:scale-95 disabled:hover:scale-100"
+          >
+            <Search size={15} /> {t("flightSearch.searchFlights")}
+          </button>
+        </div>
+      )}
     </div>
   );
 }

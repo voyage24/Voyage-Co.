@@ -1,12 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Mail, Send } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 
-export default function ContactPage() {
+function ContactContent() {
   const { t, language } = useLanguage();
-  const [form, setForm] = useState({ name: "", email: "", phone: "", subject: "", message: "" });
+  const searchParams = useSearchParams();
+  const [form, setForm] = useState({
+    name: "", email: "", phone: "",
+    subject: searchParams.get("subject") ?? "",
+    message: searchParams.get("message") ?? "",
+  });
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState(false);
@@ -128,5 +134,13 @@ export default function ContactPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ContactPage() {
+  return (
+    <Suspense>
+      <ContactContent />
+    </Suspense>
   );
 }
