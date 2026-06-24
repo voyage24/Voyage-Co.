@@ -49,7 +49,7 @@ export default function CareersPage() {
           {OPEN_ROLES.map(role => (
             <a
               key={role.title}
-              href={`mailto:careers@voyagesco.com?subject=${encodeURIComponent(`Application: ${role.title}`)}`}
+              href={`mailto:hello@voyagesco.com?subject=${encodeURIComponent(`Application: ${role.title}`)}`}
               className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-5 bg-panel border border-line rounded-xl hover:border-gold/40 hover:shadow-card transition-all"
             >
               <div>
@@ -69,8 +69,8 @@ export default function CareersPage() {
         <p className="text-sm text-ink-muted mb-5 font-light">
           {t("careers.notSeeRoleDesc")}
         </p>
-        <a href="mailto:careers@voyagesco.com" className="inline-block text-base font-medium text-gold link-underline">
-          careers@voyagesco.com
+        <a href="mailto:hello@voyagesco.com" className="inline-block text-base font-medium text-gold link-underline">
+          hello@voyagesco.com
         </a>
       </div>
     </div>

@@ -50,7 +50,7 @@ export default function PartnersPage() {
               ))}
             </ul>
             <a
-              href={`mailto:partners@voyagesco.com?subject=${encodeURIComponent(`Partnership enquiry: ${p.title}`)}`}
+              href={`mailto:hello@voyagesco.com?subject=${encodeURIComponent(`Partnership enquiry: ${p.title}`)}`}
               className="w-full flex items-center justify-center gap-2 py-2.5 border border-line-strong text-ink text-xs font-normal tracking-[0.12em] uppercase rounded-sm hover:bg-ink hover:text-page transition-all"
             >
               {p.cta} <ArrowRight size={14} />
@@ -62,7 +62,7 @@ export default function PartnersPage() {
       <div className="bg-vc-800 rounded-2xl p-10 text-center border border-vc-700">
         <h2 className="font-serif text-3xl font-light text-[#ece7dd] mb-2">{t("partners.ctaTitle")}</h2>
         <p className="text-[#9aa4ab] mb-7 font-light">{t("partners.ctaSubtitle")}</p>
-        <a href="mailto:partners@voyagesco.com" className="inline-block px-7 py-3.5 bg-[#ece7dd] hover:bg-white text-vc-900 font-normal text-xs tracking-[0.14em] uppercase rounded-sm transition-colors">
+        <a href="mailto:hello@voyagesco.com" className="inline-block px-7 py-3.5 bg-[#ece7dd] hover:bg-white text-vc-900 font-normal text-xs tracking-[0.14em] uppercase rounded-sm transition-colors">
           {t("partners.ctaButton")}
         </a>
       </div>

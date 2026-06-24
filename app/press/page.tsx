@@ -61,8 +61,8 @@ export default function PressPage() {
         <p className="text-sm text-ink-muted mb-5 font-light">
           {t("press.mediaEnquiriesDesc")}
         </p>
-        <a href="mailto:press@voyagesco.com" className="inline-block text-base font-medium text-gold link-underline">
-          press@voyagesco.com
+        <a href="mailto:hello@voyagesco.com" className="inline-block text-base font-medium text-gold link-underline">
+          hello@voyagesco.com
         </a>
       </div>
     </div>
