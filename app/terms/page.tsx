@@ -42,7 +42,7 @@ export default function TermsPage() {
             </h2>
             <p className="text-sm text-ink-muted leading-relaxed font-light">
               {s.linkHref ? (
-                <>{s.bodyPre}<Link href={s.linkHref as string} className="text-gold link-underline">{s.linkText}</Link>{s.bodyPost}</>
+                <>{s.bodyPre}<Link href={s.linkHref as string} className="inline-block text-gold link-underline transition-transform duration-200 hover:scale-105 active:scale-95">{s.linkText}</Link>{s.bodyPost}</>
               ) : (
                 s.body
               )}
