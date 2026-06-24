@@ -111,7 +111,7 @@ function AirportDropdown({
     <div
       ref={dropRef}
       style={{ ...style, position: "fixed", zIndex: 9999 }}
-      className="bg-panel-raised border border-line rounded-xl shadow-luxury overflow-hidden"
+      className="bg-panel-raised border border-line rounded-xl shadow-luxury overflow-hidden max-w-[90vw]"
     >
       <div className="px-4 py-2 border-b border-line">
         <p className="text-[10px] tracking-[0.16em] uppercase text-ink-faint font-medium">

@@ -82,7 +82,7 @@ function ContactContent() {
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
               <h2 className="font-serif text-2xl font-light text-ink mb-2">{t("contact.makeEnquiry")}</h2>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {[
                   { key: "name", label: t("contact.fullName"), type: "text", placeholder: "Rahul Sharma" },
                   { key: "email", label: t("contact.emailLabel"), type: "email", placeholder: "you@example.com" },
