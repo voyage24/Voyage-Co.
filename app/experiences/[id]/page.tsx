@@ -66,7 +66,7 @@ export default function ExperienceDetailPage({ params }: { params: { id: string 
 
         {/* Booking card */}
         <div className="lg:col-span-1">
-          <div className="sticky top-28 bg-panel border border-line rounded-2xl shadow-widget p-6">
+          <div className="lg:sticky lg:top-28 bg-panel border border-line rounded-2xl shadow-widget p-6">
             <div className="mb-5">
               <Price amount={exp.price} className="font-serif text-3xl font-light text-ink" />
               <p className="text-xs text-ink-faint font-light"><T k="detail.perPerson" /></p>

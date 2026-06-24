@@ -32,9 +32,9 @@ function CruisesContent() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-16">
       {/* Hero banner */}
-      <div className="rounded-2xl overflow-hidden p-10 mb-10 bg-vc-800 border border-vc-700">
+      <div className="rounded-2xl overflow-hidden p-6 sm:p-10 mb-10 bg-vc-800 border border-vc-700">
         <p className="text-[10px] font-normal uppercase tracking-[0.3em] text-[#b09e74] mb-3">{t("cruisesPage.eyebrow")}</p>
-        <h1 className="font-serif text-4xl font-light text-[#ece7dd] mb-3">{t("cruisesPage.title")}</h1>
+        <h1 className="font-serif text-3xl sm:text-4xl font-light text-[#ece7dd] mb-3">{t("cruisesPage.title")}</h1>
         <p className="text-[#9aa4ab] max-w-lg font-light leading-relaxed">
           {t("cruisesPage.intro")}
         </p>

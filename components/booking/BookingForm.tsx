@@ -148,7 +148,7 @@ export default function BookingForm({ item }: { item: BookingItem }) {
 
       {/* Summary */}
       <div className="lg:col-span-2">
-        <div className="bg-panel border border-line rounded-2xl shadow-card overflow-hidden sticky top-28">
+        <div className="bg-panel border border-line rounded-2xl shadow-card overflow-hidden lg:sticky lg:top-28">
           {item.image && (
             <div className="relative aspect-[16/10]">
               <Image src={item.image} alt={item.title} fill sizes="(max-width: 1024px) 100vw, 40vw" className="object-cover" />

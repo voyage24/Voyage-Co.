@@ -30,7 +30,7 @@ export default function PackagesPage() {
           worldwide spread of journeys below, rather than a flat color
           block; same image + gradient-overlay technique used on the
           individual hotel/package detail pages, for consistency. */}
-      <div className="relative rounded-2xl overflow-hidden p-10 mb-10 border border-vc-700 min-h-[280px] flex flex-col justify-center">
+      <div className="relative rounded-2xl overflow-hidden p-6 sm:p-10 mb-10 border border-vc-700 min-h-[280px] flex flex-col justify-center">
         <Image
           src="https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1600&h=800&fit=crop"
           alt=""
@@ -42,7 +42,7 @@ export default function PackagesPage() {
         <div className="absolute inset-0 bg-gradient-to-r from-vc-950/90 via-vc-950/70 to-vc-950/30" />
         <div className="relative">
           <p className="text-[10px] font-normal uppercase tracking-[0.3em] text-[#b09e74] mb-3">{t("searchTabs.packages")}</p>
-          <h1 className="font-serif text-4xl font-light text-[#ece7dd] mb-3">{t("packagesPage.title")}</h1>
+          <h1 className="font-serif text-3xl sm:text-4xl font-light text-[#ece7dd] mb-3">{t("packagesPage.title")}</h1>
           <p className="text-[#9aa4ab] max-w-lg font-light leading-relaxed">
             {t("packagesPage.intro")}
           </p>

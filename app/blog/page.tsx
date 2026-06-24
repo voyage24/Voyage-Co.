@@ -15,9 +15,9 @@ export default function BlogPage() {
       </div>
 
       {/* Featured */}
-      <Link href={`/blog/${BLOG_POSTS[0].slug}`} className="block bg-vc-800 rounded-2xl p-10 mb-10 border border-vc-700 hover:border-[#b09e74]/50 transition-colors group">
+      <Link href={`/blog/${BLOG_POSTS[0].slug}`} className="block bg-vc-800 rounded-2xl p-6 sm:p-10 mb-10 border border-vc-700 hover:border-[#b09e74]/50 transition-colors group">
         <span className="text-[10px] tracking-[0.18em] uppercase text-[#b09e74] border border-[#b09e74]/40 px-3 py-1 rounded-sm">{t("blog.featured")}</span>
-        <h2 className="font-serif text-3xl font-light text-[#ece7dd] mt-4 mb-2 group-hover:text-[#b09e74] transition-colors">{BLOG_POSTS[0].title}</h2>
+        <h2 className="font-serif text-2xl sm:text-3xl font-light text-[#ece7dd] mt-4 mb-2 group-hover:text-[#b09e74] transition-colors">{BLOG_POSTS[0].title}</h2>
         <p className="text-[#9aa4ab] text-sm mb-4 font-light max-w-2xl leading-relaxed">{BLOG_POSTS[0].excerpt}</p>
         <div className="flex items-center gap-4 text-xs text-[#687781]">
           <span>{BLOG_POSTS[0].date}</span>

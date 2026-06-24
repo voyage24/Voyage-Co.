@@ -106,7 +106,7 @@ export default function PackageDetailPage({ params }: { params: { id: string } }
 
         {/* Right — booking card */}
         <div className="lg:col-span-1">
-          <div className="sticky top-28 bg-panel rounded-2xl border border-line shadow-widget p-6">
+          <div className="lg:sticky lg:top-28 bg-panel rounded-2xl border border-line shadow-widget p-6">
             <div className="mb-5">
               <p className="text-[10px] tracking-[0.1em] uppercase text-ink-faint font-light"><T k="card.perPersonFrom" /></p>
               <Price amount={pkg.pricePerPerson} className="font-serif text-3xl font-light text-ink" />
