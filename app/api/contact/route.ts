@@ -1,8 +1,11 @@
 import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
+import { EN, DICTIONARIES } from "@/lib/i18n/dictionaries";
 
 export async function POST(req: Request) {
-  const { name, email, phone, subject, message } = await req.json();
+  const { name, email, phone, subject, message, language } = await req.json();
+  const dict = DICTIONARIES[language as string] ?? EN;
+  const tr = (key: string) => dict[key] ?? EN[key] ?? key;
 
   if (!name || !email || !subject || !message) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -35,6 +38,26 @@ export async function POST(req: Request) {
         <p>${String(message).replace(/\n/g, "<br>")}</p>
       `,
     });
+
+    // Auto-reply to the enquirer, in their own selected language. Sent
+    // best-effort — its failure shouldn't fail the request, since the
+    // concierge has already received the enquiry at this point.
+    try {
+      await transporter.sendMail({
+        from: `"Voyages & Co. Concierge" <${process.env.SMTP_USER}>`,
+        to: email,
+        subject: tr("contact.autoReplySubject"),
+        text: `${tr("contact.autoReplyGreeting")} ${name},\n\n${tr("contact.autoReplyBody")}\n\n${tr("contact.autoReplySignoff")}\nVoyages & Co.`,
+        html: `
+          <p>${tr("contact.autoReplyGreeting")} ${name},</p>
+          <p>${tr("contact.autoReplyBody")}</p>
+          <p>${tr("contact.autoReplySignoff")}<br>Voyages &amp; Co.</p>
+        `,
+      });
+    } catch (err) {
+      console.error("Auto-reply email failed:", err);
+    }
+
     return NextResponse.json({ ok: true });
   } catch (err) {
     console.error("Contact form email failed:", err);

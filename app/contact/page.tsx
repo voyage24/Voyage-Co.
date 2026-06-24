@@ -5,7 +5,7 @@ import { Mail, Send } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 
 export default function ContactPage() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [form, setForm] = useState({ name: "", email: "", phone: "", subject: "", message: "" });
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
@@ -22,7 +22,7 @@ export default function ContactPage() {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, language: language.code }),
       });
       if (!res.ok) throw new Error("Failed to send");
       setSent(true);
