@@ -21,10 +21,11 @@ const FOOTER_LINKS = {
     { key: "common.partners", href: "/partners" },
   ],
   "footer.care": [
-    { key: "common.concierge", href: "/contact" },
-    { key: "common.help",      href: "/help" },
-    { key: "common.privacy",   href: "/privacy" },
-    { key: "common.terms",     href: "/terms" },
+    { key: "common.concierge",     href: "/contact" },
+    { key: "common.help",          href: "/help" },
+    { key: "common.cancellations", href: "/cancellations" },
+    { key: "common.privacy",       href: "/privacy" },
+    { key: "common.terms",         href: "/terms" },
   ],
 };
 

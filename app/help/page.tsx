@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { ChevronDown, ChevronUp, Search, Phone, Mail, MessageCircle } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 
@@ -122,6 +123,13 @@ export default function HelpPage() {
             </a>
           );
         })}
+      </div>
+
+      <div className="text-center mt-10">
+        <p className="text-sm text-ink-muted font-light">
+          {t("help.lookingForCancellations")}{" "}
+          <Link href="/cancellations" className="text-gold link-underline">{t("common.cancellations")}</Link>
+        </p>
       </div>
     </div>
   );
