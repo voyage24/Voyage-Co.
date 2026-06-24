@@ -8,13 +8,29 @@ export default function ContactPage() {
   const { t } = useLanguage();
   const [form, setForm] = useState({ name: "", email: "", phone: "", subject: "", message: "" });
   const [sent, setSent] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState(false);
 
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
     setForm(prev => ({ ...prev, [k]: e.target.value }));
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSent(true);
+    setSending(true);
+    setError(false);
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      if (!res.ok) throw new Error("Failed to send");
+      setSent(true);
+    } catch {
+      setError(true);
+    } finally {
+      setSending(false);
+    }
   };
 
   const inputClass = "w-full px-4 py-2.5 rounded-sm bg-panel-soft border border-line text-sm text-ink focus:outline-none focus:border-gold transition-colors";
@@ -97,8 +113,15 @@ export default function ContactPage() {
                 />
               </div>
 
-              <button type="submit" className="w-full py-3.5 bg-ink hover:bg-ink/90 text-page font-normal text-xs tracking-[0.14em] uppercase rounded-sm transition-colors flex items-center justify-center gap-2">
-                <Send size={14} /> {t("contact.sendEnquiry")}
+              {error && (
+                <p className="text-xs text-red-600 font-light">{t("contact.sendError")}</p>
+              )}
+              <button
+                type="submit"
+                disabled={sending}
+                className="w-full py-3.5 bg-ink hover:bg-ink/90 disabled:opacity-60 text-page font-normal text-xs tracking-[0.14em] uppercase rounded-sm transition-colors flex items-center justify-center gap-2"
+              >
+                <Send size={14} /> {sending ? t("contact.sending") : t("contact.sendEnquiry")}
               </button>
             </form>
           )}
