@@ -2,6 +2,29 @@ import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 import { EN, DICTIONARIES } from "@/lib/i18n/dictionaries";
 
+// Appended to every outgoing email — logo, web/phone, and a confidentiality
+// notice. Kept in English regardless of recipient language, consistent with
+// how legal/compliance boilerplate is usually handled across markets.
+const EMAIL_FOOTER_HTML = `
+  <table role="presentation" width="100%" style="margin-top:32px;padding-top:16px;border-top:1px solid #ddd;font-family:Arial,Helvetica,sans-serif;">
+    <tr><td style="text-align:center;">
+      <img src="https://voyagesco.com/logo-blue.png" alt="Voyages & Co." style="height:22px;margin-bottom:10px;display:inline-block;" />
+      <p style="margin:0 0 6px;font-size:12px;color:#555;">
+        <a href="https://voyagesco.com" style="color:#705C38;text-decoration:none;">voyagesco.com</a> &nbsp;·&nbsp; +91 99199 10213
+      </p>
+      <p style="margin:0;font-size:11px;color:#999;line-height:1.5;">
+        This email and any attachments are confidential and intended solely for the addressee.
+        If you have received this in error, please notify the sender and delete it.
+        Voyages &amp; Co. does not guarantee the security of communications sent over the internet.
+      </p>
+    </td></tr>
+  </table>
+`;
+const EMAIL_FOOTER_TEXT =
+  "\n\n--\nVoyages & Co. | voyagesco.com | +91 99199 10213\n" +
+  "This email and any attachments are confidential and intended solely for the addressee. " +
+  "If you have received this in error, please notify the sender and delete it.";
+
 export async function POST(req: Request) {
   const { name, email, phone, subject, message, language } = await req.json();
   const dict = DICTIONARIES[language as string] ?? EN;
@@ -28,7 +51,7 @@ export async function POST(req: Request) {
       to: process.env.CONTACT_TO_EMAIL,
       replyTo: email,
       subject: `[Concierge Enquiry] ${subject} — ${name}`,
-      text: `Name: ${name}\nEmail: ${email}\nPhone: ${phone || "—"}\nSubject: ${subject}\n\n${message}`,
+      text: `Name: ${name}\nEmail: ${email}\nPhone: ${phone || "—"}\nSubject: ${subject}\n\n${message}${EMAIL_FOOTER_TEXT}`,
       html: `
         <p><strong>Name:</strong> ${name}</p>
         <p><strong>Email:</strong> ${email}</p>
@@ -36,6 +59,7 @@ export async function POST(req: Request) {
         <p><strong>Subject:</strong> ${subject}</p>
         <p><strong>Message:</strong></p>
         <p>${String(message).replace(/\n/g, "<br>")}</p>
+        ${EMAIL_FOOTER_HTML}
       `,
     });
 
@@ -47,11 +71,12 @@ export async function POST(req: Request) {
         from: `"Voyages & Co. Concierge" <${process.env.SMTP_USER}>`,
         to: email,
         subject: tr("contact.autoReplySubject"),
-        text: `${tr("contact.autoReplyGreeting")} ${name},\n\n${tr("contact.autoReplyBody")}\n\n${tr("contact.autoReplySignoff")}\nVoyages & Co.`,
+        text: `${tr("contact.autoReplyGreeting")} ${name},\n\n${tr("contact.autoReplyBody")}\n\n${tr("contact.autoReplySignoff")}\nVoyages & Co.${EMAIL_FOOTER_TEXT}`,
         html: `
           <p>${tr("contact.autoReplyGreeting")} ${name},</p>
           <p>${tr("contact.autoReplyBody")}</p>
           <p>${tr("contact.autoReplySignoff")}<br>Voyages &amp; Co.</p>
+          ${EMAIL_FOOTER_HTML}
         `,
       });
     } catch (err) {
