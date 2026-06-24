@@ -1,0 +1,12 @@
+{
+  "meta": {
+    "schema_version": "4.0",
+    "title": "Luxury Hotels Master - De-duplicated",
+    "description": "Single consolidated, de-duplicated dataset of prime luxury, palace, wellness and experiential hotels.",
+    "count": 159,
+    "brands": ["Aman","Awasi","Baillie Lodges","COMO","Explora","Four Seasons","Independent","Kempinski","Leela Palaces","Mandarin Oriental","Oberoi","Peninsula","Regent","Ritz-Carlton","Ritz-Carlton Reserve","Rosewood","Sextantio","Shangri-La","Singita","Six Senses","Soneva","St. Regis","Waldorf Astoria"],
+    "location_note": "Each hotel has location.lat/lng (curated, approximate) PLUS location.embed_url (drop into an iframe, no API key needed) and location.maps_query/google_maps_url.",
+    "image_note": "images are placeholders (placehold.co). Site substitutes verified stock photography instead."
+  },
+  "hotels": []
+}

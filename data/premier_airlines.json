@@ -1,0 +1,49 @@
+{
+  "meta": {
+    "title": "Premier Airline Allowlist",
+    "purpose": "Whitelist of carriers to show in flight search. Keep ALL cabin classes (economy, premium_economy, business, first); restrict only by airline. Filter every segment's marketing carrier against this list so codeshares onto budget partners are excluded.",
+    "basis": "Skytrax 5-Star certified carriers + top-tier full-service flag carriers. Editable - verify current Skytrax certification before finalizing.",
+    "last_reviewed": "2026"
+  },
+  "tier_1_five_star": [
+    { "name": "Singapore Airlines", "iata": "SQ" },
+    { "name": "Qatar Airways", "iata": "QR" },
+    { "name": "Japan Airlines (JAL)", "iata": "JL" },
+    { "name": "All Nippon Airways (ANA)", "iata": "NH" },
+    { "name": "Cathay Pacific", "iata": "CX" },
+    { "name": "EVA Air", "iata": "BR" },
+    { "name": "STARLUX Airlines", "iata": "JX" },
+    { "name": "Hainan Airlines", "iata": "HU" },
+    { "name": "Korean Air", "iata": "KE" },
+    { "name": "Asiana Airlines", "iata": "OZ" },
+    { "name": "Garuda Indonesia", "iata": "GA" },
+    { "name": "Air France", "iata": "AF" },
+    { "name": "Emirates", "iata": "EK" },
+    { "name": "Etihad Airways", "iata": "EY" }
+  ],
+  "tier_2_premium_full_service": [
+    { "name": "Swiss International Air Lines", "iata": "LX" },
+    { "name": "Lufthansa", "iata": "LH" },
+    { "name": "Austrian Airlines", "iata": "OS" },
+    { "name": "Turkish Airlines", "iata": "TK" },
+    { "name": "British Airways", "iata": "BA" },
+    { "name": "Virgin Atlantic", "iata": "VS" },
+    { "name": "KLM", "iata": "KL" },
+    { "name": "Finnair", "iata": "AY" },
+    { "name": "Iberia", "iata": "IB" },
+    { "name": "Qantas", "iata": "QF" },
+    { "name": "Air New Zealand", "iata": "NZ" },
+    { "name": "Oman Air", "iata": "WY" },
+    { "name": "Saudia", "iata": "SV" },
+    { "name": "Thai Airways", "iata": "TG" },
+    { "name": "Vietnam Airlines", "iata": "VN" },
+    { "name": "Malaysia Airlines", "iata": "MH" },
+    { "name": "China Airlines", "iata": "CI" },
+    { "name": "Bangkok Airways", "iata": "PG" }
+  ],
+  "optional_consider": [
+    { "name": "Delta Air Lines (best-rated US carrier)", "iata": "DL" },
+    { "name": "Air India (post-revamp, premium push)", "iata": "AI" }
+  ],
+  "all_iata_codes": ["SQ","QR","JL","NH","CX","BR","JX","HU","KE","OZ","GA","AF","EK","EY","LX","LH","OS","TK","BA","VS","KL","AY","IB","QF","NZ","WY","SV","TG","VN","MH","CI","PG"]
+}

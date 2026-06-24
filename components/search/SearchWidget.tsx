@@ -1,0 +1,83 @@
+"use client";
+
+import { useState } from "react";
+import { Plane, Hotel, Train, Sparkles, Package, Anchor } from "lucide-react";
+import FlightSearch from "./FlightSearch";
+import HotelSearch from "./HotelSearch";
+import TrainSearch from "./TrainSearch";
+import ExperienceSearch from "./ExperienceSearch";
+import PackageSearch from "./PackageSearch";
+import CruiseSearch from "./CruiseSearch";
+import type { City } from "@/lib/types";
+import { useLanguage } from "@/components/providers/LanguageProvider";
+
+const TABS = [
+  { id: "flights",     labelKey: "searchTabs.flights",     icon: Plane },
+  { id: "hotels",      labelKey: "searchTabs.hotels",      icon: Hotel },
+  { id: "cruises",     labelKey: "searchTabs.cruises",     icon: Anchor },
+  { id: "trains",      labelKey: "searchTabs.trains",      icon: Train },
+  { id: "experiences", labelKey: "searchTabs.experiences", icon: Sparkles },
+  { id: "packages",    labelKey: "searchTabs.packages",    icon: Package },
+] as const;
+
+export type TabId = typeof TABS[number]["id"];
+
+export default function SearchWidget({
+  flightFrom, flightTo, onFlightRouteChange, activeTab, onActiveTabChange,
+  hotelCity, onHotelCitySelect,
+}: {
+  flightFrom?: City | null;
+  flightTo?: City | null;
+  onFlightRouteChange?: (from: City | null, to: City | null) => void;
+  activeTab?: TabId;
+  onActiveTabChange?: (tab: TabId) => void;
+  hotelCity?: string;
+  onHotelCitySelect?: (city: string) => void;
+} = {}) {
+  const { t } = useLanguage();
+  const [internalActive, setInternalActive] = useState<TabId>("flights");
+  const active = activeTab ?? internalActive;
+  const setActive = (tab: TabId) => {
+    setInternalActive(tab);
+    onActiveTabChange?.(tab);
+  };
+
+  return (
+    // Warm atelier card on the cream canvas.
+    <div className="bg-panel-raised rounded-sm shadow-widget overflow-visible border border-line">
+      {/* Tab bar */}
+      <div className="rounded-t-sm overflow-hidden border-b border-line">
+        <div className="flex overflow-x-auto scrollbar-none">
+          {TABS.map(tab => {
+            const Icon = tab.icon;
+            const isActive = active === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActive(tab.id)}
+                className={`flex items-center gap-2 px-5 py-4 text-[11px] font-normal tracking-[0.16em] uppercase whitespace-nowrap transition-all duration-200 border-b -mb-px hover:scale-105 active:scale-95 ${
+                  isActive
+                    ? "border-ink text-ink bg-panel-soft font-medium"
+                    : "border-transparent text-ink-faint hover:text-ink-muted hover:bg-panel-soft/50"
+                }`}
+              >
+                <Icon size={15} />
+                {t(tab.labelKey)}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Search form */}
+      <div className="p-5">
+        {active === "flights"     && <FlightSearch defaultFrom={flightFrom} defaultTo={flightTo} onRouteChange={onFlightRouteChange} />}
+        {active === "hotels"      && <HotelSearch defaultCity={hotelCity} onCitySelect={onHotelCitySelect} />}
+        {active === "cruises"     && <CruiseSearch />}
+        {active === "trains"      && <TrainSearch />}
+        {active === "experiences" && <ExperienceSearch />}
+        {active === "packages"    && <PackageSearch />}
+      </div>
+    </div>
+  );
+}
