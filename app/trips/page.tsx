@@ -36,11 +36,26 @@ export default function TripsPage() {
             {t("trips.noReservationsDesc")}
           </p>
           <div className="flex gap-4 justify-center flex-wrap">
-            <Link href="/hotels" className="px-7 py-3.5 bg-ink text-page text-xs tracking-[0.16em] uppercase rounded-sm hover:bg-ink/90 transition-colors">
+            <Link href="/hotels" className="px-7 py-3.5 bg-ink text-page text-xs tracking-[0.16em] uppercase rounded-sm hover:bg-ink/90 transition-all duration-200 hover:scale-105 active:scale-95">
               {t("trips.browseStays")}
             </Link>
-            <Link href="/flights" className="px-7 py-3.5 border border-line-strong text-ink text-xs tracking-[0.16em] uppercase rounded-sm hover:bg-ink hover:text-page transition-all">
+            <Link href="/flights" className="px-7 py-3.5 border border-line-strong text-ink text-xs tracking-[0.16em] uppercase rounded-sm hover:bg-ink hover:text-page transition-all duration-200 hover:scale-105 active:scale-95">
               {t("trips.findFlight")}
+            </Link>
+            <Link href="/cruises" className="px-7 py-3.5 border border-line-strong text-ink text-xs tracking-[0.16em] uppercase rounded-sm hover:bg-ink hover:text-page transition-all duration-200 hover:scale-105 active:scale-95">
+              {t("trips.browseCruises")}
+            </Link>
+            <Link href="/packages" className="px-7 py-3.5 border border-line-strong text-ink text-xs tracking-[0.16em] uppercase rounded-sm hover:bg-ink hover:text-page transition-all duration-200 hover:scale-105 active:scale-95">
+              {t("trips.browseDestinations")}
+            </Link>
+            <Link href="/experiences" className="px-7 py-3.5 border border-line-strong text-ink text-xs tracking-[0.16em] uppercase rounded-sm hover:bg-ink hover:text-page transition-all duration-200 hover:scale-105 active:scale-95">
+              {t("trips.browseExperiences")}
+            </Link>
+            <Link href="/trains" className="px-7 py-3.5 border border-line-strong text-ink text-xs tracking-[0.16em] uppercase rounded-sm hover:bg-ink hover:text-page transition-all duration-200 hover:scale-105 active:scale-95">
+              {t("trips.browseRailJourneys")}
+            </Link>
+            <Link href="/packages" className="px-7 py-3.5 border border-line-strong text-ink text-xs tracking-[0.16em] uppercase rounded-sm hover:bg-ink hover:text-page transition-all duration-200 hover:scale-105 active:scale-95">
+              {t("trips.browseBespokeJourneys")}
             </Link>
           </div>
         </div>
