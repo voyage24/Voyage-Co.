@@ -3,21 +3,17 @@ import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/admin/requireAdmin";
 import { PACKAGES } from "@/lib/mock-data";
 
-const CURATED_IDS = [
-  "p21", "p22", "p23", "p24", "p25", "p26", "p27", "p28", "p29", "p30", "p31", "p32",
-];
-
-// One-click admin action: adds the curated worldwide bespoke journeys from
-// lib/mock-data.ts that aren't already in the database. Safe to click more
-// than once — skipDuplicates means already-imported entries are left alone.
+// One-click admin action: re-syncs the full package catalog from
+// lib/mock-data.ts (all 32 entries — the original 20 plus the 12 curated
+// worldwide additions) into the database. Safe to click more than once —
+// skipDuplicates means already-present entries are left untouched, so this
+// also doubles as a repair tool if any packages are ever found missing.
 export async function POST(req: NextRequest) {
   const admin = await requireAdmin(req);
   if (admin instanceof NextResponse) return admin;
 
-  const curated = PACKAGES.filter(p => CURATED_IDS.includes(p.id));
-
   const result = await prisma.package.createMany({
-    data: curated.map(p => ({ ...p, published: true })),
+    data: PACKAGES.map(p => ({ ...p, published: true })),
     skipDuplicates: true,
   });
 
