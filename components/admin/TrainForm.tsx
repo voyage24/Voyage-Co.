@@ -71,7 +71,7 @@ export default function TrainForm({ initial }: { initial?: TrainData }) {
 
   return (
     <form onSubmit={handleSubmit} className="max-w-3xl space-y-6">
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label className={labelClass}>Train Name *</label>
           <input required className={inputClass} value={form.name} onChange={e => set("name", e.target.value)} />
@@ -132,11 +132,11 @@ export default function TrainForm({ initial }: { initial?: TrainData }) {
         <label className={labelClass}>Classes</label>
         <div className="space-y-2">
           {form.classes.map((c, i) => (
-            <div key={i} className="flex gap-2 items-center">
+            <div key={i} className="flex flex-col sm:flex-row gap-2 sm:items-center">
               <input placeholder="Type (3A, 2A…)" className={inputClass} value={c.type} onChange={e => updateClass(i, "type", e.target.value)} />
               <input type="number" placeholder="Price" className={inputClass} value={c.price} onChange={e => updateClass(i, "price", e.target.value)} />
               <input type="number" placeholder="Available" className={inputClass} value={c.available} onChange={e => updateClass(i, "available", e.target.value)} />
-              <button type="button" onClick={() => removeClass(i)} className="text-red-600 text-xs whitespace-nowrap">Remove</button>
+              <button type="button" onClick={() => removeClass(i)} className="text-red-600 text-xs whitespace-nowrap self-start sm:self-auto">Remove</button>
             </div>
           ))}
         </div>

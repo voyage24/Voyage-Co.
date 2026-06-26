@@ -52,7 +52,7 @@ export default function BlogPostForm({ initial }: { initial?: BlogPostData }) {
 
   return (
     <form onSubmit={handleSubmit} className="max-w-3xl space-y-6">
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="col-span-2">
           <label className={labelClass}>Title *</label>
           <input required className={inputClass} value={form.title} onChange={e => set("title", e.target.value)} />

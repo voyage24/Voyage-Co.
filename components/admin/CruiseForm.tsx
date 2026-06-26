@@ -65,7 +65,7 @@ export default function CruiseForm({ initial }: { initial?: CruiseData }) {
 
   return (
     <form onSubmit={handleSubmit} className="max-w-3xl space-y-6">
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="col-span-2">
           <label className={labelClass}>Name *</label>
           <input required className={inputClass} value={form.name} onChange={e => set("name", e.target.value)} />

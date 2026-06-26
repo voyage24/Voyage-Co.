@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const NAV_ITEMS = [
+export const NAV_ITEMS = [
   { href: "/admin", label: "Dashboard" },
   { href: "/admin/hotels", label: "Hotels" },
   { href: "/admin/flights", label: "Flights" },
@@ -19,7 +19,7 @@ export default function AdminSidebar() {
   const pathname = usePathname();
 
   return (
-    <nav className="w-56 shrink-0 bg-gray-900 text-gray-200 min-h-screen p-4">
+    <nav className="hidden lg:block w-56 shrink-0 bg-gray-900 text-gray-200 min-h-screen p-4">
       <p className="text-white font-semibold text-sm px-2 mb-6">Voyages & Co. Admin</p>
       <ul className="space-y-1">
         {NAV_ITEMS.map(item => {

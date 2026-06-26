@@ -60,7 +60,7 @@ export default function FlightForm({ initial }: { initial?: FlightData }) {
 
   return (
     <form onSubmit={handleSubmit} className="max-w-3xl space-y-6">
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label className={labelClass}>Origin Code *</label>
           <input required className={inputClass} value={form.origin} onChange={e => set("origin", e.target.value.toUpperCase())} />

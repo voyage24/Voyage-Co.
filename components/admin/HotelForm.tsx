@@ -70,7 +70,7 @@ export default function HotelForm({ initial }: { initial?: HotelData }) {
 
   return (
     <form onSubmit={handleSubmit} className="max-w-3xl space-y-6">
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label className={labelClass}>Name *</label>
           <input required className={inputClass} value={form.name} onChange={e => set("name", e.target.value)} />
