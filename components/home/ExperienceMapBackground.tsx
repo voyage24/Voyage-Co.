@@ -48,7 +48,7 @@ export default function ExperienceMapBackground({ experiences }: { experiences: 
   const points = useMemo(() => {
     const result: { exp: Experience; x: number; y: number }[] = [];
     for (const exp of featured) {
-      if (exp.lat === undefined || exp.lng === undefined) continue;
+      if (exp.lat == null || exp.lng == null) continue;
       const pin = map.getPin({ lat: exp.lat, lng: exp.lng });
       if (pin) result.push({ exp, ...pin });
     }

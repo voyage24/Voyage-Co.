@@ -2,17 +2,15 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { Clock, MapPin, CheckCircle, ArrowLeft, Phone, Users } from "lucide-react";
-import { PACKAGES } from "@/lib/mock-data";
+import { prisma } from "@/lib/prisma";
 import Price from "@/components/ui/Price";
 import T from "@/components/ui/T";
 
-export function generateStaticParams() {
-  return PACKAGES.map(p => ({ id: p.id }));
-}
+export const dynamic = "force-dynamic";
 
-export default function PackageDetailPage({ params }: { params: { id: string } }) {
-  const pkg = PACKAGES.find(p => p.id === params.id);
-  if (!pkg) notFound();
+export default async function PackageDetailPage({ params }: { params: { id: string } }) {
+  const pkg = await prisma.package.findUnique({ where: { id: params.id } });
+  if (!pkg || !pkg.published) notFound();
 
   const days = parseInt(pkg.duration, 10) || 7;
 

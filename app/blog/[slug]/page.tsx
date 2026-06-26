@@ -2,18 +2,19 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import { BLOG_POSTS } from "@/lib/mock-data";
+import { prisma } from "@/lib/prisma";
 import T from "@/components/ui/T";
 
-export function generateStaticParams() {
-  return BLOG_POSTS.map(p => ({ slug: p.slug }));
-}
+export const dynamic = "force-dynamic";
 
-export default function BlogPostPage({ params }: { params: { slug: string } }) {
-  const post = BLOG_POSTS.find(p => p.slug === params.slug);
-  if (!post) notFound();
+export default async function BlogPostPage({ params }: { params: { slug: string } }) {
+  const post = await prisma.blogPost.findUnique({ where: { slug: params.slug } });
+  if (!post || !post.published) notFound();
 
-  const more = BLOG_POSTS.filter(p => p.slug !== post.slug).slice(0, 3);
+  const more = await prisma.blogPost.findMany({
+    where: { published: true, slug: { not: post.slug } },
+    take: 3,
+  });
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20">

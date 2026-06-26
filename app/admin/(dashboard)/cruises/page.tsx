@@ -1,0 +1,29 @@
+import Link from "next/link";
+import { prisma } from "@/lib/prisma";
+import DataTable from "@/components/admin/DataTable";
+
+export default async function AdminCruisesPage() {
+  const cruises = await prisma.cruise.findMany({ orderBy: { updatedAt: "desc" } });
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-semibold text-gray-900">Cruises</h1>
+        <Link href="/admin/cruises/new" className="px-4 py-2 bg-gray-900 hover:bg-gray-800 text-white text-sm font-medium rounded-md">
+          + Add Cruise
+        </Link>
+      </div>
+      <DataTable
+        rows={cruises}
+        basePath="/admin/cruises"
+        apiPath="/api/admin/cruises"
+        columns={[
+          { key: "name", label: "Name" },
+          { key: "cruiseLine", label: "Cruise Line" },
+          { key: "region", label: "Region" },
+          { key: "pricePerPerson", label: "Price/Person" },
+        ]}
+      />
+    </div>
+  );
+}

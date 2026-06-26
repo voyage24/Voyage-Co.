@@ -3,14 +3,12 @@
 import { useState, useRef, useEffect } from "react";
 import { Calendar, Users, Search, ChevronDown } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { HOTELS } from "@/lib/mock-data";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 
-const ALL_CITIES = Array.from(new Set(HOTELS.map(h => h.city))).sort();
-
 function CityAutocomplete({
-  value, onChange, onSelect,
+  cities, value, onChange, onSelect,
 }: {
+  cities: string[];
   value: string;
   onChange: (v: string) => void;
   onSelect: (city: string) => void;
@@ -19,8 +17,8 @@ function CityAutocomplete({
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const matches = value.length > 0
-    ? ALL_CITIES.filter(c => c.toLowerCase().includes(value.toLowerCase()))
-    : ALL_CITIES;
+    ? cities.filter(c => c.toLowerCase().includes(value.toLowerCase()))
+    : cities;
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -59,11 +57,12 @@ function CityAutocomplete({
 }
 
 export default function HotelSearch({
-  defaultCity, onCitySelect,
+  cities, defaultCity, onCitySelect,
 }: {
+  cities?: string[];
   defaultCity?: string;
   onCitySelect?: (city: string) => void;
-} = {}) {
+}) {
   const router = useRouter();
   const { t } = useLanguage();
   const [city, setCity] = useState(defaultCity ?? "");
@@ -91,6 +90,7 @@ export default function HotelSearch({
         {/* Destination */}
         <div className={fieldCls}>
           <CityAutocomplete
+            cities={cities ?? []}
             value={city}
             onChange={setCity}
             onSelect={c => onCitySelect?.(c)}

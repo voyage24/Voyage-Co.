@@ -9,8 +9,8 @@ import CruiseMapBackground from "@/components/home/CruiseMapBackground";
 import RailMapBackground from "@/components/home/RailMapBackground";
 import PackageMapBackground from "@/components/home/PackageMapBackground";
 import ExperienceMapBackground from "@/components/home/ExperienceMapBackground";
-import { CITIES, HOTELS, CRUISES, TRAINS, PACKAGES, EXPERIENCES } from "@/lib/mock-data";
-import type { City } from "@/lib/types";
+import { CITIES } from "@/lib/mock-data";
+import type { City, Hotel, Cruise, Train, Package, Experience } from "@/lib/types";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 
 // Journeys featured in the hero background for their respective search
@@ -42,7 +42,15 @@ const TAB_EXPLORE_LINK: Record<TabId, { labelKey: string; href: string }> = {
   packages:    { labelKey: "hero.exploreBespokeJourneys",  href: "/packages" },
 };
 
-export default function HeroSection() {
+export default function HeroSection({
+  hotels, cruises, trains, packages, experiences,
+}: {
+  hotels: Hotel[];
+  cruises: Cruise[];
+  trains: Train[];
+  packages: Package[];
+  experiences: Experience[];
+}) {
   const { t } = useLanguage();
   const [from, setFrom] = useState<City | null>(CITIES.find(c => c.code === "DEL") ?? null);
   const [to, setTo]     = useState<City | null>(CITIES.find(c => c.code === "DXB") ?? null);
@@ -88,12 +96,13 @@ export default function HeroSection() {
   // same generic text regardless of what the traveller is browsing.
   const contentKey = TAB_CONTENT_KEY[activeTab];
   const tx = (suffix: string) => t(contentKey ? `hero.${contentKey}.${suffix}` : `hero.${suffix}`);
+  const hotelCities = useMemo(() => Array.from(new Set(hotels.map(h => h.city))).sort(), [hotels]);
 
   const featuredTrains = useMemo(
     () => FEATURED_TRAIN_IDS
-      .map(id => TRAINS.find(t => t.id === id))
+      .map(id => trains.find(t => t.id === id))
       .filter((t): t is NonNullable<typeof t> => !!t),
-    []
+    [trains]
   );
 
   return (
@@ -113,15 +122,15 @@ export default function HeroSection() {
         onMouseLeave={() => setMapHoverRaw(false)}
       >
         {activeTab === "hotels" ? (
-          <HotelMapBackground hotels={HOTELS} city={hotelCity} />
+          <HotelMapBackground hotels={hotels} city={hotelCity} />
         ) : activeTab === "cruises" ? (
-          <CruiseMapBackground cruises={CRUISES} />
+          <CruiseMapBackground cruises={cruises} />
         ) : activeTab === "trains" ? (
           <RailMapBackground trains={featuredTrains} />
         ) : activeTab === "packages" ? (
-          <PackageMapBackground packages={PACKAGES} />
+          <PackageMapBackground packages={packages} />
         ) : activeTab === "experiences" ? (
-          <ExperienceMapBackground experiences={EXPERIENCES} />
+          <ExperienceMapBackground experiences={experiences} />
         ) : (
           <DestinationMap from={from} to={to} onSelectDestination={setTo} />
         )}
@@ -196,6 +205,7 @@ export default function HeroSection() {
           onActiveTabChange={setActiveTab}
           hotelCity={hotelCity}
           onHotelCitySelect={setHotelCity}
+          hotelCities={hotelCities}
         />
       </div>
 

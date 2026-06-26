@@ -3,14 +3,14 @@
 import Image from "next/image";
 import Link from "next/link";
 import { MapPin, Clock } from "lucide-react";
-import { PACKAGES } from "@/lib/mock-data";
+import type { Package } from "@/lib/types";
 import { useCurrency } from "@/components/providers/CurrencyProvider";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 
-export default function PackagesPreview() {
+export default function PackagesPreview({ packages }: { packages: Package[] }) {
   const { format } = useCurrency();
   const { t } = useLanguage();
-  const featured = PACKAGES.slice(0, 3);
+  const featured = packages.slice(0, 3);
 
   return (
     <section className="bg-page py-24 px-6 lg:px-10">

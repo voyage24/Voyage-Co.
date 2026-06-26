@@ -24,7 +24,7 @@ export type TabId = typeof TABS[number]["id"];
 
 export default function SearchWidget({
   flightFrom, flightTo, onFlightRouteChange, activeTab, onActiveTabChange,
-  hotelCity, onHotelCitySelect,
+  hotelCity, onHotelCitySelect, hotelCities,
 }: {
   flightFrom?: City | null;
   flightTo?: City | null;
@@ -33,6 +33,7 @@ export default function SearchWidget({
   onActiveTabChange?: (tab: TabId) => void;
   hotelCity?: string;
   onHotelCitySelect?: (city: string) => void;
+  hotelCities?: string[];
 } = {}) {
   const { t } = useLanguage();
   const [internalActive, setInternalActive] = useState<TabId>("flights");
@@ -72,7 +73,7 @@ export default function SearchWidget({
       {/* Search form */}
       <div className="p-5">
         {active === "flights"     && <FlightSearch defaultFrom={flightFrom} defaultTo={flightTo} onRouteChange={onFlightRouteChange} />}
-        {active === "hotels"      && <HotelSearch defaultCity={hotelCity} onCitySelect={onHotelCitySelect} />}
+        {active === "hotels"      && <HotelSearch cities={hotelCities} defaultCity={hotelCity} onCitySelect={onHotelCitySelect} />}
         {active === "cruises"     && <CruiseSearch />}
         {active === "trains"      && <TrainSearch />}
         {active === "experiences" && <ExperienceSearch />}

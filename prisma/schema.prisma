@@ -1,0 +1,181 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL_UNPOOLED")
+}
+
+model AdminUser {
+  id           String         @id @default(cuid())
+  email        String         @unique
+  passwordHash String
+  name         String?
+  createdAt    DateTime       @default(now())
+  lastLoginAt  DateTime?
+  sessions     AdminSession[]
+}
+
+model AdminSession {
+  id        String    @id @default(cuid())
+  tokenHash String    @unique
+  userId    String
+  user      AdminUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime  @default(now())
+}
+
+model Hotel {
+  id            String   @id
+  name          String
+  location      String
+  city          String
+  country       String
+  region        String
+  stars         Int
+  rating        Float
+  reviewCount   Int
+  pricePerNight Int
+  image         String
+  images        String[]
+  category      String
+  amenities     String[]
+  highlights    String[]
+  description   String   @db.Text
+  badge         String?
+  brand         String?
+  lat           Float?
+  lng           Float?
+  officialSite  String?
+  published     Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Flight {
+  id              String   @id
+  origin          String
+  originCity      String
+  destination     String
+  destinationCity String
+  airline         String
+  airlineCode     String
+  flightNumber    String
+  departure       String
+  arrival         String
+  duration        String
+  stops           Int
+  price           Int
+  businessPrice   Int?
+  amenities       String[]
+  currency        String   @default("INR")
+  published       Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Train {
+  id              String   @id
+  name            String
+  number          String
+  origin          String
+  originCity      String
+  destination     String
+  destinationCity String
+  departure       String
+  arrival         String
+  duration        String
+  classes         Json
+  runsDays        String[]
+  published       Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Experience {
+  id          String   @id
+  title       String
+  location    String
+  country     String
+  duration    String
+  price       Int
+  category    String
+  image       String
+  description String   @db.Text
+  includes    String[]
+  badge       String?
+  lat         Float?
+  lng         Float?
+  published   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Package {
+  id             String   @id
+  title          String
+  subtitle       String
+  destinations   String[]
+  duration       String
+  pricePerPerson Int
+  image          String
+  highlights     String[]
+  includes       String[]
+  category       String
+  badge          String?
+  published      Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Cruise {
+  id             String   @id
+  name           String
+  cruiseLine     String
+  ship           String
+  region         String
+  departurePort  String
+  ports          String[]
+  duration       String
+  pricePerPerson Int
+  image          String
+  category       String
+  amenities      String[]
+  highlights     String[]
+  includes       String[]
+  description    String   @db.Text
+  rating         Float
+  reviewCount    Int
+  badge          String?
+  published      Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model BlogPost {
+  slug      String   @id
+  title     String
+  category  String
+  readTime  String
+  date      String
+  excerpt   String
+  image     String
+  author    String
+  content   String[]
+  published Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model FeaturedDestination {
+  id         String  @id @default(cuid())
+  name       String
+  tagline    String
+  country    String
+  image      String
+  hotelCount Int
+  sortOrder  Int     @default(0)
+  published  Boolean @default(true)
+}

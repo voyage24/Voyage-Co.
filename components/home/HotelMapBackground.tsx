@@ -62,7 +62,7 @@ export default function HotelMapBackground({ hotels, city }: { hotels: Hotel[]; 
 
     // Hotels with their own precise lat/lng (the master dataset import) are
     // plotted directly — no city-level approximation or jitter needed.
-    const withOwnCoords = displayedHotels.filter(h => h.lat !== undefined && h.lng !== undefined);
+    const withOwnCoords = displayedHotels.filter(h => h.lat != null && h.lng != null);
     for (const hotel of withOwnCoords) {
       const pin = map.getPin({ lat: hotel.lat!, lng: hotel.lng! });
       if (pin) result.push({ hotel, ...pin });
@@ -71,7 +71,7 @@ export default function HotelMapBackground({ hotels, city }: { hotels: Hotel[]; 
     // The original curated hotels have no per-property coordinates — fall
     // back to city-level lookup, spreading multiples in the same city so
     // their icons don't overlap.
-    const withoutOwnCoords = displayedHotels.filter(h => h.lat === undefined || h.lng === undefined);
+    const withoutOwnCoords = displayedHotels.filter(h => h.lat == null || h.lng == null);
     const byCity = new Map<string, Hotel[]>();
     for (const hotel of withoutOwnCoords) {
       if (!byCity.has(hotel.city)) byCity.set(hotel.city, []);

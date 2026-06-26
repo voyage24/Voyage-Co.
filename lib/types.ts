@@ -36,14 +36,14 @@ export interface Hotel {
   amenities: string[];
   highlights: string[];
   description: string;
-  badge?: string;
+  badge?: string | null;
   // Optional — populated for hotels sourced from the luxury hotels master
   // dataset; absent for the original curated entries (those fall back to
   // city-level coordinates via lib/hotel-coords.ts).
-  brand?: string;
-  lat?: number;
-  lng?: number;
-  officialSite?: string;
+  brand?: string | null;
+  lat?: number | null;
+  lng?: number | null;
+  officialSite?: string | null;
 }
 
 export interface Flight {
@@ -60,7 +60,7 @@ export interface Flight {
   duration: string;
   stops: number;
   price: number;
-  businessPrice?: number;
+  businessPrice?: number | null;
   amenities: string[];
   currency?: string;          // ISO currency code for `price`, e.g. "INR" / "USD". Defaults to INR.
   source?: "mock" | "live";   // "live" = real Amadeus fare — suppresses the fake discount badge.
@@ -92,9 +92,9 @@ export interface Experience {
   image: string;
   description: string;
   includes: string[];
-  badge?: string;
-  lat?: number;
-  lng?: number;
+  badge?: string | null;
+  lat?: number | null;
+  lng?: number | null;
 }
 
 export interface Package {
@@ -108,7 +108,7 @@ export interface Package {
   highlights: string[];
   includes: string[];
   category: string;
-  badge?: string;
+  badge?: string | null;
 }
 
 export interface BlogPost {
@@ -141,7 +141,7 @@ export interface Cruise {
   description: string;
   rating: number;
   reviewCount: number;
-  badge?: string;
+  badge?: string | null;
 }
 
 export interface PassengerCount {

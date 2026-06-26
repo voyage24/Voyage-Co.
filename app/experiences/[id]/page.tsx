@@ -2,17 +2,15 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { Clock, MapPin, CheckCircle, ArrowLeft } from "lucide-react";
-import { EXPERIENCES } from "@/lib/mock-data";
+import { prisma } from "@/lib/prisma";
 import Price from "@/components/ui/Price";
 import T from "@/components/ui/T";
 
-export function generateStaticParams() {
-  return EXPERIENCES.map(e => ({ id: e.id }));
-}
+export const dynamic = "force-dynamic";
 
-export default function ExperienceDetailPage({ params }: { params: { id: string } }) {
-  const exp = EXPERIENCES.find(e => e.id === params.id);
-  if (!exp) notFound();
+export default async function ExperienceDetailPage({ params }: { params: { id: string } }) {
+  const exp = await prisma.experience.findUnique({ where: { id: params.id } });
+  if (!exp || !exp.published) notFound();
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20">

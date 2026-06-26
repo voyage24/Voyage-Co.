@@ -2,17 +2,15 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { Clock, MapPin, CheckCircle, ArrowLeft, Phone, Anchor, Star } from "lucide-react";
-import { CRUISES } from "@/lib/mock-data";
+import { prisma } from "@/lib/prisma";
 import Price from "@/components/ui/Price";
 import T from "@/components/ui/T";
 
-export function generateStaticParams() {
-  return CRUISES.map(c => ({ id: c.id }));
-}
+export const dynamic = "force-dynamic";
 
-export default function CruiseDetailPage({ params }: { params: { id: string } }) {
-  const cruise = CRUISES.find(c => c.id === params.id);
-  if (!cruise) notFound();
+export default async function CruiseDetailPage({ params }: { params: { id: string } }) {
+  const cruise = await prisma.cruise.findUnique({ where: { id: params.id } });
+  if (!cruise || !cruise.published) notFound();
 
   const nights = parseInt(cruise.duration, 10) || 7;
   const stops = [cruise.departurePort, ...cruise.ports];

@@ -2,17 +2,15 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { Star, MapPin, CheckCircle, ArrowLeft } from "lucide-react";
-import { HOTELS } from "@/lib/mock-data";
+import { prisma } from "@/lib/prisma";
 import Price from "@/components/ui/Price";
 import T from "@/components/ui/T";
 
-export function generateStaticParams() {
-  return HOTELS.map(h => ({ id: h.id }));
-}
+export const dynamic = "force-dynamic";
 
-export default function HotelDetailPage({ params }: { params: { id: string } }) {
-  const hotel = HOTELS.find(h => h.id === params.id);
-  if (!hotel) notFound();
+export default async function HotelDetailPage({ params }: { params: { id: string } }) {
+  const hotel = await prisma.hotel.findUnique({ where: { id: params.id } });
+  if (!hotel || !hotel.published) notFound();
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20">
@@ -79,7 +77,7 @@ export default function HotelDetailPage({ params }: { params: { id: string } }) 
             </div>
           </div>
 
-          {hotel.lat !== undefined && hotel.lng !== undefined && (
+          {hotel.lat != null && hotel.lng != null && (
             <div className="border-t border-line pt-8 mt-8">
               <h2 className="font-serif text-2xl font-light text-ink mb-4"><T k="detail.location" /></h2>
               <div className="rounded-xl overflow-hidden border border-line aspect-[16/9]">

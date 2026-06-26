@@ -23,7 +23,7 @@ const SIGNATURE_CHAINS = [
   "Mandarin Oriental", "Peninsula", "Ritz-Carlton", "Shangri-La", "St. Regis", "Waldorf Astoria", "Regent",
 ];
 
-export function getWeeklyFeaturedHotels<T extends { name: string; region: string; brand?: string }>(hotels: T[], count: number): T[] {
+export function getWeeklyFeaturedHotels<T extends { name: string; region: string; brand?: string | null }>(hotels: T[], count: number): T[] {
   // Prefer the real brand field when present (the master-dataset imports);
   // fall back to a name match for the original curated entries, which
   // predate that field.

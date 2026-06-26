@@ -27,3 +27,4 @@ dev_server*.log
 next-env.d.ts
 
 .vercel
+.env*

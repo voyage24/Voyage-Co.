@@ -1,5 +1,13 @@
 ﻿import { City, Station, Hotel, Flight, Train, Experience, Package, Cruise, BlogPost } from "./types";
 
+// CITIES and STATIONS remain the live, permanent source for airport/station
+// reference data — they're not admin-editable content, just lookup data for
+// search autocomplete. Every other export below (HOTELS, FLIGHTS, TRAINS,
+// EXPERIENCES, PACKAGES, CRUISES, BLOG_POSTS, FEATURED_DESTINATIONS) is no
+// longer read by the live site — it now lives in Postgres, managed via the
+// /admin console — and is kept here only as the source data for
+// `prisma/seed.ts` (e.g. to reseed a fresh database).
+
 export const CITIES: City[] = [
   // India
   { code: "DEL", name: "Delhi", fullName: "Indira Gandhi International Airport", country: "India" },
