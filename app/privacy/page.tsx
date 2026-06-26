@@ -5,13 +5,13 @@ import { useLanguage } from "@/components/providers/LanguageProvider";
 export default function PrivacyPage() {
   const { t } = useLanguage();
   const sections = [
-    { title: "Information We Collect", body: "We collect information you provide directly to us, such as when you apply for membership, plan a journey, or contact your concierge. This includes your name, email address, phone number, payment information, and travel preferences. We also collect certain information automatically when you use our services, such as your IP address, browser type, device information, and usage data." },
-    { title: "How We Use Your Information", body: "We use the information we collect to craft and arrange your journeys, communicate confirmations and itineraries, provide concierge support, personalise your experience, share occasional updates (which you may opt out of at any time), improve our services, and comply with legal obligations." },
-    { title: "Information Sharing", body: "We share your information only with the travel partners (airlines, hotels, villas, experience curators) necessary to fulfil your journey, and with payment processors to complete transactions. We never sell your personal data to third parties. Discretion is fundamental to who we are." },
-    { title: "Data Security", body: "We implement industry-standard security measures including 256-bit SSL encryption, PCI DSS compliance for payment data, regular security audits, and strict access controls to protect your personal information from unauthorised access, disclosure, or misuse." },
-    { title: "Cookies", body: "We use cookies and similar technologies to improve your experience. You can control cookie settings through your browser. Note that disabling cookies may affect some functionality of our site." },
-    { title: "Your Rights", body: "You have the right to access, correct, or delete your personal data, and to object to or restrict certain processing. To exercise these rights, contact us at hello@voyagesco.com. We will respond within 30 days." },
-    { title: "Changes to This Policy", body: "We may update this Privacy Policy from time to time. We will notify you of significant changes by email or through a notice on our website. Continued use of our services after changes constitutes acceptance of the updated policy." },
+    { titleKey: "privacy.section1.title", bodyKey: "privacy.section1.body" },
+    { titleKey: "privacy.section2.title", bodyKey: "privacy.section2.body" },
+    { titleKey: "privacy.section3.title", bodyKey: "privacy.section3.body" },
+    { titleKey: "privacy.section4.title", bodyKey: "privacy.section4.body" },
+    { titleKey: "privacy.section5.title", bodyKey: "privacy.section5.body" },
+    { titleKey: "privacy.section6.title", bodyKey: "privacy.section6.body" },
+    { titleKey: "privacy.section7.title", bodyKey: "privacy.section7.body" },
   ];
 
   return (
@@ -28,12 +28,12 @@ export default function PrivacyPage() {
 
       <div className="space-y-5">
         {sections.map((s, i) => (
-          <div key={s.title} className="bg-panel rounded-2xl border border-line shadow-card p-6">
+          <div key={s.titleKey} className="bg-panel rounded-2xl border border-line shadow-card p-6">
             <h2 className="font-serif text-lg font-light text-ink mb-3 flex items-center gap-3">
               <span className="w-7 h-7 rounded-full border border-gold/40 text-gold text-xs flex items-center justify-center font-medium shrink-0">{i + 1}</span>
-              {s.title}
+              {t(s.titleKey)}
             </h2>
-            <p className="text-sm text-ink-muted leading-relaxed font-light">{s.body}</p>
+            <p className="text-sm text-ink-muted leading-relaxed font-light">{t(s.bodyKey)}</p>
           </div>
         ))}
       </div>
