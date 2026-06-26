@@ -6,28 +6,28 @@ export default function CancellationsPage() {
   const { t } = useLanguage();
   const sections = [
     {
-      title: "Flight Cancellations",
+      titleKey: "cancellations.flight.title",
       content: [
-        { heading: "Flexible Fares", text: "Where your itinerary permits, your concierge can cancel or amend flights on your behalf. Any partner charges are communicated transparently in advance, and balances refunded promptly to your original payment method." },
-        { heading: "Restricted Fares", text: "Certain fares are non-refundable but may permit rebooking for a change fee. Your specialist will confirm the exact conditions before any booking is made." },
-        { heading: "Carrier-Initiated Changes", text: "If a carrier cancels or significantly delays your flight, you are entitled to a full refund or complimentary rebooking. We will proactively manage this on your behalf." },
+        { headingKey: "cancellations.flight.flexibleFares.heading", textKey: "cancellations.flight.flexibleFares.text" },
+        { headingKey: "cancellations.flight.restrictedFares.heading", textKey: "cancellations.flight.restrictedFares.text" },
+        { headingKey: "cancellations.flight.carrierChanges.heading", textKey: "cancellations.flight.carrierChanges.text" },
       ],
     },
     {
-      title: "Stay Cancellations",
+      titleKey: "cancellations.stay.title",
       content: [
-        { heading: "Flexible Rate Stays", text: "Stays booked on a flexible rate can be cancelled without charge up to the date noted in your confirmation. After that date, the first night may be charged." },
-        { heading: "Non-Refundable Stays", text: "Certain exclusive properties require non-refundable bookings. The full amount is committed at the time of reservation, regardless of subsequent changes." },
-        { heading: "No-Show Policy", text: "If you do not arrive and have not cancelled, the property's no-show policy applies — typically the full booking amount is forfeited." },
+        { headingKey: "cancellations.stay.flexibleRate.heading", textKey: "cancellations.stay.flexibleRate.text" },
+        { headingKey: "cancellations.stay.nonRefundable.heading", textKey: "cancellations.stay.nonRefundable.text" },
+        { headingKey: "cancellations.stay.noShow.heading", textKey: "cancellations.stay.noShow.text" },
       ],
     },
     {
-      title: "Journey Cancellations",
+      titleKey: "cancellations.journey.title",
       content: [
-        { heading: "30+ Days Before Travel", text: "15% of total journey cost as cancellation charge." },
-        { heading: "15–29 Days Before Travel", text: "30% of total journey cost as cancellation charge." },
-        { heading: "7–14 Days Before Travel", text: "50% of total journey cost as cancellation charge." },
-        { heading: "Less than 7 Days", text: "100% of total journey cost — no refund." },
+        { headingKey: "cancellations.journey.tier1.heading", textKey: "cancellations.journey.tier1.text" },
+        { headingKey: "cancellations.journey.tier2.heading", textKey: "cancellations.journey.tier2.text" },
+        { headingKey: "cancellations.journey.tier3.heading", textKey: "cancellations.journey.tier3.text" },
+        { headingKey: "cancellations.journey.tier4.heading", textKey: "cancellations.journey.tier4.text" },
       ],
     },
   ];
@@ -46,13 +46,13 @@ export default function CancellationsPage() {
 
       <div className="space-y-8">
         {sections.map(s => (
-          <div key={s.title}>
-            <h2 className="font-serif text-2xl font-light text-ink mb-4">{s.title}</h2>
+          <div key={s.titleKey}>
+            <h2 className="font-serif text-2xl font-light text-ink mb-4">{t(s.titleKey)}</h2>
             <div className="space-y-4">
               {s.content.map(c => (
-                <div key={c.heading} className="bg-panel rounded-2xl border border-line shadow-card p-5">
-                  <h3 className="font-medium text-ink mb-1.5">{c.heading}</h3>
-                  <p className="text-sm text-ink-muted leading-relaxed font-light">{c.text}</p>
+                <div key={c.headingKey} className="bg-panel rounded-2xl border border-line shadow-card p-5">
+                  <h3 className="font-medium text-ink mb-1.5">{t(c.headingKey)}</h3>
+                  <p className="text-sm text-ink-muted leading-relaxed font-light">{t(c.textKey)}</p>
                 </div>
               ))}
             </div>
