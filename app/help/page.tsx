@@ -7,27 +7,27 @@ import { useLanguage } from "@/components/providers/LanguageProvider";
 
 const FAQS = [
   {
-    category: "Membership",
+    categoryKey: "help.faq.membership.category",
     items: [
-      { q: "How do I become a member of Voyages & Co.?", a: "Membership is by application. Submit a request via 'Request Invitation', and a member of our team will be in touch to understand your travel preferences before extending an invitation." },
-      { q: "Is there a membership fee?", a: "We offer tiered memberships tailored to how you travel. Your dedicated specialist will discuss the option best suited to you during onboarding." },
-      { q: "Can I travel with guests?", a: "Of course. Your membership extends to your travelling companions and immediate family, with the same standard of care throughout." },
+      { qKey: "help.faq.membership.q1", aKey: "help.faq.membership.a1" },
+      { qKey: "help.faq.membership.q2", aKey: "help.faq.membership.a2" },
+      { qKey: "help.faq.membership.q3", aKey: "help.faq.membership.a3" },
     ],
   },
   {
-    category: "Journeys & Bookings",
+    categoryKey: "help.faq.journeys.category",
     items: [
-      { q: "How are journeys arranged?", a: "Every journey is handcrafted by your dedicated specialist. Share your dates, interests and preferences, and we will design a bespoke itinerary for your approval — refined until perfect." },
-      { q: "Do you handle every element of the trip?", a: "Yes. Flights, private transfers, stays, dining, experiences and on-the-ground support are all arranged and overseen by your concierge." },
-      { q: "How far in advance should I plan?", a: "For the most exclusive stays and experiences, we recommend planning several months ahead. That said, our network allows us to arrange remarkable journeys at short notice." },
+      { qKey: "help.faq.journeys.q1", aKey: "help.faq.journeys.a1" },
+      { qKey: "help.faq.journeys.q2", aKey: "help.faq.journeys.a2" },
+      { qKey: "help.faq.journeys.q3", aKey: "help.faq.journeys.a3" },
     ],
   },
   {
-    category: "Concierge & Support",
+    categoryKey: "help.faq.support.category",
     items: [
-      { q: "Is support available while I travel?", a: "Always. Your concierge is reachable 24 hours a day, across every time zone, for anything you may need during your journey." },
-      { q: "What if my plans change?", a: "Simply contact your specialist. We will adjust your itinerary discreetly and handle any arrangements on your behalf." },
-      { q: "How is my privacy protected?", a: "Discretion is fundamental to who we are. Your information and itineraries are held in the strictest confidence and never shared." },
+      { qKey: "help.faq.support.q1", aKey: "help.faq.support.a1" },
+      { qKey: "help.faq.support.q2", aKey: "help.faq.support.a2" },
+      { qKey: "help.faq.support.q3", aKey: "help.faq.support.a3" },
     ],
   },
 ];
@@ -55,7 +55,7 @@ export default function HelpPage() {
         .map(section => ({
           ...section,
           items: section.items.filter(item =>
-            item.q.toLowerCase().includes(q) || item.a.toLowerCase().includes(q)
+            t(item.qKey).toLowerCase().includes(q) || t(item.aKey).toLowerCase().includes(q)
           ),
         }))
         .filter(section => section.items.length > 0)
@@ -84,10 +84,10 @@ export default function HelpPage() {
       <div className="space-y-5 mb-12">
         {filteredFaqs.length > 0 ? (
           filteredFaqs.map(section => (
-            <div key={section.category} className="bg-panel rounded-2xl border border-line shadow-card p-6">
-              <h2 className="font-serif text-xl font-light text-ink mb-2">{section.category}</h2>
+            <div key={section.categoryKey} className="bg-panel rounded-2xl border border-line shadow-card p-6">
+              <h2 className="font-serif text-xl font-light text-ink mb-2">{t(section.categoryKey)}</h2>
               {section.items.map(item => (
-                <FaqItem key={item.q} q={item.q} a={item.a} />
+                <FaqItem key={item.qKey} q={t(item.qKey)} a={t(item.aKey)} />
               ))}
             </div>
           ))
