@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-export default function ImportCuratedPackagesButton() {
+export default function SyncCatalogButton({ endpoint, label }: { endpoint: string; label: string }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
@@ -11,14 +11,14 @@ export default function ImportCuratedPackagesButton() {
   const handleClick = async () => {
     setLoading(true);
     setMessage("");
-    const res = await fetch("/api/admin/packages/import-curated", { method: "POST" });
+    const res = await fetch(endpoint, { method: "POST" });
     const data = await res.json().catch(() => ({}));
     setLoading(false);
     if (res.ok) {
-      setMessage(data.added > 0 ? `Added ${data.added} missing journeys.` : "Already up to date — nothing missing.");
+      setMessage(data.added > 0 ? `Added ${data.added} missing entries.` : "Already up to date — nothing missing.");
       router.refresh();
     } else {
-      setMessage(data.error ?? "Import failed.");
+      setMessage(data.error ?? "Sync failed.");
     }
   };
 
@@ -29,7 +29,7 @@ export default function ImportCuratedPackagesButton() {
         disabled={loading}
         className="px-4 py-2 border border-gray-300 hover:bg-gray-50 disabled:opacity-50 text-gray-700 text-sm font-medium rounded-md"
       >
-        {loading ? "Syncing…" : "Sync Full Catalog (repair / add missing)"}
+        {loading ? "Syncing…" : label}
       </button>
       {message && <p className="text-sm text-gray-500">{message}</p>}
     </div>

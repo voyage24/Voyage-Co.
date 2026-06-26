@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import DataTable from "@/components/admin/DataTable";
-import ImportCuratedPackagesButton from "@/components/admin/ImportCuratedPackagesButton";
+import SyncCatalogButton from "@/components/admin/SyncCatalogButton";
 
 export default async function AdminPackagesPage() {
   const packages = await prisma.package.findMany({ orderBy: { updatedAt: "desc" } });
@@ -15,7 +15,7 @@ export default async function AdminPackagesPage() {
         </Link>
       </div>
       <div className="mb-6">
-        <ImportCuratedPackagesButton />
+        <SyncCatalogButton endpoint="/api/admin/packages/import-curated" label="Sync Full Catalog (repair / add missing)" />
       </div>
       <DataTable
         rows={packages}
