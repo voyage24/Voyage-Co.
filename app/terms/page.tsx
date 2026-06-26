@@ -6,19 +6,18 @@ import { useLanguage } from "@/components/providers/LanguageProvider";
 export default function TermsPage() {
   const { t } = useLanguage();
   const sections = [
-    { title: "Acceptance of Terms", body: "By accessing or using Voyages & Co. (voyagesco.com), you agree to be bound by these Terms of Service. If you do not agree with any part of these terms, you may not use our services. These terms apply to all users, including members, prospective members, and partners." },
-    { title: "Booking & Reservations", body: "All arrangements made through Voyages & Co. are subject to availability and confirmation by the respective travel partner. A booking is confirmed only when you receive a confirmation with a reference number. Prices quoted are subject to change until payment is completed." },
-    { title: "Pricing & Payment", body: "Prices are quoted in the agreed currency, inclusive of applicable taxes unless stated otherwise. Voyages & Co. reserves the right to correct pricing errors. Payment terms are confirmed with your specialist at the time of booking." },
+    { titleKey: "terms.section1.title", bodyKey: "terms.section1.body" },
+    { titleKey: "terms.section2.title", bodyKey: "terms.section2.body" },
+    { titleKey: "terms.section3.title", bodyKey: "terms.section3.body" },
     {
-      title: "Cancellations & Refunds",
-      bodyPre: "Cancellation and refund terms vary by partner and arrangement. Please refer to our ",
-      linkText: "Cancellation Policy",
+      titleKey: "terms.section4.title",
+      bodyPreKey: "terms.section4.bodyPre",
       linkHref: "/cancellations",
-      bodyPost: " for detailed information. Refunds, where applicable, are processed promptly to your original payment method.",
+      bodyPostKey: "terms.section4.bodyPost",
     },
-    { title: "Member Responsibilities", body: "You are responsible for ensuring all travel documents (passport, visa, identification) are valid and appropriate for your journey. Voyages & Co. is not liable for issues arising from incorrect or expired documents. You must be at least 18 years old to hold a membership." },
-    { title: "Limitation of Liability", body: "Voyages & Co. acts as a curator and intermediary between members and travel partners. We are not responsible for the acts, errors, omissions or negligence of such partners. Our total liability in connection with any arrangement shall not exceed the amount paid for it." },
-    { title: "Governing Law", body: "These Terms of Service are governed by the laws of India. Any disputes arising from these terms shall be subject to the exclusive jurisdiction of the courts of Pune, Maharashtra." },
+    { titleKey: "terms.section5.title", bodyKey: "terms.section5.body" },
+    { titleKey: "terms.section6.title", bodyKey: "terms.section6.body" },
+    { titleKey: "terms.section7.title", bodyKey: "terms.section7.body" },
   ];
 
   return (
@@ -35,16 +34,16 @@ export default function TermsPage() {
 
       <div className="space-y-5">
         {sections.map((s, i) => (
-          <div key={s.title} className="bg-panel rounded-2xl border border-line shadow-card p-6">
+          <div key={s.titleKey} className="bg-panel rounded-2xl border border-line shadow-card p-6">
             <h2 className="font-serif text-lg font-light text-ink mb-3 flex items-center gap-3">
               <span className="w-7 h-7 rounded-full border border-gold/40 text-gold text-xs flex items-center justify-center font-medium shrink-0">{i + 1}</span>
-              {s.title}
+              {t(s.titleKey)}
             </h2>
             <p className="text-sm text-ink-muted leading-relaxed font-light">
               {s.linkHref ? (
-                <>{s.bodyPre}<Link href={s.linkHref as string} className="inline-block text-gold link-underline transition-transform duration-200 hover:scale-105 active:scale-95">{s.linkText}</Link>{s.bodyPost}</>
+                <>{t(s.bodyPreKey as string)}<Link href={s.linkHref as string} className="inline-block text-gold link-underline transition-transform duration-200 hover:scale-105 active:scale-95">{t("common.cancellations")}</Link>{t(s.bodyPostKey as string)}</>
               ) : (
-                s.body
+                t(s.bodyKey as string)
               )}
             </p>
           </div>
