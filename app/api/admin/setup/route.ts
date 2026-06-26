@@ -12,9 +12,13 @@ import {
   FEATURED_DESTINATIONS,
 } from "@/lib/mock-data";
 
+export const maxDuration = 60;
+
 // One-time bootstrap: creates the first admin account and seeds the
 // existing catalog into the database. Self-disabling — refuses to run
 // once any AdminUser already exists, so it's safe to leave deployed.
+// Uses bulk createMany (one round-trip per table) instead of per-record
+// upserts, since this only ever runs once against empty tables.
 export async function POST(req: NextRequest) {
   const existing = await prisma.adminUser.count();
   if (existing > 0) {
@@ -29,32 +33,40 @@ export async function POST(req: NextRequest) {
   const passwordHash = await bcrypt.hash(password, 12);
   await prisma.adminUser.create({ data: { email, passwordHash } });
 
-  for (const h of HOTELS) {
-    await prisma.hotel.upsert({ where: { id: h.id }, create: { ...h, images: h.images ?? [], published: true }, update: {} });
-  }
-  for (const f of FLIGHTS) {
-    await prisma.flight.upsert({ where: { id: f.id }, create: { ...f, currency: f.currency ?? "INR", published: true }, update: {} });
-  }
-  for (const t of TRAINS) {
-    await prisma.train.upsert({ where: { id: t.id }, create: { ...t, published: true }, update: {} });
-  }
-  for (const e of EXPERIENCES) {
-    await prisma.experience.upsert({ where: { id: e.id }, create: { ...e, published: true }, update: {} });
-  }
-  for (const p of PACKAGES) {
-    await prisma.package.upsert({ where: { id: p.id }, create: { ...p, published: true }, update: {} });
-  }
-  for (const c of CRUISES) {
-    await prisma.cruise.upsert({ where: { id: c.id }, create: { ...c, published: true }, update: {} });
-  }
-  for (const b of BLOG_POSTS) {
-    await prisma.blogPost.upsert({ where: { slug: b.slug }, create: { ...b, published: true }, update: {} });
-  }
-  for (let i = 0; i < FEATURED_DESTINATIONS.length; i++) {
-    const d = FEATURED_DESTINATIONS[i];
-    const exists = await prisma.featuredDestination.findFirst({ where: { name: d.name } });
-    if (!exists) await prisma.featuredDestination.create({ data: { ...d, sortOrder: i, published: true } });
-  }
+  await Promise.all([
+    prisma.hotel.createMany({
+      data: HOTELS.map(h => ({ ...h, images: h.images ?? [], published: true })),
+      skipDuplicates: true,
+    }),
+    prisma.flight.createMany({
+      data: FLIGHTS.map(f => ({ ...f, currency: f.currency ?? "INR", published: true })),
+      skipDuplicates: true,
+    }),
+    prisma.train.createMany({
+      data: TRAINS.map(t => ({ ...t, published: true })),
+      skipDuplicates: true,
+    }),
+    prisma.experience.createMany({
+      data: EXPERIENCES.map(e => ({ ...e, published: true })),
+      skipDuplicates: true,
+    }),
+    prisma.package.createMany({
+      data: PACKAGES.map(p => ({ ...p, published: true })),
+      skipDuplicates: true,
+    }),
+    prisma.cruise.createMany({
+      data: CRUISES.map(c => ({ ...c, published: true })),
+      skipDuplicates: true,
+    }),
+    prisma.blogPost.createMany({
+      data: BLOG_POSTS.map(b => ({ ...b, published: true })),
+      skipDuplicates: true,
+    }),
+    prisma.featuredDestination.createMany({
+      data: FEATURED_DESTINATIONS.map((d, i) => ({ ...d, sortOrder: i, published: true })),
+      skipDuplicates: true,
+    }),
+  ]);
 
   return NextResponse.json({ ok: true });
 }
