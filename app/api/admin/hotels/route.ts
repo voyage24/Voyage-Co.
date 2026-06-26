@@ -1,13 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { uniqueSlug } from "@/lib/utils/slugify";
+import { requireAdmin } from "@/lib/admin/requireAdmin";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const admin = await requireAdmin(req);
+  if (admin instanceof NextResponse) return admin;
   const hotels = await prisma.hotel.findMany({ orderBy: { updatedAt: "desc" } });
   return NextResponse.json({ hotels });
 }
 
 export async function POST(req: NextRequest) {
+  const admin = await requireAdmin(req);
+  if (admin instanceof NextResponse) return admin;
   const data = await req.json();
 
   if (!data.name || !data.city || !data.country) {

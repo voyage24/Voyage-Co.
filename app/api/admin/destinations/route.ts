@@ -1,12 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { requireAdmin } from "@/lib/admin/requireAdmin";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const admin = await requireAdmin(req);
+  if (admin instanceof NextResponse) return admin;
   const destinations = await prisma.featuredDestination.findMany({ orderBy: { sortOrder: "asc" } });
   return NextResponse.json({ destinations });
 }
 
 export async function POST(req: NextRequest) {
+  const admin = await requireAdmin(req);
+  if (admin instanceof NextResponse) return admin;
   const data = await req.json();
 
   if (!data.name || !data.country) {

@@ -1,24 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSessionUser, SESSION_COOKIE_NAME } from "@/lib/admin/session";
+import { SESSION_COOKIE_NAME } from "@/lib/admin/session";
 
 export const config = {
   matcher: ["/admin/:path*", "/api/admin/:path*"],
 };
 
-export const runtime = "nodejs";
-
 const PUBLIC_PATHS = ["/admin/login", "/api/admin/auth/login", "/admin/setup", "/api/admin/setup"];
 
-export async function middleware(req: NextRequest) {
+// Edge runtime cannot run Prisma, so middleware only does a cheap
+// presence check on the session cookie — the real DB-backed validation
+// happens in the Node.js runtime, in app/admin/(dashboard)/layout.tsx for
+// pages and via requireAdmin() in each /api/admin/** route handler.
+export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
   if (PUBLIC_PATHS.some(p => pathname === p)) {
     return NextResponse.next();
   }
 
   const token = req.cookies.get(SESSION_COOKIE_NAME)?.value;
-  const user = await getSessionUser(token);
 
-  if (!user) {
+  if (!token) {
     if (pathname.startsWith("/api/admin")) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }

@@ -1,13 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { requireAdmin } from "@/lib/admin/requireAdmin";
 
-export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+  const admin = await requireAdmin(req);
+  if (admin instanceof NextResponse) return admin;
   const hotel = await prisma.hotel.findUnique({ where: { id: params.id } });
   if (!hotel) return NextResponse.json({ error: "Not found" }, { status: 404 });
   return NextResponse.json({ hotel });
 }
 
 export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+  const admin = await requireAdmin(req);
+  if (admin instanceof NextResponse) return admin;
   const data = await req.json();
 
   const update: Record<string, unknown> = {};
@@ -29,7 +34,9 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   return NextResponse.json({ hotel });
 }
 
-export async function DELETE(_req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+  const admin = await requireAdmin(req);
+  if (admin instanceof NextResponse) return admin;
   await prisma.hotel.delete({ where: { id: params.id } });
   return NextResponse.json({ ok: true });
 }

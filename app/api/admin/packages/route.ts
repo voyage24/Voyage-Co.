@@ -1,13 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { uniqueSlug } from "@/lib/utils/slugify";
+import { requireAdmin } from "@/lib/admin/requireAdmin";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const admin = await requireAdmin(req);
+  if (admin instanceof NextResponse) return admin;
   const packages = await prisma.package.findMany({ orderBy: { updatedAt: "desc" } });
   return NextResponse.json({ packages });
 }
 
 export async function POST(req: NextRequest) {
+  const admin = await requireAdmin(req);
+  if (admin instanceof NextResponse) return admin;
   const data = await req.json();
 
   if (!data.title || !data.subtitle) {
