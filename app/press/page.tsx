@@ -2,23 +2,24 @@
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
 
-const MENTIONS = [
-  { outlet: "Condé Nast Traveller", quote: "The rare travel atelier that treats an itinerary as a piece of writing — every transition considered, nothing left to chance.", date: "2026" },
-  { outlet: "Travel + Leisure", quote: "Voyages & Co.'s Bhutan circuit is the most thoughtfully paced spiritual journey we've taken in a decade of covering the region.", date: "2025" },
-  { outlet: "Robb Report", quote: "What sets them apart isn't the five-star access — everyone in this category has that. It's the restraint in how they use it.", date: "2025" },
-  { outlet: "AFAR", quote: "A private aviation desk that actually understands the difference between a light jet and a long-haul — rarer than it should be.", date: "2025" },
-  { outlet: "Forbes Travel Guide", quote: "Among the small handful of bespoke operators we'd trust with a first visit to the Maldives or a first visit anywhere.", date: "2024" },
-];
-
-const FACTS = [
-  { label: "Founded", value: "2019" },
-  { label: "Headquarters", value: "Pune, India" },
-  { label: "Destinations curated", value: "60+ countries" },
-  { label: "Average itinerary lead time", value: "6–10 weeks" },
-];
-
 export default function PressPage() {
   const { t } = useLanguage();
+
+  const MENTIONS = [
+    { outlet: "Condé Nast Traveller", quote: t("press.quote1"), date: "2026" },
+    { outlet: "Travel + Leisure", quote: t("press.quote2"), date: "2025" },
+    { outlet: "Robb Report", quote: t("press.quote3"), date: "2025" },
+    { outlet: "AFAR", quote: t("press.quote4"), date: "2025" },
+    { outlet: "Forbes Travel Guide", quote: t("press.quote5"), date: "2024" },
+  ];
+
+  const FACTS = [
+    { label: t("press.factLabel1"), value: "2019" },
+    { label: t("press.factLabel2"), value: "Pune, India" },
+    { label: t("press.factLabel3"), value: t("press.factValue3") },
+    { label: t("press.factLabel4"), value: t("press.factValue4") },
+  ];
+
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-24">
       <div className="text-center mb-16">
