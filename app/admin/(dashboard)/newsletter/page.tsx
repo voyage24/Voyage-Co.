@@ -1,14 +1,22 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import NewsletterComposer from "@/components/admin/NewsletterComposer";
+import NewsletterSubscribers from "@/components/admin/NewsletterSubscribers";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminNewsletterPage() {
-  const [issues, subscriberCount] = await Promise.all([
-    prisma.newsletter.findMany({ orderBy: { createdAt: "desc" } }),
-    prisma.newsletterSubscriber.count(),
+  const [issues, subscribers] = await Promise.all([
+    prisma.newsletter.findMany({
+      orderBy: { createdAt: "desc" },
+      select: { id: true, subject: true, status: true, createdAt: true, recipientCount: true },
+    }),
+    prisma.newsletterSubscriber.findMany({
+      orderBy: { createdAt: "desc" },
+      select: { email: true, createdAt: true },
+    }),
   ]);
+  const subscriberCount = subscribers.length;
 
   return (
     <div>
@@ -20,6 +28,10 @@ export default async function AdminNewsletterPage() {
         Each week a draft is curated automatically from your live content (or generate one now).
         Review it, then send to all subscribers with one click. Nothing is sent without your approval.
       </p>
+
+      <div className="mb-6">
+        <NewsletterSubscribers subscribers={subscribers} />
+      </div>
 
       <div className="mb-6">
         <NewsletterComposer />
