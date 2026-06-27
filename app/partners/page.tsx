@@ -3,29 +3,30 @@
 import { ArrowRight, CheckCircle } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 
-const PARTNER_TYPES = [
-  {
-    title: "Hotels & Resorts",
-    desc: "Present your property to a discerning clientele who value the exceptional and book without hesitation.",
-    benefits: ["Curated placement", "Dedicated relationship manager", "Qualified, high-value guests", "Preferred-partner programme"],
-    cta: "Partner with us",
-  },
-  {
-    title: "Villas & Private Estates",
-    desc: "Introduce your residence to members seeking privacy, space and impeccable service.",
-    benefits: ["Discreet listing", "Vetted guests only", "Concierge coordination", "Tailored commercial terms"],
-    cta: "Become a partner",
-  },
-  {
-    title: "Experience Curators",
-    desc: "Share your rare, once-in-a-lifetime experiences with travellers who seek precisely that.",
-    benefits: ["Storytelling support", "Seamless coordination", "Premium positioning", "Long-term collaboration"],
-    cta: "Collaborate",
-  },
-];
-
 export default function PartnersPage() {
   const { t } = useLanguage();
+
+  const PARTNER_TYPES = [
+    {
+      title: t("partners.type1Title"),
+      desc: t("partners.type1Desc"),
+      benefits: [t("partners.type1Benefit1"), t("partners.type1Benefit2"), t("partners.type1Benefit3"), t("partners.type1Benefit4")],
+      cta: t("partners.type1Cta"),
+    },
+    {
+      title: t("partners.type2Title"),
+      desc: t("partners.type2Desc"),
+      benefits: [t("partners.type2Benefit1"), t("partners.type2Benefit2"), t("partners.type2Benefit3"), t("partners.type2Benefit4")],
+      cta: t("partners.type2Cta"),
+    },
+    {
+      title: t("partners.type3Title"),
+      desc: t("partners.type3Desc"),
+      benefits: [t("partners.type3Benefit1"), t("partners.type3Benefit2"), t("partners.type3Benefit3"), t("partners.type3Benefit4")],
+      cta: t("partners.type3Cta"),
+    },
+  ];
+
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-16">
       <div className="text-center mb-14">
