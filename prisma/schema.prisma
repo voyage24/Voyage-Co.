@@ -8,6 +8,13 @@ datasource db {
   directUrl = env("DATABASE_URL_UNPOOLED")
 }
 
+model NewsletterSubscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  language  String?
+  createdAt DateTime @default(now())
+}
+
 model AdminUser {
   id           String         @id @default(cuid())
   email        String         @unique

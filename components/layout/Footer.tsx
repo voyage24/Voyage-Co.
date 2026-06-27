@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { MessageCircle } from "lucide-react";
 import Logo from "@/components/ui/Logo";
@@ -32,7 +33,27 @@ const FOOTER_LINKS = {
 const SOCIAL = ["footer.instagram", "footer.pinterest", "footer.linkedin"];
 
 export default function Footer() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const [email, setEmail] = useState("");
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (status === "loading") return;
+    setStatus("loading");
+    try {
+      const res = await fetch("/api/newsletter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, language: language.code }),
+      });
+      if (!res.ok) throw new Error();
+      setStatus("success");
+      setEmail("");
+    } catch {
+      setStatus("error");
+    }
+  };
 
   return (
     <footer className="bg-page border-t border-line">
@@ -42,16 +63,30 @@ export default function Footer() {
         <h2 className="font-serif font-light text-ink text-3xl sm:text-4xl mb-8 leading-snug">
           {t("footer.dispatchLine1")}<br className="hidden sm:block" /> {t("footer.dispatchLine2")}
         </h2>
-        <form className="flex items-center max-w-md mx-auto border-b border-line-strong focus-within:border-ink transition-colors">
-          <input
-            type="email"
-            placeholder={t("footer.emailPlaceholder")}
-            className="flex-1 bg-transparent py-3 text-sm text-ink placeholder:text-ink-faint outline-none"
-          />
-          <button type="submit" className="text-[11px] tracking-[0.22em] uppercase text-ink hover:text-gold transition-colors pl-4">
-            {t("footer.subscribe")}
-          </button>
-        </form>
+        {status === "success" ? (
+          <p className="text-sm text-ink-muted max-w-md mx-auto">{t("footer.subscribeSuccess")}</p>
+        ) : (
+          <form onSubmit={handleSubscribe} className="flex items-center max-w-md mx-auto border-b border-line-strong focus-within:border-ink transition-colors">
+            <input
+              type="email"
+              required
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              placeholder={t("footer.emailPlaceholder")}
+              className="flex-1 bg-transparent py-3 text-sm text-ink placeholder:text-ink-faint outline-none"
+            />
+            <button
+              type="submit"
+              disabled={status === "loading"}
+              className="text-[11px] tracking-[0.22em] uppercase text-ink hover:text-gold transition-colors pl-4 disabled:opacity-50"
+            >
+              {status === "loading" ? t("footer.subscribing") : t("footer.subscribe")}
+            </button>
+          </form>
+        )}
+        {status === "error" && (
+          <p className="text-sm text-red-600 max-w-md mx-auto mt-3">{t("footer.subscribeError")}</p>
+        )}
       </div>
 
       {/* Links */}
