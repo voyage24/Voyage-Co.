@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 import { EN, DICTIONARIES } from "@/lib/i18n/dictionaries";
+import { renderConciergeEmailHTML, renderConciergeEmailText } from "@/lib/email/template";
 
 // Appended to every outgoing email — logo, web/phone, and a confidentiality
 // notice. Kept in English regardless of recipient language, consistent with
@@ -67,17 +68,23 @@ export async function POST(req: Request) {
     // best-effort — its failure shouldn't fail the request, since the
     // concierge has already received the enquiry at this point.
     try {
+      const heading = `${tr("contact.autoReplyGreeting")} ${name},`;
       await transporter.sendMail({
         from: `"Voyages & Co. Concierge" <${process.env.SMTP_USER}>`,
         to: email,
         subject: tr("contact.autoReplySubject"),
-        text: `${tr("contact.autoReplyGreeting")} ${name},\n\n${tr("contact.autoReplyBody")}\n\n${tr("contact.autoReplySignoff")}\nVoyages & Co.${EMAIL_FOOTER_TEXT}`,
-        html: `
-          <p>${tr("contact.autoReplyGreeting")} ${name},</p>
-          <p>${tr("contact.autoReplyBody")}</p>
-          <p>${tr("contact.autoReplySignoff")}<br>Voyages &amp; Co.</p>
-          ${EMAIL_FOOTER_HTML}
-        `,
+        text: renderConciergeEmailText({
+          heading,
+          bodyText: tr("contact.autoReplyBody"),
+          signoff: tr("contact.autoReplySignoff"),
+        }),
+        html: renderConciergeEmailHTML({
+          eyebrow: "Voyages & Co. Concierge",
+          heading,
+          bodyHtml: `<p style="margin:0;">${tr("contact.autoReplyBody")}</p>`,
+          signoff: tr("contact.autoReplySignoff"),
+          ctaLabel: "Chat on WhatsApp",
+        }),
       });
     } catch (err) {
       console.error("Auto-reply email failed:", err);
