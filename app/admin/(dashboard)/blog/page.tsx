@@ -4,7 +4,10 @@ import DataTable from "@/components/admin/DataTable";
 import SyncCatalogButton from "@/components/admin/SyncCatalogButton";
 
 export default async function AdminBlogPage() {
-  const posts = await prisma.blogPost.findMany({ orderBy: { updatedAt: "desc" } });
+  const posts = await prisma.blogPost.findMany({
+    orderBy: { updatedAt: "desc" },
+    select: { slug: true, title: true, category: true, author: true, date: true, published: true },
+  });
 
   return (
     <div>

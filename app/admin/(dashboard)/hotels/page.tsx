@@ -4,7 +4,10 @@ import DataTable from "@/components/admin/DataTable";
 import SyncCatalogButton from "@/components/admin/SyncCatalogButton";
 
 export default async function AdminHotelsPage() {
-  const hotels = await prisma.hotel.findMany({ orderBy: { updatedAt: "desc" } });
+  const hotels = await prisma.hotel.findMany({
+    orderBy: { updatedAt: "desc" },
+    select: { id: true, name: true, city: true, country: true, pricePerNight: true, published: true },
+  });
 
   return (
     <div>

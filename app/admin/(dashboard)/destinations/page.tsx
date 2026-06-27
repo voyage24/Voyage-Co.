@@ -4,7 +4,10 @@ import DataTable from "@/components/admin/DataTable";
 import SyncCatalogButton from "@/components/admin/SyncCatalogButton";
 
 export default async function AdminDestinationsPage() {
-  const destinations = await prisma.featuredDestination.findMany({ orderBy: { sortOrder: "asc" } });
+  const destinations = await prisma.featuredDestination.findMany({
+    orderBy: { sortOrder: "asc" },
+    select: { id: true, name: true, country: true, tagline: true, hotelCount: true, published: true },
+  });
 
   return (
     <div>

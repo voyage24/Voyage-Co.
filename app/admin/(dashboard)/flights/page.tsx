@@ -4,7 +4,10 @@ import DataTable from "@/components/admin/DataTable";
 import SyncCatalogButton from "@/components/admin/SyncCatalogButton";
 
 export default async function AdminFlightsPage() {
-  const flights = await prisma.flight.findMany({ orderBy: { updatedAt: "desc" } });
+  const flights = await prisma.flight.findMany({
+    orderBy: { updatedAt: "desc" },
+    select: { id: true, airline: true, origin: true, destination: true, price: true, published: true },
+  });
 
   return (
     <div>

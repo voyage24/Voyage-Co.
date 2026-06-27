@@ -4,7 +4,10 @@ import DataTable from "@/components/admin/DataTable";
 import SyncCatalogButton from "@/components/admin/SyncCatalogButton";
 
 export default async function AdminTrainsPage() {
-  const trains = await prisma.train.findMany({ orderBy: { updatedAt: "desc" } });
+  const trains = await prisma.train.findMany({
+    orderBy: { updatedAt: "desc" },
+    select: { id: true, name: true, origin: true, destination: true, duration: true, published: true },
+  });
 
   return (
     <div>

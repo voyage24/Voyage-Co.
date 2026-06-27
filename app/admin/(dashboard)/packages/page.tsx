@@ -4,7 +4,10 @@ import DataTable from "@/components/admin/DataTable";
 import SyncCatalogButton from "@/components/admin/SyncCatalogButton";
 
 export default async function AdminPackagesPage() {
-  const packages = await prisma.package.findMany({ orderBy: { updatedAt: "desc" } });
+  const packages = await prisma.package.findMany({
+    orderBy: { updatedAt: "desc" },
+    select: { id: true, title: true, subtitle: true, duration: true, pricePerPerson: true, published: true },
+  });
 
   return (
     <div>

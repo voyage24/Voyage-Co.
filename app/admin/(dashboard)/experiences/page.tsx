@@ -4,7 +4,10 @@ import DataTable from "@/components/admin/DataTable";
 import SyncCatalogButton from "@/components/admin/SyncCatalogButton";
 
 export default async function AdminExperiencesPage() {
-  const experiences = await prisma.experience.findMany({ orderBy: { updatedAt: "desc" } });
+  const experiences = await prisma.experience.findMany({
+    orderBy: { updatedAt: "desc" },
+    select: { id: true, title: true, location: true, category: true, price: true, published: true },
+  });
 
   return (
     <div>
