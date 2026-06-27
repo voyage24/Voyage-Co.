@@ -69,6 +69,81 @@ export function renderConciergeEmailHTML(opts: {
 </table>`;
 }
 
+// Reusable card for one curated item in the weekly newsletter — image,
+// title, one line of detail, price, and a link through to the site.
+export function renderNewsletterCard(opts: {
+  image: string;
+  title: string;
+  detail: string;
+  price?: string;
+  url: string;
+  ctaLabel: string;
+}) {
+  const { image, title, detail, price, url, ctaLabel } = opts;
+  return `
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 28px;border:1px solid ${LINE};">
+    <tr><td>
+      <a href="${url}" style="text-decoration:none;">
+        <img src="${image}" alt="${title.replace(/"/g, "&quot;")}" width="520" style="width:100%;max-width:520px;height:auto;display:block;" />
+      </a>
+    </td></tr>
+    <tr><td style="padding:20px 24px 22px;">
+      <h2 style="margin:0 0 6px;font-family:Georgia,'Times New Roman',serif;font-size:20px;font-weight:400;color:${INK};line-height:1.3;">${title}</h2>
+      <p style="margin:0 0 ${price ? "10px" : "14px"};font-family:Arial,Helvetica,sans-serif;font-size:13px;color:${INK_MUTED};line-height:1.6;">${detail}</p>
+      ${price ? `<p style="margin:0 0 14px;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:${GOLD};font-weight:bold;">${price}</p>` : ""}
+      <a href="${url}" style="font-family:Arial,Helvetica,sans-serif;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:${NAVY};text-decoration:none;font-weight:bold;border-bottom:2px solid ${GOLD};padding-bottom:2px;">${ctaLabel} &rarr;</a>
+    </td></tr>
+  </table>`;
+}
+
+export function renderNewsletterHTML(opts: {
+  eyebrow: string;
+  heading: string;
+  introHtml: string;
+  bodyHtml: string;
+  unsubscribeUrl: string;
+}) {
+  const { eyebrow, heading, introHtml, bodyHtml, unsubscribeUrl } = opts;
+  return `
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${PAGE};padding:32px 16px;">
+  <tr><td align="center">
+    <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#FFFFFF;">
+      <tr><td style="background:${NAVY};padding:40px 40px;text-align:center;">
+        <img src="${LOGO_URL}" alt="Voyages & Co." style="height:46px;display:inline-block;" />
+      </td></tr>
+      <tr><td style="height:3px;background:${GOLD};line-height:0;font-size:0;">&nbsp;</td></tr>
+      <tr><td style="padding:44px 40px 16px;text-align:center;">
+        <p style="margin:0 0 10px;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:${GOLD};font-family:Arial,Helvetica,sans-serif;font-weight:bold;">${eyebrow}</p>
+        <h1 style="margin:0 0 18px;font-family:Georgia,'Times New Roman',serif;font-size:28px;font-weight:400;color:${INK};line-height:1.3;">${heading}</h1>
+        <div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.7;color:${INK_MUTED};">${introHtml}</div>
+      </td></tr>
+      <tr><td style="padding:28px 40px 8px;">
+        ${bodyHtml}
+      </td></tr>
+      <tr><td style="padding:8px 40px 44px;text-align:center;">
+        <table role="presentation" cellpadding="0" cellspacing="0" align="center" style="margin:0 auto;">
+          <tr><td style="background:${NAVY};">
+            <a href="${SITE_URL}" style="display:inline-block;padding:14px 30px;font-family:Arial,Helvetica,sans-serif;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:#FFFFFF;text-decoration:none;">Explore More Journeys</a>
+          </td></tr>
+        </table>
+      </td></tr>
+      <tr><td style="background:${PAGE};padding:30px 40px;text-align:center;border-top:1px solid ${LINE};">
+        <img src="${LOGO_DARK_URL}" alt="Voyages & Co." style="height:30px;margin-bottom:14px;display:inline-block;" />
+        <p style="margin:0 0 6px;font-family:Arial,Helvetica,sans-serif;font-size:12px;color:${INK_MUTED};">
+          <a href="${SITE_URL}" style="color:${GOLD};text-decoration:none;">voyagesco.com</a>
+          &nbsp;&nbsp;·&nbsp;&nbsp;
+          <a href="tel:${PHONE_TEL}" style="color:${GOLD};text-decoration:none;">${PHONE_DISPLAY}</a>
+        </p>
+        <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:10px;color:${INK_FAINT};line-height:1.6;">
+          You are receiving this because you subscribed at voyagesco.com.<br>
+          <a href="${unsubscribeUrl}" style="color:${INK_FAINT};text-decoration:underline;">Unsubscribe</a>
+        </p>
+      </td></tr>
+    </table>
+  </td></tr>
+</table>`;
+}
+
 export function renderConciergeEmailText(opts: { heading: string; bodyText: string; signoff: string }) {
   const { heading, bodyText, signoff } = opts;
   return `${heading}

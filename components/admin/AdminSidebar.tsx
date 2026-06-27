@@ -13,6 +13,7 @@ export const NAV_ITEMS = [
   { href: "/admin/cruises", label: "Cruises" },
   { href: "/admin/blog", label: "Blog Posts" },
   { href: "/admin/destinations", label: "Featured Destinations" },
+  { href: "/admin/newsletter", label: "Newsletter" },
 ];
 
 export default function AdminSidebar() {

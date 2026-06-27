@@ -15,6 +15,17 @@ model NewsletterSubscriber {
   createdAt DateTime @default(now())
 }
 
+model Newsletter {
+  id             String    @id @default(cuid())
+  subject        String
+  previewText    String?
+  html           String    @db.Text
+  status         String    @default("draft") // draft | sent
+  createdAt      DateTime  @default(now())
+  sentAt         DateTime?
+  recipientCount Int       @default(0)
+}
+
 model AdminUser {
   id           String         @id @default(cuid())
   email        String         @unique
