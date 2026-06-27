@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import SiteChrome from "@/components/layout/SiteChrome";
 import { TripsProvider } from "@/components/providers/TripsProvider";
@@ -14,6 +14,15 @@ export const metadata: Metadata = {
     description: "A private travel atelier crafting extraordinary journeys for the discerning.",
     siteName: "Voyages & Co.",
   },
+  appleWebApp: {
+    capable: true,
+    title: "Voyages & Co.",
+    statusBarStyle: "black-translucent",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#15212D",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
