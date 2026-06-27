@@ -54,6 +54,20 @@ export default function BookingForm({ item }: { item: BookingItem }) {
       guestName: form.name,
       bookedAt: new Date().toISOString(),
     });
+    // Send the reservation to the concierge (stored as an enquiry + email).
+    // Fire-and-forget so the confirmation screen shows instantly.
+    const notes = item.needsDates && (form.checkIn || form.checkOut)
+      ? `Dates: ${form.checkIn || "?"} → ${form.checkOut || "?"} · Guests: ${form.guests}`
+      : `Guests: ${form.guests}`;
+    fetch("/api/booking", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: form.name, email: form.email, phone: form.phone,
+        itemType: item.type, itemId: item.id, itemTitle: item.title,
+        total, message: notes, ref,
+      }),
+    }).catch(() => {});
     setReference(ref);
     setConfirmed(true);
     window.scrollTo({ top: 0, behavior: "smooth" });

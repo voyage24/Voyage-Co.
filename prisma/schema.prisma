@@ -15,6 +15,25 @@ model NewsletterSubscriber {
   createdAt DateTime @default(now())
 }
 
+model Enquiry {
+  id        String   @id @default(cuid())
+  type      String   // "contact" | "booking"
+  name      String
+  email     String
+  phone     String?
+  subject   String?
+  message   String?  @db.Text
+  itemType  String?  // for bookings: hotel | package | experience | ...
+  itemId    String?
+  itemTitle String?
+  total     Int?
+  status    String   @default("new") // new | handled
+  createdAt DateTime @default(now())
+
+  @@index([status])
+  @@index([createdAt])
+}
+
 model Newsletter {
   id             String    @id @default(cuid())
   subject        String

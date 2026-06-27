@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 import { EN, DICTIONARIES } from "@/lib/i18n/dictionaries";
 import { renderConciergeEmailHTML, renderConciergeEmailText } from "@/lib/email/template";
+import { prisma } from "@/lib/prisma";
 
 // Appended to every outgoing email — logo, web/phone, and a confidentiality
 // notice. Kept in English regardless of recipient language, consistent with
@@ -33,6 +34,16 @@ export async function POST(req: Request) {
 
   if (!name || !email || !subject || !message) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+  }
+
+  // Persist the enquiry first, so a lead is never lost even if the email
+  // send below fails. Best-effort — a DB hiccup shouldn't block the email.
+  try {
+    await prisma.enquiry.create({
+      data: { type: "contact", name, email, phone: phone || null, subject, message },
+    });
+  } catch (err) {
+    console.error("Failed to store contact enquiry:", err);
   }
 
   const port = Number(process.env.SMTP_PORT ?? 587);
