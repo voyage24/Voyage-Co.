@@ -10,7 +10,8 @@ const INK_MUTED = "#48402F";
 const INK_FAINT = "#A39C8C";
 const PAGE = "#F4F0E9";
 const LINE = "#E5DFD2";
-const LOGO_URL = "https://voyagesco.com/logo-blue.png";
+const LOGO_URL = "https://voyagesco.com/logo-blue.png";       // white wordmark on navy — for the dark header band
+const LOGO_DARK_URL = "https://voyagesco.com/logo-navy.png";  // navy wordmark on transparent — for the light footer
 const SITE_URL = "https://voyagesco.com";
 const PHONE_DISPLAY = "+91 99199 10213";
 const PHONE_TEL = "+919919910213";
@@ -28,8 +29,8 @@ export function renderConciergeEmailHTML(opts: {
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${PAGE};padding:32px 16px;">
   <tr><td align="center">
     <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#FFFFFF;">
-      <tr><td style="background:${NAVY};padding:36px 40px;text-align:center;">
-        <img src="${LOGO_URL}" alt="Voyages & Co." style="height:26px;display:inline-block;" />
+      <tr><td style="background:${NAVY};padding:40px 40px;text-align:center;">
+        <img src="${LOGO_URL}" alt="Voyages & Co." style="height:46px;display:inline-block;" />
       </td></tr>
       <tr><td style="height:3px;background:${GOLD};line-height:0;font-size:0;">&nbsp;</td></tr>
       <tr><td style="padding:48px 40px 40px;font-family:Georgia,'Times New Roman',serif;">
@@ -50,8 +51,8 @@ export function renderConciergeEmailHTML(opts: {
           <span style="color:${GOLD};">Voyages &amp; Co.</span>
         </p>
       </td></tr>
-      <tr><td style="background:${PAGE};padding:28px 40px;text-align:center;border-top:1px solid ${LINE};">
-        <img src="${LOGO_URL}" alt="Voyages & Co." style="height:16px;margin-bottom:12px;display:inline-block;" />
+      <tr><td style="background:${PAGE};padding:30px 40px;text-align:center;border-top:1px solid ${LINE};">
+        <img src="${LOGO_DARK_URL}" alt="Voyages & Co." style="height:30px;margin-bottom:14px;display:inline-block;" />
         <p style="margin:0 0 6px;font-family:Arial,Helvetica,sans-serif;font-size:12px;color:${INK_MUTED};">
           <a href="${SITE_URL}" style="color:${GOLD};text-decoration:none;">voyagesco.com</a>
           &nbsp;&nbsp;·&nbsp;&nbsp;
