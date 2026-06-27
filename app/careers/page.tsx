@@ -2,25 +2,26 @@
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
 
-const OPEN_ROLES = [
-  { title: "Senior Travel Designer", department: "Journey Design", location: "Mumbai, India", type: "Full-time" },
-  { title: "Concierge Manager — Middle East", department: "Guest Relations", location: "Dubai, UAE", type: "Full-time" },
-  { title: "Private Aviation Specialist", department: "Flights", location: "Remote (India)", type: "Full-time" },
-  { title: "Hotel Partnerships Lead", department: "Partnerships", location: "Mumbai, India", type: "Full-time" },
-  { title: "Bespoke Journeys Cartographer", department: "Journey Design", location: "Remote", type: "Contract" },
-  { title: "Guest Experience Associate", department: "Guest Relations", location: "Mumbai, India", type: "Full-time" },
-  { title: "Content & Journal Editor", department: "Brand", location: "Remote", type: "Part-time" },
-  { title: "Cruise & Rail Specialist", department: "Voyages", location: "Mumbai, India", type: "Full-time" },
-];
-
-const VALUES = [
-  { title: "Obsessive Attention", body: "We sweat details no guest will ever notice — because the ones who do notice are the ones we're building this for." },
-  { title: "Quiet Confidence", body: "Genuine luxury rarely announces itself. We work in a register that's calm, precise and entirely unflashy." },
-  { title: "Worldwide Curiosity", body: "Every member of the team is, at heart, a traveller first — restless, well-read and always planning the next trip." },
-];
-
 export default function CareersPage() {
   const { t } = useLanguage();
+
+  const OPEN_ROLES = [
+    { title: t("careers.role1"), department: t("careers.deptJourneyDesign"), location: "Mumbai, India", type: t("careers.typeFullTime") },
+    { title: t("careers.role2"), department: t("careers.deptGuestRelations"), location: "Dubai, UAE", type: t("careers.typeFullTime") },
+    { title: t("careers.role3"), department: t("careers.deptFlights"), location: t("careers.locRemoteIndia"), type: t("careers.typeFullTime") },
+    { title: t("careers.role4"), department: t("careers.deptPartnerships"), location: "Mumbai, India", type: t("careers.typeFullTime") },
+    { title: t("careers.role5"), department: t("careers.deptJourneyDesign"), location: t("careers.locRemote"), type: t("careers.typeContract") },
+    { title: t("careers.role6"), department: t("careers.deptGuestRelations"), location: "Mumbai, India", type: t("careers.typeFullTime") },
+    { title: t("careers.role7"), department: t("careers.deptBrand"), location: t("careers.locRemote"), type: t("careers.typePartTime") },
+    { title: t("careers.role8"), department: t("careers.deptVoyages"), location: "Mumbai, India", type: t("careers.typeFullTime") },
+  ];
+
+  const VALUES = [
+    { title: t("careers.value1Title"), body: t("careers.value1Body") },
+    { title: t("careers.value2Title"), body: t("careers.value2Body") },
+    { title: t("careers.value3Title"), body: t("careers.value3Body") },
+  ];
+
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-24">
       {/* Hero */}
