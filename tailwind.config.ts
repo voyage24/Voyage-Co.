@@ -51,10 +51,10 @@ const config: Config = {
         },
       },
       fontFamily: {
-        // Single typeface site-wide (Apple-style) — serif alias kept so existing
-        // font-serif classNames across the codebase don't need touching.
-        sans:  ["Inter", "system-ui", "sans-serif"],
-        serif: ["Inter", "system-ui", "sans-serif"],
+        // Driven by CSS variables so the admin Appearance panel can change
+        // them site-wide. font-serif (headings) can differ from the body.
+        sans:  ["var(--font-body)", "Inter", "system-ui", "sans-serif"],
+        serif: ["var(--font-heading)", "Inter", "system-ui", "sans-serif"],
         // Reserved exclusively for the "Voyages & Co." wordmark.
         logo:  ["Fahkwang", "system-ui", "sans-serif"],
       },

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { MessageCircle } from "lucide-react";
 import Logo from "@/components/ui/Logo";
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { useSetting, useSettings } from "@/components/providers/SettingsProvider";
 
 const FOOTER_LINKS = {
   "footer.discover": [
@@ -30,10 +31,17 @@ const FOOTER_LINKS = {
   ],
 };
 
-const SOCIAL = ["footer.instagram", "footer.pinterest", "footer.linkedin"];
+const SOCIAL = [
+  { label: "footer.instagram", key: "social.instagram" as const },
+  { label: "footer.pinterest", key: "social.pinterest" as const },
+  { label: "footer.linkedin", key: "social.linkedin" as const },
+];
 
 export default function Footer() {
   const { t, language } = useLanguage();
+  const phone = useSetting("contact.phone") || "+91 99199 10213";
+  const whatsapp = useSetting("contact.whatsapp") || "919919910213";
+  const settings = useSettings();
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
 
@@ -99,13 +107,13 @@ export default function Footer() {
               {t("footer.tagline")}
             </p>
             <a
-              href="https://wa.me/919919910213"
+              href={`https://wa.me/${whatsapp}`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 mt-5 text-sm text-ink-muted hover:text-ink transition-all duration-200 font-light hover:scale-110 active:scale-95 origin-left"
             >
               <MessageCircle size={15} className="text-gold" />
-              {t("help.whatsapp")} +91 99199 10213
+              {t("help.whatsapp")} {phone}
             </a>
           </div>
 
@@ -131,11 +139,14 @@ export default function Footer() {
             © 2026 Voyages &amp; Co. (by Lighthouse Ventures) · voyagesco.com
           </p>
           <div className="flex items-center gap-6 order-1 sm:order-2">
-            {SOCIAL.map(s => (
-              <a key={s} href="#" className="inline-block text-[10px] tracking-[0.2em] uppercase text-ink-muted hover:text-ink transition-all duration-200 hover:scale-110 active:scale-95">
-                {t(s)}
-              </a>
-            ))}
+            {SOCIAL.map(s => {
+              const url = settings?.[s.key];
+              return (
+                <a key={s.key} href={url || "#"} target={url ? "_blank" : undefined} rel={url ? "noopener noreferrer" : undefined} className="inline-block text-[10px] tracking-[0.2em] uppercase text-ink-muted hover:text-ink transition-all duration-200 hover:scale-110 active:scale-95">
+                  {t(s.label)}
+                </a>
+              );
+            })}
           </div>
         </div>
       </div>

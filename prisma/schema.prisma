@@ -15,6 +15,11 @@ model NewsletterSubscriber {
   createdAt DateTime @default(now())
 }
 
+model SiteSetting {
+  key   String @id
+  value String @db.Text
+}
+
 model Enquiry {
   id        String   @id @default(cuid())
   type      String   // "contact" | "booking"

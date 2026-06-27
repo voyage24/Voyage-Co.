@@ -1,6 +1,7 @@
 "use client";
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { useSetting } from "@/components/providers/SettingsProvider";
 
 // Persistent floating action button, visible on every page, that opens a
 // WhatsApp chat with the concierge number — the simplest "chatbox" the site
@@ -8,10 +9,11 @@ import { useLanguage } from "@/components/providers/LanguageProvider";
 // "Live Concierge" option) rather than through a separate chat platform.
 export default function WhatsAppFAB() {
   const { t } = useLanguage();
+  const wa = useSetting("contact.whatsapp") || "919919910213";
 
   return (
     <a
-      href="https://wa.me/919919910213"
+      href={`https://wa.me/${wa}`}
       target="_blank"
       rel="noopener noreferrer"
       aria-label={t("help.whatsapp")}

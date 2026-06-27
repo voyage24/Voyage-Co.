@@ -1,8 +1,11 @@
+"use client";
+
 import Link from "next/link";
+import { useSetting } from "@/components/providers/SettingsProvider";
 
 /**
- * Voyages & Co. wordmark — set in Fahkwang, the one place on the site that
- * deviates from the global Inter typeface.
+ * Voyages & Co. wordmark. By default a text wordmark set in Fahkwang; if an
+ * appearance-panel logo image is uploaded, that image is shown instead.
  */
 export default function Logo({
   className = "",
@@ -15,9 +18,13 @@ export default function Logo({
   href?: string | null;
   tone?: "dark" | "light";
 }) {
+  const customLogo = useSetting(tone === "light" ? "logo.light" : "logo.dark");
   const color = tone === "light" ? "text-[#f4f0e9]" : "text-ink";
 
-  const mark = (
+  const mark = customLogo ? (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={customLogo} alt="Voyages & Co." style={{ height: size * 1.15 }} className="inline-block w-auto" />
+  ) : (
     <span
       className={`font-logo font-normal leading-none tracking-[0.04em] ${color} transition-colors duration-300`}
       style={{ fontSize: size }}

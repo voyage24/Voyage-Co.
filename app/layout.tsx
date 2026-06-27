@@ -4,6 +4,8 @@ import SiteChrome from "@/components/layout/SiteChrome";
 import { TripsProvider } from "@/components/providers/TripsProvider";
 import { CurrencyProvider } from "@/components/providers/CurrencyProvider";
 import { LanguageProvider } from "@/components/providers/LanguageProvider";
+import { SettingsProvider } from "@/components/providers/SettingsProvider";
+import { getSiteSettings, buildThemeHead } from "@/lib/site-settings";
 
 export const metadata: Metadata = {
   title: "Voyages & Co. — A Sense of Place",
@@ -25,18 +27,27 @@ export const viewport: Viewport = {
   themeColor: "#15212D",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const settings = await getSiteSettings();
+  const { css, fontHref } = buildThemeHead(settings);
+
   return (
     <html lang="en">
+      <head>
+        <link rel="stylesheet" href={fontHref} />
+        <style dangerouslySetInnerHTML={{ __html: css }} />
+      </head>
       <body className="bg-page text-ink">
         <a href="#main" className="skip-link">Skip to content</a>
-        <LanguageProvider>
-          <CurrencyProvider>
-            <TripsProvider>
-              <SiteChrome>{children}</SiteChrome>
-            </TripsProvider>
-          </CurrencyProvider>
-        </LanguageProvider>
+        <SettingsProvider settings={settings}>
+          <LanguageProvider>
+            <CurrencyProvider>
+              <TripsProvider>
+                <SiteChrome>{children}</SiteChrome>
+              </TripsProvider>
+            </CurrencyProvider>
+          </LanguageProvider>
+        </SettingsProvider>
       </body>
     </html>
   );

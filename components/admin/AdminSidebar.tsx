@@ -15,6 +15,7 @@ export const NAV_ITEMS = [
   { href: "/admin/blog", label: "Blog Posts" },
   { href: "/admin/destinations", label: "Featured Destinations" },
   { href: "/admin/newsletter", label: "Newsletter" },
+  { href: "/admin/appearance", label: "Appearance" },
   { href: "/admin/settings", label: "Settings" },
 ];
 

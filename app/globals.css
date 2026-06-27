@@ -21,6 +21,9 @@
   --ink-faint: 108 98 84;
   --gold: 112 92 56;
   --gold-soft: 148 126 88;
+  /* Font stacks — overridable from the admin Appearance panel. */
+  --font-body: 'Inter', system-ui, sans-serif;
+  --font-heading: 'Inter', system-ui, sans-serif;
 }
 
 html {
@@ -30,7 +33,7 @@ html {
 }
 
 body {
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: var(--font-body), 'Inter', system-ui, sans-serif;
   font-weight: 400;
   line-height: 1.7;
   color: rgb(var(--ink));

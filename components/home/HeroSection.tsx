@@ -12,6 +12,7 @@ import ExperienceMapBackground from "@/components/home/ExperienceMapBackground";
 import { CITIES } from "@/lib/mock-data";
 import type { City, Hotel, Cruise, Train, Package, Experience } from "@/lib/types";
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { useSetting } from "@/components/providers/SettingsProvider";
 
 // Journeys featured in the hero background for their respective search
 // tabs. Luxury Stays and Cruises have no fixed list — Cruises cycles
@@ -96,6 +97,10 @@ export default function HeroSection({
   // same generic text regardless of what the traveller is browsing.
   const contentKey = TAB_CONTENT_KEY[activeTab];
   const tx = (suffix: string) => t(contentKey ? `hero.${contentKey}.${suffix}` : `hero.${suffix}`);
+
+  // Admin-overridable hero copy (blank = use the built-in translated copy).
+  const customHeadline = useSetting("hero.headline");
+  const customSubtext = useSetting("hero.subtext");
   const hotelCities = useMemo(() => Array.from(new Set(hotels.map(h => h.city))).sort(), [hotels]);
 
   const featuredTrains = useMemo(
@@ -158,10 +163,10 @@ export default function HeroSection({
               {tx("eyebrow")}
             </p>
             <h1 className="font-serif font-light text-white text-5xl sm:text-6xl lg:text-7xl leading-[1.04] mb-5">
-              {tx("headline1")}<br />{tx("headline2")}
+              {customHeadline ? customHeadline : <>{tx("headline1")}<br />{tx("headline2")}</>}
             </h1>
             <p className="text-white/85 text-lg sm:text-xl max-w-lg leading-relaxed">
-              {tx("paragraph")}
+              {customSubtext || tx("paragraph")}
             </p>
           </div>
         </div>
