@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -8,6 +8,8 @@ export interface DataTableColumn {
   key: string;
   label: string;
 }
+
+const PAGE_SIZE = 25;
 
 export default function DataTable({
   rows,
@@ -24,6 +26,20 @@ export default function DataTable({
 }) {
   const router = useRouter();
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
+  const [page, setPage] = useState(0);
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return rows;
+    return rows.filter(row =>
+      columns.some(c => String(row[c.key] ?? "").toLowerCase().includes(q))
+    );
+  }, [rows, columns, query]);
+
+  const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const safePage = Math.min(page, pageCount - 1);
+  const pageRows = filtered.slice(safePage * PAGE_SIZE, safePage * PAGE_SIZE + PAGE_SIZE);
 
   const handleDelete = async (id: string) => {
     if (!confirm("Delete this record? This cannot be undone.")) return;
@@ -45,7 +61,21 @@ export default function DataTable({
   };
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg overflow-x-auto">
+    <div>
+      <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+        <input
+          value={query}
+          onChange={e => { setQuery(e.target.value); setPage(0); }}
+          placeholder="Search…"
+          className="border border-gray-300 rounded-md px-3 py-2 text-sm w-full sm:w-72"
+        />
+        <span className="text-xs text-gray-500">
+          {filtered.length} {filtered.length === 1 ? "record" : "records"}
+          {query && ` (filtered from ${rows.length})`}
+        </span>
+      </div>
+
+      <div className="bg-white border border-gray-200 rounded-lg overflow-x-auto">
       <table className="w-full text-sm">
         <thead>
           <tr className="border-b border-gray-200 text-left text-gray-500">
@@ -57,14 +87,14 @@ export default function DataTable({
           </tr>
         </thead>
         <tbody>
-          {rows.length === 0 && (
+          {pageRows.length === 0 && (
             <tr>
               <td colSpan={columns.length + 2} className="px-4 py-8 text-center text-gray-400">
-                No records yet.
+                {rows.length === 0 ? "No records yet." : "No records match your search."}
               </td>
             </tr>
           )}
-          {rows.map(row => {
+          {pageRows.map(row => {
             const id = row[idField];
             return (
               <tr key={id} className="border-b border-gray-100 last:border-0">
@@ -103,6 +133,27 @@ export default function DataTable({
           })}
         </tbody>
       </table>
+      </div>
+
+      {pageCount > 1 && (
+        <div className="flex items-center justify-between gap-3 mt-3">
+          <button
+            onClick={() => setPage(p => Math.max(0, p - 1))}
+            disabled={safePage === 0}
+            className="text-sm px-3 py-1.5 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 disabled:opacity-40"
+          >
+            ← Previous
+          </button>
+          <span className="text-xs text-gray-500">Page {safePage + 1} of {pageCount}</span>
+          <button
+            onClick={() => setPage(p => Math.min(pageCount - 1, p + 1))}
+            disabled={safePage >= pageCount - 1}
+            className="text-sm px-3 py-1.5 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 disabled:opacity-40"
+          >
+            Next →
+          </button>
+        </div>
+      )}
     </div>
   );
 }
