@@ -5,7 +5,7 @@ import PackagesPreview from "@/components/home/PackagesPreview";
 import TrustSection from "@/components/home/TrustSection";
 import { prisma } from "@/lib/prisma";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export default async function Home() {
   const [hotels, cruises, trains, packages, experiences] = await Promise.all([

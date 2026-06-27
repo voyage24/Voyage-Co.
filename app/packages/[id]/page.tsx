@@ -6,7 +6,7 @@ import { prisma } from "@/lib/prisma";
 import Price from "@/components/ui/Price";
 import T from "@/components/ui/T";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export default async function PackageDetailPage({ params }: { params: { id: string } }) {
   const pkg = await prisma.package.findUnique({ where: { id: params.id } });

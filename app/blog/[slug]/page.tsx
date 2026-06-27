@@ -5,7 +5,7 @@ import { ArrowLeft } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import T from "@/components/ui/T";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export default async function BlogPostPage({ params }: { params: { slug: string } }) {
   const post = await prisma.blogPost.findUnique({ where: { slug: params.slug } });

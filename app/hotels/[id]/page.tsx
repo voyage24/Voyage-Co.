@@ -6,7 +6,7 @@ import { prisma } from "@/lib/prisma";
 import Price from "@/components/ui/Price";
 import T from "@/components/ui/T";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export default async function HotelDetailPage({ params }: { params: { id: string } }) {
   const hotel = await prisma.hotel.findUnique({ where: { id: params.id } });
