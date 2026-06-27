@@ -30,7 +30,7 @@ export function renderConciergeEmailHTML(opts: {
   <tr><td align="center">
     <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#FFFFFF;">
       <tr><td style="background:${NAVY};padding:40px 40px;text-align:center;">
-        <img src="${LOGO_URL}" alt="Voyages & Co." style="height:46px;display:inline-block;" />
+        <img src="${LOGO_URL}" alt="Voyages & Co." style="height:66px;display:inline-block;" />
       </td></tr>
       <tr><td style="height:3px;background:${GOLD};line-height:0;font-size:0;">&nbsp;</td></tr>
       <tr><td style="padding:48px 40px 40px;font-family:Georgia,'Times New Roman',serif;">
@@ -52,7 +52,7 @@ export function renderConciergeEmailHTML(opts: {
         </p>
       </td></tr>
       <tr><td style="background:${PAGE};padding:30px 40px;text-align:center;border-top:1px solid ${LINE};">
-        <img src="${LOGO_DARK_URL}" alt="Voyages & Co." style="height:30px;margin-bottom:14px;display:inline-block;" />
+        <img src="${LOGO_DARK_URL}" alt="Voyages & Co." style="height:42px;margin-bottom:14px;display:inline-block;" />
         <p style="margin:0 0 6px;font-family:Arial,Helvetica,sans-serif;font-size:12px;color:${INK_MUTED};">
           <a href="${SITE_URL}" style="color:${GOLD};text-decoration:none;">voyagesco.com</a>
           &nbsp;&nbsp;·&nbsp;&nbsp;
@@ -109,7 +109,7 @@ export function renderNewsletterHTML(opts: {
   <tr><td align="center">
     <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#FFFFFF;">
       <tr><td style="background:${NAVY};padding:40px 40px;text-align:center;">
-        <img src="${LOGO_URL}" alt="Voyages & Co." style="height:46px;display:inline-block;" />
+        <img src="${LOGO_URL}" alt="Voyages & Co." style="height:66px;display:inline-block;" />
       </td></tr>
       <tr><td style="height:3px;background:${GOLD};line-height:0;font-size:0;">&nbsp;</td></tr>
       <tr><td style="padding:44px 40px 16px;text-align:center;">
@@ -128,7 +128,7 @@ export function renderNewsletterHTML(opts: {
         </table>
       </td></tr>
       <tr><td style="background:${PAGE};padding:30px 40px;text-align:center;border-top:1px solid ${LINE};">
-        <img src="${LOGO_DARK_URL}" alt="Voyages & Co." style="height:30px;margin-bottom:14px;display:inline-block;" />
+        <img src="${LOGO_DARK_URL}" alt="Voyages & Co." style="height:42px;margin-bottom:14px;display:inline-block;" />
         <p style="margin:0 0 6px;font-family:Arial,Helvetica,sans-serif;font-size:12px;color:${INK_MUTED};">
           <a href="${SITE_URL}" style="color:${GOLD};text-decoration:none;">voyagesco.com</a>
           &nbsp;&nbsp;·&nbsp;&nbsp;
