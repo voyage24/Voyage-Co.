@@ -4,6 +4,7 @@ import { useState } from "react";
 import ExperienceCard from "@/components/cards/ExperienceCard";
 import type { Experience } from "@/lib/types";
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { filterLabel } from "@/lib/i18n/filterLabels";
 
 const CATEGORIES = ["All", "adventure", "wellness", "wildlife", "cultural", "culinary", "spiritual"];
 
@@ -36,7 +37,7 @@ export default function ExperiencesPageClient({ experiences }: { experiences: Ex
             onClick={() => setCategory(c)}
             className={`px-4 py-2 rounded-full text-xs font-normal tracking-[0.08em] uppercase whitespace-nowrap transition-colors capitalize ${category === c ? "bg-ink text-page" : "bg-panel-soft text-ink-muted hover:text-ink"}`}
           >
-            {c}
+            {filterLabel(t, c)}
           </button>
         ))}
       </div>

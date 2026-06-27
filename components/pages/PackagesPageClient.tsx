@@ -5,6 +5,7 @@ import Image from "next/image";
 import PackageCard from "@/components/cards/PackageCard";
 import type { Package } from "@/lib/types";
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { filterLabel } from "@/lib/i18n/filterLabels";
 
 const CATEGORIES = ["All", "Heritage", "Beach & Culture", "Luxury European", "Spiritual", "Safari & Beach", "Adventure", "Desert Expedition", "Island Escape"];
 
@@ -54,7 +55,7 @@ export default function PackagesPageClient({ packages }: { packages: Package[] }
         <p className="text-[11px] tracking-[0.14em] uppercase text-ink-faint mb-2">{t("experienceSearch.category")}</p>
         <div className="flex gap-2 overflow-x-auto scrollbar-none pb-1">
           {CATEGORIES.map(c => (
-            <button key={c} onClick={() => setCategory(c)} className={`${pill(category === c)} whitespace-nowrap shrink-0`}>{c}</button>
+            <button key={c} onClick={() => setCategory(c)} className={`${pill(category === c)} whitespace-nowrap shrink-0`}>{filterLabel(t, c)}</button>
           ))}
         </div>
       </div>

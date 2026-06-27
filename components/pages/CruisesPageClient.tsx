@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import CruiseCard from "@/components/cards/CruiseCard";
 import type { Cruise } from "@/lib/types";
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { filterLabel } from "@/lib/i18n/filterLabels";
 
 const REGIONS = ["All", "Caribbean", "Mediterranean", "Alaska", "Norwegian Fjords", "Antarctica", "Galápagos", "Asia & Far East", "Nile & Egypt", "European Rivers", "Transatlantic", "World Cruise", "South Pacific", "Indian Ocean", "Baltic & Scandinavia"];
 const CATEGORIES = ["All", "ultra-luxury", "luxury", "expedition", "river", "family"];
@@ -45,7 +46,7 @@ function CruisesContent({ cruises }: { cruises: Cruise[] }) {
         <p className="text-[11px] tracking-[0.14em] uppercase text-ink-faint mb-2">{t("cruiseSearch.region")}</p>
         <div className="flex gap-2 overflow-x-auto scrollbar-none pb-1">
           {REGIONS.map(r => (
-            <button key={r} onClick={() => setRegion(r)} className={`${pill(region === r)} whitespace-nowrap shrink-0`}>{r}</button>
+            <button key={r} onClick={() => setRegion(r)} className={`${pill(region === r)} whitespace-nowrap shrink-0`}>{filterLabel(t, r)}</button>
           ))}
         </div>
       </div>
@@ -54,7 +55,7 @@ function CruisesContent({ cruises }: { cruises: Cruise[] }) {
         <p className="text-[11px] tracking-[0.14em] uppercase text-ink-faint mb-2">{t("cruisesPage.style")}</p>
         <div className="flex gap-2 overflow-x-auto scrollbar-none pb-1">
           {CATEGORIES.map(c => (
-            <button key={c} onClick={() => setCategory(c)} className={`${pill(category === c)} capitalize whitespace-nowrap shrink-0`}>{c}</button>
+            <button key={c} onClick={() => setCategory(c)} className={`${pill(category === c)} capitalize whitespace-nowrap shrink-0`}>{filterLabel(t, c)}</button>
           ))}
         </div>
       </div>

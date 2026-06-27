@@ -5,6 +5,7 @@ import { SlidersHorizontal, X, Search } from "lucide-react";
 import HotelCard from "@/components/cards/HotelCard";
 import type { Hotel } from "@/lib/types";
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { filterLabel } from "@/lib/i18n/filterLabels";
 
 const AMENITY_FILTERS = ["Pool", "Spa", "Gym", "Restaurant", "Bar", "Private Beach", "Butler", "Yoga"];
 const STAR_OPTIONS = [5, 4, 3];
@@ -59,7 +60,7 @@ export default function HotelsPageClient({ hotels }: { hotels: Hotel[] }) {
       return 0;
     }), [hotels, sortBy, minStars, amenities, maxPrice, activeRegion, activeCategory, searchTerm]);
 
-  const headingText = searchTerm || (activeRegion === "All" ? "Worldwide" : activeRegion);
+  const headingText = searchTerm || (activeRegion === "All" ? t("filter.worldwide") : filterLabel(t, activeRegion));
 
   const FilterPanel = () => (
     <aside className="bg-panel rounded-2xl border border-line shadow-card p-6 space-y-7">
@@ -110,7 +111,7 @@ export default function HotelsPageClient({ hotels }: { hotels: Hotel[] }) {
               onClick={() => setActiveCategory(c)}
               className={`px-3 py-1.5 rounded-full text-[11px] font-normal border capitalize transition-colors ${activeCategory === c ? "bg-ink border-ink text-page" : "border-line text-ink-muted hover:border-ink/40"}`}
             >
-              {c}
+              {filterLabel(t, c)}
             </button>
           ))}
         </div>
@@ -122,7 +123,7 @@ export default function HotelsPageClient({ hotels }: { hotels: Hotel[] }) {
           {AMENITY_FILTERS.map(a => (
             <label key={a} className="flex items-center gap-2.5 cursor-pointer">
               <input type="checkbox" checked={amenities.includes(a)} onChange={() => toggleAmenity(a)} className="accent-gold w-4 h-4" />
-              <span className="text-sm text-ink-muted font-light">{a}</span>
+              <span className="text-sm text-ink-muted font-light">{filterLabel(t, a)}</span>
             </label>
           ))}
         </div>
@@ -175,7 +176,7 @@ export default function HotelsPageClient({ hotels }: { hotels: Hotel[] }) {
             onClick={() => { setActiveRegion(r); setSearchTerm(""); }}
             className={`shrink-0 px-4 py-1.5 rounded-full text-xs font-normal tracking-[0.08em] border transition-colors whitespace-nowrap ${activeRegion === r && !searchTerm ? "bg-ink border-ink text-page" : "border-line text-ink-muted hover:border-ink/40 bg-panel"}`}
           >
-            {r}
+            {filterLabel(t, r)}
           </button>
         ))}
       </div>
