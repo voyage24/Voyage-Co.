@@ -17,11 +17,12 @@ interface PackageData {
   category: string;
   badge: string | null;
   published: boolean;
+  featured?: boolean;
 }
 
 const BLANK: PackageData = {
   title: "", subtitle: "", destinations: [], duration: "", pricePerPerson: 0,
-  image: "", highlights: [], includes: [], category: "", badge: null, published: true,
+  image: "", highlights: [], includes: [], category: "", badge: null, published: true, featured: false,
 };
 
 const inputClass = "w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-gray-900";
@@ -104,6 +105,11 @@ export default function PackageForm({ initial }: { initial?: PackageData }) {
       <label className="flex items-center gap-2 text-sm text-gray-700">
         <input type="checkbox" checked={form.published} onChange={e => set("published", e.target.checked)} />
         Published (visible on the live site)
+      </label>
+
+      <label className="flex items-center gap-2 text-sm text-gray-700">
+        <input type="checkbox" checked={!!form.featured} onChange={e => set("featured", e.target.checked)} />
+        Feature on homepage (shown in the &ldquo;Curated Journeys&rdquo; section)
       </label>
 
       <button type="submit" disabled={saving} className="px-5 py-2.5 bg-gray-900 hover:bg-gray-800 disabled:opacity-50 text-white text-sm font-medium rounded-md">

@@ -12,7 +12,7 @@ export default async function Home() {
     prisma.hotel.findMany({ where: { published: true } }),
     prisma.cruise.findMany({ where: { published: true } }),
     prisma.train.findMany({ where: { published: true } }),
-    prisma.package.findMany({ where: { published: true } }),
+    prisma.package.findMany({ where: { published: true }, orderBy: [{ featured: "desc" }, { createdAt: "asc" }] }),
     prisma.experience.findMany({ where: { published: true } }),
   ]);
 

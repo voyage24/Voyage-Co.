@@ -16,7 +16,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   const data = await req.json();
   const update: Record<string, unknown> = {};
 
-  for (const key of ["title", "subtitle", "duration", "image", "category", "published"]) {
+  for (const key of ["title", "subtitle", "duration", "image", "category", "published", "featured"]) {
     if (data[key] !== undefined) update[key] = data[key];
   }
   if (data.pricePerPerson !== undefined) update.pricePerPerson = Number(data.pricePerPerson);

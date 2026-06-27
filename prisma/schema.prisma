@@ -163,6 +163,7 @@ model Package {
   category       String
   badge          String?
   published      Boolean  @default(true)
+  featured       Boolean  @default(false)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 }

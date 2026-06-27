@@ -35,6 +35,7 @@ export async function POST(req: NextRequest) {
       category: data.category ?? "",
       badge: data.badge || null,
       published: data.published ?? true,
+      featured: data.featured ?? false,
     },
   });
 
