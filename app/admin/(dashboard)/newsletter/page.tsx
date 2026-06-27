@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import NewsletterGenerateButton from "@/components/admin/NewsletterGenerateButton";
+import NewsletterComposer from "@/components/admin/NewsletterComposer";
 
 export const dynamic = "force-dynamic";
 
@@ -22,7 +22,7 @@ export default async function AdminNewsletterPage() {
       </p>
 
       <div className="mb-6">
-        <NewsletterGenerateButton />
+        <NewsletterComposer />
       </div>
 
       {issues.length === 0 ? (
