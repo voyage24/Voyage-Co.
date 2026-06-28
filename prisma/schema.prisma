@@ -41,6 +41,8 @@ model Customer {
   phone        String?
   createdAt    DateTime          @default(now())
   lastLoginAt  DateTime?
+  shareToken   String?           @unique
+  tier         String            @default("member") // member | silver | gold
   sessions     CustomerSession[]
   bookings     Booking[]
   reviews      Review[]

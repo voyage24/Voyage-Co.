@@ -5,6 +5,7 @@ import { getCurrentCustomer } from "@/lib/customer/session";
 import LogoutButton from "@/components/account/LogoutButton";
 import CancelBookingButton from "@/components/account/CancelBookingButton";
 import SavedList from "@/components/account/SavedList";
+import ShareBoardButton from "@/components/account/ShareBoardButton";
 import Price from "@/components/ui/Price";
 
 export const dynamic = "force-dynamic";
@@ -29,7 +30,12 @@ export default async function AccountPage() {
       <div className="flex flex-wrap items-end justify-between gap-3 mb-10">
         <div>
           <p className="text-[10px] tracking-[0.3em] uppercase text-gold mb-2">My Account</p>
-          <h1 className="font-serif text-3xl sm:text-4xl font-light text-ink">{customer.name || customer.email}</h1>
+          <div className="flex items-center gap-3">
+            <h1 className="font-serif text-3xl sm:text-4xl font-light text-ink">{customer.name || customer.email}</h1>
+            {customer.tier && customer.tier !== "member" && (
+              <span className="text-[10px] tracking-[0.18em] uppercase border border-gold/50 text-gold px-2.5 py-1 rounded-full capitalize">{customer.tier}</span>
+            )}
+          </div>
           <p className="text-sm text-ink-muted font-light mt-1">{customer.email}</p>
         </div>
         <LogoutButton />
@@ -68,7 +74,10 @@ export default async function AccountPage() {
         </div>
       )}
 
-      <h2 className="font-serif text-2xl font-light text-ink mt-12 mb-5">Saved</h2>
+      <div className="flex flex-wrap items-center justify-between gap-3 mt-12 mb-5">
+        <h2 className="font-serif text-2xl font-light text-ink">Saved</h2>
+        {saved.length > 0 && <ShareBoardButton />}
+      </div>
       <SavedList items={saved.map(s => ({ id: s.id, type: s.type, itemId: s.itemId, itemTitle: s.itemTitle, image: s.image, href: s.href }))} />
     </div>
   );

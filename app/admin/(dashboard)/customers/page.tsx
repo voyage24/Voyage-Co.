@@ -8,13 +8,13 @@ export default async function AdminCustomersPage() {
     orderBy: { createdAt: "desc" },
     take: 500,
     select: {
-      id: true, name: true, email: true, phone: true, createdAt: true, lastLoginAt: true,
+      id: true, name: true, email: true, phone: true, tier: true, createdAt: true, lastLoginAt: true,
       _count: { select: { bookings: true } },
     },
   });
 
   const rows = customers.map(c => ({
-    id: c.id, name: c.name, email: c.email, phone: c.phone,
+    id: c.id, name: c.name, email: c.email, phone: c.phone, tier: c.tier,
     createdAt: c.createdAt, lastLoginAt: c.lastLoginAt, bookings: c._count.bookings,
   }));
 
