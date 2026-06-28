@@ -99,10 +99,21 @@ export default function HeroSection({
     return () => clearTimeout(autoHideTimer.current);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab]);
+  // Clicking the map area brings the headline back and pins it visible for a
+  // few seconds (overriding hover/auto-fade) so it can be read again, then it
+  // resumes its normal fade-away behaviour.
+  const [forceShow, setForceShow] = useState(false);
+  const forceShowTimer = useRef<ReturnType<typeof setTimeout>>();
+  const revealHeadline = () => {
+    setForceShow(true);
+    clearTimeout(forceShowTimer.current);
+    forceShowTimer.current = setTimeout(() => setForceShow(false), 6000);
+  };
+
   // On phones the headline sits below the map (not over it), so it must stay
   // put — the hover/auto-fade behaviour is desktop-only.
   const isMobile = useIsMobile();
-  const headlineHidden = !isMobile && (mapHover || autoHide);
+  const headlineHidden = !isMobile && !forceShow && (mapHover || autoHide);
 
   // Each search tab gets its own headline copy instead of repeating the
   // same generic text regardless of what the traveller is browsing.
@@ -136,6 +147,7 @@ export default function HeroSection({
           setMapHoverRaw(isLeftHalf);
         }}
         onMouseLeave={() => setMapHoverRaw(false)}
+        onClick={revealHeadline}
       >
         {activeTab === "hotels" ? (
           <HotelMapBackground hotels={hotels} city={hotelCity} />
