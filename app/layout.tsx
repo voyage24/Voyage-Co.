@@ -9,6 +9,7 @@ import { getSiteSettings, buildThemeHead } from "@/lib/site-settings";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import CookieConsent from "@/components/layout/CookieConsent";
+import Haptics from "@/components/ui/Haptics";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://voyagesco.com"),
@@ -65,6 +66,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             </CurrencyProvider>
           </LanguageProvider>
         </SettingsProvider>
+        <Haptics />
         <Analytics />
         <SpeedInsights />
       </body>
