@@ -5,6 +5,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import WhatsAppFAB from "@/components/ui/WhatsAppFAB";
 import ScrollButtons from "@/components/ui/ScrollButtons";
+import ConciergeChat from "@/components/concierge/ConciergeChat";
 
 // The admin console is a separate application surface and must not show the
 // public site's nav/footer/WhatsApp button — but it still lives under the
@@ -23,6 +24,7 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
       <Footer />
       <WhatsAppFAB />
       <ScrollButtons />
+      <ConciergeChat />
     </>
   );
 }
