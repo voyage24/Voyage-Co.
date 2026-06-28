@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { createTransport, FROM_CONCIERGE } from "@/lib/email/transport";
 import { renderConciergeEmailHTML, renderConciergeEmailText } from "@/lib/email/template";
 import { getCurrentCustomer } from "@/lib/customer/session";
+import { getRemaining } from "@/lib/availability";
 
 function inr(n: number) {
   return `₹${n.toLocaleString("en-IN")}`;
@@ -22,6 +23,12 @@ export async function POST(req: Request) {
   }
   if (!itemType || !itemId || !itemTitle) {
     return NextResponse.json({ error: "Missing booking item" }, { status: 400 });
+  }
+
+  // Reject if the item has a capacity and it's already full.
+  const remaining = await getRemaining(itemType, itemId);
+  if (remaining !== null && remaining <= 0) {
+    return NextResponse.json({ error: "This experience is fully booked. Please contact the concierge for the waitlist." }, { status: 409 });
   }
 
   const customer = await getCurrentCustomer();

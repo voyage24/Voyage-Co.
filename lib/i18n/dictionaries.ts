@@ -596,6 +596,7 @@ export const EN: Dictionary = {
   "search.searching": "Searching…", "search.noResults": "No matches found.",
   "search.hint": "Start typing to search journeys, stays, experiences, cruises and the journal.",
   "booking.confirmReservation": "Confirm Reservation",
+  "booking.fullyBooked": "Fully booked", "booking.sending": "Sending…",
   "booking.noPaymentNow": "No payment is taken now — a specialist will contact you to finalise your journey.",
   "booking.price": "Price",
   "booking.type.hotel": "hotel",

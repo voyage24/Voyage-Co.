@@ -24,12 +24,13 @@ interface CruiseData {
   reviewCount: number;
   badge: string | null;
   published: boolean;
+  availableUnits?: number | null;
 }
 
 const BLANK: CruiseData = {
   name: "", cruiseLine: "", ship: "", region: "", departurePort: "", ports: [],
   duration: "", pricePerPerson: 0, image: "", category: "", amenities: [], highlights: [],
-  includes: [], description: "", rating: 0, reviewCount: 0, badge: null, published: true,
+  includes: [], description: "", rating: 0, reviewCount: 0, badge: null, published: true, availableUnits: null,
 };
 
 const inputClass = "w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-gray-900";
@@ -133,6 +134,16 @@ export default function CruiseForm({ initial }: { initial?: CruiseData }) {
       <div>
         <label className={labelClass}>Description</label>
         <textarea rows={5} className={inputClass} value={form.description} onChange={e => set("description", e.target.value)} />
+      </div>
+
+      <div>
+        <label className={labelClass}>Available units (leave blank for on-request / unlimited)</label>
+        <input
+          type="number" min={0} className={inputClass}
+          value={form.availableUnits ?? ""}
+          onChange={e => set("availableUnits", e.target.value === "" ? null : Number(e.target.value))}
+          placeholder="On request"
+        />
       </div>
 
       <label className="flex items-center gap-2 text-sm text-gray-700">

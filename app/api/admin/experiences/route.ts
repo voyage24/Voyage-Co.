@@ -37,6 +37,7 @@ export async function POST(req: NextRequest) {
       lat: data.lat ? Number(data.lat) : null,
       lng: data.lng ? Number(data.lng) : null,
       published: data.published ?? true,
+      availableUnits: data.availableUnits === "" || data.availableUnits == null ? null : Number(data.availableUnits),
     },
   });
 

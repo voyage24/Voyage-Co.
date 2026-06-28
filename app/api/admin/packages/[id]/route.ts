@@ -24,6 +24,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   if (data.highlights !== undefined) update.highlights = data.highlights;
   if (data.includes !== undefined) update.includes = data.includes;
   if (data.badge !== undefined) update.badge = data.badge || null;
+  if (data.availableUnits !== undefined) update.availableUnits = data.availableUnits === "" || data.availableUnits === null ? null : Number(data.availableUnits);
 
   const pkg = await prisma.package.update({ where: { id: params.id }, data: update });
   return NextResponse.json({ package: pkg });

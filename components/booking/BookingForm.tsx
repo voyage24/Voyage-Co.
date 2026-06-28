@@ -19,13 +19,15 @@ export interface BookingItem {
   needsDates?: boolean;
 }
 
-export default function BookingForm({ item }: { item: BookingItem }) {
+export default function BookingForm({ item, soldOut = false }: { item: BookingItem; soldOut?: boolean }) {
   const [form, setForm] = useState({
     name: "", email: "", phone: "",
     checkIn: "", checkOut: "", guests: 2,
   });
   const [confirmed, setConfirmed] = useState(false);
   const [reference, setReference] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
   const { addTrip } = useTrips();
   const { format } = useCurrency();
   const { t } = useLanguage();
@@ -40,35 +42,34 @@ export default function BookingForm({ item }: { item: BookingItem }) {
 
   const total = item.needsDates && nights > 0 ? item.price * nights : item.price;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Reference generated on submit (client only) — no hydration concern.
+    if (submitting) return;
+    setSubmitting(true);
+    setError("");
     const ref = "VC-" + Math.random().toString(36).slice(2, 8).toUpperCase();
-    addTrip({
-      ref,
-      type: item.type,
-      title: item.title,
-      subtitle: item.subtitle,
-      image: item.image,
-      total,
-      guestName: form.name,
-      bookedAt: new Date().toISOString(),
-    });
-    // Persist the reservation (creates a real Booking + notifies concierge).
-    // Fire-and-forget so the confirmation screen shows instantly.
-    fetch("/api/booking", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name: form.name, email: form.email, phone: form.phone,
-        itemType: item.type, itemId: item.id, itemTitle: item.title, image: item.image,
-        checkIn: form.checkIn || null, checkOut: form.checkOut || null, guests: form.guests,
-        total, ref,
-      }),
-    }).catch(() => {});
-    setReference(ref);
-    setConfirmed(true);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    try {
+      const res = await fetch("/api/booking", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: form.name, email: form.email, phone: form.phone,
+          itemType: item.type, itemId: item.id, itemTitle: item.title, image: item.image,
+          checkIn: form.checkIn || null, checkOut: form.checkOut || null, guests: form.guests,
+          total, ref,
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) { setError(data.error ?? "Could not complete the reservation."); setSubmitting(false); return; }
+      // Mirror into the local "trips" list for quick reference.
+      addTrip({ ref: data.reference ?? ref, type: item.type, title: item.title, subtitle: item.subtitle, image: item.image, total, guestName: form.name, bookedAt: new Date().toISOString() });
+      setReference(data.reference ?? ref);
+      setConfirmed(true);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } catch {
+      setError("Something went wrong. Please try again.");
+      setSubmitting(false);
+    }
   };
 
   if (confirmed) {
@@ -150,8 +151,13 @@ export default function BookingForm({ item }: { item: BookingItem }) {
           </div>
         )}
 
-        <button type="submit" className="w-full py-4 bg-ink hover:bg-ink/90 text-page font-medium text-xs tracking-[0.16em] uppercase rounded-sm transition-colors">
-          {t("booking.confirmReservation")}
+        {error && <p className="text-sm text-red-600 font-light text-center">{error}</p>}
+        <button
+          type="submit"
+          disabled={submitting || soldOut}
+          className="w-full py-4 bg-ink hover:bg-ink/90 disabled:opacity-50 disabled:cursor-not-allowed text-page font-medium text-xs tracking-[0.16em] uppercase rounded-sm transition-colors"
+        >
+          {soldOut ? t("booking.fullyBooked") : submitting ? t("booking.sending") : t("booking.confirmReservation")}
         </button>
         <p className="text-xs text-ink-faint font-light text-center">
           {t("booking.noPaymentNow")}

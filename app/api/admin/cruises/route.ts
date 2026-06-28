@@ -42,6 +42,7 @@ export async function POST(req: NextRequest) {
       reviewCount: Number(data.reviewCount) || 0,
       badge: data.badge || null,
       published: data.published ?? true,
+      availableUnits: data.availableUnits === "" || data.availableUnits == null ? null : Number(data.availableUnits),
     },
   });
 

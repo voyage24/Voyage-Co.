@@ -24,6 +24,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   if (data.badge !== undefined) update.badge = data.badge || null;
   if (data.lat !== undefined) update.lat = data.lat === "" || data.lat === null ? null : Number(data.lat);
   if (data.lng !== undefined) update.lng = data.lng === "" || data.lng === null ? null : Number(data.lng);
+  if (data.availableUnits !== undefined) update.availableUnits = data.availableUnits === "" || data.availableUnits === null ? null : Number(data.availableUnits);
 
   const experience = await prisma.experience.update({ where: { id: params.id }, data: update });
   return NextResponse.json({ experience });

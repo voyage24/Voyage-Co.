@@ -3,6 +3,7 @@ import { ArrowLeft } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import BookingForm, { type BookingItem } from "@/components/booking/BookingForm";
 import T from "@/components/ui/T";
+import { getRemaining } from "@/lib/availability";
 
 export const dynamic = "force-dynamic";
 
@@ -82,6 +83,9 @@ export default async function BookPage({
     item.type === "experience" ? "/experiences" :
     item.type === "cruise" ? "/cruises" : "/trains";
 
+  const remaining = await getRemaining(item.type, item.id);
+  const soldOut = remaining !== null && remaining <= 0;
+
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20">
       <Link href={backHref} className="inline-flex items-center gap-2 text-xs tracking-[0.1em] uppercase text-ink-muted hover:text-ink mb-8 transition-colors">
@@ -89,7 +93,7 @@ export default async function BookPage({
       </Link>
       <p className="text-[11px] tracking-[0.3em] uppercase text-gold mb-3"><T k="booking.reservation" /></p>
       <h1 className="font-serif text-4xl sm:text-5xl font-light text-ink mb-10"><T k="booking.completeBooking" /></h1>
-      <BookingForm item={item} />
+      <BookingForm item={item} soldOut={soldOut} />
     </div>
   );
 }
