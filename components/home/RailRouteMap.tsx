@@ -37,7 +37,7 @@ function TrainGlyph({ scale, color }: { scale: number; color: string }) {
 export default function RailRouteMap({ train }: { train: Train }) {
   const map = useMemo(() => getIndiaMap(), []);
   const isMobile = useIsMobile();
-  const fit = isMobile ? "meet" : "slice";
+  const fit = "slice";
   const dotsSVG = useMemo(() => getIndiaDotsSVG(fit, isMobile ? 0.52 : 0.3), [fit, isMobile]);
   const { width, height } = map.image;
 

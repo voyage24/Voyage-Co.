@@ -129,7 +129,7 @@ export default function HeroSection({
           interactive maps plotting their own featured properties/voyages/
           itineraries/experiences, instead of static photos. */}
       <div
-        className={`relative w-full ${activeTab === "trains" ? "aspect-square" : "aspect-[2/1]"} sm:aspect-auto sm:absolute sm:inset-0`}
+        className={`relative w-full ${activeTab === "trains" ? "aspect-square" : "aspect-[16/9]"} sm:aspect-auto sm:absolute sm:inset-0`}
         onMouseMove={e => {
           const rect = e.currentTarget.getBoundingClientRect();
           const isLeftHalf = e.clientX - rect.left < rect.width / 2;
@@ -165,20 +165,20 @@ export default function HeroSection({
           never sits on top of the map indefinitely — moving onto it (or
           away from the map) brings it straight back. */}
       <div className="relative flex-none sm:flex-1 flex items-center pointer-events-none">
-        <div className="w-full max-w-[1500px] mx-auto px-6 lg:px-12 pt-8 pb-4 sm:pt-24">
+        <div className="w-full max-w-[1500px] mx-auto px-6 lg:px-12 pt-6 pb-3 sm:pt-24 sm:pb-4">
           <div
             key={activeTab}
             className="max-w-2xl animate-fade-up transition-opacity duration-300"
             style={{ opacity: headlineHidden ? 0 : 1, pointerEvents: headlineHidden ? "none" : "auto" }}
             onMouseEnter={() => { setMapHoverRaw(false); setMapHover(false); scheduleAutoHide(); }}
           >
-            <p className="text-[13px] tracking-[0.28em] uppercase text-white/80 mb-4">
+            <p className="text-[11px] sm:text-[13px] tracking-[0.28em] uppercase text-white/80 mb-2 sm:mb-4">
               {tx("eyebrow")}
             </p>
-            <h1 className="font-serif font-light text-white text-5xl sm:text-6xl lg:text-7xl leading-[1.04] mb-5">
+            <h1 className="font-serif font-light text-white text-3xl sm:text-6xl lg:text-7xl leading-[1.1] sm:leading-[1.04] mb-3 sm:mb-5">
               {customHeadline ? customHeadline : <>{tx("headline1")}<br />{tx("headline2")}</>}
             </h1>
-            <p className="text-white/85 text-lg sm:text-xl max-w-lg leading-relaxed">
+            <p className="text-white/85 text-sm sm:text-xl max-w-lg leading-relaxed line-clamp-3 sm:line-clamp-none">
               {customSubtext || tx("paragraph")}
             </p>
           </div>

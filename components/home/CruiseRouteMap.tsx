@@ -35,7 +35,7 @@ function ShipGlyph({ scale, color }: { scale: number; color: string }) {
 export default function CruiseRouteMap({ cruise }: { cruise: Cruise }) {
   const map = useMemo(() => getWorldMap(), []);
   const isMobile = useIsMobile();
-  const fit = isMobile ? "meet" : "slice";
+  const fit = "slice";
   const dotsSVG = useMemo(() => getWorldDotsSVG(fit, isMobile ? 0.6 : 0.32), [fit, isMobile]);
   const { width, height } = map.image;
 
