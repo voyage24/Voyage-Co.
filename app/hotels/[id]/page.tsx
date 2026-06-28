@@ -10,6 +10,7 @@ import ReviewsSection from "@/components/reviews/ReviewsSection";
 import SaveButton from "@/components/ui/SaveButton";
 import JsonLd from "@/components/seo/JsonLd";
 import FaqAndEntry from "@/components/products/FaqAndEntry";
+import CompareButton from "@/components/compare/CompareButton";
 import { hotelJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 export const revalidate = 60;
@@ -44,7 +45,11 @@ export default async function HotelDetailPage({ params }: { params: { id: string
         <Link href="/hotels" className="inline-flex items-center gap-2 text-xs tracking-[0.1em] uppercase text-ink-muted hover:text-ink transition-colors">
           <ArrowLeft size={15} /> <T k="detail.allStays" />
         </Link>
-        <SaveButton type="hotel" itemId={hotel.id} itemTitle={hotel.name} image={hotel.image} href={`/hotels/${hotel.id}`} label />
+        <div className="flex items-center gap-4">
+          <CompareButton type="hotel" id={hotel.id} title={hotel.name} image={hotel.image} href={`/hotels/${hotel.id}`} label
+            attrs={{ Price: hotel.priceOnRequest ? "On request" : `₹${hotel.pricePerNight.toLocaleString("en-IN")}/night`, Rating: `${hotel.rating} (${hotel.reviewCount})`, Stars: `${hotel.stars}★`, Location: hotel.location, Category: hotel.category }} />
+          <SaveButton type="hotel" itemId={hotel.id} itemTitle={hotel.name} image={hotel.image} href={`/hotels/${hotel.id}`} label />
+        </div>
       </div>
 
       {/* Hero image */}

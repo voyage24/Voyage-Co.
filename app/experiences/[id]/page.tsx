@@ -10,6 +10,7 @@ import ReviewsSection from "@/components/reviews/ReviewsSection";
 import SaveButton from "@/components/ui/SaveButton";
 import JsonLd from "@/components/seo/JsonLd";
 import FaqAndEntry from "@/components/products/FaqAndEntry";
+import CompareButton from "@/components/compare/CompareButton";
 import { productJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 export const revalidate = 60;
@@ -44,7 +45,11 @@ export default async function ExperienceDetailPage({ params }: { params: { id: s
         <Link href="/experiences" className="inline-flex items-center gap-2 text-xs tracking-[0.1em] uppercase text-ink-muted hover:text-ink transition-colors">
           <ArrowLeft size={15} /> <T k="detail.allExperiences" />
         </Link>
-        <SaveButton type="experience" itemId={exp.id} itemTitle={exp.title} image={exp.image} href={`/experiences/${exp.id}`} label />
+        <div className="flex items-center gap-4">
+          <CompareButton type="experience" id={exp.id} title={exp.title} image={exp.image} href={`/experiences/${exp.id}`} label
+            attrs={{ Price: exp.priceOnRequest ? "On request" : `₹${exp.price.toLocaleString("en-IN")} pp`, Duration: exp.duration, Location: exp.location, Category: exp.category }} />
+          <SaveButton type="experience" itemId={exp.id} itemTitle={exp.title} image={exp.image} href={`/experiences/${exp.id}`} label />
+        </div>
       </div>
 
       {/* Hero image */}

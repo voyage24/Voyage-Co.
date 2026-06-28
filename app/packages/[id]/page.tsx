@@ -10,6 +10,7 @@ import ReviewsSection from "@/components/reviews/ReviewsSection";
 import SaveButton from "@/components/ui/SaveButton";
 import JsonLd from "@/components/seo/JsonLd";
 import FaqAndEntry from "@/components/products/FaqAndEntry";
+import CompareButton from "@/components/compare/CompareButton";
 import { productJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 export const revalidate = 60;
@@ -45,7 +46,11 @@ export default async function PackageDetailPage({ params }: { params: { id: stri
         <Link href="/packages" className="inline-flex items-center gap-2 text-xs tracking-[0.1em] uppercase text-ink-muted hover:text-gold transition-colors">
           <ArrowLeft size={15} /> <T k="detail.allJourneys" />
         </Link>
-        <SaveButton type="package" itemId={pkg.id} itemTitle={pkg.title} image={pkg.image} href={`/packages/${pkg.id}`} label />
+        <div className="flex items-center gap-4">
+          <CompareButton type="package" id={pkg.id} title={pkg.title} image={pkg.image} href={`/packages/${pkg.id}`} label
+            attrs={{ Price: pkg.priceOnRequest ? "On request" : `₹${pkg.pricePerPerson.toLocaleString("en-IN")} pp`, Duration: pkg.duration, Destinations: String(pkg.destinations.length), Category: pkg.category }} />
+          <SaveButton type="package" itemId={pkg.id} itemTitle={pkg.title} image={pkg.image} href={`/packages/${pkg.id}`} label />
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
