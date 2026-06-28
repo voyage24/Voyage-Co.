@@ -2,10 +2,21 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import T from "@/components/ui/T";
 
 export const revalidate = 60;
+
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  const post = await prisma.blogPost.findUnique({ where: { slug: params.slug } });
+  if (!post) return { title: "Journal — Voyages & Co." };
+  return {
+    title: `${post.title} — Voyages & Co.`,
+    description: post.excerpt,
+    openGraph: { title: post.title, description: post.excerpt, images: [post.image], type: "article" },
+  };
+}
 
 export default async function BlogPostPage({ params }: { params: { slug: string } }) {
   const post = await prisma.blogPost.findUnique({ where: { slug: params.slug } });

@@ -11,6 +11,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import CookieConsent from "@/components/layout/CookieConsent";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://voyagesco.com"),
   title: "Voyages & Co. — A Sense of Place",
   description: "Voyages & Co. is a private travel atelier crafting extraordinary journeys — singular stays, wellness retreats and cultural immersions in the world's most remarkable places.",
   keywords: "luxury travel, bespoke journeys, private villas, wellness retreats, luxury hotels, voyages and co",
@@ -34,11 +35,23 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const settings = await getSiteSettings();
   const { css, fontHref } = buildThemeHead(settings);
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "TravelAgency",
+    name: "Voyages & Co.",
+    url: "https://voyagesco.com",
+    description: "A private travel atelier crafting extraordinary bespoke journeys worldwide.",
+    telephone: settings["contact.phone"],
+    email: settings["contact.email"],
+    sameAs: [settings["social.instagram"], settings["social.pinterest"], settings["social.linkedin"]].filter(Boolean),
+  };
+
   return (
     <html lang="en">
       <head>
         <link rel="stylesheet" href={fontHref} />
         <style dangerouslySetInnerHTML={{ __html: css }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       </head>
       <body className="bg-page text-ink">
         <a href="#main" className="skip-link">Skip to content</a>

@@ -2,11 +2,23 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { Clock, MapPin, CheckCircle, ArrowLeft, Phone, Users } from "lucide-react";
+import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import Price from "@/components/ui/Price";
 import T from "@/components/ui/T";
 
 export const revalidate = 60;
+
+export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+  const pkg = await prisma.package.findUnique({ where: { id: params.id } });
+  if (!pkg) return { title: "Journey — Voyages & Co." };
+  const desc = `${pkg.subtitle} · ${pkg.duration}. ${pkg.destinations.join(", ")}.`;
+  return {
+    title: `${pkg.title} — Voyages & Co.`,
+    description: desc,
+    openGraph: { title: pkg.title, description: desc, images: [pkg.image], type: "website" },
+  };
+}
 
 export default async function PackageDetailPage({ params }: { params: { id: string } }) {
   const pkg = await prisma.package.findUnique({ where: { id: params.id } });

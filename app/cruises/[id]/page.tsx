@@ -2,11 +2,23 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { Clock, MapPin, CheckCircle, ArrowLeft, Phone, Anchor, Star } from "lucide-react";
+import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import Price from "@/components/ui/Price";
 import T from "@/components/ui/T";
 
 export const revalidate = 60;
+
+export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+  const cruise = await prisma.cruise.findUnique({ where: { id: params.id } });
+  if (!cruise) return { title: "Cruise — Voyages & Co." };
+  const desc = `${cruise.cruiseLine} · ${cruise.region} · ${cruise.duration}. ${cruise.description}`.slice(0, 200);
+  return {
+    title: `${cruise.name} — Voyages & Co.`,
+    description: desc,
+    openGraph: { title: cruise.name, description: desc, images: [cruise.image], type: "website" },
+  };
+}
 
 export default async function CruiseDetailPage({ params }: { params: { id: string } }) {
   const cruise = await prisma.cruise.findUnique({ where: { id: params.id } });

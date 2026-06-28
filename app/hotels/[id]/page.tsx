@@ -2,11 +2,23 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { Star, MapPin, CheckCircle, ArrowLeft } from "lucide-react";
+import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import Price from "@/components/ui/Price";
 import T from "@/components/ui/T";
 
 export const revalidate = 60;
+
+export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+  const hotel = await prisma.hotel.findUnique({ where: { id: params.id } });
+  if (!hotel) return { title: "Stay — Voyages & Co." };
+  const desc = `${hotel.location} · ${hotel.category}. ${hotel.description}`.slice(0, 200);
+  return {
+    title: `${hotel.name} — Voyages & Co.`,
+    description: desc,
+    openGraph: { title: hotel.name, description: desc, images: [hotel.image], type: "website" },
+  };
+}
 
 export default async function HotelDetailPage({ params }: { params: { id: string } }) {
   const hotel = await prisma.hotel.findUnique({ where: { id: params.id } });
