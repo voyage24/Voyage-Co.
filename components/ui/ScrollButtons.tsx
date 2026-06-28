@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { ChevronUp, ChevronDown } from "lucide-react";
+import { useHideOnScroll } from "@/lib/useHideOnScroll";
 
 // Floating scroll-to-top / scroll-to-bottom controls. Sits just above the
 // WhatsApp button (bottom-5) so the two never overlap. Each arrow only
@@ -10,6 +11,7 @@ import { ChevronUp, ChevronDown } from "lucide-react";
 export default function ScrollButtons() {
   const [showUp, setShowUp] = useState(false);
   const [showDown, setShowDown] = useState(false);
+  const hidden = useHideOnScroll();
 
   useEffect(() => {
     const onScroll = () => {
@@ -34,7 +36,7 @@ export default function ScrollButtons() {
     "w-10 h-10 flex items-center justify-center bg-ink text-page border border-ink shadow-md hover:bg-ink/90 transition-all duration-200 hover:scale-110 active:scale-95";
 
   return (
-    <div className="fixed right-5 bottom-20 z-40 flex flex-col gap-2">
+    <div className={`fixed right-5 bottom-20 z-40 flex flex-col gap-2 transition-all duration-300 ${hidden ? "translate-y-24 opacity-0 pointer-events-none" : "translate-y-0 opacity-100"}`}>
       {showUp && (
         <button onClick={toTop} aria-label="Scroll to top" className={btn}>
           <ChevronUp size={18} />

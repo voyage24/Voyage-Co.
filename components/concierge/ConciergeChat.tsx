@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { Sparkles, X, Send } from "lucide-react";
+import { useHideOnScroll } from "@/lib/useHideOnScroll";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
@@ -29,26 +30,11 @@ function Rendered({ text }: { text: string }) {
 
 export default function ConciergeChat() {
   const [open, setOpen] = useState(false);
-  const [hidden, setHidden] = useState(false);
+  const hidden = useHideOnScroll();
   const [messages, setMessages] = useState<Msg[]>([{ role: "assistant", content: GREETING }]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
-
-  // Auto-hide the launcher while scrolling down; bring it back on scroll up
-  // or near the top, so it never sits over content the guest is reading.
-  useEffect(() => {
-    let last = window.scrollY;
-    const onScroll = () => {
-      const y = window.scrollY;
-      if (y < 140) setHidden(false);
-      else if (y > last + 6) setHidden(true);
-      else if (y < last - 6) setHidden(false);
-      last = y;
-    };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });

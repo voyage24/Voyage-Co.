@@ -2,6 +2,7 @@
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useSetting } from "@/components/providers/SettingsProvider";
+import { useHideOnScroll } from "@/lib/useHideOnScroll";
 
 // Persistent floating action button, visible on every page, that opens a
 // WhatsApp chat with the concierge number — the simplest "chatbox" the site
@@ -10,6 +11,7 @@ import { useSetting } from "@/components/providers/SettingsProvider";
 export default function WhatsAppFAB() {
   const { t } = useLanguage();
   const wa = useSetting("contact.whatsapp") || "919919910213";
+  const hidden = useHideOnScroll();
 
   return (
     <a
@@ -17,7 +19,7 @@ export default function WhatsAppFAB() {
       target="_blank"
       rel="noopener noreferrer"
       aria-label={t("help.whatsapp")}
-      className="fixed bottom-5 right-5 z-40 w-9 h-9 flex items-center justify-center transition-transform duration-200 hover:scale-110 active:scale-95"
+      className={`fixed bottom-5 right-5 z-40 w-9 h-9 flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 ${hidden ? "translate-y-24 opacity-0 pointer-events-none" : "translate-y-0 opacity-100"}`}
     >
       <svg viewBox="0 0 32 32" width="32" height="32" aria-hidden="true">
         <circle cx="16" cy="16" r="16" fill="#25D366" />
