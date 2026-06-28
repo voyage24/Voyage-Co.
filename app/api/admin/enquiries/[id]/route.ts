@@ -6,11 +6,18 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   const admin = await requireAdmin(req);
   if (admin instanceof NextResponse) return admin;
 
-  const { status } = await req.json().catch(() => ({}));
-  if (status !== "new" && status !== "handled") {
-    return NextResponse.json({ error: "Invalid status" }, { status: 400 });
+  const { status, stage, notes } = await req.json().catch(() => ({}));
+  const data: { status?: string; stage?: string; notes?: string | null } = {};
+  if (status !== undefined) {
+    if (status !== "new" && status !== "handled") return NextResponse.json({ error: "Invalid status" }, { status: 400 });
+    data.status = status;
   }
-  await prisma.enquiry.update({ where: { id: params.id }, data: { status } });
+  if (stage !== undefined) {
+    if (!["new", "contacted", "quoted", "won", "lost"].includes(stage)) return NextResponse.json({ error: "Invalid stage" }, { status: 400 });
+    data.stage = stage;
+  }
+  if (notes !== undefined) data.notes = notes || null;
+  await prisma.enquiry.update({ where: { id: params.id }, data });
   return NextResponse.json({ ok: true });
 }
 

@@ -14,7 +14,18 @@ export type EnquiryRow = {
   itemTitle: string | null;
   total: number | null;
   status: string;
+  stage: string;
+  notes: string | null;
   createdAt: string | Date;
+};
+
+const STAGES = ["new", "contacted", "quoted", "won", "lost"] as const;
+const STAGE_STYLE: Record<string, string> = {
+  new: "bg-gray-100 text-gray-600",
+  contacted: "bg-blue-50 text-blue-700",
+  quoted: "bg-amber-50 text-amber-700",
+  won: "bg-emerald-50 text-emerald-700",
+  lost: "bg-red-50 text-red-600",
 };
 
 export default function EnquiriesList({ enquiries }: { enquiries: EnquiryRow[] }) {
@@ -22,19 +33,21 @@ export default function EnquiriesList({ enquiries }: { enquiries: EnquiryRow[] }
   const [filter, setFilter] = useState<"all" | "new" | "handled">("all");
   const [openId, setOpenId] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [noteDrafts, setNoteDrafts] = useState<Record<string, string>>({});
 
   const shown = enquiries.filter(e => filter === "all" || e.status === filter);
 
-  const setStatus = async (id: string, status: "new" | "handled") => {
+  const patch = async (id: string, body: object) => {
     setBusyId(id);
     await fetch(`/api/admin/enquiries/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status }),
+      body: JSON.stringify(body),
     });
     setBusyId(null);
     router.refresh();
   };
+  const setStatus = (id: string, status: "new" | "handled") => patch(id, { status });
 
   const remove = async (id: string) => {
     if (!confirm("Delete this enquiry permanently?")) return;
@@ -52,6 +65,15 @@ export default function EnquiriesList({ enquiries }: { enquiries: EnquiryRow[] }
 
   return (
     <div>
+      {/* Pipeline summary */}
+      <div className="flex flex-wrap gap-2 mb-4">
+        {STAGES.map(s => (
+          <span key={s} className={`text-[11px] px-2.5 py-1 rounded-md capitalize ${STAGE_STYLE[s]}`}>
+            {s}: {enquiries.filter(e => e.stage === s).length}
+          </span>
+        ))}
+      </div>
+
       <div className="flex gap-2 mb-4">
         {tabs.map(tb => (
           <button
@@ -82,6 +104,7 @@ export default function EnquiriesList({ enquiries }: { enquiries: EnquiryRow[] }
                     {e.type}
                   </span>
                   {e.status === "new" && <span className="text-[10px] uppercase tracking-wide px-2 py-0.5 rounded bg-amber-50 text-amber-700">New</span>}
+                  <span className={`text-[10px] uppercase tracking-wide px-2 py-0.5 rounded capitalize ${STAGE_STYLE[e.stage] ?? STAGE_STYLE.new}`}>{e.stage}</span>
                   <span className="text-sm font-medium text-gray-900">{e.name}</span>
                   <span className="text-sm text-gray-500 truncate">{e.itemTitle ?? e.subject ?? ""}</span>
                   <span className="text-xs text-gray-400 ml-auto">{new Date(e.createdAt).toLocaleString()}</span>
@@ -95,6 +118,32 @@ export default function EnquiriesList({ enquiries }: { enquiries: EnquiryRow[] }
                     {e.itemTitle && <p><span className="text-gray-400">Item:</span> {e.itemTitle}</p>}
                     {typeof e.total === "number" && <p><span className="text-gray-400">Est. total:</span> ₹{e.total.toLocaleString("en-IN")}</p>}
                     {e.message && <p className="whitespace-pre-wrap mt-2 bg-gray-50 border border-gray-100 rounded-md p-3">{e.message}</p>}
+
+                    <div className="pt-3">
+                      <p className="text-xs text-gray-400 mb-1.5">Pipeline stage</p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {STAGES.map(s => (
+                          <button key={s} disabled={busyId === e.id} onClick={() => patch(e.id, { stage: s })}
+                            className={`text-xs px-3 py-1.5 rounded-md border capitalize disabled:opacity-50 ${e.stage === s ? `${STAGE_STYLE[s]} border-current` : "border-gray-300 text-gray-600 hover:bg-gray-50"}`}>
+                            {s}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="pt-3">
+                      <p className="text-xs text-gray-400 mb-1.5">Internal notes</p>
+                      <textarea
+                        rows={2}
+                        defaultValue={e.notes ?? ""}
+                        onChange={ev => setNoteDrafts(d => ({ ...d, [e.id]: ev.target.value }))}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-gray-900"
+                        placeholder="Follow-up notes, quote details…"
+                      />
+                      <button disabled={busyId === e.id || noteDrafts[e.id] === undefined} onClick={() => patch(e.id, { notes: noteDrafts[e.id] ?? e.notes ?? "" })}
+                        className="mt-1.5 text-xs px-3 py-1.5 rounded-md bg-gray-900 hover:bg-gray-800 text-white disabled:opacity-50">Save notes</button>
+                    </div>
+
                     <div className="flex flex-wrap gap-3 pt-3">
                       {e.status === "new" ? (
                         <button disabled={busyId === e.id} onClick={() => setStatus(e.id, "handled")} className="text-xs px-3 py-1.5 rounded-md bg-emerald-700 hover:bg-emerald-800 text-white disabled:opacity-50">Mark handled</button>

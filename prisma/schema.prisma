@@ -129,9 +129,12 @@ model Enquiry {
   itemTitle String?
   total     Int?
   status    String   @default("new") // new | handled
+  stage     String   @default("new") // pipeline: new | contacted | quoted | won | lost
+  notes     String?  @db.Text
   createdAt DateTime @default(now())
 
   @@index([status])
+  @@index([stage])
   @@index([createdAt])
 }
 
