@@ -8,7 +8,7 @@ import { useLanguage } from "@/components/providers/LanguageProvider";
 
 type Result = { type: string; title: string; subtitle: string; href: string; image?: string | null };
 
-export default function SearchOverlay({ tone = "dark" }: { tone?: "dark" | "light" }) {
+export default function SearchOverlay({ tone = "dark", triggerSize = 18 }: { tone?: "dark" | "light"; triggerSize?: number }) {
   const { t } = useLanguage();
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -54,7 +54,7 @@ export default function SearchOverlay({ tone = "dark" }: { tone?: "dark" | "ligh
         aria-label={t("search.label")}
         className={`transition-all duration-200 hover:scale-110 active:scale-95 ${tone === "light" ? "text-white/90 hover:text-white" : "text-ink-muted hover:text-ink"}`}
       >
-        <Search size={18} />
+        <Search size={triggerSize} />
       </button>
 
       {open && (
