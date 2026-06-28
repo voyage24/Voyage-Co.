@@ -32,6 +32,13 @@ export const NAV_SECTIONS: { title: string | null; items: { href: string; label:
     ],
   },
   {
+    title: "Storefront",
+    items: [
+      { href: "/admin/storefront", label: "Storefront" },
+      { href: "/admin/media", label: "Media Library" },
+    ],
+  },
+  {
     title: "Marketing",
     items: [{ href: "/admin/newsletter", label: "Newsletter" }],
   },

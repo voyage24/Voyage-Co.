@@ -18,12 +18,22 @@ export default function AdminTopbar({ email }: { email: string }) {
         <AdminMobileNav />
         <p className="text-sm text-gray-500 truncate">Signed in as <span className="font-medium text-gray-900">{email}</span></p>
       </div>
-      <button
-        onClick={handleLogout}
-        className="shrink-0 text-sm text-gray-600 hover:text-gray-900 border border-gray-300 rounded-md px-3 py-1.5 transition-colors"
-      >
-        Log out
-      </button>
+      <div className="flex items-center gap-2 shrink-0">
+        <a
+          href="https://voyagesco.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hidden sm:inline-block text-sm text-gray-600 hover:text-gray-900 border border-gray-300 rounded-md px-3 py-1.5 transition-colors"
+        >
+          View site ↗
+        </a>
+        <button
+          onClick={handleLogout}
+          className="text-sm text-gray-600 hover:text-gray-900 border border-gray-300 rounded-md px-3 py-1.5 transition-colors"
+        >
+          Log out
+        </button>
+      </div>
     </header>
   );
 }
