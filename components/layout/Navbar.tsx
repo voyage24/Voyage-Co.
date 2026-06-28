@@ -133,7 +133,7 @@ export default function Navbar() {
           {/* Mobile/tablet — search + account + toggle */}
           <div className="flex lg:hidden items-center gap-4 ml-auto">
             <SearchOverlay tone={overHero ? "light" : "dark"} triggerSize={20} />
-            <Link href="/account" aria-label={t("account.account")} className={`transition-all duration-200 hover:scale-110 active:scale-95 ${overHero ? "text-white/90 hover:text-white" : "text-ink-muted hover:text-ink"}`}>
+            <Link href="/account" aria-label={t("account.account")} className={`inline-flex items-center justify-center leading-none transition-all duration-200 hover:scale-110 active:scale-95 ${overHero ? "text-white/90 hover:text-white" : "text-ink-muted hover:text-ink"}`}>
               <User size={20} />
             </Link>
             <button className={overHero ? "text-white" : "text-ink"} onClick={() => setMobileOpen(!mobileOpen)} aria-label="Menu">

@@ -28,7 +28,7 @@ export default function AccountMenu({ tone = "dark" }: { tone?: "dark" | "light"
       <button
         onClick={() => setOpen(o => !o)}
         aria-label={t("account.account")}
-        className={`transition-all duration-200 hover:scale-110 active:scale-95 ${tone === "light" ? "text-white/90 hover:text-white" : "text-ink-muted hover:text-ink"}`}
+        className={`inline-flex items-center justify-center leading-none transition-all duration-200 hover:scale-110 active:scale-95 ${tone === "light" ? "text-white/90 hover:text-white" : "text-ink-muted hover:text-ink"}`}
       >
         <User size={18} />
       </button>

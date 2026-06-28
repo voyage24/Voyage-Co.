@@ -52,7 +52,7 @@ export default function SearchOverlay({ tone = "dark", triggerSize = 18 }: { ton
       <button
         onClick={() => setOpen(true)}
         aria-label={t("search.label")}
-        className={`transition-all duration-200 hover:scale-110 active:scale-95 ${tone === "light" ? "text-white/90 hover:text-white" : "text-ink-muted hover:text-ink"}`}
+        className={`inline-flex items-center justify-center leading-none transition-all duration-200 hover:scale-110 active:scale-95 ${tone === "light" ? "text-white/90 hover:text-white" : "text-ink-muted hover:text-ink"}`}
       >
         <Search size={triggerSize} />
       </button>
