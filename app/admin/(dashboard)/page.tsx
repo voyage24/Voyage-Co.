@@ -11,11 +11,12 @@ const CARDS = [
   { key: "blogPost", label: "Blog Posts", href: "/admin/blog" },
   { key: "featuredDestination", label: "Featured Destinations", href: "/admin/destinations" },
   { key: "testimonial", label: "Testimonials", href: "/admin/testimonials" },
+  { key: "customer", label: "Customers", href: "/admin/customers" },
   { key: "newsletter", label: "Newsletter Subscribers", href: "/admin/newsletter" },
 ] as const;
 
 export default async function AdminDashboardPage() {
-  const [hotel, flight, train, experience, pkg, cruise, blogPost, featuredDestination, newsletter, newEnquiries, testimonial, pendingBookings] = await Promise.all([
+  const [hotel, flight, train, experience, pkg, cruise, blogPost, featuredDestination, newsletter, newEnquiries, testimonial, pendingBookings, customer] = await Promise.all([
     prisma.hotel.count(),
     prisma.flight.count(),
     prisma.train.count(),
@@ -28,9 +29,10 @@ export default async function AdminDashboardPage() {
     prisma.enquiry.count({ where: { status: "new" } }),
     prisma.testimonial.count(),
     prisma.booking.count({ where: { status: "pending" } }),
+    prisma.customer.count(),
   ]);
 
-  const counts: Record<string, number> = { hotel, flight, train, experience, package: pkg, cruise, blogPost, featuredDestination, newsletter, testimonial };
+  const counts: Record<string, number> = { hotel, flight, train, experience, package: pkg, cruise, blogPost, featuredDestination, newsletter, testimonial, customer };
 
   return (
     <div>

@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { Menu, X, ChevronLeft, ChevronRight, User } from "lucide-react";
 import Logo from "@/components/ui/Logo";
 import CurrencySelector from "@/components/ui/CurrencySelector";
 import LanguageSelector from "@/components/ui/LanguageSelector";
@@ -130,9 +130,12 @@ export default function Navbar() {
             </Link>
           </div>
 
-          {/* Mobile/tablet — search + toggle */}
+          {/* Mobile/tablet — search + account + toggle */}
           <div className="flex lg:hidden items-center gap-4 ml-auto">
             <SearchOverlay tone={overHero ? "light" : "dark"} />
+            <Link href="/account" aria-label={t("account.account")} className={overHero ? "text-white/90 hover:text-white" : "text-ink-muted hover:text-ink"}>
+              <User size={20} />
+            </Link>
             <button className={overHero ? "text-white" : "text-ink"} onClick={() => setMobileOpen(!mobileOpen)} aria-label="Menu">
               {mobileOpen ? <X size={22} /> : <Menu size={22} />}
             </button>

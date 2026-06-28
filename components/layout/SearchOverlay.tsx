@@ -58,47 +58,55 @@ export default function SearchOverlay({ tone = "dark" }: { tone?: "dark" | "ligh
       </button>
 
       {open && (
-        <div className="fixed inset-0 z-[60]">
-          <div className="absolute inset-0 bg-vc-950/60 backdrop-blur-sm" onClick={close} />
-          <div className="relative max-w-2xl mx-auto mt-24 mx-4 sm:mx-auto bg-panel-raised border border-line shadow-luxury">
-            <div className="flex items-center gap-3 px-5 py-4 border-b border-line">
-              <Search size={18} className="text-ink-faint shrink-0" />
+        <div className="fixed inset-0 z-[60] flex items-start justify-center px-4 pt-20 sm:pt-28">
+          <div className="absolute inset-0 bg-vc-950/70 backdrop-blur-md animate-fade-in" onClick={close} />
+          <div className="relative w-full max-w-2xl bg-panel-raised border border-line shadow-luxury animate-fade-up">
+            {/* Search field */}
+            <div className="flex items-center gap-3 px-5 sm:px-6 py-5 border-b border-line">
+              <Search size={20} className="text-gold shrink-0" />
               <input
                 ref={inputRef}
                 value={q}
                 onChange={e => setQ(e.target.value)}
                 placeholder={t("search.placeholder")}
-                className="flex-1 bg-transparent text-ink placeholder:text-ink-faint outline-none text-base"
+                className="flex-1 bg-transparent text-ink placeholder:text-ink-faint outline-none text-lg font-light"
               />
-              <button onClick={close} aria-label="Close" className="text-ink-faint hover:text-ink shrink-0"><X size={18} /></button>
+              <button onClick={close} aria-label="Close" className="text-ink-faint hover:text-ink shrink-0 transition-colors"><X size={20} /></button>
             </div>
 
             <div className="max-h-[60vh] overflow-y-auto">
-              {loading && <p className="px-5 py-6 text-sm text-ink-faint">{t("search.searching")}</p>}
+              {loading && <p className="px-6 py-8 text-sm text-ink-faint font-light">{t("search.searching")}</p>}
               {!loading && searched && results.length === 0 && (
-                <p className="px-5 py-6 text-sm text-ink-faint">{t("search.noResults")}</p>
+                <p className="px-6 py-8 text-sm text-ink-faint font-light">{t("search.noResults")}</p>
               )}
               {!loading && results.map(r => (
                 <button
                   key={r.href}
                   onClick={() => go(r.href)}
-                  className="w-full flex items-center gap-3 px-5 py-3 text-left hover:bg-panel-soft transition-colors border-b border-line/50 last:border-0"
+                  className="group w-full flex items-center gap-4 px-5 sm:px-6 py-3.5 text-left hover:bg-panel-soft transition-colors border-b border-line/40 last:border-0"
                 >
                   {r.image && (
-                    <span className="relative w-12 h-12 shrink-0 overflow-hidden border border-line">
-                      <Image src={r.image} alt="" fill sizes="48px" className="object-cover" />
+                    <span className="relative w-14 h-14 shrink-0 overflow-hidden border border-line">
+                      <Image src={r.image} alt="" fill sizes="56px" className="object-cover transition-transform duration-500 group-hover:scale-105" />
                     </span>
                   )}
-                  <span className="min-w-0">
-                    <span className="block text-[10px] tracking-[0.18em] uppercase text-gold">{r.type}</span>
-                    <span className="block text-sm text-ink font-medium truncate">{r.title}</span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-[10px] tracking-[0.2em] uppercase text-gold mb-0.5">{r.type}</span>
+                    <span className="block font-serif text-base font-light text-ink truncate">{r.title}</span>
                     <span className="block text-xs text-ink-faint font-light truncate">{r.subtitle}</span>
                   </span>
+                  <Search size={14} className="text-ink-faint opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
                 </button>
               ))}
               {!searched && !loading && (
-                <p className="px-5 py-6 text-sm text-ink-faint font-light">{t("search.hint")}</p>
+                <p className="px-6 py-8 text-sm text-ink-faint font-light leading-relaxed">{t("search.hint")}</p>
               )}
+            </div>
+
+            {/* Footer hint */}
+            <div className="px-6 py-3 border-t border-line bg-panel-soft/50 flex items-center justify-between">
+              <span className="text-[10px] tracking-[0.16em] uppercase text-ink-faint">Voyages &amp; Co.</span>
+              <span className="text-[10px] tracking-[0.12em] uppercase text-ink-faint">esc</span>
             </div>
           </div>
         </div>
