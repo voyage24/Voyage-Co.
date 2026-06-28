@@ -33,7 +33,10 @@ export default async function AccountPage() {
         <LogoutButton />
       </div>
 
-      <h2 className="font-serif text-2xl font-light text-ink mb-5">My Bookings</h2>
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
+        <h2 className="font-serif text-2xl font-light text-ink">My Bookings</h2>
+        <Link href="/trips" className="text-xs tracking-[0.12em] uppercase text-gold link-underline">Saved trips →</Link>
+      </div>
 
       {bookings.length === 0 ? (
         <div className="border border-dashed border-line rounded-2xl p-10 text-center">
