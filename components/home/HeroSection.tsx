@@ -13,6 +13,7 @@ import { CITIES } from "@/lib/mock-data";
 import type { City, Hotel, Cruise, Train, Package, Experience } from "@/lib/types";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useSetting } from "@/components/providers/SettingsProvider";
+import { useIsMobile } from "@/lib/useIsMobile";
 
 // Journeys featured in the hero background for their respective search
 // tabs. Luxury Stays and Cruises have no fixed list — Cruises cycles
@@ -91,7 +92,10 @@ export default function HeroSection({
     return () => clearTimeout(autoHideTimer.current);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab]);
-  const headlineHidden = mapHover || autoHide;
+  // On phones the headline sits below the map (not over it), so it must stay
+  // put — the hover/auto-fade behaviour is desktop-only.
+  const isMobile = useIsMobile();
+  const headlineHidden = !isMobile && (mapHover || autoHide);
 
   // Each search tab gets its own headline copy instead of repeating the
   // same generic text regardless of what the traveller is browsing.
@@ -111,14 +115,14 @@ export default function HeroSection({
   );
 
   return (
-    <section className="relative min-h-[70vh] sm:min-h-screen flex flex-col overflow-hidden">
+    <section className="relative bg-vc-950 sm:bg-transparent pt-20 sm:pt-0 flex flex-col overflow-hidden sm:min-h-screen">
       {/* Hero background — swaps with the active search tab. The Flights tab
           (default) shows the interactive destination map; Luxury Stays,
           Cruises, Rail Journeys, Bespoke Journeys and Experiences all show
           interactive maps plotting their own featured properties/voyages/
           itineraries/experiences, instead of static photos. */}
       <div
-        className="absolute inset-0"
+        className={`relative w-full ${activeTab === "trains" ? "aspect-square" : "aspect-[2/1]"} sm:aspect-auto sm:absolute sm:inset-0`}
         onMouseMove={e => {
           const rect = e.currentTarget.getBoundingClientRect();
           const isLeftHalf = e.clientX - rect.left < rect.width / 2;
@@ -141,8 +145,10 @@ export default function HeroSection({
         )}
       </div>
 
-      {/* Soft vignette for text legibility over the background */}
-      <div className="absolute inset-0 bg-gradient-to-t from-vc-950/85 via-vc-950/35 to-vc-950/25 pointer-events-none" />
+      {/* Soft vignette for text legibility over the background. Desktop only —
+          on mobile the map sits in its own block with the text below it on a
+          solid dark background, so there's nothing to dim. */}
+      <div className="hidden sm:block absolute inset-0 bg-gradient-to-t from-vc-950/85 via-vc-950/35 to-vc-950/25 pointer-events-none" />
 
       {/* Top content — headline & CTA. pointer-events-none on the empty
           wrapper area so it doesn't block clicks (e.g. slide indicators) on
@@ -151,8 +157,8 @@ export default function HeroSection({
           map, and automatically a few seconds after appearing, so the text
           never sits on top of the map indefinitely — moving onto it (or
           away from the map) brings it straight back. */}
-      <div className="relative flex-1 flex items-center pointer-events-none">
-        <div className="w-full max-w-[1500px] mx-auto px-6 lg:px-12 pt-24 pb-4">
+      <div className="relative flex-none sm:flex-1 flex items-center pointer-events-none">
+        <div className="w-full max-w-[1500px] mx-auto px-6 lg:px-12 pt-8 pb-4 sm:pt-24">
           <div
             key={activeTab}
             className="max-w-2xl animate-fade-up transition-opacity duration-300"

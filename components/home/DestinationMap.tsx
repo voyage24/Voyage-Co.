@@ -56,7 +56,7 @@ export default function DestinationMap({
   const map = useMemo(() => getWorldMap(), []);
   const isMobile = useIsMobile();
   const fit = isMobile ? "meet" : "slice";
-  const dotsSVG = useMemo(() => getWorldDotsSVG(fit), [fit]);
+  const dotsSVG = useMemo(() => getWorldDotsSVG(fit, isMobile ? 0.6 : 0.32), [fit, isMobile]);
 
   // Popular destinations to plot as clickable points, excluding whichever
   // are already the active From/To (those get their own pin + plane glyph).

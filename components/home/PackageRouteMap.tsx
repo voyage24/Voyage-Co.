@@ -31,7 +31,7 @@ export default function PackageRouteMap({ pkg }: { pkg: Package }) {
   const map = useMemo(() => getWorldMap(), []);
   const isMobile = useIsMobile();
   const fit = isMobile ? "meet" : "slice";
-  const dotsSVG = useMemo(() => getWorldDotsSVG(fit), [fit]);
+  const dotsSVG = useMemo(() => getWorldDotsSVG(fit, isMobile ? 0.6 : 0.32), [fit, isMobile]);
   const { width, height } = map.image;
 
   const stops = useMemo(() => {

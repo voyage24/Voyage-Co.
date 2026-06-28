@@ -18,15 +18,16 @@ export function getWorldMap() {
 // portrait phones, where slicing a 2:1 map would zoom it ~10x and show only a
 // tiny sliver). Overlays drawn on top (routes, pins, icons) MUST use the same
 // `fit` value or the two layers scale differently and dots/pins drift apart.
-export function getWorldDotsSVG(fit: "slice" | "meet" = "slice") {
-  if (!sharedDotsSVG[fit]) {
+export function getWorldDotsSVG(fit: "slice" | "meet" = "slice", radius = 0.32) {
+  const key = `${fit}-${radius}`;
+  if (!sharedDotsSVG[key]) {
     const raw = getWorldMap().getSVG({
       shape: "circle",
-      radius: 0.32,
+      radius,
       color: "rgba(244,240,233,0.28)",
       backgroundColor: "transparent",
     });
-    sharedDotsSVG[fit] = raw.replace("<svg ", `<svg preserveAspectRatio="xMidYMid ${fit}" `);
+    sharedDotsSVG[key] = raw.replace("<svg ", `<svg preserveAspectRatio="xMidYMid ${fit}" `);
   }
-  return sharedDotsSVG[fit];
+  return sharedDotsSVG[key];
 }
