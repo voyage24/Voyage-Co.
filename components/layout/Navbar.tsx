@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X } from "lucide-react";
+import { Menu, X, ChevronLeft, ChevronRight } from "lucide-react";
 import Logo from "@/components/ui/Logo";
 import CurrencySelector from "@/components/ui/CurrencySelector";
 import LanguageSelector from "@/components/ui/LanguageSelector";
@@ -33,6 +33,16 @@ export default function Navbar() {
   const pathname = usePathname();
   const linksRef = useRef<HTMLDivElement>(null);
   const [linksOverflow, setLinksOverflow] = useState(false);
+  const [canLeft, setCanLeft] = useState(false);
+  const [canRight, setCanRight] = useState(false);
+
+  const updateArrows = () => {
+    const el = linksRef.current;
+    if (!el) return;
+    setCanLeft(el.scrollLeft > 4);
+    setCanRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 4);
+  };
+  const scrollNav = (dir: 1 | -1) => linksRef.current?.scrollBy({ left: dir * 240, behavior: "smooth" });
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 60);
@@ -48,11 +58,11 @@ export default function Navbar() {
   useEffect(() => {
     const el = linksRef.current;
     if (!el) return;
-    const check = () => setLinksOverflow(el.scrollWidth > el.clientWidth + 1);
+    const check = () => { setLinksOverflow(el.scrollWidth > el.clientWidth + 1); updateArrows(); };
     check();
     window.addEventListener("resize", check);
     return () => window.removeEventListener("resize", check);
-  }, [t]);
+  }, [t, language]);
 
   // Let a vertical mouse wheel scroll the nav links horizontally when they
   // overflow — so desktop users without a trackpad can still reach the
@@ -111,19 +121,44 @@ export default function Navbar() {
               that, even "lg" desktop widths are too tight for longer
               translations (Vietnamese, Filipino, Greek), so the menu falls
               back to the always-correct stacked mobile layout. */}
-          <div
-            ref={linksRef}
-            className="hidden xl:block overflow-x-auto scrollbar-none min-w-0 flex-1"
-            style={linksOverflow ? {
-              maskImage: "linear-gradient(to right, black 92%, transparent 100%)",
-              WebkitMaskImage: "linear-gradient(to right, black 92%, transparent 100%)",
-            } : undefined}
-          >
-            <div className="flex items-center gap-x-4 w-max pr-2">
-              {ALL_LINKS.map(l => (
-                <Link key={l.href} href={l.href} className={`${linkBase} ${linkColor}`}>{t(l.key)}</Link>
-              ))}
+          <div className="hidden xl:block relative min-w-0 flex-1">
+            {/* Left arrow — appears once the row has been scrolled. */}
+            {canLeft && (
+              <button
+                type="button"
+                aria-label="Scroll navigation left"
+                onClick={() => scrollNav(-1)}
+                className={`absolute left-0 top-1/2 -translate-y-1/2 z-10 flex items-center justify-center w-7 h-7 rounded-full shadow-sm ${overHero ? "bg-vc-950/70 text-white" : "bg-page text-ink border border-line"}`}
+              >
+                <ChevronLeft size={16} />
+              </button>
+            )}
+            <div
+              ref={linksRef}
+              onScroll={updateArrows}
+              className="overflow-x-auto scrollbar-none"
+              style={linksOverflow && canRight ? {
+                maskImage: "linear-gradient(to right, black 92%, transparent 100%)",
+                WebkitMaskImage: "linear-gradient(to right, black 92%, transparent 100%)",
+              } : undefined}
+            >
+              <div className="flex items-center gap-x-4 w-max pr-2">
+                {ALL_LINKS.map(l => (
+                  <Link key={l.href} href={l.href} className={`${linkBase} ${linkColor}`}>{t(l.key)}</Link>
+                ))}
+              </div>
             </div>
+            {/* Right arrow — appears whenever more links remain off-screen. */}
+            {canRight && (
+              <button
+                type="button"
+                aria-label="Scroll navigation right"
+                onClick={() => scrollNav(1)}
+                className={`absolute right-0 top-1/2 -translate-y-1/2 z-10 flex items-center justify-center w-7 h-7 rounded-full shadow-sm ${overHero ? "bg-vc-950/70 text-white" : "bg-page text-ink border border-line"}`}
+              >
+                <ChevronRight size={16} />
+              </button>
+            )}
           </div>
 
           {/* Language/currency/reserve — pinned to the end, never compressed
