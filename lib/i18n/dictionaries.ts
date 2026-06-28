@@ -17,6 +17,7 @@ export const EN: Dictionary = {
   "common.press": "Press",
   "common.partners": "Partners",
   "common.concierge": "Concierge",
+  "common.requestCallback": "Request a Callback",
   "common.help": "Help",
   "common.privacy": "Privacy",
   "common.terms": "Terms",
