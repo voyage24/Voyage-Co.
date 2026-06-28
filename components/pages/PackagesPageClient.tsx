@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import PackageCard from "@/components/cards/PackageCard";
+import SaveSearchButton from "@/components/search/SaveSearchButton";
 import type { Package } from "@/lib/types";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { filterLabel } from "@/lib/i18n/filterLabels";
@@ -47,6 +48,7 @@ export default function PackagesPageClient({ packages }: { packages: Package[] }
           <p className="text-[#9aa4ab] max-w-lg font-light leading-relaxed">
             {t("packagesPage.intro")}
           </p>
+          <div className="mt-3"><SaveSearchButton type="package" /></div>
         </div>
       </div>
 

@@ -47,6 +47,21 @@ model Customer {
   bookings     Booking[]
   reviews      Review[]
   saved        SavedItem[]
+  searches     SavedSearch[]
+}
+
+model SavedSearch {
+  id             String   @id @default(cuid())
+  customerId     String
+  customer       Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  type           String   // hotel | package | experience | cruise
+  label          String
+  href           String
+  criteria       Json     // { city?, region?, category?, maxPrice? }
+  createdAt      DateTime @default(now())
+  lastNotifiedAt DateTime @default(now())
+
+  @@index([customerId])
 }
 
 model Review {

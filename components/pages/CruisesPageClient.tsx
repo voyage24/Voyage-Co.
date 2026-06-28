@@ -3,6 +3,7 @@
 import { useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import CruiseCard from "@/components/cards/CruiseCard";
+import SaveSearchButton from "@/components/search/SaveSearchButton";
 import type { Cruise } from "@/lib/types";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { filterLabel } from "@/lib/i18n/filterLabels";
@@ -39,6 +40,7 @@ function CruisesContent({ cruises }: { cruises: Cruise[] }) {
         <p className="text-[#9aa4ab] max-w-lg font-light leading-relaxed">
           {t("cruisesPage.intro")}
         </p>
+        <div className="mt-3"><SaveSearchButton type="cruise" /></div>
       </div>
 
       {/* Filters */}

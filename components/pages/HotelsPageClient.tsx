@@ -3,6 +3,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { SlidersHorizontal, X, Search } from "lucide-react";
 import HotelCard from "@/components/cards/HotelCard";
+import SaveSearchButton from "@/components/search/SaveSearchButton";
 import type { Hotel } from "@/lib/types";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { filterLabel } from "@/lib/i18n/filterLabels";
@@ -159,6 +160,7 @@ export default function HotelsPageClient({ hotels }: { hotels: Hotel[] }) {
             {t("hotelsPage.titlePrefix")} <span className="italic text-gold">{headingText}</span>
           </h1>
           <p className="text-sm text-ink-muted mt-1 font-light">{filtered.length} {filtered.length === 1 ? t("hotelsPage.property") : t("hotelsPage.properties")} {t("hotelsPage.available")}</p>
+          <div className="mt-2"><SaveSearchButton type="hotel" /></div>
         </div>
         <button
           onClick={() => setShowFilters(true)}

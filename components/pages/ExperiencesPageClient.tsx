@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import ExperienceCard from "@/components/cards/ExperienceCard";
+import SaveSearchButton from "@/components/search/SaveSearchButton";
 import type { Experience } from "@/lib/types";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { filterLabel } from "@/lib/i18n/filterLabels";
@@ -27,6 +28,7 @@ export default function ExperiencesPageClient({ experiences }: { experiences: Ex
         <p className="text-[10px] tracking-[0.28em] uppercase text-gold mb-2">{t("experiencesPage.eyebrow")}</p>
         <h1 className="font-serif text-3xl sm:text-4xl font-light text-ink">{t("experiencesPage.title")}</h1>
         <p className="text-sm text-ink-muted mt-1 font-light">{t("experiencesPage.subtitle")}</p>
+        <div className="mt-2"><SaveSearchButton type="experience" /></div>
       </div>
 
       {/* Category pills */}

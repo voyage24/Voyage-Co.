@@ -6,6 +6,7 @@ import LogoutButton from "@/components/account/LogoutButton";
 import CancelBookingButton from "@/components/account/CancelBookingButton";
 import SavedList from "@/components/account/SavedList";
 import ShareBoardButton from "@/components/account/ShareBoardButton";
+import SavedSearchesList from "@/components/account/SavedSearchesList";
 import Price from "@/components/ui/Price";
 
 export const dynamic = "force-dynamic";
@@ -82,6 +83,8 @@ export default async function AccountPage() {
         {saved.length > 0 && <ShareBoardButton />}
       </div>
       <SavedList items={saved.map(s => ({ id: s.id, type: s.type, itemId: s.itemId, itemTitle: s.itemTitle, image: s.image, href: s.href }))} />
+
+      <SavedSearchesList />
     </div>
   );
 }
