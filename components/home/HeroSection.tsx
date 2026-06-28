@@ -111,7 +111,7 @@ export default function HeroSection({
   );
 
   return (
-    <section className="relative min-h-screen flex flex-col overflow-hidden">
+    <section className="relative min-h-[70vh] sm:min-h-screen flex flex-col overflow-hidden">
       {/* Hero background — swaps with the active search tab. The Flights tab
           (default) shows the interactive destination map; Luxury Stays,
           Cruises, Rail Journeys, Bespoke Journeys and Experiences all show
