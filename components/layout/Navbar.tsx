@@ -18,6 +18,7 @@ const LEFT_LINKS = [
 ];
 
 const RIGHT_LINKS = [
+  { key: "plan.title", href: "/plan" },
   { key: "common.journal",  href: "/blog" },
   { key: "common.myTrips", href: "/trips" },
 ];
