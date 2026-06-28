@@ -3,10 +3,12 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, ChevronLeft, ChevronRight, User } from "lucide-react";
+import { Menu, X, ChevronLeft, ChevronRight } from "lucide-react";
 import Logo from "@/components/ui/Logo";
 import CurrencySelector from "@/components/ui/CurrencySelector";
 import LanguageSelector from "@/components/ui/LanguageSelector";
+import SearchOverlay from "@/components/layout/SearchOverlay";
+import AccountMenu from "@/components/layout/AccountMenu";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 
 // Consolidated primary nav — the six links that always sit in the bar.
@@ -69,7 +71,6 @@ export default function Navbar() {
   // One uniform size and weight for every language — no per-language bumps.
   const linkBase = "text-[12px] font-normal tracking-[0.08em] uppercase transition-all duration-200 py-2 whitespace-nowrap shrink-0 inline-block origin-left hover:scale-110 active:scale-95";
   const linkColor = overHero ? "text-white/90 hover:text-white" : "text-ink-muted hover:text-ink";
-  const iconColor = overHero ? "text-white/90 hover:text-white" : "text-ink-muted hover:text-ink";
 
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
@@ -113,11 +114,10 @@ export default function Navbar() {
             )}
           </div>
 
-          {/* Controls — account icon, language, currency, primary CTA. */}
+          {/* Controls — search, account menu, language, currency, primary CTA. */}
           <div className="hidden lg:flex items-center gap-x-3 shrink-0">
-            <Link href="/account" aria-label={t("account.account")} className={`${iconColor} transition-all duration-200 hover:scale-110 active:scale-95`}>
-              <User size={18} />
-            </Link>
+            <SearchOverlay tone={overHero ? "light" : "dark"} />
+            <AccountMenu tone={overHero ? "light" : "dark"} />
             <LanguageSelector tone={overHero ? "light" : "dark"} />
             <CurrencySelector tone={overHero ? "light" : "dark"} />
             <Link
@@ -130,8 +130,9 @@ export default function Navbar() {
             </Link>
           </div>
 
-          {/* Mobile/tablet toggle */}
-          <div className="flex lg:hidden justify-end ml-auto">
+          {/* Mobile/tablet — search + toggle */}
+          <div className="flex lg:hidden items-center gap-4 ml-auto">
+            <SearchOverlay tone={overHero ? "light" : "dark"} />
             <button className={overHero ? "text-white" : "text-ink"} onClick={() => setMobileOpen(!mobileOpen)} aria-label="Menu">
               {mobileOpen ? <X size={22} /> : <Menu size={22} />}
             </button>
