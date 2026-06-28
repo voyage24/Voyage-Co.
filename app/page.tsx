@@ -5,6 +5,8 @@ import PackagesPreview from "@/components/home/PackagesPreview";
 import TestimonialsSection from "@/components/home/TestimonialsSection";
 import TrustSection from "@/components/home/TrustSection";
 import { prisma } from "@/lib/prisma";
+import JsonLd from "@/components/seo/JsonLd";
+import { organizationJsonLd, websiteJsonLd } from "@/lib/seo";
 
 export const revalidate = 60;
 
@@ -20,6 +22,7 @@ export default async function Home() {
 
   return (
     <>
+      <JsonLd data={[organizationJsonLd(), websiteJsonLd()]} />
       <HeroSection hotels={hotels} cruises={cruises} trains={trains as any} packages={packages} experiences={experiences} />
       <PopularDestinations />
       <SignatureExperiences />
