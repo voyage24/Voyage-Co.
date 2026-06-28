@@ -11,6 +11,7 @@ import SaveButton from "@/components/ui/SaveButton";
 import JsonLd from "@/components/seo/JsonLd";
 import FaqAndEntry from "@/components/products/FaqAndEntry";
 import CompareButton from "@/components/compare/CompareButton";
+import RecordView from "@/components/products/RecordView";
 import { productJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 export const revalidate = 60;
@@ -42,6 +43,7 @@ export default async function CruiseDetailPage({ params }: { params: { id: strin
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-16">
+      <RecordView type="cruise" id={cruise.id} title={cruise.name} image={cruise.image} href={`/cruises/${cruise.id}`} />
       <JsonLd data={[productJsonLd({ type: "cruise", id: cruise.id, basePath: "/cruises", name: cruise.name, description: cruise.description, image: cruise.image, price: cruise.pricePerPerson, priceOnRequest: cruise.priceOnRequest, rating: cruise.rating, reviewCount: cruise.reviewCount }, reviews), breadcrumbJsonLd([{ name: "Cruises", path: "/cruises" }, { name: cruise.name, path: `/cruises/${cruise.id}` }]), ...(faqs.length ? [faqJsonLd(faqs)] : [])]} />
       <div className="flex items-center justify-between mb-6">
         <Link href="/cruises" className="inline-flex items-center gap-2 text-xs tracking-[0.1em] uppercase text-ink-muted hover:text-gold transition-colors">

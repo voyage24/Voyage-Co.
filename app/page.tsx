@@ -4,6 +4,7 @@ import SignatureExperiences from "@/components/home/SignatureExperiences";
 import PackagesPreview from "@/components/home/PackagesPreview";
 import TestimonialsSection from "@/components/home/TestimonialsSection";
 import TrustSection from "@/components/home/TrustSection";
+import RecentlyViewed from "@/components/home/RecentlyViewed";
 import { prisma } from "@/lib/prisma";
 import JsonLd from "@/components/seo/JsonLd";
 import { organizationJsonLd, websiteJsonLd } from "@/lib/seo";
@@ -24,6 +25,7 @@ export default async function Home() {
     <>
       <JsonLd data={[organizationJsonLd(), websiteJsonLd()]} />
       <HeroSection hotels={hotels} cruises={cruises} trains={trains as any} packages={packages} experiences={experiences} />
+      <RecentlyViewed />
       <PopularDestinations />
       <SignatureExperiences />
       <PackagesPreview packages={packages} />

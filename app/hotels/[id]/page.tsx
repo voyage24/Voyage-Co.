@@ -11,6 +11,7 @@ import SaveButton from "@/components/ui/SaveButton";
 import JsonLd from "@/components/seo/JsonLd";
 import FaqAndEntry from "@/components/products/FaqAndEntry";
 import CompareButton from "@/components/compare/CompareButton";
+import RecordView from "@/components/products/RecordView";
 import { hotelJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 export const revalidate = 60;
@@ -40,6 +41,7 @@ export default async function HotelDetailPage({ params }: { params: { id: string
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20">
+      <RecordView type="hotel" id={hotel.id} title={hotel.name} image={hotel.image} href={`/hotels/${hotel.id}`} />
       <JsonLd data={[hotelJsonLd(hotel, reviews), breadcrumbJsonLd([{ name: "Stays", path: "/hotels" }, { name: hotel.name, path: `/hotels/${hotel.id}` }]), ...(faqs.length ? [faqJsonLd(faqs)] : [])]} />
       <div className="flex items-center justify-between mb-6">
         <Link href="/hotels" className="inline-flex items-center gap-2 text-xs tracking-[0.1em] uppercase text-ink-muted hover:text-ink transition-colors">
