@@ -33,7 +33,7 @@ export default function ScrollButtons() {
   const toBottom = () => window.scrollTo({ top: document.documentElement.scrollHeight, behavior: "smooth" });
 
   const btn =
-    "w-10 h-10 flex items-center justify-center bg-ink text-page border border-ink shadow-md hover:bg-ink/90 transition-all duration-200 hover:scale-110 active:scale-95";
+    "w-11 h-11 sm:w-10 sm:h-10 flex items-center justify-center bg-ink text-page border border-ink shadow-md hover:bg-ink/90 transition-all duration-200 hover:scale-110 active:scale-95";
 
   return (
     <div className={`fixed right-5 bottom-20 z-40 flex flex-col gap-2 transition-all duration-300 ${hidden ? "translate-y-24 opacity-0 pointer-events-none" : "translate-y-0 opacity-100"}`}>

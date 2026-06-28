@@ -1,14 +1,21 @@
 "use client";
 
 import { useState, useMemo, useEffect, useRef } from "react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import SearchWidget, { type TabId } from "@/components/search/SearchWidget";
 import DestinationMap from "@/components/home/DestinationMap";
-import HotelMapBackground from "@/components/home/HotelMapBackground";
-import CruiseMapBackground from "@/components/home/CruiseMapBackground";
-import RailMapBackground from "@/components/home/RailMapBackground";
-import PackageMapBackground from "@/components/home/PackageMapBackground";
-import ExperienceMapBackground from "@/components/home/ExperienceMapBackground";
+
+// The Flights tab (DestinationMap, the default) ships in the initial bundle;
+// the other tabs' maps are loaded only when that tab is opened, keeping the
+// homepage's initial JS light — especially on phones. A plain dark panel
+// stands in for the split-second before each map chunk arrives.
+const mapLoading = () => <div className="absolute inset-0 bg-vc-950" />;
+const HotelMapBackground = dynamic(() => import("@/components/home/HotelMapBackground"), { ssr: false, loading: mapLoading });
+const CruiseMapBackground = dynamic(() => import("@/components/home/CruiseMapBackground"), { ssr: false, loading: mapLoading });
+const RailMapBackground = dynamic(() => import("@/components/home/RailMapBackground"), { ssr: false, loading: mapLoading });
+const PackageMapBackground = dynamic(() => import("@/components/home/PackageMapBackground"), { ssr: false, loading: mapLoading });
+const ExperienceMapBackground = dynamic(() => import("@/components/home/ExperienceMapBackground"), { ssr: false, loading: mapLoading });
 import { CITIES } from "@/lib/mock-data";
 import type { City, Hotel, Cruise, Train, Package, Experience } from "@/lib/types";
 import { useLanguage } from "@/components/providers/LanguageProvider";
