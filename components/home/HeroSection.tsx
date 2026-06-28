@@ -155,8 +155,8 @@ export default function HeroSection({
         <div className="w-full max-w-[1500px] mx-auto px-6 lg:px-12 pt-24 pb-4">
           <div
             key={activeTab}
-            className="max-w-2xl animate-fade-up pointer-events-auto transition-opacity duration-300"
-            style={{ opacity: headlineHidden ? 0 : 1 }}
+            className="max-w-2xl animate-fade-up transition-opacity duration-300"
+            style={{ opacity: headlineHidden ? 0 : 1, pointerEvents: headlineHidden ? "none" : "auto" }}
             onMouseEnter={() => { setMapHoverRaw(false); setMapHover(false); scheduleAutoHide(); }}
           >
             <p className="text-[13px] tracking-[0.28em] uppercase text-white/80 mb-4">

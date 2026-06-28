@@ -98,19 +98,6 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <div className="relative my-6">
-            <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-line" /></div>
-            <div className="relative flex justify-center"><span className="bg-panel px-3 text-[11px] text-ink-faint tracking-wide uppercase">{t("login.orContinueWith")}</span></div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            {["Google", "Apple"].map(p => (
-              <button key={p} className="flex items-center justify-center gap-2 py-2.5 border border-line rounded-sm text-sm font-light text-ink-muted hover:border-gold/50 hover:text-ink transition-colors">
-                {p}
-              </button>
-            ))}
-          </div>
-
           <p className="text-center text-sm text-ink-muted mt-6 font-light">
             {t("login.notMember")}{" "}
             <Link href="/signup" className="text-gold link-underline">{t("login.requestInvitation")}</Link>

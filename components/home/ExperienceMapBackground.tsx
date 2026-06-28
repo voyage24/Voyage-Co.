@@ -78,7 +78,7 @@ export default function ExperienceMapBackground({ experiences }: { experiences: 
           >
             {/* Larger transparent hit-area — the sparkle's stroke-only
                 outline is too thin on its own to reliably catch hover. */}
-            <circle cx={p.x} cy={p.y} r={0.5} fill="transparent" />
+            <circle cx={p.x} cy={p.y} r={1.6} fill="transparent" />
             <g transform={`translate(${p.x}, ${p.y})`}>
               <SparkleGlyph scale={0.07} />
             </g>

@@ -154,7 +154,7 @@ export default function DestinationMap({
             style={{ cursor: "pointer", pointerEvents: "auto" }}
             onClick={() => onSelectDestination(city)}
           >
-            <circle cx={x} cy={y} r={0.8} fill="transparent" />
+            <circle cx={x} cy={y} r={2.6} fill="transparent" />
             <circle cx={x} cy={y} r={0.32} fill="#f4f0e9" opacity={0.55} />
           </g>
         ))}

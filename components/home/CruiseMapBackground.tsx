@@ -58,8 +58,10 @@ export default function CruiseMapBackground({ cruises }: { cruises: Cruise[] }) 
             key={cruise.id}
             onClick={e => { e.stopPropagation(); setIndex(i); revealCaptionBriefly(); }}
             aria-label={`Show ${cruise.name}`}
-            className={`w-6 h-[2px] transition-colors ${i === index ? "bg-gold" : "bg-white/30"}`}
-          />
+            className="py-3 -my-3 flex items-center"
+          >
+            <span className={`block w-6 h-[2px] transition-colors ${i === index ? "bg-gold" : "bg-white/30"}`} />
+          </button>
         ))}
       </div>
     </div>

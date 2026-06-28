@@ -57,8 +57,10 @@ export default function PackageMapBackground({ packages }: { packages: Package[]
             key={pkg.id}
             onClick={e => { e.stopPropagation(); setIndex(i); revealCaptionBriefly(); }}
             aria-label={`Show ${pkg.title}`}
-            className={`w-6 h-[2px] transition-colors ${i === index ? "bg-gold" : "bg-white/30"}`}
-          />
+            className="py-3 -my-3 flex items-center"
+          >
+            <span className={`block w-6 h-[2px] transition-colors ${i === index ? "bg-gold" : "bg-white/30"}`} />
+          </button>
         ))}
       </div>
     </div>

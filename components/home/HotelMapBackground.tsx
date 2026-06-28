@@ -120,7 +120,7 @@ export default function HotelMapBackground({ hotels, city }: { hotels: Hotel[]; 
               )}
               {/* Larger transparent hit-area — the cottage icon's stroke-only
                   outline is too thin on its own to reliably catch hover. */}
-              <circle cx={p.x} cy={p.y} r={0.5} fill="transparent" />
+              <circle cx={p.x} cy={p.y} r={1.6} fill="transparent" />
               <g transform={`translate(${p.x}, ${p.y})`}>
                 <CottageGlyph scale={isHighlighted ? 0.1 : 0.07} />
               </g>

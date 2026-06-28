@@ -107,9 +107,17 @@ textarea:focus-visible {
   transform-origin: center;
   transition: transform 0.2s ease, opacity 0.2s ease;
 }
-.dest-dot:hover circle:last-child {
+.dest-dot:hover circle:last-child,
+.dest-dot:active circle:last-child {
   transform: scale(2.2);
   opacity: 1;
+}
+
+/* Touch devices have no hover — keep the interactive map points clearly
+   visible and give tap feedback so the maps are usable by finger. */
+@media (hover: none) {
+  .dest-dot circle:last-child { transform: scale(1.7); opacity: 0.95; }
+  .hotel-dot { color: #f97316; }
 }
 
 /* Cottage icons on the Luxury Stays hero map */
