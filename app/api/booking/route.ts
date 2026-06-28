@@ -1,7 +1,12 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { createTransport, FROM_CONCIERGE } from "@/lib/email/transport";
+import { renderConciergeEmailHTML, renderConciergeEmailText } from "@/lib/email/template";
 import { getCurrentCustomer } from "@/lib/customer/session";
+
+function inr(n: number) {
+  return `₹${n.toLocaleString("en-IN")}`;
+}
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -58,6 +63,38 @@ export async function POST(req: Request) {
     });
   } catch (err) {
     console.error("Booking notification email failed:", err);
+  }
+
+  // Branded confirmation to the customer.
+  try {
+    const transporter = createTransport();
+    const dates = checkIn ? `<p style="margin:0 0 6px;"><strong>Dates:</strong> ${checkIn}${checkOut ? ` → ${checkOut}` : ""}</p>` : "";
+    const body = `
+      <p style="margin:0 0 16px;">We've received your reservation request. A member of our concierge team will be in touch shortly to confirm the details and finalise your journey.</p>
+      <p style="margin:0 0 6px;"><strong>Reference:</strong> ${reference}</p>
+      <p style="margin:0 0 6px;"><strong>${itemTitle}</strong></p>
+      ${dates}
+      <p style="margin:0 0 6px;"><strong>Guests:</strong> ${guests ?? 1}</p>
+      ${typeof total === "number" && total > 0 ? `<p style="margin:0;"><strong>Estimated total:</strong> ${inr(Math.round(total))}</p>` : ""}
+    `;
+    await transporter.sendMail({
+      from: FROM_CONCIERGE(),
+      to: email,
+      subject: `Your reservation — ${reference}`,
+      text: renderConciergeEmailText({
+        heading: "We've received your reservation",
+        bodyText: `Reference: ${reference}\n${itemTitle}\n${checkIn ? `Dates: ${checkIn}${checkOut ? ` to ${checkOut}` : ""}\n` : ""}Guests: ${guests ?? 1}\n\nA member of our concierge team will be in touch shortly to confirm.`,
+        signoff: "With anticipation,",
+      }),
+      html: renderConciergeEmailHTML({
+        eyebrow: "Reservation Received",
+        heading: `Thank you, ${String(name).split(" ")[0]}`,
+        bodyHtml: body,
+        signoff: "With anticipation,",
+      }),
+    });
+  } catch (err) {
+    console.error("Customer confirmation email failed:", err);
   }
 
   return NextResponse.json({ ok: true, reference });

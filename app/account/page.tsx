@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getCurrentCustomer } from "@/lib/customer/session";
 import LogoutButton from "@/components/account/LogoutButton";
+import CancelBookingButton from "@/components/account/CancelBookingButton";
 import Price from "@/components/ui/Price";
 
 export const dynamic = "force-dynamic";
@@ -62,6 +63,7 @@ export default async function AccountPage() {
                 <span className={`text-[10px] uppercase tracking-wide px-2.5 py-1 rounded-full border ${STATUS_STYLES[b.status] ?? STATUS_STYLES.pending}`}>
                   {b.status}
                 </span>
+                {b.status === "pending" && <CancelBookingButton id={b.id} />}
               </div>
             </div>
           ))}
