@@ -1,4 +1,5 @@
 import Link from "next/link";
+import StorefrontPreview from "@/components/admin/StorefrontPreview";
 
 export const dynamic = "force-dynamic";
 
@@ -59,6 +60,12 @@ export default function AdminStorefrontPage() {
           View live site ↗
         </a>
       </div>
+
+      {/* Live preview */}
+      <section>
+        <h2 className="text-sm font-semibold text-gray-900 mb-3">Live preview</h2>
+        <StorefrontPreview />
+      </section>
 
       {/* Pages index with preview links */}
       <section>
