@@ -12,6 +12,7 @@ export type AdminReview = {
   rating: number;
   comment: string;
   status: string;
+  images?: string[];
   createdAt: string | Date;
 };
 
@@ -67,6 +68,14 @@ export default function ReviewsModeration({ reviews }: { reviews: AdminReview[] 
                 <span className="text-xs text-gray-400 ml-auto">{new Date(r.createdAt).toLocaleDateString()}</span>
               </div>
               <p className="text-sm text-gray-700 whitespace-pre-wrap mb-3">{r.comment}</p>
+              {r.images && r.images.length > 0 && (
+                <div className="flex flex-wrap gap-2 mb-3">
+                  {r.images.map((src, i) => (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <a key={i} href={src} target="_blank" rel="noopener noreferrer"><img src={src} alt="" className="w-16 h-16 object-cover rounded border border-gray-200" /></a>
+                  ))}
+                </div>
+              )}
               <div className="flex flex-wrap gap-2">
                 {r.status !== "approved" && <button disabled={busy === r.id} onClick={() => setStatus(r.id, "approved")} className="text-xs px-3 py-1.5 rounded-md bg-emerald-700 hover:bg-emerald-800 text-white disabled:opacity-50">Approve</button>}
                 {r.status === "approved" && <button disabled={busy === r.id} onClick={() => setStatus(r.id, "pending")} className="text-xs px-3 py-1.5 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50">Unpublish</button>}

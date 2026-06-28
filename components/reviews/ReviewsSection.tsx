@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Star } from "lucide-react";
+import Image from "next/image";
+import { Star, ImagePlus, X } from "lucide-react";
 
-export type ReviewItem = { id: string; authorName: string; rating: number; comment: string; createdAt: string | Date };
+export type ReviewItem = { id: string; authorName: string; rating: number; comment: string; createdAt: string | Date; images?: string[] };
 
 function Stars({ value, size = 14 }: { value: number; size?: number }) {
   return (
@@ -28,9 +29,28 @@ export default function ReviewsSection({
   const [rating, setRating] = useState(0);
   const [hover, setHover] = useState(0);
   const [comment, setComment] = useState("");
+  const [photos, setPhotos] = useState<string[]>([]);
+  const [uploading, setUploading] = useState(false);
   const [sending, setSending] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState("");
+
+  const onFiles = async (files: FileList | null) => {
+    if (!files?.length) return;
+    setError("");
+    setUploading(true);
+    for (const file of Array.from(files).slice(0, 5 - photos.length)) {
+      const fd = new FormData();
+      fd.append("file", file);
+      try {
+        const res = await fetch("/api/account/upload", { method: "POST", body: fd });
+        const data = await res.json();
+        if (res.ok && data.url) setPhotos(p => [...p, data.url]);
+        else setError(data.error ?? "Could not upload image.");
+      } catch { setError("Could not upload image."); }
+    }
+    setUploading(false);
+  };
 
   const avg = reviews.length ? reviews.reduce((s, r) => s + r.rating, 0) / reviews.length : 0;
 
@@ -42,11 +62,11 @@ export default function ReviewsSection({
     setSending(true);
     const res = await fetch("/api/reviews", {
       method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ type, itemId, rating, comment }),
+      body: JSON.stringify({ type, itemId, rating, comment, images: photos }),
     });
     const data = await res.json().catch(() => ({}));
     setSending(false);
-    if (res.ok) { setDone(true); setComment(""); setRating(0); }
+    if (res.ok) { setDone(true); setComment(""); setRating(0); setPhotos([]); }
     else setError(data.error ?? "Could not submit your review.");
   };
 
@@ -71,6 +91,15 @@ export default function ReviewsSection({
               <Stars value={r.rating} size={13} />
             </div>
             <p className="text-sm text-ink-muted font-light leading-relaxed">{r.comment}</p>
+            {r.images && r.images.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-3">
+                {r.images.map((src, i) => (
+                  <a key={i} href={src} target="_blank" rel="noopener noreferrer" className="relative w-20 h-20 rounded-lg overflow-hidden border border-line">
+                    <Image src={src} alt={`Review photo ${i + 1}`} fill sizes="80px" className="object-cover" />
+                  </a>
+                ))}
+              </div>
+            )}
           </div>
         ))}
       </div>
@@ -94,8 +123,25 @@ export default function ReviewsSection({
             placeholder="Tell others about your experience…"
             className="w-full px-3 py-2.5 rounded-sm bg-panel-soft border border-line text-sm text-ink focus:outline-none focus:border-gold"
           />
+          <div className="flex flex-wrap items-center gap-2">
+            {photos.map((src, i) => (
+              <div key={i} className="relative w-16 h-16 rounded-lg overflow-hidden border border-line">
+                <Image src={src} alt={`Photo ${i + 1}`} fill sizes="64px" className="object-cover" />
+                <button type="button" onClick={() => setPhotos(p => p.filter((_, idx) => idx !== i))} className="absolute top-0.5 right-0.5 bg-vc-950/70 text-white rounded-full p-0.5" aria-label="Remove photo">
+                  <X size={12} />
+                </button>
+              </div>
+            ))}
+            {photos.length < 5 && (
+              <label className="w-16 h-16 flex flex-col items-center justify-center gap-1 rounded-lg border border-dashed border-line-strong text-ink-muted hover:text-ink cursor-pointer">
+                <ImagePlus size={16} />
+                <span className="text-[9px] tracking-wide uppercase">{uploading ? "…" : "Photo"}</span>
+                <input type="file" accept="image/*" multiple className="hidden" onChange={e => { onFiles(e.target.files); e.target.value = ""; }} />
+              </label>
+            )}
+          </div>
           {error && <p className="text-sm text-red-600">{error}</p>}
-          <button type="submit" disabled={sending} className="px-5 py-2.5 bg-ink hover:bg-ink/90 disabled:opacity-50 text-page text-xs tracking-[0.14em] uppercase rounded-sm transition-colors">
+          <button type="submit" disabled={sending || uploading} className="px-5 py-2.5 bg-ink hover:bg-ink/90 disabled:opacity-50 text-page text-xs tracking-[0.14em] uppercase rounded-sm transition-colors">
             {sending ? "Submitting…" : "Submit review"}
           </button>
         </form>

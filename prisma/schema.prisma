@@ -58,6 +58,7 @@ model Review {
   itemId     String
   rating     Int       // 1-5
   comment    String    @db.Text
+  images     String[]  @default([])
   status     String    @default("pending") // pending | approved
   createdAt  DateTime  @default(now())
 

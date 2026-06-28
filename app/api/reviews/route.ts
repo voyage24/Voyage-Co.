@@ -8,7 +8,7 @@ export async function POST(req: Request) {
   const customer = await getCurrentCustomer();
   if (!customer) return NextResponse.json({ error: "Please sign in to leave a review" }, { status: 401 });
 
-  const { type, itemId, rating, comment } = await req.json().catch(() => ({}));
+  const { type, itemId, rating, comment, images } = await req.json().catch(() => ({}));
   if (!TYPES.includes(type) || !itemId) {
     return NextResponse.json({ error: "Invalid item" }, { status: 400 });
   }
@@ -20,11 +20,16 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Please write a short review" }, { status: 400 });
   }
 
+  const photos = Array.isArray(images)
+    ? images.filter((u: unknown): u is string => typeof u === "string" && u.startsWith("http")).slice(0, 5)
+    : [];
+
   await prisma.review.create({
     data: {
       customerId: customer.id,
       authorName: customer.name?.trim() || customer.email.split("@")[0],
       type, itemId, rating: r, comment: comment.trim().slice(0, 2000),
+      images: photos,
       status: "pending",
     },
   });

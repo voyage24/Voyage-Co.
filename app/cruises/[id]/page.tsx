@@ -32,7 +32,7 @@ export default async function CruiseDetailPage({ params }: { params: { id: strin
   const reviews = await prisma.review.findMany({
     where: { type: "cruise", itemId: cruise.id, status: "approved" },
     orderBy: { createdAt: "desc" },
-    select: { id: true, authorName: true, rating: true, comment: true, createdAt: true },
+    select: { id: true, authorName: true, rating: true, comment: true, createdAt: true, images: true },
   });
 
   const nights = parseInt(cruise.duration, 10) || 7;

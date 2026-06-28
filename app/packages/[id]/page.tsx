@@ -32,7 +32,7 @@ export default async function PackageDetailPage({ params }: { params: { id: stri
   const reviews = await prisma.review.findMany({
     where: { type: "package", itemId: pkg.id, status: "approved" },
     orderBy: { createdAt: "desc" },
-    select: { id: true, authorName: true, rating: true, comment: true, createdAt: true },
+    select: { id: true, authorName: true, rating: true, comment: true, createdAt: true, images: true },
   });
 
   const days = parseInt(pkg.duration, 10) || 7;

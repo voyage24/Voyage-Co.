@@ -32,7 +32,7 @@ export default async function HotelDetailPage({ params }: { params: { id: string
   const reviews = await prisma.review.findMany({
     where: { type: "hotel", itemId: hotel.id, status: "approved" },
     orderBy: { createdAt: "desc" },
-    select: { id: true, authorName: true, rating: true, comment: true, createdAt: true },
+    select: { id: true, authorName: true, rating: true, comment: true, createdAt: true, images: true },
   });
 
   const faqs = (hotel.faqs as { q: string; a: string }[] | null) ?? [];
