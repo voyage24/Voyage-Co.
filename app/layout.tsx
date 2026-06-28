@@ -6,6 +6,9 @@ import { CurrencyProvider } from "@/components/providers/CurrencyProvider";
 import { LanguageProvider } from "@/components/providers/LanguageProvider";
 import { SettingsProvider } from "@/components/providers/SettingsProvider";
 import { getSiteSettings, buildThemeHead } from "@/lib/site-settings";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import CookieConsent from "@/components/layout/CookieConsent";
 
 export const metadata: Metadata = {
   title: "Voyages & Co. — A Sense of Place",
@@ -44,10 +47,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <CurrencyProvider>
               <TripsProvider>
                 <SiteChrome>{children}</SiteChrome>
+              <CookieConsent />
               </TripsProvider>
             </CurrencyProvider>
           </LanguageProvider>
         </SettingsProvider>
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
