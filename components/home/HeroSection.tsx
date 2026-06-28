@@ -129,7 +129,7 @@ export default function HeroSection({
           interactive maps plotting their own featured properties/voyages/
           itineraries/experiences, instead of static photos. */}
       <div
-        className={`relative w-full ${activeTab === "trains" ? "aspect-square" : "aspect-[16/9]"} sm:aspect-auto sm:absolute sm:inset-0`}
+        className={`relative w-full ${activeTab === "trains" ? "aspect-[4/3]" : "aspect-[16/9]"} sm:aspect-auto sm:absolute sm:inset-0`}
         onMouseMove={e => {
           const rect = e.currentTarget.getBoundingClientRect();
           const isLeftHalf = e.clientX - rect.left < rect.width / 2;
