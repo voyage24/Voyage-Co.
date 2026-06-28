@@ -29,10 +29,26 @@ function Rendered({ text }: { text: string }) {
 
 export default function ConciergeChat() {
   const [open, setOpen] = useState(false);
+  const [hidden, setHidden] = useState(false);
   const [messages, setMessages] = useState<Msg[]>([{ role: "assistant", content: GREETING }]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  // Auto-hide the launcher while scrolling down; bring it back on scroll up
+  // or near the top, so it never sits over content the guest is reading.
+  useEffect(() => {
+    let last = window.scrollY;
+    const onScroll = () => {
+      const y = window.scrollY;
+      if (y < 140) setHidden(false);
+      else if (y > last + 6) setHidden(true);
+      else if (y < last - 6) setHidden(false);
+      last = y;
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
@@ -65,7 +81,7 @@ export default function ConciergeChat() {
       <button
         onClick={() => setOpen(true)}
         aria-label="Ask the concierge"
-        className="fixed bottom-5 left-5 z-40 flex items-center gap-2 bg-ink text-page pl-3 pr-4 py-2.5 rounded-full shadow-luxury hover:scale-105 active:scale-95 transition-transform"
+        className={`fixed bottom-5 left-5 z-40 flex items-center gap-2 bg-ink text-page pl-3 pr-4 py-2.5 rounded-full shadow-luxury hover:scale-105 active:scale-95 transition-all duration-300 ${hidden ? "translate-y-24 opacity-0 pointer-events-none" : "translate-y-0 opacity-100"}`}
       >
         <Sparkles size={16} className="text-gold" />
         <span className="text-[11px] tracking-[0.12em] uppercase">Ask the Concierge</span>
