@@ -163,3 +163,14 @@ export interface Trip {
   guestName: string;
   bookedAt: string;
 }
+
+export interface Testimonial {
+  id: string;
+  quote: string;
+  author: string;
+  detail?: string | null;
+  image?: string | null;
+  rating: number;
+  sortOrder: number;
+  published: boolean;
+}

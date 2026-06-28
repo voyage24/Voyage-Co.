@@ -590,6 +590,7 @@ export const EN: Dictionary = {
   "plan.successDesc": "We'll be in touch within 24 hours to begin shaping your journey.",
   "cookie.message": "We use essential cookies and privacy-friendly analytics to improve your experience.",
   "cookie.privacy": "Privacy Policy", "cookie.accept": "Accept",
+  "testimonials.eyebrow": "In Their Words", "testimonials.heading": "Journeys Worth Remembering",
   "booking.confirmReservation": "Confirm Reservation",
   "booking.noPaymentNow": "No payment is taken now — a specialist will contact you to finalise your journey.",
   "booking.price": "Price",
