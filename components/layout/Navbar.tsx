@@ -21,6 +21,7 @@ const RIGHT_LINKS = [
   { key: "plan.title", href: "/plan" },
   { key: "common.journal",  href: "/blog" },
   { key: "common.myTrips", href: "/trips" },
+  { key: "account.account", href: "/account" },
 ];
 
 const ALL_LINKS = [...LEFT_LINKS, ...RIGHT_LINKS];

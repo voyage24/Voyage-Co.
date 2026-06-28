@@ -33,6 +33,53 @@ model Testimonial {
   updatedAt DateTime @updatedAt
 }
 
+model Customer {
+  id           String            @id @default(cuid())
+  email        String            @unique
+  passwordHash String
+  name         String?
+  phone        String?
+  createdAt    DateTime          @default(now())
+  lastLoginAt  DateTime?
+  sessions     CustomerSession[]
+  bookings     Booking[]
+}
+
+model CustomerSession {
+  id         String   @id @default(cuid())
+  tokenHash  String   @unique
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+}
+
+model Booking {
+  id          String    @id @default(cuid())
+  customerId  String?
+  customer    Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  type        String    // hotel | package | experience | cruise | flight | train
+  itemId      String
+  itemTitle   String
+  image       String?
+  guestName   String
+  guestEmail  String
+  guestPhone  String?
+  checkIn     String?
+  checkOut    String?
+  guests      Int       @default(1)
+  total       Int
+  currency    String    @default("INR")
+  status      String    @default("pending") // pending | confirmed | cancelled
+  reference   String    @unique
+  notes       String?   @db.Text
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([customerId])
+  @@index([status])
+}
+
 model Enquiry {
   id        String   @id @default(cuid())
   type      String   // "contact" | "booking"

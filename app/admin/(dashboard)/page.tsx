@@ -15,7 +15,7 @@ const CARDS = [
 ] as const;
 
 export default async function AdminDashboardPage() {
-  const [hotel, flight, train, experience, pkg, cruise, blogPost, featuredDestination, newsletter, newEnquiries, testimonial] = await Promise.all([
+  const [hotel, flight, train, experience, pkg, cruise, blogPost, featuredDestination, newsletter, newEnquiries, testimonial, pendingBookings] = await Promise.all([
     prisma.hotel.count(),
     prisma.flight.count(),
     prisma.train.count(),
@@ -27,6 +27,7 @@ export default async function AdminDashboardPage() {
     prisma.newsletterSubscriber.count(),
     prisma.enquiry.count({ where: { status: "new" } }),
     prisma.testimonial.count(),
+    prisma.booking.count({ where: { status: "pending" } }),
   ]);
 
   const counts: Record<string, number> = { hotel, flight, train, experience, package: pkg, cruise, blogPost, featuredDestination, newsletter, testimonial };
@@ -35,19 +36,30 @@ export default async function AdminDashboardPage() {
     <div>
       <h1 className="text-2xl font-semibold text-gray-900 mb-6">Dashboard</h1>
 
-      <Link
-        href="/admin/enquiries"
-        className={`block rounded-lg p-5 mb-4 border transition-colors ${
-          newEnquiries > 0
-            ? "bg-amber-50 border-amber-300 hover:border-amber-400"
-            : "bg-white border-gray-200 hover:border-gray-400"
-        }`}
-      >
-        <p className="text-3xl font-semibold text-gray-900">{newEnquiries}</p>
-        <p className="text-sm text-gray-600 mt-1">
-          New {newEnquiries === 1 ? "enquiry" : "enquiries"} {newEnquiries > 0 ? "— awaiting follow-up" : ""}
-        </p>
-      </Link>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+        <Link
+          href="/admin/bookings"
+          className={`block rounded-lg p-5 border transition-colors ${
+            pendingBookings > 0 ? "bg-amber-50 border-amber-300 hover:border-amber-400" : "bg-white border-gray-200 hover:border-gray-400"
+          }`}
+        >
+          <p className="text-3xl font-semibold text-gray-900">{pendingBookings}</p>
+          <p className="text-sm text-gray-600 mt-1">
+            Pending {pendingBookings === 1 ? "booking" : "bookings"} {pendingBookings > 0 ? "— awaiting confirmation" : ""}
+          </p>
+        </Link>
+        <Link
+          href="/admin/enquiries"
+          className={`block rounded-lg p-5 border transition-colors ${
+            newEnquiries > 0 ? "bg-amber-50 border-amber-300 hover:border-amber-400" : "bg-white border-gray-200 hover:border-gray-400"
+          }`}
+        >
+          <p className="text-3xl font-semibold text-gray-900">{newEnquiries}</p>
+          <p className="text-sm text-gray-600 mt-1">
+            New {newEnquiries === 1 ? "enquiry" : "enquiries"} {newEnquiries > 0 ? "— awaiting follow-up" : ""}
+          </p>
+        </Link>
+      </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
         {CARDS.map(c => (

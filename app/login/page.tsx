@@ -14,11 +14,26 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => { setLoading(false); router.push("/"); }, 1000);
+    setError("");
+    try {
+      const res = await fetch("/api/account/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) { setError(data.error ?? "Sign in failed"); setLoading(false); return; }
+      router.push("/account");
+      router.refresh();
+    } catch {
+      setError("Something went wrong. Please try again.");
+      setLoading(false);
+    }
   };
 
   return (
@@ -74,6 +89,7 @@ export default function LoginPage() {
               </div>
             </div>
 
+            {error && <p className="text-sm text-red-600 font-light">{error}</p>}
             <button
               type="submit" disabled={loading}
               className="w-full py-3.5 bg-ink hover:bg-ink/90 text-page font-normal text-xs tracking-[0.16em] uppercase rounded-sm transition-colors flex items-center justify-center gap-2 disabled:opacity-60"
