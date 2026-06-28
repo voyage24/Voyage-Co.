@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import { getWorldMap, getWorldDotsSVG } from "@/lib/world-map-singleton";
+import { useIsMobile } from "@/lib/useIsMobile";
 import { getPackageDestinationCoords } from "@/lib/package-destinations";
 import type { Package } from "@/lib/types";
 
@@ -28,7 +29,9 @@ function CompassGlyph({ scale, color }: { scale: number; color: string }) {
  */
 export default function PackageRouteMap({ pkg }: { pkg: Package }) {
   const map = useMemo(() => getWorldMap(), []);
-  const dotsSVG = useMemo(() => getWorldDotsSVG(), []);
+  const isMobile = useIsMobile();
+  const fit = isMobile ? "meet" : "slice";
+  const dotsSVG = useMemo(() => getWorldDotsSVG(fit), [fit]);
   const { width, height } = map.image;
 
   const stops = useMemo(() => {
@@ -70,7 +73,7 @@ export default function PackageRouteMap({ pkg }: { pkg: Package }) {
       <svg
         viewBox={`0 0 ${width} ${height}`}
         className="absolute inset-0 w-full h-full"
-        preserveAspectRatio="xMidYMid slice"
+        preserveAspectRatio={`xMidYMid ${fit}`}
       >
         {legs.map(leg => (
           <path

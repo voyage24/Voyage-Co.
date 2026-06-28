@@ -6,30 +6,27 @@ import mapData from "@/lib/world-map-data.json";
 // built once per page load and shared by every map on the page (hero map,
 // per-flight-card mini maps, etc.) instead of each component recomputing it.
 let sharedMap: InstanceType<typeof DottedMap> | null = null;
-let sharedDotsSVG: string | null = null;
+const sharedDotsSVG: Record<string, string> = {};
 
 export function getWorldMap() {
   if (!sharedMap) sharedMap = new DottedMap({ map: mapData as unknown as MapData });
   return sharedMap;
 }
 
-export function getWorldDotsSVG() {
-  if (!sharedDotsSVG) {
+// `fit` controls preserveAspectRatio: "slice" fills/crops the container (used
+// on wide desktop heroes), "meet" fits the whole map letterboxed (used on
+// portrait phones, where slicing a 2:1 map would zoom it ~10x and show only a
+// tiny sliver). Overlays drawn on top (routes, pins, icons) MUST use the same
+// `fit` value or the two layers scale differently and dots/pins drift apart.
+export function getWorldDotsSVG(fit: "slice" | "meet" = "slice") {
+  if (!sharedDotsSVG[fit]) {
     const raw = getWorldMap().getSVG({
       shape: "circle",
       radius: 0.32,
       color: "rgba(244,240,233,0.28)",
       backgroundColor: "transparent",
     });
-    // dotted-map's own <svg> doesn't set preserveAspectRatio, so it defaults
-    // to "meet" (fit, letterboxed) while every overlay drawn on top of it
-    // (routes, pins, icons) explicitly uses "slice" (fill, cropped) to match
-    // the hero's aspect ratio. Without forcing this dots layer to "slice"
-    // too, the two layers scale differently whenever the container's aspect
-    // ratio doesn't exactly match the map's — which is everywhere — so dots
-    // and pins drift apart. This was the root cause of every map looking
-    // inaccurate.
-    sharedDotsSVG = raw.replace("<svg ", '<svg preserveAspectRatio="xMidYMid slice" ');
+    sharedDotsSVG[fit] = raw.replace("<svg ", `<svg preserveAspectRatio="xMidYMid ${fit}" `);
   }
-  return sharedDotsSVG;
+  return sharedDotsSVG[fit];
 }

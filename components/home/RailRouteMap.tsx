@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import { getIndiaMap, getIndiaDotsSVG } from "@/lib/india-map-singleton";
+import { useIsMobile } from "@/lib/useIsMobile";
 import { getStationCoords } from "@/lib/rail-stations";
 import type { Train } from "@/lib/types";
 
@@ -35,7 +36,9 @@ function TrainGlyph({ scale, color }: { scale: number; color: string }) {
  */
 export default function RailRouteMap({ train }: { train: Train }) {
   const map = useMemo(() => getIndiaMap(), []);
-  const dotsSVG = useMemo(() => getIndiaDotsSVG(), []);
+  const isMobile = useIsMobile();
+  const fit = isMobile ? "meet" : "slice";
+  const dotsSVG = useMemo(() => getIndiaDotsSVG(fit), [fit]);
   const { width, height } = map.image;
 
   const fromPoint = useMemo(() => {
@@ -74,7 +77,7 @@ export default function RailRouteMap({ train }: { train: Train }) {
       <svg
         viewBox={`0 0 ${width} ${height}`}
         className="absolute inset-0 w-full h-full"
-        preserveAspectRatio="xMidYMid slice"
+        preserveAspectRatio={`xMidYMid ${fit}`}
       >
         {routePath && (
           <path

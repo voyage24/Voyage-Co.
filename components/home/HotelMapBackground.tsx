@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getWorldMap, getWorldDotsSVG } from "@/lib/world-map-singleton";
+import { useIsMobile } from "@/lib/useIsMobile";
 import { getHotelCityCoords } from "@/lib/hotel-coords";
 import { getWeeklyFeaturedHotels } from "@/lib/weekly-featured";
 import type { Hotel } from "@/lib/types";
@@ -40,7 +41,9 @@ function CottageGlyph({ scale }: { scale: number }) {
 export default function HotelMapBackground({ hotels, city }: { hotels: Hotel[]; city: string }) {
   const router = useRouter();
   const map = useMemo(() => getWorldMap(), []);
-  const dotsSVG = useMemo(() => getWorldDotsSVG(), []);
+  const isMobile = useIsMobile();
+  const fit = isMobile ? "meet" : "slice";
+  const dotsSVG = useMemo(() => getWorldDotsSVG(fit), [fit]);
   const { width, height } = map.image;
   const [captionVisible, setCaptionVisible] = useState(true);
 
@@ -102,7 +105,7 @@ export default function HotelMapBackground({ hotels, city }: { hotels: Hotel[]; 
       <svg
         viewBox={`0 0 ${width} ${height}`}
         className="absolute inset-0 w-full h-full"
-        preserveAspectRatio="xMidYMid slice"
+        preserveAspectRatio={`xMidYMid ${fit}`}
       >
         {points.map(p => {
           const isHighlighted = !!city && p.hotel.city === city;

@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import { getWorldMap, getWorldDotsSVG } from "@/lib/world-map-singleton";
+import { useIsMobile } from "@/lib/useIsMobile";
 import { getCoords } from "@/lib/geo";
 import { CITIES } from "@/lib/mock-data";
 import type { City } from "@/lib/types";
@@ -53,7 +54,9 @@ export default function DestinationMap({
   onSelectDestination?: (city: City) => void;
 }) {
   const map = useMemo(() => getWorldMap(), []);
-  const dotsSVG = useMemo(() => getWorldDotsSVG(), []);
+  const isMobile = useIsMobile();
+  const fit = isMobile ? "meet" : "slice";
+  const dotsSVG = useMemo(() => getWorldDotsSVG(fit), [fit]);
 
   // Popular destinations to plot as clickable points, excluding whichever
   // are already the active From/To (those get their own pin + plane glyph).
@@ -111,7 +114,7 @@ export default function DestinationMap({
       <svg
         viewBox={`0 0 ${width} ${height}`}
         className="absolute inset-0 w-full h-full"
-        preserveAspectRatio="xMidYMid slice"
+        preserveAspectRatio={`xMidYMid ${fit}`}
       >
         {arcPath && (
           <path
