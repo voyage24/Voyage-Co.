@@ -9,7 +9,7 @@ export default async function EditPackagePage({ params }: { params: { id: string
   return (
     <div>
       <h1 className="text-2xl font-semibold text-gray-900 mb-6">Edit Package</h1>
-      <PackageForm initial={pkg} />
+      <PackageForm initial={{ ...pkg, faqs: pkg.faqs as { q: string; a: string }[] | null }} />
     </div>
   );
 }

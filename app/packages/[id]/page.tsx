@@ -9,7 +9,8 @@ import T from "@/components/ui/T";
 import ReviewsSection from "@/components/reviews/ReviewsSection";
 import SaveButton from "@/components/ui/SaveButton";
 import JsonLd from "@/components/seo/JsonLd";
-import { productJsonLd, breadcrumbJsonLd } from "@/lib/seo";
+import FaqAndEntry from "@/components/products/FaqAndEntry";
+import { productJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 export const revalidate = 60;
 
@@ -35,10 +36,11 @@ export default async function PackageDetailPage({ params }: { params: { id: stri
   });
 
   const days = parseInt(pkg.duration, 10) || 7;
+  const faqs = (pkg.faqs as { q: string; a: string }[] | null) ?? [];
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-16">
-      <JsonLd data={[productJsonLd({ type: "package", id: pkg.id, basePath: "/packages", name: pkg.title, description: pkg.subtitle, image: pkg.image, price: pkg.pricePerPerson, priceOnRequest: pkg.priceOnRequest }, reviews), breadcrumbJsonLd([{ name: "Destinations", path: "/packages" }, { name: pkg.title, path: `/packages/${pkg.id}` }])]} />
+      <JsonLd data={[productJsonLd({ type: "package", id: pkg.id, basePath: "/packages", name: pkg.title, description: pkg.subtitle, image: pkg.image, price: pkg.pricePerPerson, priceOnRequest: pkg.priceOnRequest }, reviews), breadcrumbJsonLd([{ name: "Destinations", path: "/packages" }, { name: pkg.title, path: `/packages/${pkg.id}` }]), ...(faqs.length ? [faqJsonLd(faqs)] : [])]} />
       <div className="flex items-center justify-between mb-6">
         <Link href="/packages" className="inline-flex items-center gap-2 text-xs tracking-[0.1em] uppercase text-ink-muted hover:text-gold transition-colors">
           <ArrowLeft size={15} /> <T k="detail.allJourneys" />
@@ -172,6 +174,8 @@ export default async function PackageDetailPage({ params }: { params: { id: stri
           </div>
         </div>
       </div>
+
+      <FaqAndEntry faqs={faqs} entryRequirements={pkg.entryRequirements} />
 
       <ReviewsSection type="package" itemId={pkg.id} reviews={reviews} />
     </div>

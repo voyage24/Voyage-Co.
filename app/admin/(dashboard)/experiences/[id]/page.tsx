@@ -9,7 +9,7 @@ export default async function EditExperiencePage({ params }: { params: { id: str
   return (
     <div>
       <h1 className="text-2xl font-semibold text-gray-900 mb-6">Edit Experience</h1>
-      <ExperienceForm initial={experience} />
+      <ExperienceForm initial={{ ...experience, faqs: experience.faqs as { q: string; a: string }[] | null }} />
     </div>
   );
 }

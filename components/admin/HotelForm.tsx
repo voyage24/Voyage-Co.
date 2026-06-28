@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import ImageUploadField from "@/components/admin/ImageUploadField";
+import FaqEditor from "@/components/admin/FaqEditor";
 
 interface HotelData {
   id?: string;
@@ -28,6 +29,8 @@ interface HotelData {
   officialSite: string | null;
   published: boolean;
   priceOnRequest?: boolean;
+  faqs?: { q: string; a: string }[] | null;
+  entryRequirements?: string | null;
 }
 
 const BLANK: HotelData = {
@@ -35,7 +38,7 @@ const BLANK: HotelData = {
   stars: 5, rating: 0, reviewCount: 0, pricePerNight: 0,
   image: "", images: [], category: "", amenities: [], highlights: [],
   description: "", badge: null, brand: null, lat: null, lng: null, officialSite: null,
-  published: true, priceOnRequest: false,
+  published: true, priceOnRequest: false, faqs: [], entryRequirements: "",
 };
 
 const inputClass = "w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-gray-900";
@@ -154,6 +157,16 @@ export default function HotelForm({ initial }: { initial?: HotelData }) {
       <div>
         <label className={labelClass}>Description</label>
         <textarea rows={5} className={inputClass} value={form.description} onChange={e => set("description", e.target.value)} />
+      </div>
+
+      <div>
+        <label className={labelClass}>Entry &amp; travel requirements (optional)</label>
+        <textarea rows={3} className={inputClass} value={form.entryRequirements ?? ""} onChange={e => set("entryRequirements", e.target.value)} placeholder="Visa, check-in policy, local notes…" />
+      </div>
+
+      <div>
+        <label className={labelClass}>FAQs (optional)</label>
+        <FaqEditor value={form.faqs} onChange={v => set("faqs", v)} />
       </div>
 
       <label className="flex items-center gap-2 text-sm text-gray-700">

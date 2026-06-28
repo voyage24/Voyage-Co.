@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import ImageUploadField from "@/components/admin/ImageUploadField";
+import FaqEditor from "@/components/admin/FaqEditor";
 
 interface PackageData {
   id?: string;
@@ -20,11 +21,14 @@ interface PackageData {
   featured?: boolean;
   availableUnits?: number | null;
   priceOnRequest?: boolean;
+  faqs?: { q: string; a: string }[] | null;
+  entryRequirements?: string | null;
 }
 
 const BLANK: PackageData = {
   title: "", subtitle: "", destinations: [], duration: "", pricePerPerson: 0,
   image: "", highlights: [], includes: [], category: "", badge: null, published: true, featured: false, availableUnits: null, priceOnRequest: false,
+  faqs: [], entryRequirements: "",
 };
 
 const inputClass = "w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-gray-900";
@@ -102,6 +106,16 @@ export default function PackageForm({ initial }: { initial?: PackageData }) {
       <div>
         <label className={labelClass}>Includes (one per line)</label>
         <textarea rows={4} className={inputClass} value={form.includes.join("\n")} onChange={e => setList("includes", e.target.value)} />
+      </div>
+
+      <div>
+        <label className={labelClass}>Entry &amp; travel requirements (optional)</label>
+        <textarea rows={3} className={inputClass} value={form.entryRequirements ?? ""} onChange={e => set("entryRequirements", e.target.value)} placeholder="Visa, vaccinations, best season…" />
+      </div>
+
+      <div>
+        <label className={labelClass}>FAQs (optional)</label>
+        <FaqEditor value={form.faqs} onChange={v => set("faqs", v)} />
       </div>
 
       <div>

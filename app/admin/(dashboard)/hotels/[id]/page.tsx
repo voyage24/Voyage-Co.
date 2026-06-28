@@ -9,7 +9,7 @@ export default async function EditHotelPage({ params }: { params: { id: string }
   return (
     <div>
       <h1 className="text-2xl font-semibold text-gray-900 mb-6">Edit Hotel</h1>
-      <HotelForm initial={hotel} />
+      <HotelForm initial={{ ...hotel, faqs: hotel.faqs as { q: string; a: string }[] | null }} />
     </div>
   );
 }

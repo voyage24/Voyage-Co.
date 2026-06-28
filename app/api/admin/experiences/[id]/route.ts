@@ -26,6 +26,8 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   if (data.lng !== undefined) update.lng = data.lng === "" || data.lng === null ? null : Number(data.lng);
   if (data.availableUnits !== undefined) update.availableUnits = data.availableUnits === "" || data.availableUnits === null ? null : Number(data.availableUnits);
   if (data.priceOnRequest !== undefined) update.priceOnRequest = !!data.priceOnRequest;
+  if (data.faqs !== undefined) update.faqs = data.faqs;
+  if (data.entryRequirements !== undefined) update.entryRequirements = data.entryRequirements || null;
 
   const experience = await prisma.experience.update({ where: { id: params.id }, data: update });
   return NextResponse.json({ experience });

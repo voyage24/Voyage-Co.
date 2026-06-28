@@ -9,7 +9,8 @@ import T from "@/components/ui/T";
 import ReviewsSection from "@/components/reviews/ReviewsSection";
 import SaveButton from "@/components/ui/SaveButton";
 import JsonLd from "@/components/seo/JsonLd";
-import { hotelJsonLd, breadcrumbJsonLd } from "@/lib/seo";
+import FaqAndEntry from "@/components/products/FaqAndEntry";
+import { hotelJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 export const revalidate = 60;
 
@@ -34,9 +35,11 @@ export default async function HotelDetailPage({ params }: { params: { id: string
     select: { id: true, authorName: true, rating: true, comment: true, createdAt: true },
   });
 
+  const faqs = (hotel.faqs as { q: string; a: string }[] | null) ?? [];
+
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20">
-      <JsonLd data={[hotelJsonLd(hotel, reviews), breadcrumbJsonLd([{ name: "Stays", path: "/hotels" }, { name: hotel.name, path: `/hotels/${hotel.id}` }])]} />
+      <JsonLd data={[hotelJsonLd(hotel, reviews), breadcrumbJsonLd([{ name: "Stays", path: "/hotels" }, { name: hotel.name, path: `/hotels/${hotel.id}` }]), ...(faqs.length ? [faqJsonLd(faqs)] : [])]} />
       <div className="flex items-center justify-between mb-6">
         <Link href="/hotels" className="inline-flex items-center gap-2 text-xs tracking-[0.1em] uppercase text-ink-muted hover:text-ink transition-colors">
           <ArrowLeft size={15} /> <T k="detail.allStays" />
@@ -159,6 +162,8 @@ export default async function HotelDetailPage({ params }: { params: { id: string
           </div>
         </div>
       </div>
+
+      <FaqAndEntry faqs={faqs} entryRequirements={hotel.entryRequirements} />
 
       <ReviewsSection type="hotel" itemId={hotel.id} reviews={reviews} />
     </div>

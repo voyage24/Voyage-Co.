@@ -38,6 +38,8 @@ export async function POST(req: NextRequest) {
       featured: data.featured ?? false,
       availableUnits: data.availableUnits === "" || data.availableUnits == null ? null : Number(data.availableUnits),
       priceOnRequest: !!data.priceOnRequest,
+      faqs: data.faqs ?? undefined,
+      entryRequirements: data.entryRequirements || null,
     },
   });
 

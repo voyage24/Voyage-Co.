@@ -46,6 +46,8 @@ export async function POST(req: NextRequest) {
       officialSite: data.officialSite || null,
       published: data.published ?? true,
       priceOnRequest: !!data.priceOnRequest,
+      faqs: data.faqs ?? undefined,
+      entryRequirements: data.entryRequirements || null,
     },
   });
 

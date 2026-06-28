@@ -189,6 +189,8 @@ model Hotel {
   published     Boolean  @default(true)
   availableUnits Int?    // null = on request (no cap); otherwise bookable capacity
   priceOnRequest Boolean @default(false)
+  faqs           Json?
+  entryRequirements String? @db.Text
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }
@@ -250,6 +252,8 @@ model Experience {
   published   Boolean  @default(true)
   availableUnits Int?
   priceOnRequest Boolean @default(false)
+  faqs        Json?
+  entryRequirements String? @db.Text
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
@@ -270,6 +274,8 @@ model Package {
   featured       Boolean  @default(false)
   availableUnits Int?
   priceOnRequest Boolean  @default(false)
+  faqs           Json?
+  entryRequirements String? @db.Text
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 }
@@ -296,6 +302,8 @@ model Cruise {
   published      Boolean  @default(true)
   availableUnits Int?
   priceOnRequest Boolean  @default(false)
+  faqs           Json?
+  entryRequirements String? @db.Text
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 }

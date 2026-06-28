@@ -16,9 +16,10 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   const data = await req.json();
   const update: Record<string, unknown> = {};
 
-  for (const key of ["title", "subtitle", "duration", "image", "category", "published", "featured", "priceOnRequest"]) {
+  for (const key of ["title", "subtitle", "duration", "image", "category", "published", "featured", "priceOnRequest", "faqs"]) {
     if (data[key] !== undefined) update[key] = data[key];
   }
+  if (data.entryRequirements !== undefined) update.entryRequirements = data.entryRequirements || null;
   if (data.pricePerPerson !== undefined) update.pricePerPerson = Number(data.pricePerPerson);
   if (data.destinations !== undefined) update.destinations = data.destinations;
   if (data.highlights !== undefined) update.highlights = data.highlights;

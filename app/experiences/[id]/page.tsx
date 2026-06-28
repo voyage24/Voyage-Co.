@@ -9,7 +9,8 @@ import T from "@/components/ui/T";
 import ReviewsSection from "@/components/reviews/ReviewsSection";
 import SaveButton from "@/components/ui/SaveButton";
 import JsonLd from "@/components/seo/JsonLd";
-import { productJsonLd, breadcrumbJsonLd } from "@/lib/seo";
+import FaqAndEntry from "@/components/products/FaqAndEntry";
+import { productJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 export const revalidate = 60;
 
@@ -34,9 +35,11 @@ export default async function ExperienceDetailPage({ params }: { params: { id: s
     select: { id: true, authorName: true, rating: true, comment: true, createdAt: true },
   });
 
+  const faqs = (exp.faqs as { q: string; a: string }[] | null) ?? [];
+
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20">
-      <JsonLd data={[productJsonLd({ type: "experience", id: exp.id, basePath: "/experiences", name: exp.title, description: exp.description, image: exp.image, price: exp.price, priceOnRequest: exp.priceOnRequest }, reviews), breadcrumbJsonLd([{ name: "Experiences", path: "/experiences" }, { name: exp.title, path: `/experiences/${exp.id}` }])]} />
+      <JsonLd data={[productJsonLd({ type: "experience", id: exp.id, basePath: "/experiences", name: exp.title, description: exp.description, image: exp.image, price: exp.price, priceOnRequest: exp.priceOnRequest }, reviews), breadcrumbJsonLd([{ name: "Experiences", path: "/experiences" }, { name: exp.title, path: `/experiences/${exp.id}` }]), ...(faqs.length ? [faqJsonLd(faqs)] : [])]} />
       <div className="flex items-center justify-between mb-6">
         <Link href="/experiences" className="inline-flex items-center gap-2 text-xs tracking-[0.1em] uppercase text-ink-muted hover:text-ink transition-colors">
           <ArrowLeft size={15} /> <T k="detail.allExperiences" />
@@ -119,6 +122,8 @@ export default async function ExperienceDetailPage({ params }: { params: { id: s
           </div>
         </div>
       </div>
+
+      <FaqAndEntry faqs={faqs} entryRequirements={exp.entryRequirements} />
 
       <ReviewsSection type="experience" itemId={exp.id} reviews={reviews} />
     </div>

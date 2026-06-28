@@ -39,6 +39,8 @@ export async function POST(req: NextRequest) {
       published: data.published ?? true,
       availableUnits: data.availableUnits === "" || data.availableUnits == null ? null : Number(data.availableUnits),
       priceOnRequest: !!data.priceOnRequest,
+      faqs: data.faqs ?? undefined,
+      entryRequirements: data.entryRequirements || null,
     },
   });
 

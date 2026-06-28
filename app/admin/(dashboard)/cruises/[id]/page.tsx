@@ -9,7 +9,7 @@ export default async function EditCruisePage({ params }: { params: { id: string 
   return (
     <div>
       <h1 className="text-2xl font-semibold text-gray-900 mb-6">Edit Cruise</h1>
-      <CruiseForm initial={cruise} />
+      <CruiseForm initial={{ ...cruise, faqs: cruise.faqs as { q: string; a: string }[] | null }} />
     </div>
   );
 }
