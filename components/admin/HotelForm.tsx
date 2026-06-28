@@ -27,6 +27,7 @@ interface HotelData {
   lng: number | null;
   officialSite: string | null;
   published: boolean;
+  priceOnRequest?: boolean;
 }
 
 const BLANK: HotelData = {
@@ -34,7 +35,7 @@ const BLANK: HotelData = {
   stars: 5, rating: 0, reviewCount: 0, pricePerNight: 0,
   image: "", images: [], category: "", amenities: [], highlights: [],
   description: "", badge: null, brand: null, lat: null, lng: null, officialSite: null,
-  published: true,
+  published: true, priceOnRequest: false,
 };
 
 const inputClass = "w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-gray-900";
@@ -158,6 +159,11 @@ export default function HotelForm({ initial }: { initial?: HotelData }) {
       <label className="flex items-center gap-2 text-sm text-gray-700">
         <input type="checkbox" checked={form.published} onChange={e => set("published", e.target.checked)} />
         Published (visible on the live site)
+      </label>
+
+      <label className="flex items-center gap-2 text-sm text-gray-700">
+        <input type="checkbox" checked={!!form.priceOnRequest} onChange={e => set("priceOnRequest", e.target.checked)} />
+        Price on request (hide the price; show an enquire button)
       </label>
 
       <div className="flex gap-3">

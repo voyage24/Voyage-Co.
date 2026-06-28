@@ -25,12 +25,13 @@ interface CruiseData {
   badge: string | null;
   published: boolean;
   availableUnits?: number | null;
+  priceOnRequest?: boolean;
 }
 
 const BLANK: CruiseData = {
   name: "", cruiseLine: "", ship: "", region: "", departurePort: "", ports: [],
   duration: "", pricePerPerson: 0, image: "", category: "", amenities: [], highlights: [],
-  includes: [], description: "", rating: 0, reviewCount: 0, badge: null, published: true, availableUnits: null,
+  includes: [], description: "", rating: 0, reviewCount: 0, badge: null, published: true, availableUnits: null, priceOnRequest: false,
 };
 
 const inputClass = "w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-gray-900";
@@ -149,6 +150,11 @@ export default function CruiseForm({ initial }: { initial?: CruiseData }) {
       <label className="flex items-center gap-2 text-sm text-gray-700">
         <input type="checkbox" checked={form.published} onChange={e => set("published", e.target.checked)} />
         Published (visible on the live site)
+      </label>
+
+      <label className="flex items-center gap-2 text-sm text-gray-700">
+        <input type="checkbox" checked={!!form.priceOnRequest} onChange={e => set("priceOnRequest", e.target.checked)} />
+        Price on request (hide the price; show an enquire button)
       </label>
 
       <button type="submit" disabled={saving} className="px-5 py-2.5 bg-gray-900 hover:bg-gray-800 disabled:opacity-50 text-white text-sm font-medium rounded-md">

@@ -43,6 +43,7 @@ export async function POST(req: NextRequest) {
       badge: data.badge || null,
       published: data.published ?? true,
       availableUnits: data.availableUnits === "" || data.availableUnits == null ? null : Number(data.availableUnits),
+      priceOnRequest: !!data.priceOnRequest,
     },
   });
 

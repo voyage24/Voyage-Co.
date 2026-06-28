@@ -643,6 +643,7 @@ export const EN: Dictionary = {
   "detail.packageItineraryLast": "Leisurely breakfast, check-out and private departure transfer.",
   "detail.packageItineraryMiddle": "Privately guided sightseeing, a reserved table for lunch and time at leisure.",
   "detail.taxesFees": "+ taxes & fees",
+  "detail.priceOnRequest": "Price on request", "detail.enquireNow": "Enquire now",
   "detail.destinations": "Destinations",
   "detail.city": "city",
   "detail.cities": "cities",

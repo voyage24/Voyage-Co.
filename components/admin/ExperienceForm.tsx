@@ -20,11 +20,12 @@ interface ExperienceData {
   lng: number | null;
   published: boolean;
   availableUnits?: number | null;
+  priceOnRequest?: boolean;
 }
 
 const BLANK: ExperienceData = {
   title: "", location: "", country: "", duration: "", price: 0, category: "",
-  image: "", description: "", includes: [], badge: null, lat: null, lng: null, published: true, availableUnits: null,
+  image: "", description: "", includes: [], badge: null, lat: null, lng: null, published: true, availableUnits: null, priceOnRequest: false,
 };
 
 const inputClass = "w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-gray-900";
@@ -127,6 +128,11 @@ export default function ExperienceForm({ initial }: { initial?: ExperienceData }
       <label className="flex items-center gap-2 text-sm text-gray-700">
         <input type="checkbox" checked={form.published} onChange={e => set("published", e.target.checked)} />
         Published (visible on the live site)
+      </label>
+
+      <label className="flex items-center gap-2 text-sm text-gray-700">
+        <input type="checkbox" checked={!!form.priceOnRequest} onChange={e => set("priceOnRequest", e.target.checked)} />
+        Price on request (hide the price; show an enquire button)
       </label>
 
       <button type="submit" disabled={saving} className="px-5 py-2.5 bg-gray-900 hover:bg-gray-800 disabled:opacity-50 text-white text-sm font-medium rounded-md">

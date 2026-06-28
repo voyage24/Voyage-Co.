@@ -45,6 +45,7 @@ export async function POST(req: NextRequest) {
       lng: data.lng ? Number(data.lng) : null,
       officialSite: data.officialSite || null,
       published: data.published ?? true,
+      priceOnRequest: !!data.priceOnRequest,
     },
   });
 

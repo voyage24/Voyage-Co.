@@ -7,6 +7,7 @@ import { Check, Calendar, Users } from "lucide-react";
 import { useTrips } from "@/components/providers/TripsProvider";
 import { useCurrency } from "@/components/providers/CurrencyProvider";
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import NotifyMe from "@/components/booking/NotifyMe";
 
 export interface BookingItem {
   type: "hotel" | "flight" | "package" | "experience" | "train" | "cruise";
@@ -159,9 +160,13 @@ export default function BookingForm({ item, soldOut = false }: { item: BookingIt
         >
           {soldOut ? t("booking.fullyBooked") : submitting ? t("booking.sending") : t("booking.confirmReservation")}
         </button>
-        <p className="text-xs text-ink-faint font-light text-center">
-          {t("booking.noPaymentNow")}
-        </p>
+        {soldOut ? (
+          <div className="pt-2"><NotifyMe type={item.type} itemId={item.id} itemTitle={item.title} /></div>
+        ) : (
+          <p className="text-xs text-ink-faint font-light text-center">
+            {t("booking.noPaymentNow")}
+          </p>
+        )}
       </form>
 
       {/* Summary */}

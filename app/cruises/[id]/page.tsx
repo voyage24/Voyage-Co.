@@ -148,9 +148,15 @@ export default async function CruiseDetailPage({ params }: { params: { id: strin
         <div className="lg:col-span-1">
           <div className="lg:sticky lg:top-28 bg-panel rounded-2xl border border-line shadow-widget p-6">
             <div className="mb-5">
-              <p className="text-[10px] tracking-[0.1em] uppercase text-ink-faint font-light"><T k="card.perPersonFrom" /></p>
-              <Price amount={cruise.pricePerPerson} className="font-serif text-3xl font-light text-ink" />
-              <p className="text-xs text-ink-faint mt-1 font-light"><T k="detail.portFeesTaxes" /></p>
+              {cruise.priceOnRequest ? (
+                <p className="font-serif text-2xl font-light text-ink"><T k="detail.priceOnRequest" /></p>
+              ) : (
+                <>
+                  <p className="text-[10px] tracking-[0.1em] uppercase text-ink-faint font-light"><T k="card.perPersonFrom" /></p>
+                  <Price amount={cruise.pricePerPerson} className="font-serif text-3xl font-light text-ink" />
+                  <p className="text-xs text-ink-faint mt-1 font-light"><T k="detail.portFeesTaxes" /></p>
+                </>
+              )}
             </div>
 
             <div className="space-y-2.5 mb-5">
@@ -168,8 +174,8 @@ export default async function CruiseDetailPage({ params }: { params: { id: strin
               ))}
             </div>
 
-            <Link href={`/book?type=cruise&id=${cruise.id}`} className="block w-full text-center py-3.5 bg-ink hover:bg-ink/90 text-page font-normal text-xs tracking-[0.14em] uppercase rounded-sm transition-colors mb-3">
-              <T k="detail.reserveThisVoyage" />
+            <Link href={cruise.priceOnRequest ? "/contact" : `/book?type=cruise&id=${cruise.id}`} className="block w-full text-center py-3.5 bg-ink hover:bg-ink/90 text-page font-normal text-xs tracking-[0.14em] uppercase rounded-sm transition-colors mb-3">
+              <T k={cruise.priceOnRequest ? "detail.enquireNow" : "detail.reserveThisVoyage"} />
             </Link>
             <Link href="/contact" className="block w-full text-center py-3 border border-line-strong text-ink font-normal text-xs tracking-[0.14em] uppercase rounded-sm hover:bg-ink hover:text-page transition-all">
               <T k="detail.speakToCruiseSpecialist" />

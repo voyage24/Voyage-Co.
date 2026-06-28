@@ -38,6 +38,7 @@ export async function POST(req: NextRequest) {
       lng: data.lng ? Number(data.lng) : null,
       published: data.published ?? true,
       availableUnits: data.availableUnits === "" || data.availableUnits == null ? null : Number(data.availableUnits),
+      priceOnRequest: !!data.priceOnRequest,
     },
   });
 

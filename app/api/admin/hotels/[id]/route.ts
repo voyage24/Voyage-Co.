@@ -29,6 +29,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   if (data.images !== undefined) update.images = data.images;
   if (data.lat !== undefined) update.lat = data.lat === "" || data.lat === null ? null : Number(data.lat);
   if (data.lng !== undefined) update.lng = data.lng === "" || data.lng === null ? null : Number(data.lng);
+  if (data.priceOnRequest !== undefined) update.priceOnRequest = !!data.priceOnRequest;
 
   const hotel = await prisma.hotel.update({ where: { id: params.id }, data: update });
   return NextResponse.json({ hotel });

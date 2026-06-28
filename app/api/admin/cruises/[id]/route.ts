@@ -29,6 +29,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   if (data.includes !== undefined) update.includes = data.includes;
   if (data.badge !== undefined) update.badge = data.badge || null;
   if (data.availableUnits !== undefined) update.availableUnits = data.availableUnits === "" || data.availableUnits === null ? null : Number(data.availableUnits);
+  if (data.priceOnRequest !== undefined) update.priceOnRequest = !!data.priceOnRequest;
 
   const cruise = await prisma.cruise.update({ where: { id: params.id }, data: update });
   return NextResponse.json({ cruise });

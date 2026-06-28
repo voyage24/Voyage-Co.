@@ -188,6 +188,7 @@ model Hotel {
   officialSite  String?
   published     Boolean  @default(true)
   availableUnits Int?    // null = on request (no cap); otherwise bookable capacity
+  priceOnRequest Boolean @default(false)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }
@@ -248,6 +249,7 @@ model Experience {
   lng         Float?
   published   Boolean  @default(true)
   availableUnits Int?
+  priceOnRequest Boolean @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
@@ -267,6 +269,7 @@ model Package {
   published      Boolean  @default(true)
   featured       Boolean  @default(false)
   availableUnits Int?
+  priceOnRequest Boolean  @default(false)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 }
@@ -292,6 +295,7 @@ model Cruise {
   badge          String?
   published      Boolean  @default(true)
   availableUnits Int?
+  priceOnRequest Boolean  @default(false)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 }

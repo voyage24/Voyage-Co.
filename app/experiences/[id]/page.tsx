@@ -89,14 +89,20 @@ export default async function ExperienceDetailPage({ params }: { params: { id: s
         <div className="lg:col-span-1">
           <div className="lg:sticky lg:top-28 bg-panel border border-line rounded-2xl shadow-widget p-6">
             <div className="mb-5">
-              <Price amount={exp.price} className="font-serif text-3xl font-light text-ink" />
-              <p className="text-xs text-ink-faint font-light"><T k="detail.perPerson" /></p>
+              {exp.priceOnRequest ? (
+                <p className="font-serif text-2xl font-light text-ink"><T k="detail.priceOnRequest" /></p>
+              ) : (
+                <>
+                  <Price amount={exp.price} className="font-serif text-3xl font-light text-ink" />
+                  <p className="text-xs text-ink-faint font-light"><T k="detail.perPerson" /></p>
+                </>
+              )}
             </div>
             <Link
-              href={`/book?type=experience&id=${exp.id}`}
+              href={exp.priceOnRequest ? "/contact" : `/book?type=experience&id=${exp.id}`}
               className="block w-full text-center py-4 bg-ink hover:bg-ink/90 text-page font-medium text-xs tracking-[0.16em] uppercase rounded-sm transition-colors mb-3"
             >
-              <T k="card.reserve" />
+              <T k={exp.priceOnRequest ? "detail.enquireNow" : "card.reserve"} />
             </Link>
             <Link
               href="/contact"
