@@ -592,6 +592,8 @@ export const EN: Dictionary = {
   "cookie.privacy": "Privacy Policy", "cookie.accept": "Accept",
   "testimonials.eyebrow": "In Their Words", "testimonials.heading": "Journeys Worth Remembering",
   "account.account": "Account", "account.myAccount": "My Account", "account.savedTrips": "Saved Trips",
+  "explore.eyebrow": "Explore the World", "explore.title": "Explore by Map",
+  "explore.subtitle": "Wander the globe and tap a destination to discover the stays that await.",
   "search.label": "Search", "search.placeholder": "Search journeys, stays, experiences…",
   "search.searching": "Searching…", "search.noResults": "No matches found.",
   "search.hint": "Start typing to search journeys, stays, experiences, cruises and the journal.",
