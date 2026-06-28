@@ -7,7 +7,10 @@ import { usePathname } from "next/navigation";
 export const NAV_SECTIONS: { title: string | null; items: { href: string; label: string }[] }[] = [
   {
     title: null,
-    items: [{ href: "/admin", label: "Dashboard" }],
+    items: [
+      { href: "/admin", label: "Dashboard" },
+      { href: "/admin/analytics", label: "Analytics" },
+    ],
   },
   {
     title: "Sales",
