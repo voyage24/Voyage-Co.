@@ -83,18 +83,25 @@ function ContactContent() {
             <form onSubmit={handleSubmit} className="space-y-4">
               <h2 className="font-serif text-2xl font-light text-ink mb-2">{t("contact.makeEnquiry")}</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {[
-                  { key: "name", label: t("contact.fullName"), type: "text", placeholder: "Rahul Sharma" },
-                  { key: "email", label: t("contact.emailLabel"), type: "email", placeholder: "you@example.com" },
-                ].map(f => (
-                  <div key={f.key}>
-                    <label className="text-[11px] font-medium text-ink-faint uppercase tracking-[0.12em] block mb-1.5">{f.label}</label>
-                    <input
-                      type={f.type} required value={form[f.key as keyof typeof form]} onChange={set(f.key as keyof typeof form)}
-                      placeholder={f.placeholder} className={inputClass}
-                    />
-                  </div>
-                ))}
+                <div>
+                  <label className="text-[11px] font-medium text-ink-faint uppercase tracking-[0.12em] block mb-1.5">
+                    {t("contact.fullName")} <span className="text-gold">*</span>
+                  </label>
+                  <input type="text" required value={form.name} onChange={set("name")} placeholder="Rahul Sharma" className={inputClass} />
+                </div>
+                <div>
+                  <label className="text-[11px] font-medium text-ink-faint uppercase tracking-[0.12em] block mb-1.5">
+                    {t("contact.emailLabel")} <span className="text-gold">*</span>
+                  </label>
+                  <input type="email" required value={form.email} onChange={set("email")} placeholder="you@example.com" className={inputClass} />
+                </div>
+              </div>
+
+              <div>
+                <label className="text-[11px] font-medium text-ink-faint uppercase tracking-[0.12em] block mb-1.5">
+                  {t("booking.phone")} <span className="text-ink-faint normal-case tracking-normal">({t("common.optional")})</span>
+                </label>
+                <input type="tel" value={form.phone} onChange={set("phone")} placeholder="+91 99199 10213" className={inputClass} />
               </div>
 
               <div>
@@ -111,7 +118,9 @@ function ContactContent() {
               </div>
 
               <div>
-                <label className="text-[11px] font-medium text-ink-faint uppercase tracking-[0.12em] block mb-1.5">{t("contact.message")}</label>
+                <label className="text-[11px] font-medium text-ink-faint uppercase tracking-[0.12em] block mb-1.5">
+                  {t("contact.message")} <span className="text-gold">*</span>
+                </label>
                 <textarea
                   required rows={5} value={form.message} onChange={set("message")}
                   placeholder={t("contact.messagePlaceholder")}
