@@ -15,6 +15,7 @@ const STORAGE_KEY = "vc-currency";
 
 export function CurrencyProvider({ children }: { children: React.ReactNode }) {
   const [code, setCode] = useState("INR");
+  const [liveRates, setLiveRates] = useState<Record<string, number>>({});
 
   // Load once on the client (avoids SSR/CSR mismatch).
   useEffect(() => {
@@ -24,6 +25,14 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
     } catch {}
   }, []);
 
+  // Pull live FX rates (base INR); silently keep static rates if unavailable.
+  useEffect(() => {
+    fetch("/api/fx")
+      .then(r => r.json())
+      .then(d => { if (d?.rates && typeof d.rates === "object") setLiveRates(d.rates); })
+      .catch(() => {});
+  }, []);
+
   const setCurrencyCode = useCallback((c: string) => {
     setCode(c);
     try { localStorage.setItem(STORAGE_KEY, c); } catch {}
@@ -31,7 +40,13 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
 
   const currency = useMemo(() => CURRENCIES.find(c => c.code === code) ?? CURRENCIES[0], [code]);
 
-  const convert = useCallback((inrAmount: number) => inrAmount * currency.rate, [currency]);
+  // Prefer the live rate for the selected currency; fall back to the static one.
+  const effectiveRate = useMemo(
+    () => (currency.code !== "INR" && liveRates[currency.code]) || currency.rate,
+    [currency, liveRates],
+  );
+
+  const convert = useCallback((inrAmount: number) => inrAmount * effectiveRate, [effectiveRate]);
 
   const format = useCallback((inrAmount: number) => {
     const value = convert(inrAmount);
