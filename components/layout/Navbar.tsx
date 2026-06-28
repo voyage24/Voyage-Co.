@@ -54,6 +54,23 @@ export default function Navbar() {
     return () => window.removeEventListener("resize", check);
   }, [t]);
 
+  // Let a vertical mouse wheel scroll the nav links horizontally when they
+  // overflow — so desktop users without a trackpad can still reach the
+  // links past the fade (My Trips, Account, …) in any language.
+  useEffect(() => {
+    const el = linksRef.current;
+    if (!el) return;
+    const onWheel = (e: WheelEvent) => {
+      if (el.scrollWidth <= el.clientWidth) return;
+      if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+        el.scrollLeft += e.deltaY;
+        e.preventDefault();
+      }
+    };
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => el.removeEventListener("wheel", onWheel);
+  }, [t, language]);
+
   const overHero = pathname === "/" && !scrolled;
   // Smaller, uniform size for every language — chosen so even the longest
   // translations (Vietnamese, Filipino, Greek) fit on a single line at xl+
@@ -96,21 +113,24 @@ export default function Navbar() {
               back to the always-correct stacked mobile layout. */}
           <div
             ref={linksRef}
-            className="hidden xl:flex items-center gap-x-4 overflow-x-auto scrollbar-none min-w-0 flex-1 pr-2"
+            className="hidden xl:block overflow-x-auto scrollbar-none min-w-0 flex-1"
             style={linksOverflow ? {
-              maskImage: "linear-gradient(to right, black 90%, transparent 100%)",
-              WebkitMaskImage: "linear-gradient(to right, black 90%, transparent 100%)",
+              maskImage: "linear-gradient(to right, black 92%, transparent 100%)",
+              WebkitMaskImage: "linear-gradient(to right, black 92%, transparent 100%)",
             } : undefined}
           >
-            {ALL_LINKS.map(l => (
-              <Link key={l.href} href={l.href} className={`${linkBase} ${linkColor}`}>{t(l.key)}</Link>
-            ))}
+            <div className="flex items-center gap-x-4 w-max pr-2">
+              {ALL_LINKS.map(l => (
+                <Link key={l.href} href={l.href} className={`${linkBase} ${linkColor}`}>{t(l.key)}</Link>
+              ))}
+            </div>
           </div>
 
           {/* Language/currency/reserve — pinned to the end, never compressed
               or scrolled out of view regardless of how much nav link space
-              translations need. */}
-          <div className="hidden xl:flex items-center gap-x-3 shrink-0 ml-auto">
+              translations need. (No ml-auto: it conflicts with the links'
+              flex-1 and previously let overflowing links slip behind these.) */}
+          <div className="hidden xl:flex items-center gap-x-3 shrink-0">
             <LanguageSelector tone={overHero ? "light" : "dark"} />
             <CurrencySelector tone={overHero ? "light" : "dark"} />
             <Link
