@@ -1,5 +1,6 @@
 import Link from "next/link";
-import StorefrontPreview from "@/components/admin/StorefrontPreview";
+import { prisma } from "@/lib/prisma";
+import StorefrontPreview, { type PreviewGroup } from "@/components/admin/StorefrontPreview";
 
 export const dynamic = "force-dynamic";
 
@@ -47,7 +48,36 @@ const CONTENT_LINKS = [
   { label: "Journal articles", href: "/admin/blog" },
 ];
 
-export default function AdminStorefrontPage() {
+export default async function AdminStorefrontPage() {
+  const [hotels, packages, experiences, cruises, posts] = await Promise.all([
+    prisma.hotel.findMany({ where: { published: true }, select: { id: true, name: true }, orderBy: { name: "asc" } }),
+    prisma.package.findMany({ where: { published: true }, select: { id: true, title: true }, orderBy: { title: "asc" } }),
+    prisma.experience.findMany({ where: { published: true }, select: { id: true, title: true }, orderBy: { title: "asc" } }),
+    prisma.cruise.findMany({ where: { published: true }, select: { id: true, name: true }, orderBy: { name: "asc" } }),
+    prisma.blogPost.findMany({ where: { published: true }, select: { slug: true, title: true }, orderBy: { title: "asc" } }),
+  ]);
+
+  const previewGroups: PreviewGroup[] = [
+    { label: "Pages", options: [
+      { value: "/", label: "Home" },
+      { value: "/plan", label: "Plan Your Journey" },
+      { value: "/packages", label: "Destinations" },
+      { value: "/hotels", label: "Stays" },
+      { value: "/cruises", label: "Cruises" },
+      { value: "/flights", label: "Flights" },
+      { value: "/trains", label: "Trains" },
+      { value: "/experiences", label: "Experiences" },
+      { value: "/blog", label: "Journal" },
+      { value: "/about", label: "About" },
+      { value: "/contact", label: "Contact" },
+    ]},
+    { label: "Journeys", options: packages.map(p => ({ value: `/packages/${p.id}`, label: p.title })) },
+    { label: "Stays", options: hotels.map(h => ({ value: `/hotels/${h.id}`, label: h.name })) },
+    { label: "Experiences", options: experiences.map(e => ({ value: `/experiences/${e.id}`, label: e.title })) },
+    { label: "Cruises", options: cruises.map(c => ({ value: `/cruises/${c.id}`, label: c.name })) },
+    { label: "Journal", options: posts.map(b => ({ value: `/blog/${b.slug}`, label: b.title })) },
+  ].filter(g => g.options.length > 0);
+
   return (
     <div className="space-y-8">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -64,7 +94,7 @@ export default function AdminStorefrontPage() {
       {/* Live preview */}
       <section>
         <h2 className="text-sm font-semibold text-gray-900 mb-3">Live preview</h2>
-        <StorefrontPreview />
+        <StorefrontPreview groups={previewGroups} />
       </section>
 
       {/* Pages index with preview links */}
