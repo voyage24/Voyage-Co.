@@ -43,6 +43,39 @@ model Customer {
   lastLoginAt  DateTime?
   sessions     CustomerSession[]
   bookings     Booking[]
+  reviews      Review[]
+  saved        SavedItem[]
+}
+
+model Review {
+  id         String    @id @default(cuid())
+  customerId String?
+  customer   Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  authorName String
+  type       String    // hotel | package | experience | cruise
+  itemId     String
+  rating     Int       // 1-5
+  comment    String    @db.Text
+  status     String    @default("pending") // pending | approved
+  createdAt  DateTime  @default(now())
+
+  @@index([type, itemId, status])
+  @@index([status])
+}
+
+model SavedItem {
+  id         String   @id @default(cuid())
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  type       String   // hotel | package | experience | cruise
+  itemId     String
+  itemTitle  String
+  image      String?
+  href       String
+  createdAt  DateTime @default(now())
+
+  @@unique([customerId, type, itemId])
+  @@index([customerId])
 }
 
 model CustomerSession {

@@ -6,6 +6,8 @@ import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import Price from "@/components/ui/Price";
 import T from "@/components/ui/T";
+import ReviewsSection from "@/components/reviews/ReviewsSection";
+import SaveButton from "@/components/ui/SaveButton";
 
 export const revalidate = 60;
 
@@ -24,14 +26,23 @@ export default async function CruiseDetailPage({ params }: { params: { id: strin
   const cruise = await prisma.cruise.findUnique({ where: { id: params.id } });
   if (!cruise || !cruise.published) notFound();
 
+  const reviews = await prisma.review.findMany({
+    where: { type: "cruise", itemId: cruise.id, status: "approved" },
+    orderBy: { createdAt: "desc" },
+    select: { id: true, authorName: true, rating: true, comment: true, createdAt: true },
+  });
+
   const nights = parseInt(cruise.duration, 10) || 7;
   const stops = [cruise.departurePort, ...cruise.ports];
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-16">
-      <Link href="/cruises" className="inline-flex items-center gap-2 text-xs tracking-[0.1em] uppercase text-ink-muted hover:text-gold mb-6 transition-colors">
-        <ArrowLeft size={15} /> <T k="detail.allVoyages" />
-      </Link>
+      <div className="flex items-center justify-between mb-6">
+        <Link href="/cruises" className="inline-flex items-center gap-2 text-xs tracking-[0.1em] uppercase text-ink-muted hover:text-gold transition-colors">
+          <ArrowLeft size={15} /> <T k="detail.allVoyages" />
+        </Link>
+        <SaveButton type="cruise" itemId={cruise.id} itemTitle={cruise.name} image={cruise.image} href={`/cruises/${cruise.id}`} label />
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left — main content */}
@@ -171,6 +182,8 @@ export default async function CruiseDetailPage({ params }: { params: { id: strin
           </div>
         </div>
       </div>
+
+      <ReviewsSection type="cruise" itemId={cruise.id} reviews={reviews} />
     </div>
   );
 }

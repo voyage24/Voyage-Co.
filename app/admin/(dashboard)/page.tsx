@@ -16,7 +16,7 @@ const CARDS = [
 ] as const;
 
 export default async function AdminDashboardPage() {
-  const [hotel, flight, train, experience, pkg, cruise, blogPost, featuredDestination, newsletter, newEnquiries, testimonial, pendingBookings, customer] = await Promise.all([
+  const [hotel, flight, train, experience, pkg, cruise, blogPost, featuredDestination, newsletter, newEnquiries, testimonial, pendingBookings, customer, pendingReviews] = await Promise.all([
     prisma.hotel.count(),
     prisma.flight.count(),
     prisma.train.count(),
@@ -30,6 +30,7 @@ export default async function AdminDashboardPage() {
     prisma.testimonial.count(),
     prisma.booking.count({ where: { status: "pending" } }),
     prisma.customer.count(),
+    prisma.review.count({ where: { status: "pending" } }),
   ]);
 
   const counts: Record<string, number> = { hotel, flight, train, experience, package: pkg, cruise, blogPost, featuredDestination, newsletter, testimonial, customer };
@@ -38,7 +39,7 @@ export default async function AdminDashboardPage() {
     <div>
       <h1 className="text-2xl font-semibold text-gray-900 mb-6">Dashboard</h1>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
         <Link
           href="/admin/bookings"
           className={`block rounded-lg p-5 border transition-colors ${
@@ -47,7 +48,7 @@ export default async function AdminDashboardPage() {
         >
           <p className="text-3xl font-semibold text-gray-900">{pendingBookings}</p>
           <p className="text-sm text-gray-600 mt-1">
-            Pending {pendingBookings === 1 ? "booking" : "bookings"} {pendingBookings > 0 ? "— awaiting confirmation" : ""}
+            Pending {pendingBookings === 1 ? "booking" : "bookings"}
           </p>
         </Link>
         <Link
@@ -58,7 +59,18 @@ export default async function AdminDashboardPage() {
         >
           <p className="text-3xl font-semibold text-gray-900">{newEnquiries}</p>
           <p className="text-sm text-gray-600 mt-1">
-            New {newEnquiries === 1 ? "enquiry" : "enquiries"} {newEnquiries > 0 ? "— awaiting follow-up" : ""}
+            New {newEnquiries === 1 ? "enquiry" : "enquiries"}
+          </p>
+        </Link>
+        <Link
+          href="/admin/reviews"
+          className={`block rounded-lg p-5 border transition-colors ${
+            pendingReviews > 0 ? "bg-amber-50 border-amber-300 hover:border-amber-400" : "bg-white border-gray-200 hover:border-gray-400"
+          }`}
+        >
+          <p className="text-3xl font-semibold text-gray-900">{pendingReviews}</p>
+          <p className="text-sm text-gray-600 mt-1">
+            {pendingReviews === 1 ? "Review" : "Reviews"} to moderate
           </p>
         </Link>
       </div>

@@ -6,6 +6,8 @@ import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import Price from "@/components/ui/Price";
 import T from "@/components/ui/T";
+import ReviewsSection from "@/components/reviews/ReviewsSection";
+import SaveButton from "@/components/ui/SaveButton";
 
 export const revalidate = 60;
 
@@ -24,13 +26,22 @@ export default async function PackageDetailPage({ params }: { params: { id: stri
   const pkg = await prisma.package.findUnique({ where: { id: params.id } });
   if (!pkg || !pkg.published) notFound();
 
+  const reviews = await prisma.review.findMany({
+    where: { type: "package", itemId: pkg.id, status: "approved" },
+    orderBy: { createdAt: "desc" },
+    select: { id: true, authorName: true, rating: true, comment: true, createdAt: true },
+  });
+
   const days = parseInt(pkg.duration, 10) || 7;
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-16">
-      <Link href="/packages" className="inline-flex items-center gap-2 text-xs tracking-[0.1em] uppercase text-ink-muted hover:text-gold mb-6 transition-colors">
-        <ArrowLeft size={15} /> <T k="detail.allJourneys" />
-      </Link>
+      <div className="flex items-center justify-between mb-6">
+        <Link href="/packages" className="inline-flex items-center gap-2 text-xs tracking-[0.1em] uppercase text-ink-muted hover:text-gold transition-colors">
+          <ArrowLeft size={15} /> <T k="detail.allJourneys" />
+        </Link>
+        <SaveButton type="package" itemId={pkg.id} itemTitle={pkg.title} image={pkg.image} href={`/packages/${pkg.id}`} label />
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left — main content */}
@@ -152,6 +163,8 @@ export default async function PackageDetailPage({ params }: { params: { id: stri
           </div>
         </div>
       </div>
+
+      <ReviewsSection type="package" itemId={pkg.id} reviews={reviews} />
     </div>
   );
 }

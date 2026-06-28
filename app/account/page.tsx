@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { getCurrentCustomer } from "@/lib/customer/session";
 import LogoutButton from "@/components/account/LogoutButton";
 import CancelBookingButton from "@/components/account/CancelBookingButton";
+import SavedList from "@/components/account/SavedList";
 import Price from "@/components/ui/Price";
 
 export const dynamic = "force-dynamic";
@@ -18,10 +19,10 @@ export default async function AccountPage() {
   const customer = await getCurrentCustomer();
   if (!customer) redirect("/login");
 
-  const bookings = await prisma.booking.findMany({
-    where: { customerId: customer.id },
-    orderBy: { createdAt: "desc" },
-  });
+  const [bookings, saved] = await Promise.all([
+    prisma.booking.findMany({ where: { customerId: customer.id }, orderBy: { createdAt: "desc" } }),
+    prisma.savedItem.findMany({ where: { customerId: customer.id }, orderBy: { createdAt: "desc" } }),
+  ]);
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-20">
@@ -34,10 +35,7 @@ export default async function AccountPage() {
         <LogoutButton />
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
-        <h2 className="font-serif text-2xl font-light text-ink">My Bookings</h2>
-        <Link href="/trips" className="text-xs tracking-[0.12em] uppercase text-gold link-underline">Saved trips →</Link>
-      </div>
+      <h2 className="font-serif text-2xl font-light text-ink mb-5">My Bookings</h2>
 
       {bookings.length === 0 ? (
         <div className="border border-dashed border-line rounded-2xl p-10 text-center">
@@ -69,6 +67,9 @@ export default async function AccountPage() {
           ))}
         </div>
       )}
+
+      <h2 className="font-serif text-2xl font-light text-ink mt-12 mb-5">Saved</h2>
+      <SavedList items={saved.map(s => ({ id: s.id, type: s.type, itemId: s.itemId, itemTitle: s.itemTitle, image: s.image, href: s.href }))} />
     </div>
   );
 }

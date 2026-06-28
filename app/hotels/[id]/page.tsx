@@ -6,6 +6,8 @@ import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import Price from "@/components/ui/Price";
 import T from "@/components/ui/T";
+import ReviewsSection from "@/components/reviews/ReviewsSection";
+import SaveButton from "@/components/ui/SaveButton";
 
 export const revalidate = 60;
 
@@ -24,11 +26,20 @@ export default async function HotelDetailPage({ params }: { params: { id: string
   const hotel = await prisma.hotel.findUnique({ where: { id: params.id } });
   if (!hotel || !hotel.published) notFound();
 
+  const reviews = await prisma.review.findMany({
+    where: { type: "hotel", itemId: hotel.id, status: "approved" },
+    orderBy: { createdAt: "desc" },
+    select: { id: true, authorName: true, rating: true, comment: true, createdAt: true },
+  });
+
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20">
-      <Link href="/hotels" className="inline-flex items-center gap-2 text-xs tracking-[0.1em] uppercase text-ink-muted hover:text-ink mb-6 transition-colors">
-        <ArrowLeft size={15} /> <T k="detail.allStays" />
-      </Link>
+      <div className="flex items-center justify-between mb-6">
+        <Link href="/hotels" className="inline-flex items-center gap-2 text-xs tracking-[0.1em] uppercase text-ink-muted hover:text-ink transition-colors">
+          <ArrowLeft size={15} /> <T k="detail.allStays" />
+        </Link>
+        <SaveButton type="hotel" itemId={hotel.id} itemTitle={hotel.name} image={hotel.image} href={`/hotels/${hotel.id}`} label />
+      </div>
 
       {/* Hero image */}
       <div className="relative rounded-2xl overflow-hidden aspect-[16/8] mb-8">
@@ -139,6 +150,8 @@ export default async function HotelDetailPage({ params }: { params: { id: string
           </div>
         </div>
       </div>
+
+      <ReviewsSection type="hotel" itemId={hotel.id} reviews={reviews} />
     </div>
   );
 }
