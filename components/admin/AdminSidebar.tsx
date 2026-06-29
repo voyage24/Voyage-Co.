@@ -81,7 +81,7 @@ export default function AdminSidebar() {
   const pathname = usePathname();
 
   return (
-    <nav className="hidden lg:flex flex-col w-60 shrink-0 bg-gray-950 text-gray-300 min-h-screen">
+    <nav className="hidden lg:flex flex-col w-60 shrink-0 bg-gradient-to-b from-[#1a130d] via-gray-950 to-[#0c0a07] text-gray-300 min-h-screen">
       <div className="px-5 py-5 border-b border-white/10">
         <p className="font-serif text-lg font-light text-white leading-none">Voyages &amp; Co.</p>
         <p className="text-[10px] tracking-[0.3em] uppercase text-[#c9ae77] mt-1">Admin</p>
