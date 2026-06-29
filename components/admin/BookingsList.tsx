@@ -21,9 +21,9 @@ export type BookingRow = {
 };
 
 const STATUS_STYLES: Record<string, string> = {
-  pending: "bg-amber-50 text-amber-700",
-  confirmed: "bg-emerald-50 text-emerald-700",
-  cancelled: "bg-gray-100 text-gray-500",
+  pending: "bg-amber-100 text-amber-800",
+  confirmed: "bg-emerald-100 text-emerald-800",
+  cancelled: "bg-rose-100 text-rose-700",
 };
 
 export default function BookingsList({ bookings }: { bookings: BookingRow[] }) {

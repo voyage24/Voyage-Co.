@@ -15,7 +15,7 @@ export default async function AdminDashboardLayout({ children }: { children: Rea
       <AdminSidebar />
       <div className="flex-1 flex flex-col">
         <AdminTopbar email={user?.email ?? ""} />
-        <main className="flex-1 p-6">{children}</main>
+        <main className="admin-main flex-1 p-6">{children}</main>
       </div>
     </div>
   );

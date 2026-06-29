@@ -73,7 +73,7 @@ export default async function AnalyticsPage() {
           {days.map((d, i) => (
             <div key={i} className="flex-1 flex flex-col items-center justify-end gap-1" title={`${d.label}: ${d.count}`}>
               <span className="text-[10px] text-gray-400">{d.count || ""}</span>
-              <div className="w-full bg-gray-900 rounded-t" style={{ height: `${(d.count / maxDay) * 100}%`, minHeight: d.count ? 4 : 0 }} />
+              <div className="w-full bg-gradient-to-t from-indigo-600 to-indigo-400 rounded-t" style={{ height: `${(d.count / maxDay) * 100}%`, minHeight: d.count ? 4 : 0 }} />
               <span className="text-[9px] text-gray-400 rotate-0 whitespace-nowrap">{d.label.split(" ")[0]}</span>
             </div>
           ))}
