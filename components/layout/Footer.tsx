@@ -17,6 +17,7 @@ const FOOTER_LINKS = {
     { key: "explore.title",         href: "/explore" },
     { key: "common.byDestination",  href: "/destinations" },
     { key: "common.offers",         href: "/offers" },
+    { key: "common.membership",     href: "/membership" },
     { key: "common.tripBuilder",    href: "/itinerary" },
     { key: "common.findJourney",    href: "/quiz" },
   ],

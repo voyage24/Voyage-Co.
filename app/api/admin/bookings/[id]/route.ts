@@ -21,6 +21,25 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
       .slice(0, 20);
   }
   await prisma.booking.update({ where: { id: params.id }, data });
+
+  // Award loyalty points once, when a booking is first confirmed (1 point per
+  // ₹1,000 of value), and bump tier at thresholds.
+  if (status === "confirmed") {
+    const b = await prisma.booking.findUnique({ where: { id: params.id }, select: { customerId: true, total: true, pointsAwarded: true } });
+    if (b?.customerId && !b.pointsAwarded) {
+      const pts = Math.floor((b.total || 0) / 1000);
+      await prisma.$transaction([
+        prisma.customer.update({ where: { id: b.customerId }, data: { points: { increment: pts } } }),
+        prisma.booking.update({ where: { id: params.id }, data: { pointsAwarded: true } }),
+      ]);
+      const c = await prisma.customer.findUnique({ where: { id: b.customerId }, select: { points: true, tier: true } });
+      if (c) {
+        const tier = c.points >= 5000 ? "gold" : c.points >= 1500 ? "silver" : "member";
+        if (tier !== c.tier) await prisma.customer.update({ where: { id: b.customerId }, data: { tier } });
+      }
+    }
+  }
+
   return NextResponse.json({ ok: true });
 }
 

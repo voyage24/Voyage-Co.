@@ -39,6 +39,7 @@ export default async function AccountPage() {
             )}
           </div>
           <p className="text-sm text-ink-muted font-light mt-1">{customer.email}</p>
+          <Link href="/membership" className="text-xs text-gold link-underline mt-1 inline-block">{(customer.points ?? 0).toLocaleString("en-IN")} points · Membership →</Link>
         </div>
         <LogoutButton />
       </div>

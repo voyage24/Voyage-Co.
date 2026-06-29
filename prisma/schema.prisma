@@ -43,6 +43,7 @@ model Customer {
   lastLoginAt  DateTime?
   shareToken   String?           @unique
   tier         String            @default("member") // member | silver | gold
+  points       Int               @default(0)
   sessions     CustomerSession[]
   bookings     Booking[]
   reviews      Review[]
@@ -143,6 +144,7 @@ model Booking {
   documents   Json      @default("[]") // [{ label, url }] — vouchers, tickets, itineraries
   preTripSentAt  DateTime?
   postTripSentAt DateTime?
+  pointsAwarded  Boolean   @default(false)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
