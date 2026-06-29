@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import AdminMobileNav from "@/components/admin/AdminMobileNav";
+import AdminSearch from "@/components/admin/AdminSearch";
 
 export default function AdminTopbar({ email }: { email: string }) {
   const router = useRouter();
@@ -14,11 +15,12 @@ export default function AdminTopbar({ email }: { email: string }) {
 
   return (
     <header className="flex items-center justify-between gap-3 border-b border-gray-200 px-4 sm:px-6 py-3 bg-white">
-      <div className="flex items-center gap-3 min-w-0">
+      <div className="flex items-center gap-3 min-w-0 flex-1">
         <AdminMobileNav />
-        <p className="text-sm text-gray-500 truncate">Signed in as <span className="font-medium text-gray-900">{email}</span></p>
+        <AdminSearch />
       </div>
-      <div className="flex items-center gap-2 shrink-0">
+      <div className="flex items-center gap-3 shrink-0">
+        <span className="hidden md:inline text-xs text-gray-400 truncate max-w-[160px]">{email}</span>
         <a
           href="https://voyagesco.com"
           target="_blank"

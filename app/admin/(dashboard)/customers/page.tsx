@@ -20,7 +20,10 @@ export default async function AdminCustomersPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-semibold text-gray-900 mb-1">Customers</h1>
+      <div className="flex items-start justify-between gap-3 mb-1">
+        <h1 className="text-2xl font-semibold text-gray-900">Customers</h1>
+        <a href="/api/admin/export?type=customers" className="text-xs px-3 py-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 shrink-0">Export CSV</a>
+      </div>
       <p className="text-sm text-gray-500 mb-5">Registered accounts and how many bookings each has made.</p>
       <CustomersList customers={rows} />
     </div>

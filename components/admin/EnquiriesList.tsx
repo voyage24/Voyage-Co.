@@ -57,6 +57,21 @@ export default function EnquiriesList({ enquiries }: { enquiries: EnquiryRow[] }
     router.refresh();
   };
 
+  // Bulk selection
+  const [sel, setSel] = useState<Set<string>>(new Set());
+  const [bulkBusy, setBulkBusy] = useState(false);
+  const toggleSel = (id: string) => setSel(s => { const n = new Set(s); n.has(id) ? n.delete(id) : n.add(id); return n; });
+  const bulk = async (action: "handled" | "delete") => {
+    if (sel.size === 0) return;
+    if (action === "delete" && !confirm(`Delete ${sel.size} enquiry(ies) permanently?`)) return;
+    setBulkBusy(true);
+    for (const id of Array.from(sel)) {
+      if (action === "delete") await fetch(`/api/admin/enquiries/${id}`, { method: "DELETE" });
+      else await fetch(`/api/admin/enquiries/${id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ status: "handled" }) });
+    }
+    setSel(new Set()); setBulkBusy(false); router.refresh();
+  };
+
   const tabs: { key: typeof filter; label: string }[] = [
     { key: "all", label: `All (${enquiries.length})` },
     { key: "new", label: `New (${enquiries.filter(e => e.status === "new").length})` },
@@ -86,6 +101,15 @@ export default function EnquiriesList({ enquiries }: { enquiries: EnquiryRow[] }
         ))}
       </div>
 
+      {sel.size > 0 && (
+        <div className="flex flex-wrap items-center gap-2 mb-3 bg-gray-900 text-white rounded-md px-3 py-2 text-sm">
+          <span>{sel.size} selected</span>
+          <button disabled={bulkBusy} onClick={() => bulk("handled")} className="ml-2 px-3 py-1 rounded bg-emerald-600 hover:bg-emerald-700 text-xs disabled:opacity-50">Mark handled</button>
+          <button disabled={bulkBusy} onClick={() => bulk("delete")} className="px-3 py-1 rounded bg-red-600 hover:bg-red-700 text-xs disabled:opacity-50">Delete</button>
+          <button onClick={() => setSel(new Set())} className="ml-auto text-xs text-gray-300 hover:text-white">Clear</button>
+        </div>
+      )}
+
       {shown.length === 0 ? (
         <p className="text-sm text-gray-400 border border-dashed border-gray-200 rounded-md p-8 text-center">
           No enquiries here.
@@ -95,7 +119,9 @@ export default function EnquiriesList({ enquiries }: { enquiries: EnquiryRow[] }
           {shown.map(e => {
             const open = openId === e.id;
             return (
-              <div key={e.id} className={`border rounded-lg bg-white ${e.status === "new" ? "border-amber-300" : "border-gray-200"}`}>
+              <div key={e.id} className={`border rounded-lg bg-white ${sel.has(e.id) ? "border-gray-900" : e.status === "new" ? "border-amber-300" : "border-gray-200"}`}>
+                <div className="flex items-center">
+                <input type="checkbox" checked={sel.has(e.id)} onChange={() => toggleSel(e.id)} className="ml-3 shrink-0" aria-label="Select enquiry" />
                 <button
                   onClick={() => setOpenId(open ? null : e.id)}
                   className="w-full flex flex-wrap items-center gap-x-3 gap-y-1 px-4 py-3 text-left"
@@ -109,6 +135,7 @@ export default function EnquiriesList({ enquiries }: { enquiries: EnquiryRow[] }
                   <span className="text-sm text-gray-500 truncate">{e.itemTitle ?? e.subject ?? ""}</span>
                   <span className="text-xs text-gray-400 ml-auto">{new Date(e.createdAt).toLocaleString()}</span>
                 </button>
+                </div>
 
                 {open && (
                   <div className="px-4 pb-4 pt-1 border-t border-gray-100 text-sm text-gray-700 space-y-1">

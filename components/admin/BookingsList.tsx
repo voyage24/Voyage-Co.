@@ -57,6 +57,21 @@ export default function BookingsList({ bookings }: { bookings: BookingRow[] }) {
     router.refresh();
   };
 
+  // Bulk selection
+  const [sel, setSel] = useState<Set<string>>(new Set());
+  const [bulkBusy, setBulkBusy] = useState(false);
+  const toggleSel = (id: string) => setSel(s => { const n = new Set(s); n.has(id) ? n.delete(id) : n.add(id); return n; });
+  const bulk = async (action: "confirmed" | "cancelled" | "delete") => {
+    if (sel.size === 0) return;
+    if (action === "delete" && !confirm(`Delete ${sel.size} booking(s) permanently?`)) return;
+    setBulkBusy(true);
+    for (const id of Array.from(sel)) {
+      if (action === "delete") await fetch(`/api/admin/bookings/${id}`, { method: "DELETE" });
+      else await fetch(`/api/admin/bookings/${id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ status: action }) });
+    }
+    setSel(new Set()); setBulkBusy(false); router.refresh();
+  };
+
   const tabs = [
     { k: "all", label: `All (${bookings.length})` },
     { k: "pending", label: `Pending (${bookings.filter(b => b.status === "pending").length})` },
@@ -75,6 +90,16 @@ export default function BookingsList({ bookings }: { bookings: BookingRow[] }) {
         ))}
       </div>
 
+      {sel.size > 0 && (
+        <div className="flex flex-wrap items-center gap-2 mb-3 bg-gray-900 text-white rounded-md px-3 py-2 text-sm">
+          <span>{sel.size} selected</span>
+          <button disabled={bulkBusy} onClick={() => bulk("confirmed")} className="ml-2 px-3 py-1 rounded bg-emerald-600 hover:bg-emerald-700 text-xs disabled:opacity-50">Confirm</button>
+          <button disabled={bulkBusy} onClick={() => bulk("cancelled")} className="px-3 py-1 rounded bg-white/10 hover:bg-white/20 text-xs disabled:opacity-50">Cancel</button>
+          <button disabled={bulkBusy} onClick={() => bulk("delete")} className="px-3 py-1 rounded bg-red-600 hover:bg-red-700 text-xs disabled:opacity-50">Delete</button>
+          <button onClick={() => setSel(new Set())} className="ml-auto text-xs text-gray-300 hover:text-white">Clear</button>
+        </div>
+      )}
+
       {shown.length === 0 ? (
         <p className="text-sm text-gray-400 border border-dashed border-gray-200 rounded-md p-8 text-center">No bookings here.</p>
       ) : (
@@ -82,7 +107,9 @@ export default function BookingsList({ bookings }: { bookings: BookingRow[] }) {
           {shown.map(b => {
             const open = openId === b.id;
             return (
-              <div key={b.id} className="border border-gray-200 rounded-lg bg-white">
+              <div key={b.id} className={`border rounded-lg bg-white ${sel.has(b.id) ? "border-gray-900" : "border-gray-200"}`}>
+                <div className="flex items-center">
+                <input type="checkbox" checked={sel.has(b.id)} onChange={() => toggleSel(b.id)} className="ml-3 shrink-0" aria-label="Select booking" />
                 <button onClick={() => setOpenId(open ? null : b.id)} className="w-full flex flex-wrap items-center gap-x-3 gap-y-1 px-4 py-3 text-left">
                   <span className="font-mono text-xs text-gray-400">{b.reference}</span>
                   <span className="text-sm font-medium text-gray-900 truncate">{b.itemTitle}</span>
@@ -90,6 +117,7 @@ export default function BookingsList({ bookings }: { bookings: BookingRow[] }) {
                   <span className={`text-[10px] uppercase tracking-wide px-2 py-0.5 rounded ${STATUS_STYLES[b.status] ?? STATUS_STYLES.pending}`}>{b.status}</span>
                   <span className="text-xs text-gray-400 ml-auto">{new Date(b.createdAt).toLocaleDateString()}</span>
                 </button>
+                </div>
                 {open && (
                   <div className="px-4 pb-4 pt-1 border-t border-gray-100 text-sm text-gray-700 space-y-1">
                     <p><span className="text-gray-400">Guest:</span> {b.guestName} · <a href={`mailto:${b.guestEmail}`} className="text-blue-600 underline">{b.guestEmail}</a>{b.guestPhone ? ` · ${b.guestPhone}` : ""}</p>

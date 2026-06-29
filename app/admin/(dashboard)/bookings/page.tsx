@@ -8,7 +8,10 @@ export default async function AdminBookingsPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-semibold text-gray-900 mb-1">Bookings</h1>
+      <div className="flex items-start justify-between gap-3 mb-1">
+        <h1 className="text-2xl font-semibold text-gray-900">Bookings</h1>
+        <a href="/api/admin/export?type=bookings" className="text-xs px-3 py-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 shrink-0">Export CSV</a>
+      </div>
       <p className="text-sm text-gray-500 mb-5 max-w-2xl">
         Every reservation made on the site. Confirm a booking once it&apos;s secured (payment confirmation will
         automate this later), or cancel it.
