@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentCustomer } from "@/lib/customer/session";
+import { notifyWhatsApp } from "@/lib/email/notify-admin";
 
 const TYPES = ["hotel", "package", "experience", "cruise"];
 
@@ -33,6 +34,8 @@ export async function POST(req: Request) {
       status: "pending",
     },
   });
+
+  await notifyWhatsApp(`⭐ New ${r}-star review for ${type} (${itemId}) by ${customer.name?.trim() || customer.email} — awaiting approval at voyagesco.com/admin/reviews`);
 
   return NextResponse.json({ ok: true });
 }

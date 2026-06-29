@@ -4,6 +4,7 @@ import { createTransport, FROM_CONCIERGE } from "@/lib/email/transport";
 import { renderConciergeEmailHTML, renderConciergeEmailText } from "@/lib/email/template";
 import { getCurrentCustomer } from "@/lib/customer/session";
 import { getRemaining } from "@/lib/availability";
+import { notifyWhatsApp } from "@/lib/email/notify-admin";
 
 function inr(n: number) {
   return `₹${n.toLocaleString("en-IN")}`;
@@ -65,6 +66,8 @@ export async function POST(req: Request) {
     console.error("Failed to create booking:", err);
     return NextResponse.json({ error: "Could not save booking" }, { status: 500 });
   }
+
+  await notifyWhatsApp(`🔔 New booking ${reference}\n${name} · ${itemTitle}${typeof total === "number" && total > 0 ? ` · ₹${Math.round(total).toLocaleString("en-IN")}` : ""}`);
 
   try {
     const transporter = createTransport();
