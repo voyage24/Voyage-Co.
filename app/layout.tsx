@@ -10,6 +10,7 @@ import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import CookieConsent from "@/components/layout/CookieConsent";
 import Haptics from "@/components/ui/Haptics";
+import ServiceWorkerRegister from "@/components/layout/ServiceWorkerRegister";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://voyagesco.com"),
@@ -26,6 +27,7 @@ export const metadata: Metadata = {
     title: "Voyages & Co.",
     statusBarStyle: "black-translucent",
   },
+  icons: { icon: "/logo-navy.png", apple: "/logo-navy.png" },
 };
 
 export const viewport: Viewport = {
@@ -67,6 +69,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           </LanguageProvider>
         </SettingsProvider>
         <Haptics />
+        <ServiceWorkerRegister />
         <Analytics />
         <SpeedInsights />
       </body>
