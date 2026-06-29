@@ -5,8 +5,8 @@ export const dynamic = "force-dynamic";
 // TEMPORARY diagnostic: reports which alert channels are configured and what
 // Telegram replies, without exposing any secret values. Remove after setup.
 export async function GET() {
-  const token = process.env.TELEGRAM_BOT_TOKEN;
-  const chatId = process.env.TELEGRAM_CHAT_ID;
+  const token = process.env.TELEGRAM_BOT_TOKEN?.trim();
+  const chatId = process.env.TELEGRAM_CHAT_ID?.trim();
   // Names only (never values) of any env keys that look related — helps spot
   // typos or vars added to the wrong project/environment.
   const matchingKeys = Object.keys(process.env).filter(k => /teleg|chat|callme|whats|bot_?to?ken/i.test(k));
