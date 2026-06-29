@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentCustomer } from "@/lib/customer/session";
+import { notifyAdminEnquiry } from "@/lib/email/notify-admin";
 
 type Entry = { type: string; id: string; title: string; image?: string; href: string; price?: number };
 
@@ -48,6 +49,7 @@ export async function POST(req: Request) {
         total: estimate || null,
       },
     });
+    await notifyAdminEnquiry({ type: "itinerary", name: customer.name?.trim() || customer.email, email: customer.email, subject: `Itinerary quote: ${itinerary.title}`, message: lines, total: estimate || null });
   }
 
   return NextResponse.json({ ok: true, itinerary });

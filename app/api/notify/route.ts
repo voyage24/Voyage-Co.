@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { notifyAdminEnquiry } from "@/lib/email/notify-admin";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -26,5 +27,6 @@ export async function POST(req: Request) {
   } catch (err) {
     console.error("Notify request failed:", err);
   }
+  await notifyAdminEnquiry({ type: "notify", name: email.split("@")[0], email, subject: "Notify when available", message: `Item: ${itemTitle ?? itemId}` });
   return NextResponse.json({ ok: true });
 }

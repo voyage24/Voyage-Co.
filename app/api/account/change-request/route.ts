@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentCustomer } from "@/lib/customer/session";
+import { notifyAdminEnquiry } from "@/lib/email/notify-admin";
 
 // A customer requests a change to one of their bookings — lands in the
 // enquiries inbox (type "change") referencing the booking.
@@ -27,5 +28,6 @@ export async function POST(req: Request) {
       itemTitle: booking.itemTitle,
     },
   });
+  await notifyAdminEnquiry({ type: "change", name: customer.name?.trim() || customer.email, email: customer.email, subject: `Change request — ${booking.reference}`, message: `${booking.itemTitle}\n\n${message.trim().slice(0, 1500)}` });
   return NextResponse.json({ ok: true });
 }

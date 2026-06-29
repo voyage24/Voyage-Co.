@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { notifyAdminEnquiry } from "@/lib/email/notify-admin";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -27,5 +28,6 @@ export async function POST(req: Request) {
     console.error("Gift request failed:", err);
     return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
   }
+  await notifyAdminEnquiry({ type: "gift", name: senderName, email: senderEmail, subject: `Gift card request — ₹${amt.toLocaleString("en-IN")}`, message: `For: ${recipientName || "—"} (${recipientEmail || "no email"})\n${message || ""}`, total: amt });
   return NextResponse.json({ ok: true });
 }

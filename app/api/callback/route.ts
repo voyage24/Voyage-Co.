@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { notifyAdminEnquiry } from "@/lib/email/notify-admin";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -22,5 +23,6 @@ export async function POST(req: Request) {
     console.error("Callback request failed:", err);
     return NextResponse.json({ error: "Something went wrong, please try again" }, { status: 500 });
   }
+  await notifyAdminEnquiry({ type: "callback", name, email, phone, subject: "Callback request", message });
   return NextResponse.json({ ok: true });
 }
