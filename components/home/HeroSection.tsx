@@ -21,6 +21,7 @@ import type { City, Hotel, Cruise, Train, Package, Experience } from "@/lib/type
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useSetting } from "@/components/providers/SettingsProvider";
 import { useIsMobile } from "@/lib/useIsMobile";
+import AnimatedWords from "@/components/ui/AnimatedWords";
 
 // Journeys featured in the hero background for their respective search
 // tabs. Luxury Stays and Cruises have no fixed list — Cruises cycles
@@ -184,11 +185,13 @@ export default function HeroSection({
             style={{ opacity: headlineHidden ? 0 : 1, pointerEvents: headlineHidden ? "none" : "auto" }}
             onMouseEnter={() => { setMapHoverRaw(false); setMapHover(false); scheduleAutoHide(); }}
           >
-            <p className="text-[11px] sm:text-[13px] tracking-[0.28em] uppercase text-white/80 mb-2 sm:mb-4">
+            <p className="text-[11px] sm:text-[13px] tracking-[0.28em] uppercase mb-2 sm:mb-4 shimmer-gold">
               {tx("eyebrow")}
             </p>
-            <h1 className="font-serif font-light text-white text-3xl sm:text-6xl lg:text-7xl leading-[1.1] sm:leading-[1.04] mb-3 sm:mb-5">
-              {customHeadline ? customHeadline : <>{tx("headline1")}<br />{tx("headline2")}</>}
+            <h1 key={`h-${activeTab}`} className="font-serif font-light text-white text-3xl sm:text-6xl lg:text-7xl leading-[1.1] sm:leading-[1.04] mb-3 sm:mb-5">
+              {customHeadline
+                ? <AnimatedWords text={customHeadline} />
+                : <><AnimatedWords text={tx("headline1")} /><br /><AnimatedWords text={tx("headline2")} start={400} /></>}
             </h1>
             <p className="text-white/85 text-sm sm:text-xl max-w-lg leading-relaxed line-clamp-3 sm:line-clamp-none">
               {customSubtext || tx("paragraph")}

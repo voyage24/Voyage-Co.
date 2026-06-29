@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import type { Metadata } from "next";
 import { getDestinations } from "@/lib/destinations";
+import Reveal from "@/components/ui/Reveal";
 
 export const revalidate = 300;
 
@@ -21,7 +22,7 @@ export default async function DestinationsPage() {
         <p className="text-ink-muted font-light max-w-xl mx-auto">A world of extraordinary places, each with its own collection of stays, experiences and journeys.</p>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+      <Reveal stagger className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
         {destinations.map(d => (
           <Link key={d.slug} href={`/destinations/${d.slug}`} className="group relative aspect-[3/4] rounded-2xl overflow-hidden">
             <Image src={d.image} alt={d.country} fill sizes="(max-width:640px) 50vw, 25vw" className="object-cover transition-transform duration-700 group-hover:scale-105" />
@@ -32,7 +33,7 @@ export default async function DestinationsPage() {
             </div>
           </Link>
         ))}
-      </div>
+      </Reveal>
     </div>
   );
 }

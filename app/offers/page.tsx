@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { Lock } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { getCurrentCustomer } from "@/lib/customer/session";
+import Reveal from "@/components/ui/Reveal";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Offers — Voyages & Co.", description: "Exclusive offers and member-only rates on luxury journeys." };
@@ -27,7 +28,7 @@ export default async function OffersPage() {
       {offers.length === 0 ? (
         <p className="text-center text-ink-muted font-light">No offers at the moment — <Link href="/plan" className="text-gold link-underline">plan a bespoke journey</Link> instead.</p>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <Reveal stagger className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {offers.map(o => {
             const card = (
               <div className="group bg-panel border border-line rounded-2xl overflow-hidden h-full hover:border-gold/40 transition-colors">
@@ -44,7 +45,7 @@ export default async function OffersPage() {
             );
             return o.href ? <Link key={o.id} href={o.href}>{card}</Link> : <div key={o.id}>{card}</div>;
           })}
-        </div>
+        </Reveal>
       )}
 
       {hiddenMemberOffers > 0 && (
