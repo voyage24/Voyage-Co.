@@ -7,6 +7,8 @@ import TrustSection from "@/components/home/TrustSection";
 import RecentlyViewed from "@/components/home/RecentlyViewed";
 import PressStrip from "@/components/home/PressStrip";
 import MomentsGallery from "@/components/home/MomentsGallery";
+import StatsBand from "@/components/home/StatsBand";
+import Reveal from "@/components/ui/Reveal";
 import { prisma } from "@/lib/prisma";
 import JsonLd from "@/components/seo/JsonLd";
 import { organizationJsonLd, websiteJsonLd } from "@/lib/seo";
@@ -28,13 +30,14 @@ export default async function Home() {
       <JsonLd data={[organizationJsonLd(), websiteJsonLd()]} />
       <HeroSection hotels={hotels} cruises={cruises} trains={trains as any} packages={packages} experiences={experiences} />
       <RecentlyViewed />
-      <PopularDestinations />
-      <SignatureExperiences />
-      <PackagesPreview packages={packages} />
+      <Reveal><PopularDestinations /></Reveal>
+      <Reveal><SignatureExperiences /></Reveal>
+      <StatsBand />
+      <Reveal><PackagesPreview packages={packages} /></Reveal>
       <PressStrip />
-      <TestimonialsSection testimonials={testimonials} />
-      <MomentsGallery />
-      <TrustSection />
+      <Reveal><TestimonialsSection testimonials={testimonials} /></Reveal>
+      <Reveal><MomentsGallery /></Reveal>
+      <Reveal><TrustSection /></Reveal>
     </>
   );
 }
