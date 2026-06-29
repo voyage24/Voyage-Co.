@@ -7,9 +7,14 @@ export const dynamic = "force-dynamic";
 export async function GET() {
   const token = process.env.TELEGRAM_BOT_TOKEN;
   const chatId = process.env.TELEGRAM_CHAT_ID;
+  // Names only (never values) of any env keys that look related — helps spot
+  // typos or vars added to the wrong project/environment.
+  const matchingKeys = Object.keys(process.env).filter(k => /teleg|chat|callme|whats|bot_?to?ken/i.test(k));
+
   const out: Record<string, unknown> = {
     telegram: { hasToken: !!token, hasChatId: !!chatId },
     whatsapp: { hasPhone: !!process.env.WHATSAPP_ALERT_PHONE, hasApiKey: !!process.env.CALLMEBOT_APIKEY },
+    matchingKeys,
   };
 
   if (token && chatId) {
