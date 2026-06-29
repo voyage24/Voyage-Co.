@@ -347,6 +347,16 @@ model Cruise {
   updatedAt      DateTime @updatedAt
 }
 
+model PressMention {
+  id        String   @id @default(cuid())
+  name      String
+  image     String
+  url       String?
+  sortOrder Int      @default(0)
+  published Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
 model GiftCard {
   id             String   @id @default(cuid())
   code           String   @unique
