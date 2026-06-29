@@ -35,6 +35,7 @@ export const NAV_SECTIONS: { title: string | null; items: { href: string; label:
       { href: "/admin/destinations", label: "Featured Destinations" },
       { href: "/admin/testimonials", label: "Testimonials" },
       { href: "/admin/press", label: "Press & Awards" },
+      { href: "/admin/moments", label: "Moments" },
     ],
   },
   {

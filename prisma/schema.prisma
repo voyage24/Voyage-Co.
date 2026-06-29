@@ -347,6 +347,17 @@ model Cruise {
   updatedAt      DateTime @updatedAt
 }
 
+model Moment {
+  id        String   @id @default(cuid())
+  image     String
+  caption   String?
+  handle    String?
+  link      String?
+  sortOrder Int      @default(0)
+  published Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
 model PressMention {
   id        String   @id @default(cuid())
   name      String

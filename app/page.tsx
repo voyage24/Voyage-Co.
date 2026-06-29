@@ -6,6 +6,7 @@ import TestimonialsSection from "@/components/home/TestimonialsSection";
 import TrustSection from "@/components/home/TrustSection";
 import RecentlyViewed from "@/components/home/RecentlyViewed";
 import PressStrip from "@/components/home/PressStrip";
+import MomentsGallery from "@/components/home/MomentsGallery";
 import { prisma } from "@/lib/prisma";
 import JsonLd from "@/components/seo/JsonLd";
 import { organizationJsonLd, websiteJsonLd } from "@/lib/seo";
@@ -32,6 +33,7 @@ export default async function Home() {
       <PackagesPreview packages={packages} />
       <PressStrip />
       <TestimonialsSection testimonials={testimonials} />
+      <MomentsGallery />
       <TrustSection />
     </>
   );
