@@ -168,11 +168,11 @@ textarea:focus-visible {
 
 /* Cinematic slow zoom + gentle diagonal drift for detail-page hero images.
    Translations stay within the scale headroom so edges never show. */
-.ken-burns { animation: kenBurns 30s ease-in-out infinite alternate; transform-origin: center; }
+.ken-burns { animation: kenBurns 24s ease-in-out infinite alternate; transform-origin: center; }
 @keyframes kenBurns {
-  0%   { transform: scale(1.02) translate(0, 0); }
-  50%  { transform: scale(1.07) translate(-1.8%, -1.2%); }
-  100% { transform: scale(1.12) translate(1.6%, -2%); }
+  0%   { transform: scale(1.03) translate(0, 0); }
+  50%  { transform: scale(1.12) translate(-3%, -2%); }
+  100% { transform: scale(1.2) translate(2.5%, -3%); }
 }
 
 /* Animated gold shimmer for accent labels. */
