@@ -12,6 +12,7 @@ import JsonLd from "@/components/seo/JsonLd";
 import FaqAndEntry from "@/components/products/FaqAndEntry";
 import CompareButton from "@/components/compare/CompareButton";
 import RecordView from "@/components/products/RecordView";
+import AddToItineraryButton from "@/components/itinerary/AddToItineraryButton";
 import { productJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 export const revalidate = 60;
@@ -49,7 +50,8 @@ export default async function CruiseDetailPage({ params }: { params: { id: strin
         <Link href="/cruises" className="inline-flex items-center gap-2 text-xs tracking-[0.1em] uppercase text-ink-muted hover:text-gold transition-colors">
           <ArrowLeft size={15} /> <T k="detail.allVoyages" />
         </Link>
-        <div className="flex items-center gap-4">
+        <div className="flex flex-wrap items-center justify-end gap-x-4 gap-y-1">
+          <AddToItineraryButton type="cruise" id={cruise.id} title={cruise.name} image={cruise.image} href={`/cruises/${cruise.id}`} price={cruise.priceOnRequest ? undefined : cruise.pricePerPerson} label />
           <CompareButton type="cruise" id={cruise.id} title={cruise.name} image={cruise.image} href={`/cruises/${cruise.id}`} label
             attrs={{ Price: cruise.priceOnRequest ? "On request" : `₹${cruise.pricePerPerson.toLocaleString("en-IN")} pp`, Duration: cruise.duration, "Cruise line": cruise.cruiseLine, Region: cruise.region, Rating: `${cruise.rating} (${cruise.reviewCount})` }} />
           <SaveButton type="cruise" itemId={cruise.id} itemTitle={cruise.name} image={cruise.image} href={`/cruises/${cruise.id}`} label />

@@ -12,6 +12,7 @@ import JsonLd from "@/components/seo/JsonLd";
 import FaqAndEntry from "@/components/products/FaqAndEntry";
 import CompareButton from "@/components/compare/CompareButton";
 import RecordView from "@/components/products/RecordView";
+import AddToItineraryButton from "@/components/itinerary/AddToItineraryButton";
 import { hotelJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 export const revalidate = 60;
@@ -47,7 +48,8 @@ export default async function HotelDetailPage({ params }: { params: { id: string
         <Link href="/hotels" className="inline-flex items-center gap-2 text-xs tracking-[0.1em] uppercase text-ink-muted hover:text-ink transition-colors">
           <ArrowLeft size={15} /> <T k="detail.allStays" />
         </Link>
-        <div className="flex items-center gap-4">
+        <div className="flex flex-wrap items-center justify-end gap-x-4 gap-y-1">
+          <AddToItineraryButton type="hotel" id={hotel.id} title={hotel.name} image={hotel.image} href={`/hotels/${hotel.id}`} price={hotel.priceOnRequest ? undefined : hotel.pricePerNight} label />
           <CompareButton type="hotel" id={hotel.id} title={hotel.name} image={hotel.image} href={`/hotels/${hotel.id}`} label
             attrs={{ Price: hotel.priceOnRequest ? "On request" : `₹${hotel.pricePerNight.toLocaleString("en-IN")}/night`, Rating: `${hotel.rating} (${hotel.reviewCount})`, Stars: `${hotel.stars}★`, Location: hotel.location, Category: hotel.category }} />
           <SaveButton type="hotel" itemId={hotel.id} itemTitle={hotel.name} image={hotel.image} href={`/hotels/${hotel.id}`} label />

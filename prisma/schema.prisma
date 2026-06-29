@@ -48,6 +48,22 @@ model Customer {
   reviews      Review[]
   saved        SavedItem[]
   searches     SavedSearch[]
+  itineraries  Itinerary[]
+}
+
+model Itinerary {
+  id         String   @id @default(cuid())
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  title      String
+  notes      String?  @db.Text
+  items      Json     // [{ type, id, title, image, href, price }]
+  estimate   Int      @default(0)
+  status     String   @default("draft") // draft | requested
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([customerId])
 }
 
 model SavedSearch {

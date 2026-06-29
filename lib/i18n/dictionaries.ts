@@ -18,6 +18,7 @@ export const EN: Dictionary = {
   "common.partners": "Partners",
   "common.concierge": "Concierge",
   "common.requestCallback": "Request a Callback",
+  "common.tripBuilder": "Trip Builder",
   "common.help": "Help",
   "common.privacy": "Privacy",
   "common.terms": "Terms",
