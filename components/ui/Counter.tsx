@@ -23,7 +23,7 @@ export default function Counter({ value, suffix = "", prefix = "", duration = 16
         if (p < 1) raf = requestAnimationFrame(tick);
       };
       raf = requestAnimationFrame(tick);
-    }, { threshold: 0.4 });
+    }, { threshold: 0, rootMargin: "0px" });
     io.observe(el);
     return () => { io.disconnect(); cancelAnimationFrame(raf); };
   }, [value, duration]);

@@ -15,11 +15,11 @@ export default function Reveal({ children, className = "", delay = 0, variant = 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    // Toggle on every enter/leave so the animation replays each time the
-    // section scrolls back into view (not just the first time).
+    // Visible whenever ANY part is on screen; hidden only when fully off
+    // screen (so it replays on re-entry but never blanks while in view).
     const io = new IntersectionObserver(
       ([e]) => setShown(e.isIntersecting),
-      { threshold: 0.1, rootMargin: "0px 0px -10% 0px" },
+      { threshold: 0, rootMargin: "0px" },
     );
     io.observe(el);
     return () => io.disconnect();
