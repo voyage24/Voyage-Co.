@@ -8,7 +8,7 @@ const VARIANT_CLASS: Record<Variant, string> = { up: "", left: "r-left", right: 
 // Fades/rises its children in when they scroll into view. Respects
 // prefers-reduced-motion (CSS handles that).
 //   variant: direction of entrance · stagger: cascade direct children
-export default function Reveal({ children, className = "", delay = 0, variant = "up", stagger = false }: { children: React.ReactNode; className?: string; delay?: number; variant?: Variant; stagger?: boolean }) {
+export default function Reveal({ children, className = "", delay = 0, variant = "up", stagger = false, soft = false }: { children: React.ReactNode; className?: string; delay?: number; variant?: Variant; stagger?: boolean; soft?: boolean }) {
   const ref = useRef<HTMLDivElement>(null);
   const [shown, setShown] = useState(false);
 
@@ -25,7 +25,7 @@ export default function Reveal({ children, className = "", delay = 0, variant = 
     return () => io.disconnect();
   }, []);
 
-  const cls = stagger ? "stagger" : `reveal ${VARIANT_CLASS[variant]}`;
+  const cls = soft ? "stagger-soft" : stagger ? "stagger" : `reveal ${VARIANT_CLASS[variant]}`;
   return (
     <div ref={ref} className={`${cls} ${shown ? "is-visible" : ""} ${className}`} style={delay ? { transitionDelay: `${delay}ms` } : undefined}>
       {children}

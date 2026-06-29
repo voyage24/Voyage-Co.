@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import PackageCard from "@/components/cards/PackageCard";
+import Reveal from "@/components/ui/Reveal";
 import SaveSearchButton from "@/components/search/SaveSearchButton";
 import type { Package } from "@/lib/types";
 import { useLanguage } from "@/components/providers/LanguageProvider";
@@ -78,7 +79,7 @@ export default function PackagesPageClient({ packages }: { packages: Package[] }
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <Reveal soft className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {filtered.length > 0 ? (
           filtered.map(pkg => <PackageCard key={pkg.id} pkg={pkg} />)
         ) : (
@@ -89,7 +90,7 @@ export default function PackagesPageClient({ packages }: { packages: Package[] }
             </button>
           </div>
         )}
-      </div>
+      </Reveal>
     </div>
   );
 }

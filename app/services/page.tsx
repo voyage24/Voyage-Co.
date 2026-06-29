@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Plane, ChefHat, Ship, UtensilsCrossed, Camera, ShieldCheck, Car, Sparkles } from "lucide-react";
 import ServiceRequestForm from "@/components/services/ServiceRequestForm";
+import Reveal from "@/components/ui/Reveal";
 
 export const metadata: Metadata = {
   title: "Concierge Services — Voyages & Co.",
@@ -27,7 +28,7 @@ export default function ServicesPage() {
         <p className="text-ink-muted font-light max-w-xl mx-auto">Beyond the journey itself, our concierge orchestrates every detail — the transfers, the tables, the moments that turn a trip into a story.</p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-14">
+      <Reveal soft className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-14">
         {SERVICES.map(s => (
           <a key={s.title} href="#request" className="group bg-panel border border-line rounded-2xl p-6 hover:border-gold/40 transition-colors">
             <s.icon size={22} className="text-gold mb-4" />
@@ -35,7 +36,7 @@ export default function ServicesPage() {
             <p className="text-sm text-ink-muted font-light leading-relaxed">{s.text}</p>
           </a>
         ))}
-      </div>
+      </Reveal>
 
       <ServiceRequestForm services={SERVICES.map(s => s.title)} />
     </div>

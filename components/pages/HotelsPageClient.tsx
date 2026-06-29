@@ -4,6 +4,7 @@ import { useState, useMemo, useEffect } from "react";
 import { SlidersHorizontal, X, Search } from "lucide-react";
 import HotelCard from "@/components/cards/HotelCard";
 import SaveSearchButton from "@/components/search/SaveSearchButton";
+import Reveal from "@/components/ui/Reveal";
 import type { Hotel } from "@/lib/types";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { filterLabel } from "@/lib/i18n/filterLabels";
@@ -204,9 +205,11 @@ export default function HotelsPageClient({ hotels }: { hotels: Hotel[] }) {
             </div>
           </div>
 
-          <div className="space-y-5">
+          <div>
             {filtered.length > 0 ? (
-              filtered.map((hotel, i) => <HotelCard key={hotel.id} hotel={hotel} priority={i === 0} />)
+              <Reveal soft className="space-y-5">
+                {filtered.map((hotel, i) => <HotelCard key={hotel.id} hotel={hotel} priority={i === 0} />)}
+              </Reveal>
             ) : (
               <div className="text-center py-20">
                 <p className="font-serif text-2xl font-light text-ink mb-2">{t("hotelsPage.noMatch")}</p>

@@ -4,6 +4,7 @@ import { useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import CruiseCard from "@/components/cards/CruiseCard";
 import SaveSearchButton from "@/components/search/SaveSearchButton";
+import Reveal from "@/components/ui/Reveal";
 import type { Cruise } from "@/lib/types";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { filterLabel } from "@/lib/i18n/filterLabels";
@@ -78,7 +79,7 @@ function CruisesContent({ cruises }: { cruises: Cruise[] }) {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <Reveal soft className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {filtered.length > 0 ? (
           filtered.map((cruise, i) => <CruiseCard key={cruise.id} cruise={cruise} priority={i === 0} />)
         ) : (
@@ -92,7 +93,7 @@ function CruisesContent({ cruises }: { cruises: Cruise[] }) {
             </button>
           </div>
         )}
-      </div>
+      </Reveal>
     </div>
   );
 }

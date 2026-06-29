@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { Check } from "lucide-react";
 import MembershipStatus from "@/components/account/MembershipStatus";
+import Reveal from "@/components/ui/Reveal";
 
 export const metadata: Metadata = {
   title: "Membership — Voyages & Co.",
@@ -25,7 +26,7 @@ export default function MembershipPage() {
 
       <div className="mb-12"><MembershipStatus /></div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+      <Reveal soft className="grid grid-cols-1 sm:grid-cols-3 gap-5">
         {TIERS.map((t, i) => (
           <div key={t.name} className={`rounded-2xl border p-6 ${i === 2 ? "border-gold/50 bg-panel" : "border-line bg-panel"}`}>
             <h2 className="font-serif text-2xl font-light text-ink">{t.name}</h2>
@@ -37,7 +38,7 @@ export default function MembershipPage() {
             </ul>
           </div>
         ))}
-      </div>
+      </Reveal>
 
       <div className="text-center mt-10">
         <Link href="/account" className="inline-block px-7 py-3 bg-ink text-page text-xs tracking-[0.16em] uppercase rounded-sm hover:bg-ink/90 transition-colors">View my account</Link>

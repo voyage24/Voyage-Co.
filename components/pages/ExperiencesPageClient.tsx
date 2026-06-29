@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import ExperienceCard from "@/components/cards/ExperienceCard";
+import Reveal from "@/components/ui/Reveal";
 import SaveSearchButton from "@/components/search/SaveSearchButton";
 import type { Experience } from "@/lib/types";
 import { useLanguage } from "@/components/providers/LanguageProvider";
@@ -60,11 +61,11 @@ export default function ExperiencesPageClient({ experiences }: { experiences: Ex
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <Reveal soft className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {filtered.map((exp, i) => (
           <ExperienceCard key={exp.id} exp={exp} priority={i === 0} />
         ))}
-      </div>
+      </Reveal>
     </div>
   );
 }
