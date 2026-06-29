@@ -21,6 +21,7 @@ export const EN: Dictionary = {
   "common.tripBuilder": "Trip Builder",
   "common.giftJourney": "Gift a Journey",
   "common.conciergeServices": "Concierge Services",
+  "common.findJourney": "Find Your Journey",
   "common.help": "Help",
   "common.privacy": "Privacy",
   "common.terms": "Terms",

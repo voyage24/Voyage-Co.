@@ -16,6 +16,7 @@ const FOOTER_LINKS = {
     { key: "common.privateFlights", href: "/flights" },
     { key: "explore.title",         href: "/explore" },
     { key: "common.tripBuilder",    href: "/itinerary" },
+    { key: "common.findJourney",    href: "/quiz" },
   ],
   "footer.maison": [
     { key: "common.about",    href: "/about" },
