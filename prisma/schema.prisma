@@ -343,6 +343,23 @@ model Cruise {
   updatedAt      DateTime @updatedAt
 }
 
+model GiftCard {
+  id             String   @id @default(cuid())
+  code           String   @unique
+  amount         Int
+  balance        Int
+  currency       String   @default("INR")
+  recipientName  String?
+  recipientEmail String?
+  senderName     String?
+  message        String?  @db.Text
+  status         String   @default("active") // active | redeemed | void
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([status])
+}
+
 model Quote {
   id            String    @id @default(cuid())
   token         String    @unique

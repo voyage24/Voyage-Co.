@@ -45,7 +45,10 @@ export const NAV_SECTIONS: { title: string | null; items: { href: string; label:
   },
   {
     title: "Marketing",
-    items: [{ href: "/admin/newsletter", label: "Newsletter" }],
+    items: [
+      { href: "/admin/newsletter", label: "Newsletter" },
+      { href: "/admin/giftcards", label: "Gift Cards" },
+    ],
   },
   {
     title: "Configuration",

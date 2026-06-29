@@ -27,6 +27,7 @@ const FOOTER_LINKS = {
   "footer.care": [
     { key: "common.concierge",     href: "/contact" },
     { key: "common.requestCallback", href: "/callback" },
+    { key: "common.giftJourney",   href: "/gift" },
     { key: "common.help",          href: "/help" },
     { key: "common.cancellations", href: "/cancellations" },
     { key: "common.privacy",       href: "/privacy" },
