@@ -353,6 +353,14 @@ model Cruise {
   updatedAt      DateTime @updatedAt
 }
 
+model PushSubscription {
+  id        String   @id @default(cuid())
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  createdAt DateTime @default(now())
+}
+
 model Offer {
   id          String   @id @default(cuid())
   title       String

@@ -11,6 +11,7 @@ import BookingActions from "@/components/account/BookingActions";
 import OccasionsForm from "@/components/account/OccasionsForm";
 import TripCountdown from "@/components/account/TripCountdown";
 import AddToCalendar from "@/components/account/AddToCalendar";
+import PushSubscribe from "@/components/ui/PushSubscribe";
 import Price from "@/components/ui/Price";
 
 export const dynamic = "force-dynamic";
@@ -43,6 +44,7 @@ export default async function AccountPage() {
           </div>
           <p className="text-sm text-ink-muted font-light mt-1">{customer.email}</p>
           <Link href="/membership" className="text-xs text-gold link-underline mt-1 inline-block">{(customer.points ?? 0).toLocaleString("en-IN")} points · Membership →</Link>
+          <div className="mt-2"><PushSubscribe /></div>
         </div>
         <LogoutButton />
       </div>

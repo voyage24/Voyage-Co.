@@ -51,6 +51,7 @@ export const NAV_SECTIONS: { title: string | null; items: { href: string; label:
       { href: "/admin/newsletter", label: "Newsletter" },
       { href: "/admin/giftcards", label: "Gift Cards" },
       { href: "/admin/offers", label: "Offers" },
+      { href: "/admin/notifications", label: "Push Notifications" },
     ],
   },
   {

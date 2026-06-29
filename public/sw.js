@@ -1,6 +1,6 @@
 // Minimal service worker: precache the offline fallback and serve a cached
 // shell when the network is unavailable. Static assets are cached on the fly.
-const CACHE = "vc-cache-v1";
+const CACHE = "vc-cache-v2";
 const OFFLINE_URL = "/offline";
 
 self.addEventListener("install", (event) => {
@@ -13,6 +13,32 @@ self.addEventListener("activate", (event) => {
     caches.keys().then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k))))
   );
   self.clients.claim();
+});
+
+// Web push: show the notification, and focus/open the app on click.
+self.addEventListener("push", (event) => {
+  let data = {};
+  try { data = event.data ? event.data.json() : {}; } catch { data = {}; }
+  const title = data.title || "Voyages & Co.";
+  event.waitUntil(
+    self.registration.showNotification(title, {
+      body: data.body || "",
+      icon: "/logo-navy.png",
+      badge: "/logo-navy.png",
+      data: { url: data.url || "/" },
+    })
+  );
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const url = event.notification.data?.url || "/";
+  event.waitUntil(
+    self.clients.matchAll({ type: "window" }).then((list) => {
+      for (const c of list) { if ("focus" in c) { c.navigate(url); return c.focus(); } }
+      return self.clients.openWindow(url);
+    })
+  );
 });
 
 self.addEventListener("fetch", (event) => {
