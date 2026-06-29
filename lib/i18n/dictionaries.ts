@@ -20,6 +20,7 @@ export const EN: Dictionary = {
   "common.requestCallback": "Request a Callback",
   "common.tripBuilder": "Trip Builder",
   "common.giftJourney": "Gift a Journey",
+  "common.conciergeServices": "Concierge Services",
   "common.help": "Help",
   "common.privacy": "Privacy",
   "common.terms": "Terms",
