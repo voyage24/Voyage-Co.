@@ -14,6 +14,8 @@ import CompareButton from "@/components/compare/CompareButton";
 import RecordView from "@/components/products/RecordView";
 import AddToItineraryButton from "@/components/itinerary/AddToItineraryButton";
 import PhotoGallery from "@/components/ui/PhotoGallery";
+import PropertyMap from "@/components/ui/PropertyMap";
+import DestinationWeather from "@/components/ui/DestinationWeather";
 import { hotelJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 export const revalidate = 60;
@@ -164,6 +166,16 @@ export default async function HotelDetailPage({ params }: { params: { id: string
           </div>
         </div>
       </div>
+
+      {hotel.lat != null && hotel.lng != null && (
+        <section className="mt-12">
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+            <h2 className="font-serif text-2xl font-light text-ink">Location</h2>
+            <DestinationWeather lat={hotel.lat} lng={hotel.lng} />
+          </div>
+          <PropertyMap lat={hotel.lat} lng={hotel.lng} name={hotel.name} />
+        </section>
+      )}
 
       <FaqAndEntry faqs={faqs} entryRequirements={hotel.entryRequirements} />
 
