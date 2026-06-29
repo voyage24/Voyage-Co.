@@ -8,6 +8,7 @@ import SavedList from "@/components/account/SavedList";
 import ShareBoardButton from "@/components/account/ShareBoardButton";
 import SavedSearchesList from "@/components/account/SavedSearchesList";
 import BookingActions from "@/components/account/BookingActions";
+import OccasionsForm from "@/components/account/OccasionsForm";
 import Price from "@/components/ui/Price";
 
 export const dynamic = "force-dynamic";
@@ -92,6 +93,8 @@ export default async function AccountPage() {
       <SavedList items={saved.map(s => ({ id: s.id, type: s.type, itemId: s.itemId, itemTitle: s.itemTitle, image: s.image, href: s.href }))} />
 
       <SavedSearchesList />
+
+      <OccasionsForm />
     </div>
   );
 }

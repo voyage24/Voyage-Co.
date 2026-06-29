@@ -44,6 +44,9 @@ model Customer {
   shareToken   String?           @unique
   tier         String            @default("member") // member | silver | gold
   points       Int               @default(0)
+  birthday     String?           // YYYY-MM-DD
+  anniversary  String?           // YYYY-MM-DD
+  occasionSentYear Int?          // last year an occasion email was sent (de-dupe)
   sessions     CustomerSession[]
   bookings     Booking[]
   reviews      Review[]
