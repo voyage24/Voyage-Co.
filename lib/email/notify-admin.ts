@@ -1,18 +1,35 @@
 import { createTransport, FROM_CONCIERGE } from "./transport";
 
-// Sends a WhatsApp alert to the owner via CallMeBot (free, no business
-// account needed). Activates only when both env vars are set:
-//   WHATSAPP_ALERT_PHONE  e.g. 919199910213  (number, country code, no +)
-//   CALLMEBOT_APIKEY      the key CallMeBot gives you (see setup docs)
-export async function notifyWhatsApp(text: string) {
+// WhatsApp via CallMeBot — fires only when both vars are set:
+//   WHATSAPP_ALERT_PHONE (number, country code, no +) + CALLMEBOT_APIKEY
+async function sendCallMeBot(text: string) {
   const phone = process.env.WHATSAPP_ALERT_PHONE;
   const apikey = process.env.CALLMEBOT_APIKEY;
   if (!phone || !apikey) return;
   try {
     await fetch(`https://api.callmebot.com/whatsapp.php?phone=${encodeURIComponent(phone)}&text=${encodeURIComponent(text)}&apikey=${encodeURIComponent(apikey)}`);
-  } catch (err) {
-    console.error("WhatsApp alert failed:", err);
-  }
+  } catch (err) { console.error("WhatsApp (CallMeBot) alert failed:", err); }
+}
+
+// Telegram via the free Bot API — fires only when both vars are set:
+//   TELEGRAM_BOT_TOKEN (from @BotFather) + TELEGRAM_CHAT_ID (your chat id)
+async function sendTelegram(text: string) {
+  const token = process.env.TELEGRAM_BOT_TOKEN;
+  const chatId = process.env.TELEGRAM_CHAT_ID;
+  if (!token || !chatId) return;
+  try {
+    await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ chat_id: chatId, text }),
+    });
+  } catch (err) { console.error("Telegram alert failed:", err); }
+}
+
+// Push a short owner alert to whichever channels are configured (WhatsApp
+// and/or Telegram). Best-effort; never throws.
+export async function notifyWhatsApp(text: string) {
+  await Promise.allSettled([sendCallMeBot(text), sendTelegram(text)]);
 }
 
 // Best-effort heads-up to the team whenever a new enquiry/lead arrives, so
