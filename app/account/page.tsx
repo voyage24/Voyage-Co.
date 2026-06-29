@@ -9,6 +9,8 @@ import ShareBoardButton from "@/components/account/ShareBoardButton";
 import SavedSearchesList from "@/components/account/SavedSearchesList";
 import BookingActions from "@/components/account/BookingActions";
 import OccasionsForm from "@/components/account/OccasionsForm";
+import TripCountdown from "@/components/account/TripCountdown";
+import AddToCalendar from "@/components/account/AddToCalendar";
 import Price from "@/components/ui/Price";
 
 export const dynamic = "force-dynamic";
@@ -75,6 +77,8 @@ export default async function AccountPage() {
                 {b.status === "pending" && <CancelBookingButton id={b.id} />}
                 {b.status === "confirmed" && (
                   <>
+                    <TripCountdown checkIn={b.checkIn} />
+                    <AddToCalendar title={b.itemTitle} reference={b.reference} checkIn={b.checkIn} checkOut={b.checkOut} />
                     <Link href={`/account/voucher/${b.reference}`} className="text-xs tracking-[0.12em] uppercase text-ink-muted link-underline whitespace-nowrap">Voucher</Link>
                     <Link href={`/account/journey/${b.reference}`} className="text-xs tracking-[0.12em] uppercase text-gold link-underline whitespace-nowrap">Journal →</Link>
                   </>
