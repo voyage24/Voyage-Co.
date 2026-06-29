@@ -26,6 +26,7 @@ export default function GiftCardsManager({ cards }: { cards: Card[] }) {
   const update = async (id: string, body: object) => { await fetch(`/api/admin/giftcards/${id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }); router.refresh(); };
   const remove = async (id: string) => { if (!confirm("Delete this gift card?")) return; await fetch(`/api/admin/giftcards/${id}`, { method: "DELETE" }); router.refresh(); };
   const copy = (code: string) => navigator.clipboard.writeText(code).then(() => { setCopied(code); setTimeout(() => setCopied(null), 1500); });
+  const copyLink = (code: string) => navigator.clipboard.writeText(`https://voyagesco.com/gift/${code}`).then(() => { setCopied(`link-${code}`); setTimeout(() => setCopied(null), 1500); });
 
   return (
     <div className="space-y-8">
@@ -48,6 +49,8 @@ export default function GiftCardsManager({ cards }: { cards: Card[] }) {
             <button onClick={() => copy(c.code)} className="inline-flex items-center gap-1 text-sm font-mono text-gray-900 hover:text-gray-600">{c.code} {copied === c.code ? <Check size={12} /> : <Copy size={12} />}</button>
             <span className="text-xs text-gray-400">₹{c.balance.toLocaleString("en-IN")} / ₹{c.amount.toLocaleString("en-IN")}{c.recipientName ? ` · ${c.recipientName}` : ""}</span>
             <div className="ml-auto flex items-center gap-3 text-xs">
+              <a href={`/gift/${c.code}`} target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-gray-900">Preview</a>
+              <button onClick={() => copyLink(c.code)} className="text-gray-600 hover:text-gray-900">{copied === `link-${c.code}` ? "Link copied" : "Copy link"}</button>
               {c.status !== "redeemed" && <button onClick={() => update(c.id, { status: "redeemed", balance: 0 })} className="text-gray-600 hover:text-gray-900">Mark redeemed</button>}
               {c.status !== "void" && <button onClick={() => update(c.id, { status: "void" })} className="text-gray-600 hover:text-gray-900">Void</button>}
               <button onClick={() => remove(c.id)} className="text-red-600 hover:text-red-700">Delete</button>
