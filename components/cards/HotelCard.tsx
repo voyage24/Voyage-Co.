@@ -11,7 +11,7 @@ export default function HotelCard({ hotel, priority }: { hotel: Hotel; priority?
   const { format } = useCurrency();
   const { t } = useLanguage();
   return (
-    <div className="bg-panel rounded-2xl border border-line hover:border-gold/40 shadow-card hover:shadow-card-hover transition-all duration-500 overflow-hidden flex flex-col sm:flex-row group">
+    <div className="bg-panel rounded-2xl border border-line hover:border-gold/40 shadow-card hover:shadow-card-hover hover:-translate-y-1.5 transition-all duration-500 overflow-hidden flex flex-col sm:flex-row group">
       {/* Image */}
       <div className="relative sm:w-60 shrink-0 aspect-[4/3] sm:aspect-auto overflow-hidden">
         <Image

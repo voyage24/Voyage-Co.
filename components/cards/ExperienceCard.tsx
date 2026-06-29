@@ -11,7 +11,7 @@ export default function ExperienceCard({ exp, priority }: { exp: Experience; pri
   const { format } = useCurrency();
   const { t } = useLanguage();
   return (
-    <div className="bg-panel rounded-2xl border border-line hover:border-gold/40 shadow-card hover:shadow-card-hover transition-all duration-500 overflow-hidden group">
+    <div className="bg-panel rounded-2xl border border-line hover:border-gold/40 shadow-card hover:shadow-card-hover hover:-translate-y-1.5 transition-all duration-500 overflow-hidden group">
       <div className="relative aspect-[16/10] overflow-hidden">
         <Image src={exp.image} alt={exp.title} fill priority={priority} sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw" className="object-cover transition-transform duration-700 group-hover:scale-105" />
         <div className="absolute inset-0 bg-gradient-to-t from-vc-950/40 to-transparent" />

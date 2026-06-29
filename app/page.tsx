@@ -31,11 +31,11 @@ export default async function Home() {
       <HeroSection hotels={hotels} cruises={cruises} trains={trains as any} packages={packages} experiences={experiences} />
       <RecentlyViewed />
       <Reveal><PopularDestinations /></Reveal>
-      <Reveal><SignatureExperiences /></Reveal>
+      <Reveal variant="left"><SignatureExperiences /></Reveal>
       <StatsBand />
-      <Reveal><PackagesPreview packages={packages} /></Reveal>
+      <Reveal variant="right"><PackagesPreview packages={packages} /></Reveal>
       <PressStrip />
-      <Reveal><TestimonialsSection testimonials={testimonials} /></Reveal>
+      <Reveal variant="zoom"><TestimonialsSection testimonials={testimonials} /></Reveal>
       <Reveal><MomentsGallery /></Reveal>
       <Reveal><TrustSection /></Reveal>
     </>

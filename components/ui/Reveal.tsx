@@ -2,9 +2,13 @@
 
 import { useEffect, useRef, useState } from "react";
 
+type Variant = "up" | "left" | "right" | "zoom";
+const VARIANT_CLASS: Record<Variant, string> = { up: "", left: "r-left", right: "r-right", zoom: "r-zoom" };
+
 // Fades/rises its children in when they scroll into view. Respects
-// prefers-reduced-motion (CSS handles that). Use to wrap any section.
-export default function Reveal({ children, className = "", delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
+// prefers-reduced-motion (CSS handles that).
+//   variant: direction of entrance · stagger: cascade direct children
+export default function Reveal({ children, className = "", delay = 0, variant = "up", stagger = false }: { children: React.ReactNode; className?: string; delay?: number; variant?: Variant; stagger?: boolean }) {
   const ref = useRef<HTMLDivElement>(null);
   const [shown, setShown] = useState(false);
 
@@ -13,14 +17,15 @@ export default function Reveal({ children, className = "", delay = 0 }: { childr
     if (!el) return;
     const io = new IntersectionObserver(
       ([e]) => { if (e.isIntersecting) { setShown(true); io.disconnect(); } },
-      { threshold: 0.12, rootMargin: "0px 0px -8% 0px" },
+      { threshold: 0.1, rootMargin: "0px 0px -8% 0px" },
     );
     io.observe(el);
     return () => io.disconnect();
   }, []);
 
+  const cls = stagger ? "stagger" : `reveal ${VARIANT_CLASS[variant]}`;
   return (
-    <div ref={ref} className={`reveal ${shown ? "is-visible" : ""} ${className}`} style={delay ? { transitionDelay: `${delay}ms` } : undefined}>
+    <div ref={ref} className={`${cls} ${shown ? "is-visible" : ""} ${className}`} style={delay ? { transitionDelay: `${delay}ms` } : undefined}>
       {children}
     </div>
   );
