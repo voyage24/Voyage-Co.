@@ -141,6 +141,8 @@ model Booking {
   reference   String    @unique
   notes       String?   @db.Text
   documents   Json      @default("[]") // [{ label, url }] — vouchers, tickets, itineraries
+  preTripSentAt  DateTime?
+  postTripSentAt DateTime?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
@@ -163,6 +165,7 @@ model Enquiry {
   status    String   @default("new") // new | handled
   stage     String   @default("new") // pipeline: new | contacted | quoted | won | lost
   notes     String?  @db.Text
+  followupSentAt DateTime?
   createdAt DateTime @default(now())
 
   @@index([status])
