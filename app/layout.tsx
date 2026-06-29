@@ -27,7 +27,9 @@ export const metadata: Metadata = {
     title: "Voyages & Co.",
     statusBarStyle: "black-translucent",
   },
-  icons: { icon: "/logo-navy.png", apple: "/logo-navy.png" },
+  // Favicon + apple-touch icon come from app/icon.png and app/apple-icon.png
+  // (Next's file conventions) — no metadata.icons override, which would
+  // otherwise replace them.
 };
 
 export const viewport: Viewport = {
