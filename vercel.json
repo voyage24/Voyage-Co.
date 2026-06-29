@@ -5,16 +5,8 @@
       "schedule": "30 3 * * 4"
     },
     {
-      "path": "/api/cron/search-alerts",
+      "path": "/api/cron/daily",
       "schedule": "0 4 * * *"
-    },
-    {
-      "path": "/api/cron/lifecycle-emails",
-      "schedule": "0 5 * * *"
-    },
-    {
-      "path": "/api/cron/occasion-emails",
-      "schedule": "0 6 * * *"
     }
   ]
 }
