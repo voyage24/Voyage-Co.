@@ -347,6 +347,19 @@ model Cruise {
   updatedAt      DateTime @updatedAt
 }
 
+model Offer {
+  id          String   @id @default(cuid())
+  title       String
+  description String   @db.Text
+  image       String
+  badge       String?
+  href        String?
+  memberOnly  Boolean  @default(false)
+  published   Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+}
+
 model Moment {
   id        String   @id @default(cuid())
   image     String

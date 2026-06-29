@@ -50,6 +50,7 @@ export const NAV_SECTIONS: { title: string | null; items: { href: string; label:
     items: [
       { href: "/admin/newsletter", label: "Newsletter" },
       { href: "/admin/giftcards", label: "Gift Cards" },
+      { href: "/admin/offers", label: "Offers" },
     ],
   },
   {
