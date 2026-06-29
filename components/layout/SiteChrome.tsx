@@ -20,9 +20,9 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
 
   return (
     <>
-      <Navbar />
+      <div className="print:hidden"><Navbar /></div>
       <main id="main">{children}</main>
-      <Footer />
+      <div className="print:hidden"><Footer /></div>
       <WhatsAppFAB />
       <ScrollButtons />
       <ConciergeChat />

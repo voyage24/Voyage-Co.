@@ -74,7 +74,10 @@ export default async function AccountPage() {
                 </span>
                 {b.status === "pending" && <CancelBookingButton id={b.id} />}
                 {b.status === "confirmed" && (
-                  <Link href={`/account/journey/${b.reference}`} className="text-xs tracking-[0.12em] uppercase text-gold link-underline whitespace-nowrap">Journal →</Link>
+                  <>
+                    <Link href={`/account/voucher/${b.reference}`} className="text-xs tracking-[0.12em] uppercase text-ink-muted link-underline whitespace-nowrap">Voucher</Link>
+                    <Link href={`/account/journey/${b.reference}`} className="text-xs tracking-[0.12em] uppercase text-gold link-underline whitespace-nowrap">Journal →</Link>
+                  </>
                 )}
               </div>
              </div>
