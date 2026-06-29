@@ -7,6 +7,7 @@ import WhatsAppFAB from "@/components/ui/WhatsAppFAB";
 import ScrollButtons from "@/components/ui/ScrollButtons";
 import ConciergeChat from "@/components/concierge/ConciergeChat";
 import CompareBar from "@/components/compare/CompareBar";
+import MobileTabBar from "@/components/layout/MobileTabBar";
 
 // The admin console is a separate application surface and must not show the
 // public site's nav/footer/WhatsApp button — but it still lives under the
@@ -22,12 +23,13 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
     <>
       <div className="print:hidden"><Navbar /></div>
       <main id="main">{children}</main>
-      <div className="print:hidden"><Footer /></div>
+      <div className="print:hidden pb-14 sm:pb-0"><Footer /></div>
       <div className="print:hidden">
         <WhatsAppFAB />
         <ScrollButtons />
         <ConciergeChat />
         <CompareBar />
+        <MobileTabBar />
       </div>
     </>
   );

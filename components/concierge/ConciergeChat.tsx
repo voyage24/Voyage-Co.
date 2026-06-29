@@ -67,7 +67,7 @@ export default function ConciergeChat() {
       <button
         onClick={() => setOpen(true)}
         aria-label="Ask the concierge"
-        className={`fixed bottom-5 left-5 z-40 flex items-center gap-2 bg-ink text-page pl-3 pr-4 py-2.5 rounded-full shadow-luxury hover:scale-105 active:scale-95 transition-all duration-300 ${hidden ? "translate-y-24 opacity-0 pointer-events-none" : "translate-y-0 opacity-100"}`}
+        className={`fixed bottom-[5.25rem] left-4 sm:bottom-5 sm:left-5 z-40 flex items-center gap-2 bg-ink text-page pl-3 pr-4 py-2.5 rounded-full shadow-luxury hover:scale-105 active:scale-95 transition-all duration-300 ${hidden ? "translate-y-24 opacity-0 pointer-events-none" : "translate-y-0 opacity-100"}`}
       >
         <Sparkles size={16} className="text-gold" />
         <span className="text-[11px] tracking-[0.12em] uppercase">Ask the Concierge</span>

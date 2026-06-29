@@ -11,7 +11,7 @@ export default function CompareBar() {
   if (list.length === 0) return null;
 
   return (
-    <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 w-[min(94vw,640px)]">
+    <div className="fixed bottom-[5.25rem] sm:bottom-4 left-1/2 -translate-x-1/2 z-40 w-[min(94vw,640px)]">
       <div className="bg-panel-raised border border-line shadow-luxury rounded-full px-3 py-2 flex items-center gap-3">
         <div className="flex items-center gap-2 overflow-x-auto scrollbar-none">
           {list.map(item => (
