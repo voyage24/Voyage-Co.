@@ -4,12 +4,12 @@ export const dynamic = "force-dynamic";
 
 const inr = (n: number) => `₹${n.toLocaleString("en-IN")}`;
 
-function Stat({ label, value, sub }: { label: string; value: string; sub?: string }) {
+function Stat({ label, value, sub, accent = "from-slate-50 to-slate-100 border-slate-200 text-slate-800" }: { label: string; value: string; sub?: string; accent?: string }) {
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-4">
+    <div className={`rounded-lg p-4 border bg-gradient-to-br ${accent}`}>
       <p className="text-xs text-gray-500 mb-1">{label}</p>
-      <p className="text-2xl font-semibold text-gray-900">{value}</p>
-      {sub && <p className="text-xs text-gray-400 mt-0.5">{sub}</p>}
+      <p className="text-2xl font-semibold">{value}</p>
+      {sub && <p className="text-xs text-gray-500/80 mt-0.5">{sub}</p>}
     </div>
   );
 }
@@ -60,10 +60,10 @@ export default async function AnalyticsPage() {
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <Stat label="Confirmed revenue" value={inr(revenue)} sub={`${confirmed.length} confirmed bookings`} />
-        <Stat label="In pipeline" value={inr(pipelineRevenue)} sub={`${statusCounts.pending || 0} pending`} />
-        <Stat label="Enquiries" value={String(enquiries.length)} sub={`${wonRate}% won`} />
-        <Stat label="Customers" value={String(customerCount)} sub={`${newsletterCount} newsletter subs`} />
+        <Stat label="Confirmed revenue" value={inr(revenue)} sub={`${confirmed.length} confirmed bookings`} accent="from-emerald-50 to-green-100 border-emerald-200 text-emerald-800" />
+        <Stat label="In pipeline" value={inr(pipelineRevenue)} sub={`${statusCounts.pending || 0} pending`} accent="from-amber-50 to-orange-100 border-amber-200 text-amber-800" />
+        <Stat label="Enquiries" value={String(enquiries.length)} sub={`${wonRate}% won`} accent="from-sky-50 to-blue-100 border-sky-200 text-sky-800" />
+        <Stat label="Customers" value={String(customerCount)} sub={`${newsletterCount} newsletter subs`} accent="from-violet-50 to-purple-100 border-violet-200 text-violet-800" />
       </div>
 
       {/* Bookings last 14 days */}
