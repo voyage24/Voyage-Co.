@@ -13,6 +13,7 @@ import FaqAndEntry from "@/components/products/FaqAndEntry";
 import CompareButton from "@/components/compare/CompareButton";
 import RecordView from "@/components/products/RecordView";
 import AddToItineraryButton from "@/components/itinerary/AddToItineraryButton";
+import PhotoGallery from "@/components/ui/PhotoGallery";
 import { productJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 export const revalidate = 60;
@@ -56,16 +57,8 @@ export default async function ExperienceDetailPage({ params }: { params: { id: s
         </div>
       </div>
 
-      {/* Hero image */}
-      <div className="relative rounded-2xl overflow-hidden aspect-[16/8] mb-8">
-        <Image src={exp.image} alt={exp.title} fill sizes="100vw" className="object-cover" priority />
-        <div className="absolute inset-0 bg-gradient-to-t from-vc-950/40 to-transparent" />
-        {exp.badge && (
-          <span className="absolute top-4 left-4 text-[10px] font-medium tracking-[0.15em] uppercase text-gold border border-gold/50 bg-vc-950/70 backdrop-blur-sm px-3 py-1 rounded-sm">
-            {exp.badge}
-          </span>
-        )}
-      </div>
+      {/* Hero */}
+      <PhotoGallery images={[exp.image]} alt={exp.title} badge={exp.badge} />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
         {/* Main */}
