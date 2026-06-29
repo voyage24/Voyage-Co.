@@ -23,10 +23,12 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
       <div className="print:hidden"><Navbar /></div>
       <main id="main">{children}</main>
       <div className="print:hidden"><Footer /></div>
-      <WhatsAppFAB />
-      <ScrollButtons />
-      <ConciergeChat />
-      <CompareBar />
+      <div className="print:hidden">
+        <WhatsAppFAB />
+        <ScrollButtons />
+        <ConciergeChat />
+        <CompareBar />
+      </div>
     </>
   );
 }
