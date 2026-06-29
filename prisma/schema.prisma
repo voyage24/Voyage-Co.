@@ -194,6 +194,7 @@ model AdminUser {
   email        String         @unique
   passwordHash String
   name         String?
+  role         String         @default("staff") // owner | staff
   createdAt    DateTime       @default(now())
   lastLoginAt  DateTime?
   sessions     AdminSession[]

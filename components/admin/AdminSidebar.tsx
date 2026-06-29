@@ -57,6 +57,7 @@ export const NAV_SECTIONS: { title: string | null; items: { href: string; label:
     title: "Configuration",
     items: [
       { href: "/admin/appearance", label: "Appearance" },
+      { href: "/admin/team", label: "Team" },
       { href: "/admin/settings", label: "Settings" },
     ],
   },
