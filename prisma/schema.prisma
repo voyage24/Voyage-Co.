@@ -343,6 +343,25 @@ model Cruise {
   updatedAt      DateTime @updatedAt
 }
 
+model Quote {
+  id            String    @id @default(cuid())
+  token         String    @unique
+  customerName  String
+  customerEmail String
+  title         String
+  lineItems     Json      // [{ label, amount }]
+  total         Int
+  currency      String    @default("INR")
+  notes         String?   @db.Text
+  validUntil    String?
+  status        String    @default("draft") // draft | sent | accepted | declined
+  respondedAt   DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([status])
+}
+
 model BlogPost {
   slug      String   @id
   title     String

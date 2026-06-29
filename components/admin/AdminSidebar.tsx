@@ -17,6 +17,7 @@ export const NAV_SECTIONS: { title: string | null; items: { href: string; label:
     items: [
       { href: "/admin/bookings", label: "Bookings" },
       { href: "/admin/enquiries", label: "Enquiries" },
+      { href: "/admin/quotes", label: "Quotes" },
       { href: "/admin/reviews", label: "Reviews" },
       { href: "/admin/customers", label: "Customers" },
     ],
