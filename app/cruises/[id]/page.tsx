@@ -63,7 +63,7 @@ export default async function CruiseDetailPage({ params }: { params: { id: strin
         <div className="lg:col-span-2">
           {/* Hero image */}
           <div className="relative rounded-2xl overflow-hidden aspect-[16/9] mb-6">
-            <Image src={cruise.image} alt={cruise.name} fill sizes="(max-width: 1024px) 100vw, 66vw" className="object-cover" priority />
+            <Image src={cruise.image} alt={cruise.name} fill sizes="(max-width: 1024px) 100vw, 66vw" className="object-cover ken-burns" priority />
             <div className="absolute inset-0 bg-gradient-to-t from-vc-950/40 to-transparent" />
             {cruise.badge && (
               <span className="absolute top-4 left-4 text-[9px] font-medium tracking-[0.15em] uppercase text-gold border border-gold/50 bg-vc-950/70 backdrop-blur-sm px-3 py-1 rounded-sm">

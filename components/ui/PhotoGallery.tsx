@@ -34,7 +34,7 @@ export default function PhotoGallery({ images, alt, badge, aspect = "aspect-[16/
   return (
     <>
       <div className={`relative rounded-2xl overflow-hidden ${aspect} mb-3 cursor-zoom-in group`} onClick={() => { setI(0); setOpen(true); }}>
-        <Image src={pics[0]} alt={alt} fill sizes="100vw" className="object-cover" priority />
+        <Image src={pics[0]} alt={alt} fill sizes="100vw" className="object-cover ken-burns" priority />
         <div className="absolute inset-0 bg-gradient-to-t from-vc-950/40 to-transparent" />
         {badge && (
           <span className="absolute top-4 left-4 text-[10px] font-medium tracking-[0.15em] uppercase text-gold border border-gold/50 bg-vc-950/70 backdrop-blur-sm px-3 py-1 rounded-sm">{badge}</span>

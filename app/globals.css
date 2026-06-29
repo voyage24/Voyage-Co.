@@ -166,6 +166,10 @@ textarea:focus-visible {
 .word-rise { display: inline-block; opacity: 0; animation: wordRise 0.7s cubic-bezier(0.22, 0.61, 0.36, 1) forwards; }
 @keyframes wordRise { from { opacity: 0; transform: translateY(0.5em); } to { opacity: 1; transform: none; } }
 
+/* Cinematic slow zoom for detail-page hero images. */
+.ken-burns { animation: kenBurns 22s ease-in-out infinite alternate; transform-origin: center; }
+@keyframes kenBurns { from { transform: scale(1); } to { transform: scale(1.09); } }
+
 /* Animated gold shimmer for accent labels. */
 .shimmer-gold {
   background: linear-gradient(100deg, rgb(var(--gold)) 0%, #e6d7b0 25%, rgb(var(--gold)) 50%, rgb(var(--gold)) 100%);
@@ -181,4 +185,5 @@ textarea:focus-visible {
   .lift:hover { transform: none; }
   .word-rise { opacity: 1; animation: none; }
   .shimmer-gold { animation: none; }
+  .ken-burns { animation: none; }
 }
