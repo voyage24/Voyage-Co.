@@ -25,6 +25,7 @@ export const EN: Dictionary = {
   "common.byDestination": "Browse by Destination",
   "common.offers": "Offers",
   "common.membership": "Membership",
+  "common.faq": "FAQ",
   "common.help": "Help",
   "common.privacy": "Privacy",
   "common.terms": "Terms",

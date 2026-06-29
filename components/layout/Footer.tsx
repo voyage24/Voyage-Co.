@@ -33,6 +33,7 @@ const FOOTER_LINKS = {
     { key: "common.requestCallback", href: "/callback" },
     { key: "common.giftJourney",   href: "/gift" },
     { key: "common.conciergeServices", href: "/services" },
+    { key: "common.faq",           href: "/faq" },
     { key: "common.help",          href: "/help" },
     { key: "common.cancellations", href: "/cancellations" },
     { key: "common.privacy",       href: "/privacy" },
