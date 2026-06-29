@@ -22,6 +22,7 @@ export const EN: Dictionary = {
   "common.giftJourney": "Gift a Journey",
   "common.conciergeServices": "Concierge Services",
   "common.findJourney": "Find Your Journey",
+  "common.byDestination": "Browse by Destination",
   "common.help": "Help",
   "common.privacy": "Privacy",
   "common.terms": "Terms",

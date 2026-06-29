@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { createTransport, FROM_CONCIERGE } from "@/lib/email/transport";
+import { notifyWhatsApp } from "@/lib/email/notify-admin";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -54,6 +55,8 @@ export async function POST(req: Request) {
   } catch (err) {
     console.error("Planner notification email failed:", err);
   }
+
+  await notifyWhatsApp(`🔔 New Plan Your Journey lead\n${name} (${email})${destination ? ` · ${destination}` : ""}`);
 
   return NextResponse.json({ ok: true });
 }
