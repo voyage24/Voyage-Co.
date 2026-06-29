@@ -145,25 +145,27 @@ export default function Navbar() {
 
       {/* Mobile/tablet menu */}
       {mobileOpen && (
-        <div className="lg:hidden bg-page border-t border-line px-6 py-8 space-y-5 animate-slide-down">
-          {MOBILE_LINKS.map(l => (
+        <div className="lg:hidden bg-page border-t border-line px-6 py-8 space-y-5 animate-slide-down overflow-hidden">
+          {MOBILE_LINKS.map((l, i) => (
             <Link
               key={l.href}
               href={l.href}
               onClick={() => setMobileOpen(false)}
-              className="block text-base font-normal tracking-[0.1em] uppercase text-ink-muted hover:text-ink transition-all duration-200 py-1.5 origin-left hover:scale-105 active:scale-95"
+              style={{ animationDelay: `${i * 50}ms`, animationFillMode: "both" }}
+              className="block text-base font-normal tracking-[0.1em] uppercase text-ink-muted hover:text-ink transition-all duration-200 py-1.5 origin-left hover:scale-105 active:scale-95 animate-slide-down"
             >
               {t(l.key)}
             </Link>
           ))}
-          <div className="py-1.5 flex items-center gap-5">
+          <div className="py-1.5 flex items-center gap-5 animate-slide-down" style={{ animationDelay: `${MOBILE_LINKS.length * 50}ms`, animationFillMode: "both" }}>
             <LanguageSelector tone="dark" />
             <CurrencySelector tone="dark" />
           </div>
           <Link
             href="/plan"
             onClick={() => setMobileOpen(false)}
-            className="block mt-4 text-center text-sm font-medium tracking-[0.16em] uppercase bg-ink text-page py-3.5 rounded-sm transition-transform duration-200 hover:scale-105 active:scale-95"
+            style={{ animationDelay: `${(MOBILE_LINKS.length + 1) * 50}ms`, animationFillMode: "both" }}
+            className="block mt-4 text-center text-sm font-medium tracking-[0.16em] uppercase bg-ink text-page py-3.5 rounded-sm transition-transform duration-200 hover:scale-105 active:scale-95 animate-slide-down"
           >
             {t("plan.title")}
           </Link>

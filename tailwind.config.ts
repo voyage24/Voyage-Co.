@@ -67,12 +67,14 @@ const config: Config = {
       animation: {
         "fade-in":   "fadeIn 0.4s ease-out",
         "fade-up":   "fadeUp 1s cubic-bezier(0.16,1,0.3,1)",
-        "slide-down":"slideDown 0.25s ease-out",
+        "slide-down":"slideDown 0.35s cubic-bezier(0.16,1,0.3,1)",
+        "slide-up":  "slideUp 0.45s cubic-bezier(0.16,1,0.3,1)",
       },
       keyframes: {
         fadeIn:    { "0%": { opacity: "0" }, "100%": { opacity: "1" } },
         fadeUp:    { "0%": { opacity: "0", transform: "translateY(24px)" }, "100%": { opacity: "1", transform: "translateY(0)" } },
-        slideDown: { "0%": { opacity: "0", transform: "translateY(-8px)" }, "100%": { opacity: "1", transform: "translateY(0)" } },
+        slideDown: { "0%": { opacity: "0", transform: "translateY(-14px)" }, "100%": { opacity: "1", transform: "translateY(0)" } },
+        slideUp:   { "0%": { opacity: "0", transform: "translateY(100%)" }, "100%": { opacity: "1", transform: "translateY(0)" } },
       },
     },
   },

@@ -49,13 +49,18 @@ export default function SearchOverlay({ tone = "dark", triggerSize = 18 }: { ton
 
   return (
     <>
-      <button
-        onClick={() => setOpen(true)}
-        aria-label={t("search.label")}
-        className={`inline-flex items-center justify-center leading-none transition-all duration-200 hover:scale-110 active:scale-95 ${tone === "light" ? "text-white/90 hover:text-white" : "text-ink-muted hover:text-ink"}`}
-      >
-        <Search size={triggerSize} />
-      </button>
+      <span className="relative group inline-flex">
+        <button
+          onClick={() => setOpen(true)}
+          aria-label={t("search.label")}
+          className={`inline-flex items-center justify-center leading-none transition-all duration-200 hover:scale-110 active:scale-95 ${tone === "light" ? "text-white/90 hover:text-white" : "text-ink-muted hover:text-ink"}`}
+        >
+          <Search size={triggerSize} />
+        </button>
+        <span className="hidden lg:block pointer-events-none absolute left-1/2 -translate-x-1/2 top-full mt-2.5 px-2.5 py-1 bg-vc-950 text-white text-[10px] tracking-[0.12em] uppercase whitespace-nowrap rounded-sm opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 z-[60]">
+          {t("search.label")}
+        </span>
+      </span>
 
       {open && (
         <div className="fixed inset-0 z-[60] flex items-start justify-center px-4 pt-20 sm:pt-28">
