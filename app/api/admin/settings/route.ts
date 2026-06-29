@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/admin/requireAdmin";
 import { SETTING_DEFAULTS } from "@/lib/site-settings";
@@ -26,7 +26,9 @@ export async function POST(req: NextRequest) {
     )
   );
 
-  // The theme is injected in the root layout, so refresh the cached pages.
+  // The theme is injected in the root layout, so refresh the cached pages
+  // and the cached settings lookup.
+  revalidateTag("site-settings");
   revalidatePath("/", "layout");
 
   return NextResponse.json({ ok: true });

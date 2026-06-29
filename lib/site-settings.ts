@@ -1,4 +1,5 @@
 import { cache } from "react";
+import { unstable_cache } from "next/cache";
 import { prisma } from "@/lib/prisma";
 
 // Every customisable setting, with its default (which matches the design as
@@ -38,19 +39,28 @@ export const FONT_OPTIONS = [
   "Lora", "Libre Baskerville", "Montserrat", "Source Sans 3", "Marcellus", "Jost",
 ];
 
-// Fetched once per request.
-export const getSiteSettings = cache(async (): Promise<SiteSettings> => {
-  const out = { ...SETTING_DEFAULTS } as Record<string, string>;
-  try {
-    const rows = await prisma.siteSetting.findMany();
-    for (const row of rows) {
-      if (row.key in SETTING_DEFAULTS && row.value != null) out[row.key] = row.value;
+// Cached across requests in the Data Cache (settings change rarely) so the
+// root layout no longer queries the DB on every navigation. Invalidated by
+// revalidateTag("site-settings") whenever settings are saved in the admin.
+const loadSiteSettings = unstable_cache(
+  async (): Promise<SiteSettings> => {
+    const out = { ...SETTING_DEFAULTS } as Record<string, string>;
+    try {
+      const rows = await prisma.siteSetting.findMany();
+      for (const row of rows) {
+        if (row.key in SETTING_DEFAULTS && row.value != null) out[row.key] = row.value;
+      }
+    } catch {
+      // If the table doesn't exist yet (pre-migration), fall back to defaults.
     }
-  } catch {
-    // If the table doesn't exist yet (pre-migration), fall back to defaults.
-  }
-  return out as SiteSettings;
-});
+    return out as SiteSettings;
+  },
+  ["site-settings"],
+  { revalidate: 300, tags: ["site-settings"] },
+);
+
+// React cache() also dedupes within a single request.
+export const getSiteSettings = cache((): Promise<SiteSettings> => loadSiteSettings());
 
 // "#F4F0E9" -> "244 240 233" for `rgb(var(--x))` usage.
 export function hexToRgbTriplet(hex: string): string {
