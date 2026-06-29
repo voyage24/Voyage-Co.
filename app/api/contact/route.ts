@@ -3,6 +3,7 @@ import nodemailer from "nodemailer";
 import { EN, DICTIONARIES } from "@/lib/i18n/dictionaries";
 import { renderConciergeEmailHTML, renderConciergeEmailText } from "@/lib/email/template";
 import { prisma } from "@/lib/prisma";
+import { notifyWhatsApp } from "@/lib/email/notify-admin";
 
 // Appended to every outgoing email — logo, web/phone, and a confidentiality
 // notice. Kept in English regardless of recipient language, consistent with
@@ -45,6 +46,8 @@ export async function POST(req: Request) {
   } catch (err) {
     console.error("Failed to store contact enquiry:", err);
   }
+
+  await notifyWhatsApp(`🔔 New contact enquiry\n${name} (${email})\n${subject}`);
 
   const port = Number(process.env.SMTP_PORT ?? 587);
   const transporter = nodemailer.createTransport({
