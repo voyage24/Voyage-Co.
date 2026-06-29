@@ -46,8 +46,23 @@ export default function BookingForm({ item, soldOut = false }: { item: BookingIt
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (submitting) return;
-    setSubmitting(true);
     setError("");
+
+    // All guest details are mandatory (dates + guests only when the item
+    // needs them). Belt-and-braces over the native `required` attributes.
+    if (!form.name.trim() || !form.email.trim() || !form.phone.trim()) {
+      setError(t("booking.fillAllFields")); return;
+    }
+    if (item.needsDates) {
+      if (!form.checkIn || !form.checkOut || !form.guests || form.guests < 1) {
+        setError(t("booking.fillAllFields")); return;
+      }
+      if (new Date(form.checkOut) <= new Date(form.checkIn)) {
+        setError(t("booking.checkoutAfterCheckin")); return;
+      }
+    }
+
+    setSubmitting(true);
     const ref = "VC-" + Math.random().toString(36).slice(2, 8).toUpperCase();
     try {
       const res = await fetch("/api/booking", {
@@ -121,16 +136,16 @@ export default function BookingForm({ item, soldOut = false }: { item: BookingIt
         <h2 className="font-serif text-2xl font-light text-ink mb-2">{t("booking.guestDetails")}</h2>
 
         <div>
-          <label className={labelClass}>{t("booking.fullName")}</label>
+          <label className={labelClass}>{t("booking.fullName")} *</label>
           <input required value={form.name} onChange={set("name")} placeholder={t("booking.fullNamePlaceholder")} className={inputClass} />
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className={labelClass}>{t("booking.email")}</label>
+            <label className={labelClass}>{t("booking.email")} *</label>
             <input required type="email" value={form.email} onChange={set("email")} placeholder="you@example.com" className={inputClass} />
           </div>
           <div>
-            <label className={labelClass}>{t("booking.phone")}</label>
+            <label className={labelClass}>{t("booking.phone")} *</label>
             <input required type="tel" value={form.phone} onChange={set("phone")} placeholder="+91 98765 43210" className={inputClass} />
           </div>
         </div>
@@ -138,16 +153,16 @@ export default function BookingForm({ item, soldOut = false }: { item: BookingIt
         {item.needsDates && (
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
-              <label className={labelClass}><Calendar size={11} className="inline mr-1" />{t("hotelSearch.checkIn")}</label>
+              <label className={labelClass}><Calendar size={11} className="inline mr-1" />{t("hotelSearch.checkIn")} *</label>
               <input required type="date" value={form.checkIn} onChange={set("checkIn")} className={inputClass} />
             </div>
             <div>
-              <label className={labelClass}><Calendar size={11} className="inline mr-1" />{t("hotelSearch.checkOut")}</label>
+              <label className={labelClass}><Calendar size={11} className="inline mr-1" />{t("hotelSearch.checkOut")} *</label>
               <input required type="date" value={form.checkOut} onChange={set("checkOut")} className={inputClass} />
             </div>
             <div>
-              <label className={labelClass}><Users size={11} className="inline mr-1" />{t("hotelSearch.guests")}</label>
-              <input type="number" min={1} max={12} value={form.guests} onChange={set("guests")} className={inputClass} />
+              <label className={labelClass}><Users size={11} className="inline mr-1" />{t("hotelSearch.guests")} *</label>
+              <input required type="number" min={1} max={12} value={form.guests} onChange={set("guests")} className={inputClass} />
             </div>
           </div>
         )}

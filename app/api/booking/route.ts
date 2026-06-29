@@ -18,11 +18,18 @@ export async function POST(req: Request) {
   const b = await req.json().catch(() => ({}));
   const { name, email, phone, itemType, itemId, itemTitle, image, total, checkIn, checkOut, guests, notes, ref } = b ?? {};
 
-  if (!name || !email || typeof email !== "string" || !EMAIL_RE.test(email)) {
+  if (!name || !String(name).trim() || !email || typeof email !== "string" || !EMAIL_RE.test(email)) {
     return NextResponse.json({ error: "Name and a valid email are required" }, { status: 400 });
+  }
+  if (!phone || typeof phone !== "string" || !phone.trim()) {
+    return NextResponse.json({ error: "A phone number is required" }, { status: 400 });
   }
   if (!itemType || !itemId || !itemTitle) {
     return NextResponse.json({ error: "Missing booking item" }, { status: 400 });
+  }
+  // Hotels are the only dated reservation — require dates + a valid guest count.
+  if (itemType === "hotel" && (!checkIn || !checkOut || !(Number(guests) >= 1))) {
+    return NextResponse.json({ error: "Check-in, check-out and number of guests are required" }, { status: 400 });
   }
 
   // Reject if the item has a capacity and it's already full.
