@@ -13,7 +13,7 @@ export default async function AdminBookingsPage() {
         Every reservation made on the site. Confirm a booking once it&apos;s secured (payment confirmation will
         automate this later), or cancel it.
       </p>
-      <BookingsList bookings={bookings} />
+      <BookingsList bookings={bookings.map(b => ({ ...b, documents: b.documents as { label: string; url: string }[] }))} />
     </div>
   );
 }

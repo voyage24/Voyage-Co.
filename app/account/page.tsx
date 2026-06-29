@@ -7,6 +7,7 @@ import CancelBookingButton from "@/components/account/CancelBookingButton";
 import SavedList from "@/components/account/SavedList";
 import ShareBoardButton from "@/components/account/ShareBoardButton";
 import SavedSearchesList from "@/components/account/SavedSearchesList";
+import BookingActions from "@/components/account/BookingActions";
 import Price from "@/components/ui/Price";
 
 export const dynamic = "force-dynamic";
@@ -54,7 +55,8 @@ export default async function AccountPage() {
       ) : (
         <div className="space-y-3">
           {bookings.map(b => (
-            <div key={b.id} className="flex flex-wrap items-center justify-between gap-3 bg-panel border border-line rounded-xl p-5">
+            <div key={b.id} className="bg-panel border border-line rounded-xl p-5">
+             <div className="flex flex-wrap items-center justify-between gap-3">
               <div className="min-w-0">
                 <p className="font-serif text-lg font-light text-ink truncate">{b.itemTitle}</p>
                 <p className="text-xs text-ink-faint font-light mt-0.5">
@@ -73,6 +75,10 @@ export default async function AccountPage() {
                   <Link href={`/account/journey/${b.reference}`} className="text-xs tracking-[0.12em] uppercase text-gold link-underline whitespace-nowrap">Journal →</Link>
                 )}
               </div>
+             </div>
+             {b.status !== "cancelled" && (
+               <BookingActions reference={b.reference} documents={(b.documents as { label: string; url: string }[]) ?? []} />
+             )}
             </div>
           ))}
         </div>

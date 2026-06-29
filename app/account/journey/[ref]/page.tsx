@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { getCurrentCustomer } from "@/lib/customer/session";
+import PrintButton from "@/components/account/PrintButton";
 
 export const dynamic = "force-dynamic";
 
@@ -20,9 +21,12 @@ export default async function JourneyJournalPage({ params }: { params: { ref: st
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20">
-      <Link href="/account" className="inline-flex items-center gap-2 text-xs tracking-[0.1em] uppercase text-ink-muted hover:text-ink mb-8 transition-colors">
-        <ArrowLeft size={15} /> Back to my account
-      </Link>
+      <div className="flex items-center justify-between mb-8 print:hidden">
+        <Link href="/account" className="inline-flex items-center gap-2 text-xs tracking-[0.1em] uppercase text-ink-muted hover:text-ink transition-colors">
+          <ArrowLeft size={15} /> Back to my account
+        </Link>
+        <PrintButton label="Save as PDF" />
+      </div>
 
       {booking.image && (
         <div className="relative rounded-2xl overflow-hidden aspect-[16/9] mb-8">

@@ -16,6 +16,7 @@ export type BookingRow = {
   guests: number;
   total: number;
   status: string;
+  documents?: { label: string; url: string }[];
   createdAt: string | Date;
 };
 
@@ -30,8 +31,15 @@ export default function BookingsList({ bookings }: { bookings: BookingRow[] }) {
   const [filter, setFilter] = useState<"all" | "pending" | "confirmed" | "cancelled">("all");
   const [openId, setOpenId] = useState<string | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
+  const [doc, setDoc] = useState({ label: "", url: "" });
 
   const shown = bookings.filter(b => filter === "all" || b.status === filter);
+
+  const saveDocs = async (b: BookingRow, documents: { label: string; url: string }[]) => {
+    setBusy(b.id);
+    await fetch(`/api/admin/bookings/${b.id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ documents }) });
+    setBusy(null); router.refresh();
+  };
 
   const setStatus = async (id: string, status: string) => {
     setBusy(id);
@@ -88,6 +96,27 @@ export default function BookingsList({ bookings }: { bookings: BookingRow[] }) {
                     <p><span className="text-gray-400">Item:</span> {b.itemTitle} ({b.type})</p>
                     {(b.checkIn || b.checkOut) && <p><span className="text-gray-400">Dates:</span> {b.checkIn || "?"}{b.checkOut ? ` → ${b.checkOut}` : ""}</p>}
                     <p><span className="text-gray-400">Guests:</span> {b.guests} · <span className="text-gray-400">Total:</span> ₹{b.total.toLocaleString("en-IN")}</p>
+
+                    {/* Documents — vouchers, tickets, itineraries the customer can download from their account */}
+                    <div className="pt-2">
+                      <p className="text-xs text-gray-400 mb-1">Documents</p>
+                      {(b.documents ?? []).length > 0 && (
+                        <ul className="mb-2 space-y-1">
+                          {(b.documents ?? []).map((d, i) => (
+                            <li key={i} className="flex items-center gap-2 text-xs">
+                              <a href={d.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">{d.label}</a>
+                              <button onClick={() => saveDocs(b, (b.documents ?? []).filter((_, idx) => idx !== i))} className="text-red-500">remove</button>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                      <div className="flex flex-wrap gap-2">
+                        <input value={doc.label} onChange={e => setDoc(d => ({ ...d, label: e.target.value }))} placeholder="Label (e.g. Voucher)" className="px-2 py-1 border border-gray-300 rounded text-xs" />
+                        <input value={doc.url} onChange={e => setDoc(d => ({ ...d, url: e.target.value }))} placeholder="https://… (paste link)" className="px-2 py-1 border border-gray-300 rounded text-xs flex-1 min-w-[180px]" />
+                        <button disabled={busy === b.id || !doc.url} onClick={() => { saveDocs(b, [...(b.documents ?? []), { label: doc.label || "Document", url: doc.url }]); setDoc({ label: "", url: "" }); }} className="text-xs px-3 py-1 rounded bg-gray-900 text-white disabled:opacity-50">Add</button>
+                      </div>
+                    </div>
+
                     <div className="flex flex-wrap gap-2 pt-3">
                       {b.status !== "confirmed" && <button disabled={busy === b.id} onClick={() => setStatus(b.id, "confirmed")} className="text-xs px-3 py-1.5 rounded-md bg-emerald-700 hover:bg-emerald-800 text-white disabled:opacity-50">Confirm</button>}
                       {b.status !== "pending" && <button disabled={busy === b.id} onClick={() => setStatus(b.id, "pending")} className="text-xs px-3 py-1.5 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50">Mark pending</button>}
