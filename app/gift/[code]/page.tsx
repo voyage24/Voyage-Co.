@@ -37,8 +37,8 @@ export default async function GiftCardPage({ params }: { params: { code: string 
         </div>
 
         <div className="relative px-8 sm:px-14 py-12 text-center text-[#2a241c]">
-          <div className="relative h-7 w-40 mx-auto mb-2">
-            <Image src="/logo-navy.png" alt="Voyages & Co." fill sizes="160px" className="object-contain" />
+          <div className="relative h-12 w-64 max-w-full mx-auto mb-3">
+            <Image src="/logo-navy.png" alt="Voyages & Co." fill sizes="256px" className="object-contain" />
           </div>
           <p className="text-[10px] tracking-[0.34em] uppercase text-[#8a6d3b] mb-8">The gift of travel</p>
 

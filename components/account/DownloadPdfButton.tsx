@@ -16,9 +16,9 @@ export type PdfData = {
   footer?: string;           // fine print at the base
 };
 
-// Fetches a remote image and returns a data URL + format. Returns null on any
-// failure (e.g. CORS) so the PDF still generates without the photo.
-async function loadImage(src: string): Promise<{ url: string; fmt: "JPEG" | "PNG" } | null> {
+// Fetches an image and returns a data URL, format and natural dimensions.
+// Returns null on any failure (e.g. CORS) so the PDF still generates without it.
+async function loadImage(src: string): Promise<{ url: string; fmt: "JPEG" | "PNG"; w: number; h: number } | null> {
   try {
     const res = await fetch(src, { mode: "cors" });
     if (!res.ok) return null;
@@ -29,7 +29,13 @@ async function loadImage(src: string): Promise<{ url: string; fmt: "JPEG" | "PNG
       fr.onerror = reject;
       fr.readAsDataURL(blob);
     });
-    return { url, fmt: blob.type.includes("png") ? "PNG" : "JPEG" };
+    const dims = await new Promise<{ w: number; h: number }>((resolve) => {
+      const img = new window.Image();
+      img.onload = () => resolve({ w: img.naturalWidth, h: img.naturalHeight });
+      img.onerror = () => resolve({ w: 0, h: 0 });
+      img.src = url;
+    });
+    return { url, fmt: blob.type.includes("png") ? "PNG" : "JPEG", w: dims.w, h: dims.h };
   } catch {
     return null;
   }
@@ -61,18 +67,29 @@ export default function DownloadPdfButton({ data, label = "Download PDF" }: { da
       }
 
       // Header band (sits below the photo, or at the very top if none loaded)
+      const bandH = 27;
       doc.setFillColor(33, 29, 24);
-      doc.rect(0, top, W, 22, "F");
-      doc.setTextColor(244, 240, 233);
-      doc.setFont("times", "normal");
-      doc.setFontSize(20);
-      doc.text("Voyages & Co.", M, top + 12);
+      doc.rect(0, top, W, bandH, "F");
+
+      // The white logo, large, on the dark band — clearly visible (falls back
+      // to the wordmark text if the logo can't be loaded).
+      const logo = await loadImage("/logo-white.png");
+      if (logo && logo.w && logo.h) {
+        const H = 14;
+        const Wd = H * (logo.w / logo.h);
+        doc.addImage(logo.url, logo.fmt, M, top + 4, Wd, H);
+      } else {
+        doc.setTextColor(244, 240, 233);
+        doc.setFont("times", "normal");
+        doc.setFontSize(22);
+        doc.text("Voyages & Co.", M, top + 14);
+      }
       doc.setTextColor(201, 174, 119);
       doc.setFont("helvetica", "normal");
       doc.setFontSize(8);
-      doc.text(data.subtitle.toUpperCase(), M, top + 18, { charSpace: 1.2 });
+      doc.text(data.subtitle.toUpperCase(), M, top + bandH - 4.5, { charSpace: 1.2 });
 
-      let y = top + 38;
+      let y = top + bandH + 16;
 
       if (data.heading) {
         if (data.headingLabel) {
