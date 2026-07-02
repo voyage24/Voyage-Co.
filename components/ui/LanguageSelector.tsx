@@ -69,7 +69,7 @@ export default function LanguageSelector({ tone = "dark" }: { tone?: "dark" | "l
   const maxH = (dropStyle as { maxHeight?: number }).maxHeight;
 
   return (
-    <div ref={wrapRef} className="relative">
+    <div ref={wrapRef} className="relative group">
       <button
         type="button"
         onClick={() => { calcPos(); setOpen(v => !v); }}
@@ -80,6 +80,11 @@ export default function LanguageSelector({ tone = "dark" }: { tone?: "dark" | "l
         {language.code.toUpperCase()}
         <ChevronDown size={12} className={`transition-transform ${open ? "rotate-180" : ""}`} />
       </button>
+      {!open && (
+        <span className="hidden lg:block pointer-events-none absolute left-1/2 -translate-x-1/2 top-full mt-2.5 px-2.5 py-1 bg-vc-950 text-white text-[10px] tracking-[0.12em] uppercase whitespace-nowrap rounded-sm opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 z-[9999]">
+          {t("languageSelector.selectLanguage")}
+        </span>
+      )}
 
       {open && mounted && createPortal(
         <div

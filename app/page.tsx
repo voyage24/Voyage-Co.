@@ -15,15 +15,26 @@ import { organizationJsonLd, websiteJsonLd } from "@/lib/seo";
 
 export const revalidate = 60;
 
-export default async function Home() {
-  const [hotels, cruises, trains, packages, experiences, testimonials] = await Promise.all([
+async function getHomeData() {
+  try {
+    return await Promise.all([
     prisma.hotel.findMany({ where: { published: true } }),
     prisma.cruise.findMany({ where: { published: true } }),
     prisma.train.findMany({ where: { published: true } }),
     prisma.package.findMany({ where: { published: true }, orderBy: [{ featured: "desc" }, { createdAt: "asc" }] }),
     prisma.experience.findMany({ where: { published: true } }),
     prisma.testimonial.findMany({ where: { published: true }, orderBy: { sortOrder: "asc" } }),
-  ]);
+    ]);
+  } catch (error) {
+    if (process.env.NODE_ENV !== "production") {
+      console.warn("Homepage catalog data unavailable; rendering with empty local data.", error);
+    }
+    return [[], [], [], [], [], []];
+  }
+}
+
+export default async function Home() {
+  const [hotels, cruises, trains, packages, experiences, testimonials] = await getHomeData();
 
   return (
     <>

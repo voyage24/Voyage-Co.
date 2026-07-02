@@ -1,0 +1,14 @@
+
+> holidaywise@0.1.0 dev
+> next dev
+
+  ▲ Next.js 14.2.30
+  - Local:        http://localhost:3000
+  - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 4s
+ ○ Compiling / ...
+ ✓ Compiled / in 5.3s (1067 modules)
+ GET / 500 in 5934ms
+ ✓ Compiled in 671ms (504 modules)
