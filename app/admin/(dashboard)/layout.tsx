@@ -11,7 +11,7 @@ export default async function AdminDashboardLayout({ children }: { children: Rea
   if (!user) redirect("/admin/login");
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50/40">
+    <div className="flex min-h-screen bg-[#f6f6f3]">
       <AdminSidebar />
       <div className="flex-1 flex flex-col">
         <AdminTopbar email={user?.email ?? ""} />

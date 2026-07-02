@@ -182,7 +182,7 @@ textarea:focus-visible {
 
 /* Admin: a gold accent bar on every page heading, applied once here so each
    page doesn't need its own markup. */
-.admin-main h1 { border-left: 3px solid #c9ae77; padding-left: 0.7rem; line-height: 1.15; }
+.admin-main h1 { border-left: 5px solid #FFD400; padding-left: 0.7rem; line-height: 1.15; font-weight: 700; }
 
 /* Cinematic slow zoom + gentle diagonal drift for detail-page hero images.
    Translations stay within the scale headroom so edges never show. */

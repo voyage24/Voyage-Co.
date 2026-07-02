@@ -81,10 +81,10 @@ export default function AdminSidebar() {
   const pathname = usePathname();
 
   return (
-    <nav className="hidden lg:flex flex-col w-60 shrink-0 bg-gradient-to-b from-[#1a130d] via-gray-950 to-[#0c0a07] text-gray-300 min-h-screen">
+    <nav className="hidden lg:flex flex-col w-60 shrink-0 bg-[#111110] text-gray-300 min-h-screen">
       <div className="px-5 py-5 border-b border-white/10">
         <p className="font-serif text-lg font-light text-white leading-none">Voyages &amp; Co.</p>
-        <p className="text-[10px] tracking-[0.3em] uppercase text-[#c9ae77] mt-1">Admin</p>
+        <p className="text-[10px] tracking-[0.3em] uppercase text-[#FFD400] mt-1 font-semibold">Admin</p>
       </div>
       <div className="flex-1 overflow-y-auto p-3 space-y-5">
         {NAV_SECTIONS.map((section, i) => (
@@ -101,11 +101,11 @@ export default function AdminSidebar() {
                       href={item.href}
                       className={`group flex items-center gap-3 pl-3 pr-3 py-2 rounded-md text-sm border-l-2 transition-colors ${
                         active
-                          ? "bg-white/[0.07] text-white border-[#c9ae77]"
+                          ? "bg-[#FFD400]/[0.14] text-white border-[#FFD400]"
                           : "text-gray-400 border-transparent hover:bg-white/5 hover:text-white"
                       }`}
                     >
-                      <item.icon size={16} className={active ? "text-[#c9ae77]" : "text-gray-500 group-hover:text-gray-300"} />
+                      <item.icon size={16} className={active ? "text-[#FFD400]" : "text-gray-500 group-hover:text-gray-300"} />
                       {item.label}
                     </Link>
                   </li>

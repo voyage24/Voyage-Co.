@@ -58,7 +58,7 @@ export default async function AdminDashboardPage() {
         </div>
         <div className="flex flex-wrap gap-2">
           {QUICK.map(q => (
-            <Link key={q.href} href={q.href} className="inline-flex items-center gap-1.5 text-xs px-3 py-2 rounded-md bg-gray-900 text-white hover:bg-gray-800">
+            <Link key={q.href} href={q.href} className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-2 rounded-md bg-black text-white hover:bg-[#FFD400] hover:text-black transition-colors">
               <Plus size={14} /> {q.label}
             </Link>
           ))}
