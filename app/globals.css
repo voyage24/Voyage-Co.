@@ -26,6 +26,40 @@
   --font-heading: 'Inter', system-ui, sans-serif;
 }
 
+/* Dark mode — redefine the theme variables the whole site is built on, so a
+   single class on <html> flips every page. More specific than :root (and than
+   the admin-injected :root overrides), so it always wins. */
+html.dark {
+  color-scheme: dark;
+  --page: 23 21 19;
+  --panel: 32 29 26;
+  --panel-soft: 43 39 35;
+  --panel-raised: 37 34 30;
+  --line: 62 57 50;
+  --line-strong: 94 86 76;
+  --ink: 240 235 226;
+  --ink-muted: 196 188 176;
+  --ink-faint: 148 140 128;
+  --gold: 200 170 120;
+  --gold-soft: 214 190 145;
+}
+
+/* Admin surfaces use fixed grays rather than the theme vars, so remap the
+   common ones under dark for the whole admin at once. */
+.dark .admin-root .bg-white { background-color: #1c1b18 !important; }
+.dark .admin-root .bg-gray-50 { background-color: #151412 !important; }
+.dark .admin-root .bg-gray-100 { background-color: #2a2825 !important; }
+.dark .admin-root .text-gray-900 { color: #ece7de !important; }
+.dark .admin-root .text-gray-800 { color: #e3ded4 !important; }
+.dark .admin-root .text-gray-700 { color: #d0cabe !important; }
+.dark .admin-root .text-gray-600 { color: #b6afa2 !important; }
+.dark .admin-root .text-gray-500 { color: #98917f !important; }
+.dark .admin-root .text-gray-400 { color: #837c6e !important; }
+.dark .admin-root .border-gray-100 { border-color: rgba(255,255,255,0.06) !important; }
+.dark .admin-root .border-gray-200 { border-color: rgba(255,255,255,0.10) !important; }
+.dark .admin-root .border-gray-300 { border-color: rgba(255,255,255,0.14) !important; }
+.dark .admin-root .divide-gray-100 > * + * { border-color: rgba(255,255,255,0.07) !important; }
+
 html {
   font-size: 100%;
   scroll-behavior: smooth;
