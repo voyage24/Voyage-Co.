@@ -30,6 +30,7 @@ export default async function JourneyJournalPage({ params }: { params: { ref: st
           data={{
             filename: `journal-${booking.reference}.pdf`,
             subtitle: "Journey Journal",
+            image: booking.image || undefined,
             heading: booking.itemTitle,
             headingLabel: "Your journey",
             intro: `A keepsake of your travels, ${firstName}.`,

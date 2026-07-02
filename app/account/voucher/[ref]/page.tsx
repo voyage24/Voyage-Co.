@@ -32,6 +32,7 @@ export default async function VoucherPage({ params }: { params: { ref: string } 
           data={{
             filename: `voucher-${b.reference}.pdf`,
             subtitle: "Travel Voucher",
+            image: b.image || undefined,
             headingLabel: "Booking reference",
             heading: b.reference,
             rows: [

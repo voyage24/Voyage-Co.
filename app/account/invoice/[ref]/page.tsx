@@ -38,6 +38,7 @@ export default async function InvoicePage({ params }: { params: { ref: string } 
           data={{
             filename: `${invoiceNo}.pdf`,
             subtitle: "Tax Invoice",
+            image: b.image || undefined,
             rows: [
               { label: "Invoice no.", value: invoiceNo },
               { label: "Date", value: issued.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" }) },

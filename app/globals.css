@@ -222,6 +222,16 @@ textarea:focus-visible {
   0%   { filter: drop-shadow(0 0 6px rgba(37, 211, 102, 0.55)); }
   100% { filter: drop-shadow(0 0 18px rgba(37, 211, 102, 1)); }
 }
+/* Gold glow on an icon only — drop-shadow hugs the glyph, so the scroll arrow
+   glows rather than its whole button box. */
+.gold-glow {
+  filter: drop-shadow(0 0 5px rgba(201, 174, 119, 0.9));
+  animation: goldIconGlow 3.4s ease-in-out infinite alternate;
+}
+@keyframes goldIconGlow {
+  0%   { filter: drop-shadow(0 0 3px rgba(201, 174, 119, 0.6)); }
+  100% { filter: drop-shadow(0 0 10px rgba(201, 174, 119, 1)); }
+}
 
 /* Print — vouchers, invoices and journals rely on dark headers, gold accents
    and photos. Mobile browsers drop backgrounds/images by default (turning those
@@ -244,5 +254,5 @@ textarea:focus-visible {
   .word-rise { opacity: 1; animation: none; }
   .shimmer-gold { animation: none; }
   .ken-burns { animation: none; }
-  .atelier-glow, .wa-glow { animation: none; }
+  .atelier-glow, .wa-glow, .gold-glow { animation: none; }
 }

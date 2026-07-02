@@ -7,6 +7,7 @@ export type PdfRow = { label: string; value: string };
 export type PdfData = {
   filename: string;
   subtitle: string;          // header eyebrow, e.g. "Travel Voucher"
+  image?: string;            // destination photo banner at the top
   headingLabel?: string;     // small centred label above the heading
   heading?: string;          // large centred value (e.g. the reference)
   intro?: string;            // a short lead paragraph
@@ -14,6 +15,25 @@ export type PdfData = {
   paragraphs?: string[];     // free narrative (journal)
   footer?: string;           // fine print at the base
 };
+
+// Fetches a remote image and returns a data URL + format. Returns null on any
+// failure (e.g. CORS) so the PDF still generates without the photo.
+async function loadImage(src: string): Promise<{ url: string; fmt: "JPEG" | "PNG" } | null> {
+  try {
+    const res = await fetch(src, { mode: "cors" });
+    if (!res.ok) return null;
+    const blob = await res.blob();
+    const url = await new Promise<string>((resolve, reject) => {
+      const fr = new FileReader();
+      fr.onload = () => resolve(fr.result as string);
+      fr.onerror = reject;
+      fr.readAsDataURL(blob);
+    });
+    return { url, fmt: blob.type.includes("png") ? "PNG" : "JPEG" };
+  } catch {
+    return null;
+  }
+}
 
 // Generates a real, downloadable PDF in the browser (works on phones, unlike
 // window.print() which silently no-ops in many mobile / in-app browsers).
@@ -30,19 +50,29 @@ export default function DownloadPdfButton({ data, label = "Download PDF" }: { da
       const W = 210;
       const M = 16;
 
-      // Header band
+      // Optional destination photo banner across the top.
+      let top = 0;
+      if (data.image) {
+        const img = await loadImage(data.image);
+        if (img) {
+          doc.addImage(img.url, img.fmt, 0, 0, W, 60);
+          top = 60;
+        }
+      }
+
+      // Header band (sits below the photo, or at the very top if none loaded)
       doc.setFillColor(33, 29, 24);
-      doc.rect(0, 0, W, 30, "F");
+      doc.rect(0, top, W, 22, "F");
       doc.setTextColor(244, 240, 233);
       doc.setFont("times", "normal");
-      doc.setFontSize(22);
-      doc.text("Voyages & Co.", M, 15);
+      doc.setFontSize(20);
+      doc.text("Voyages & Co.", M, top + 12);
       doc.setTextColor(201, 174, 119);
       doc.setFont("helvetica", "normal");
       doc.setFontSize(8);
-      doc.text(data.subtitle.toUpperCase(), M, 22, { charSpace: 1.2 });
+      doc.text(data.subtitle.toUpperCase(), M, top + 18, { charSpace: 1.2 });
 
-      let y = 46;
+      let y = top + 38;
 
       if (data.heading) {
         if (data.headingLabel) {
