@@ -205,22 +205,22 @@ textarea:focus-visible {
 /* Floating-control halos — a slow, breathing glow so the concierge & WhatsApp
    buttons feel like a lit atelier window rather than a loud notification. */
 .atelier-glow {
-  box-shadow: 0 8px 30px -8px rgba(201, 174, 119, 0.5), 0 0 0 1px rgba(201, 174, 119, 0.28);
-  animation: atelierGlow 3.6s ease-in-out infinite alternate;
+  box-shadow: 0 0 24px 3px rgba(201, 174, 119, 0.6), 0 0 0 1px rgba(201, 174, 119, 0.45);
+  animation: atelierGlow 3.4s ease-in-out infinite alternate;
 }
 @keyframes atelierGlow {
-  0%   { box-shadow: 0 6px 22px -8px rgba(201, 174, 119, 0.35), 0 0 0 1px rgba(201, 174, 119, 0.20); }
-  100% { box-shadow: 0 10px 38px -6px rgba(201, 174, 119, 0.72), 0 0 0 1px rgba(201, 174, 119, 0.45); }
+  0%   { box-shadow: 0 0 16px 1px rgba(201, 174, 119, 0.45), 0 0 0 1px rgba(201, 174, 119, 0.32); }
+  100% { box-shadow: 0 0 40px 8px rgba(201, 174, 119, 0.95), 0 0 0 1.5px rgba(201, 174, 119, 0.7); }
 }
 /* drop-shadow follows the SVG circle's alpha, so the halo stays round even
    though the site forces square corners everywhere. */
 .wa-glow {
-  filter: drop-shadow(0 4px 12px rgba(37, 211, 102, 0.55));
-  animation: waGlow 3.6s ease-in-out infinite alternate;
+  filter: drop-shadow(0 0 10px rgba(37, 211, 102, 0.75));
+  animation: waGlow 3.4s ease-in-out infinite alternate;
 }
 @keyframes waGlow {
-  0%   { filter: drop-shadow(0 3px 8px rgba(37, 211, 102, 0.4)); }
-  100% { filter: drop-shadow(0 6px 18px rgba(37, 211, 102, 0.85)); }
+  0%   { filter: drop-shadow(0 0 6px rgba(37, 211, 102, 0.55)); }
+  100% { filter: drop-shadow(0 0 18px rgba(37, 211, 102, 1)); }
 }
 
 @media (prefers-reduced-motion: reduce) {

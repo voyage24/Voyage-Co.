@@ -552,12 +552,10 @@ export default function FlightSearch({
     { from: null, to: null, date: null },
     { from: null, to: null, date: null },
   ]);
-  const [from, setFrom] = useState<City | null>(
-    defaultFrom !== undefined ? defaultFrom : (CITIES.find(c => c.code === "DEL") ?? null)
-  );
-  const [to, setTo] = useState<City | null>(
-    defaultTo !== undefined ? defaultTo : (CITIES.find(c => c.code === "DXB") ?? null)
-  );
+  // Start empty by default — only prefilled when a caller passes an explicit
+  // From/To (e.g. deep-linked results). No more sticky Delhi → Dubai.
+  const [from, setFrom] = useState<City | null>(defaultFrom ?? null);
+  const [to, setTo] = useState<City | null>(defaultTo ?? null);
   const [departure, setDeparture]   = useState<Date | null>(null);
   const [returnDate, setReturnDate] = useState<Date | null>(null);
   const [cabin, setCabin]   = useState("Economy");
