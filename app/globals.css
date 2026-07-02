@@ -247,6 +247,16 @@ textarea:focus-visible {
   0%   { background-position: 150% center; }
   100% { background-position: -50% center; }
 }
+/* Shimmer for a stroked icon (the scroll arrows) — a stroke-only glyph can't
+   clip a moving text-gradient, so we sweep its colour + glow between muted and
+   bright gold to read as a shimmer. */
+.arrow-shimmer {
+  animation: arrowShimmer 2.4s ease-in-out infinite;
+}
+@keyframes arrowShimmer {
+  0%, 100% { color: #9c7d43; filter: drop-shadow(0 0 2px rgba(201, 174, 119, 0.35)); }
+  50%      { color: #f4e6bf; filter: drop-shadow(0 0 9px rgba(201, 174, 119, 0.95)); }
+}
 
 /* Print — vouchers, invoices and journals rely on dark headers, gold accents
    and photos. Mobile browsers drop backgrounds/images by default (turning those
@@ -271,4 +281,5 @@ textarea:focus-visible {
   .ken-burns { animation: none; }
   .atelier-glow, .wa-glow, .gold-glow { animation: none; }
   .text-shimmer { animation: none; -webkit-text-fill-color: #efe9df; color: #efe9df; }
+  .arrow-shimmer { animation: none; color: rgb(var(--gold)); }
 }
