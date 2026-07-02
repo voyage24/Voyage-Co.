@@ -9,7 +9,6 @@ import CurrencySelector from "@/components/ui/CurrencySelector";
 import LanguageSelector from "@/components/ui/LanguageSelector";
 import SearchOverlay from "@/components/layout/SearchOverlay";
 import AccountMenu from "@/components/layout/AccountMenu";
-import ThemeToggle from "@/components/ui/ThemeToggle";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 
 type NavLink = { key?: string; label?: string; href: string };
@@ -124,7 +123,6 @@ export default function Navbar() {
           <div className="hidden lg:flex items-center gap-x-3 shrink-0">
             <SearchOverlay tone={overHero ? "light" : "dark"} />
             <AccountMenu tone={overHero ? "light" : "dark"} />
-            <ThemeToggle tone={overHero ? "light" : "dark"} size={17} />
             <LanguageSelector tone={overHero ? "light" : "dark"} />
             <CurrencySelector tone={overHero ? "light" : "dark"} />
             <Link
@@ -139,7 +137,6 @@ export default function Navbar() {
 
           {/* Mobile/tablet — search + account + toggle */}
           <div className="flex lg:hidden items-center gap-4 ml-auto">
-            <ThemeToggle tone={overHero ? "light" : "dark"} size={20} />
             <SearchOverlay tone={overHero ? "light" : "dark"} triggerSize={20} />
             <Link href="/account" aria-label={t("account.account")} className={`inline-flex items-center justify-center leading-none transition-all duration-200 hover:scale-110 active:scale-95 ${overHero ? "text-white/90 hover:text-white" : "text-ink-muted hover:text-ink"}`}>
               <User size={20} />
