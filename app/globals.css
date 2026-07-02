@@ -202,6 +202,27 @@ textarea:focus-visible {
 }
 @keyframes goldShimmer { to { background-position: 220% center; } }
 
+/* Floating-control halos — a slow, breathing glow so the concierge & WhatsApp
+   buttons feel like a lit atelier window rather than a loud notification. */
+.atelier-glow {
+  box-shadow: 0 8px 30px -8px rgba(201, 174, 119, 0.5), 0 0 0 1px rgba(201, 174, 119, 0.28);
+  animation: atelierGlow 3.6s ease-in-out infinite alternate;
+}
+@keyframes atelierGlow {
+  0%   { box-shadow: 0 6px 22px -8px rgba(201, 174, 119, 0.35), 0 0 0 1px rgba(201, 174, 119, 0.20); }
+  100% { box-shadow: 0 10px 38px -6px rgba(201, 174, 119, 0.72), 0 0 0 1px rgba(201, 174, 119, 0.45); }
+}
+/* drop-shadow follows the SVG circle's alpha, so the halo stays round even
+   though the site forces square corners everywhere. */
+.wa-glow {
+  filter: drop-shadow(0 4px 12px rgba(37, 211, 102, 0.55));
+  animation: waGlow 3.6s ease-in-out infinite alternate;
+}
+@keyframes waGlow {
+  0%   { filter: drop-shadow(0 3px 8px rgba(37, 211, 102, 0.4)); }
+  100% { filter: drop-shadow(0 6px 18px rgba(37, 211, 102, 0.85)); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .reveal, .stagger > *, .stagger-soft > * { opacity: 1; transform: none; transition: none; }
   .page-enter { animation: none; }
@@ -209,4 +230,5 @@ textarea:focus-visible {
   .word-rise { opacity: 1; animation: none; }
   .shimmer-gold { animation: none; }
   .ken-burns { animation: none; }
+  .atelier-glow, .wa-glow { animation: none; }
 }
