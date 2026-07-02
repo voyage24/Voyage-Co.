@@ -11,20 +11,25 @@ import SearchOverlay from "@/components/layout/SearchOverlay";
 import AccountMenu from "@/components/layout/AccountMenu";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 
-// Consolidated primary nav — the six links that always sit in the bar.
-const PRIMARY_LINKS = [
+type NavLink = { key?: string; label?: string; href: string };
+
+// Consolidated primary nav — the links that always sit in the bar.
+const PRIMARY_LINKS: NavLink[] = [
   { key: "common.destinations", href: "/packages" },
   { key: "common.stays",        href: "/hotels" },
   { key: "common.cruises",      href: "/cruises" },
   { key: "common.flights",      href: "/flights" },
   { key: "common.experiences",  href: "/experiences" },
   { key: "common.journal",      href: "/blog" },
+  { label: "Trip Tools",        href: "/tools" },
 ];
 
 // Secondary links — reached via the Account icon / mobile menu, plus the
 // Plan Your Journey CTA. Kept out of the primary row so it never overflows.
-const SECONDARY_LINKS = [
+const SECONDARY_LINKS: NavLink[] = [
   { key: "plan.title",      href: "/plan" },
+  { label: "Visa assistance", href: "/visa" },
+  { label: "Travel insurance", href: "/insurance" },
   { key: "common.myTrips",  href: "/trips" },
   { key: "account.account", href: "/account" },
 ];
@@ -102,7 +107,7 @@ export default function Navbar() {
             >
               <div className="flex items-center gap-x-5 w-max pr-2">
                 {PRIMARY_LINKS.map(l => (
-                  <Link key={l.href} href={l.href} className={`${linkBase} ${linkColor}`}>{t(l.key)}</Link>
+                  <Link key={l.href} href={l.href} className={`${linkBase} ${linkColor}`}>{l.label ?? t(l.key ?? "")}</Link>
                 ))}
               </div>
             </div>
@@ -154,7 +159,7 @@ export default function Navbar() {
               style={{ animationDelay: `${i * 50}ms`, animationFillMode: "both" }}
               className="block text-base font-normal tracking-[0.1em] uppercase text-ink-muted hover:text-ink transition-all duration-200 py-1.5 origin-left hover:scale-105 active:scale-95 animate-slide-down"
             >
-              {t(l.key)}
+              {l.label ?? t(l.key ?? "")}
             </Link>
           ))}
           <div className="py-1.5 flex items-center gap-5 animate-slide-down" style={{ animationDelay: `${MOBILE_LINKS.length * 50}ms`, animationFillMode: "both" }}>

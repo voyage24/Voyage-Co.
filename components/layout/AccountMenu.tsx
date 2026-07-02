@@ -21,6 +21,9 @@ export default function AccountMenu({ tone = "dark" }: { tone?: "dark" | "light"
   const items = [
     { label: t("account.myAccount"), href: "/account" },
     { label: t("common.myTrips"), href: "/trips" },
+    { label: "Trip tools", href: "/tools" },
+    { label: "Visa assistance", href: "/visa" },
+    { label: "Travel insurance", href: "/insurance" },
   ];
 
   return (
