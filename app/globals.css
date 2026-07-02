@@ -31,30 +31,30 @@
    the admin-injected :root overrides), so it always wins. */
 html.dark {
   color-scheme: dark;
-  --page: 23 21 19;
-  --panel: 32 29 26;
-  --panel-soft: 43 39 35;
-  --panel-raised: 37 34 30;
-  --line: 62 57 50;
-  --line-strong: 94 86 76;
-  --ink: 240 235 226;
-  --ink-muted: 196 188 176;
-  --ink-faint: 148 140 128;
-  --gold: 200 170 120;
-  --gold-soft: 214 190 145;
+  --page: 14 22 32;         /* #0E1620 deep navy-slate */
+  --panel: 22 32 44;        /* #16202C */
+  --panel-soft: 27 40 54;   /* #1B2836 */
+  --panel-raised: 28 41 53; /* #1C2935 */
+  --line: 42 56 70;         /* #2A3846 */
+  --line-strong: 60 78 96;  /* #3C4E60 */
+  --ink: 233 228 216;       /* #E9E4D8 soft ivory */
+  --ink-muted: 169 177 188; /* #A9B1BC */
+  --ink-faint: 124 135 148; /* #7C8794 */
+  --gold: 201 169 106;      /* #C9A96A warm gold */
+  --gold-soft: 218 192 142; /* #DAC08E */
 }
 
 /* Admin surfaces use fixed grays rather than the theme vars, so remap the
    common ones under dark for the whole admin at once. */
-.dark .admin-root .bg-white { background-color: #1c1b18 !important; }
-.dark .admin-root .bg-gray-50 { background-color: #151412 !important; }
-.dark .admin-root .bg-gray-100 { background-color: #2a2825 !important; }
-.dark .admin-root .text-gray-900 { color: #ece7de !important; }
-.dark .admin-root .text-gray-800 { color: #e3ded4 !important; }
-.dark .admin-root .text-gray-700 { color: #d0cabe !important; }
-.dark .admin-root .text-gray-600 { color: #b6afa2 !important; }
-.dark .admin-root .text-gray-500 { color: #98917f !important; }
-.dark .admin-root .text-gray-400 { color: #837c6e !important; }
+.dark .admin-root .bg-white { background-color: #16202c !important; }
+.dark .admin-root .bg-gray-50 { background-color: #101823 !important; }
+.dark .admin-root .bg-gray-100 { background-color: #26333f !important; }
+.dark .admin-root .text-gray-900 { color: #e9e4d8 !important; }
+.dark .admin-root .text-gray-800 { color: #dde1e6 !important; }
+.dark .admin-root .text-gray-700 { color: #c8cfd7 !important; }
+.dark .admin-root .text-gray-600 { color: #aab2bd !important; }
+.dark .admin-root .text-gray-500 { color: #939ca8 !important; }
+.dark .admin-root .text-gray-400 { color: #7c8794 !important; }
 .dark .admin-root .border-gray-100 { border-color: rgba(255,255,255,0.06) !important; }
 .dark .admin-root .border-gray-200 { border-color: rgba(255,255,255,0.10) !important; }
 .dark .admin-root .border-gray-300 { border-color: rgba(255,255,255,0.14) !important; }
