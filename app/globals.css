@@ -232,6 +232,21 @@ textarea:focus-visible {
   0%   { filter: drop-shadow(0 0 3px rgba(201, 174, 119, 0.6)); }
   100% { filter: drop-shadow(0 0 10px rgba(201, 174, 119, 1)); }
 }
+/* A light that scrolls across the letters — used on the concierge label so the
+   text glows rather than the whole button. */
+.text-shimmer {
+  background: linear-gradient(100deg, #efe9df 0%, #efe9df 38%, #ffffff 48%, #e9d4a1 54%, #efe9df 64%, #efe9df 100%);
+  background-size: 250% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: textShimmer 3.2s linear infinite;
+}
+@keyframes textShimmer {
+  0%   { background-position: 150% center; }
+  100% { background-position: -50% center; }
+}
 
 /* Print — vouchers, invoices and journals rely on dark headers, gold accents
    and photos. Mobile browsers drop backgrounds/images by default (turning those
@@ -255,4 +270,5 @@ textarea:focus-visible {
   .shimmer-gold { animation: none; }
   .ken-burns { animation: none; }
   .atelier-glow, .wa-glow, .gold-glow { animation: none; }
+  .text-shimmer { animation: none; -webkit-text-fill-color: #efe9df; color: #efe9df; }
 }
