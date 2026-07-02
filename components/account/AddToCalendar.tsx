@@ -32,7 +32,7 @@ export default function AddToCalendar({ title, reference, checkIn, checkOut }: {
   };
 
   return (
-    <button onClick={download} className="inline-flex items-center gap-1.5 text-xs tracking-[0.12em] uppercase text-ink-muted hover:text-ink whitespace-nowrap">
+    <button onClick={download} className="inline-flex items-center gap-1.5 text-xs tracking-[0.12em] uppercase text-ink-muted rounded px-2.5 py-1.5 border border-transparent hover:bg-panel-soft hover:text-ink hover:border-line active:bg-gold/20 active:text-ink transition-colors whitespace-nowrap">
       <CalendarPlus size={14} /> Add to calendar
     </button>
   );

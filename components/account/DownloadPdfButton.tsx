@@ -147,7 +147,7 @@ export default function DownloadPdfButton({ data, label = "Download PDF" }: { da
     <button
       onClick={make}
       disabled={busy}
-      className="inline-flex items-center gap-1.5 text-xs tracking-[0.1em] uppercase text-ink-muted hover:text-ink disabled:opacity-50 print:hidden"
+      className="inline-flex items-center gap-1.5 text-xs tracking-[0.1em] uppercase text-ink-muted rounded px-3 py-1.5 border border-transparent hover:bg-panel-soft hover:text-ink hover:border-line active:bg-gold/20 active:text-ink disabled:opacity-50 transition-colors print:hidden"
     >
       <Download size={15} /> {busy ? "Preparing…" : label}
     </button>

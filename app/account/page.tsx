@@ -22,6 +22,11 @@ const STATUS_STYLES: Record<string, string> = {
   cancelled: "bg-gray-100 text-gray-500 border-gray-200",
 };
 
+// Padded tap-targets that clearly highlight on hover (desktop) and on tap
+// (phone) so it's obvious which action was pressed.
+const ACTION_CLS =
+  "inline-flex items-center gap-1 text-xs tracking-[0.12em] uppercase text-ink-muted rounded px-2.5 py-1.5 border border-transparent hover:bg-panel-soft hover:text-ink hover:border-line active:bg-gold/20 active:text-ink transition-colors whitespace-nowrap";
+
 export default async function AccountPage() {
   const customer = await getCurrentCustomer();
   if (!customer) redirect("/login");
@@ -62,7 +67,7 @@ export default async function AccountPage() {
         <div className="space-y-3">
           {bookings.map(b => (
             <div key={b.id} className="bg-panel border border-line rounded-xl p-5">
-             <div className="flex flex-wrap items-center justify-between gap-3">
+             <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
               <div className="min-w-0">
                 <p className="font-serif text-lg font-light text-ink truncate">{b.itemTitle}</p>
                 <p className="text-xs text-ink-faint font-light mt-0.5">
@@ -71,25 +76,28 @@ export default async function AccountPage() {
                   {` · ${b.guests} ${b.guests === 1 ? "guest" : "guests"}`}
                 </p>
               </div>
-              <div className="flex items-center gap-4 shrink-0">
+              <div className="flex items-center gap-3 shrink-0">
                 <Price amount={b.total} className="font-serif text-lg font-light text-ink" />
                 <span className={`text-[10px] uppercase tracking-wide px-2.5 py-1 rounded-full border ${STATUS_STYLES[b.status] ?? STATUS_STYLES.pending}`}>
                   {b.status}
                 </span>
-                {b.status !== "cancelled" && (
-                  <Link href={`/account/invoice/${b.reference}`} className="text-xs tracking-[0.12em] uppercase text-ink-muted link-underline whitespace-nowrap">Invoice</Link>
-                )}
-                {b.status === "pending" && <CancelBookingButton id={b.id} />}
-                {b.status === "confirmed" && (
-                  <>
-                    <TripCountdown checkIn={b.checkIn} />
-                    <AddToCalendar title={b.itemTitle} reference={b.reference} checkIn={b.checkIn} checkOut={b.checkOut} />
-                    <Link href={`/account/voucher/${b.reference}`} className="text-xs tracking-[0.12em] uppercase text-ink-muted link-underline whitespace-nowrap">Voucher</Link>
-                    <Link href={`/account/journey/${b.reference}`} className="text-xs tracking-[0.12em] uppercase text-gold link-underline whitespace-nowrap">Journal →</Link>
-                  </>
-                )}
               </div>
              </div>
+
+             {b.status !== "cancelled" && (
+               <div className="flex flex-wrap items-center gap-1.5 mt-3 pt-3 border-t border-line/60">
+                 {b.status === "confirmed" && <TripCountdown checkIn={b.checkIn} />}
+                 <Link href={`/account/invoice/${b.reference}`} className={ACTION_CLS}>Invoice</Link>
+                 {b.status === "confirmed" && (
+                   <>
+                     <Link href={`/account/voucher/${b.reference}`} className={ACTION_CLS}>Voucher</Link>
+                     <Link href={`/account/journey/${b.reference}`} className={`${ACTION_CLS} text-gold`}>Journal →</Link>
+                     <AddToCalendar title={b.itemTitle} reference={b.reference} checkIn={b.checkIn} checkOut={b.checkOut} />
+                   </>
+                 )}
+                 {b.status === "pending" && <CancelBookingButton id={b.id} />}
+               </div>
+             )}
              {b.status !== "cancelled" && (
                <BookingActions reference={b.reference} documents={(b.documents as { label: string; url: string }[]) ?? []} />
              )}
