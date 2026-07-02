@@ -16,7 +16,6 @@ const CruiseMapBackground = dynamic(() => import("@/components/home/CruiseMapBac
 const RailMapBackground = dynamic(() => import("@/components/home/RailMapBackground"), { ssr: false, loading: mapLoading });
 const PackageMapBackground = dynamic(() => import("@/components/home/PackageMapBackground"), { ssr: false, loading: mapLoading });
 const ExperienceMapBackground = dynamic(() => import("@/components/home/ExperienceMapBackground"), { ssr: false, loading: mapLoading });
-import { CITIES } from "@/lib/mock-data";
 import type { City, Hotel, Cruise, Train, Package, Experience } from "@/lib/types";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useSetting } from "@/components/providers/SettingsProvider";
@@ -62,8 +61,10 @@ export default function HeroSection({
   experiences: Experience[];
 }) {
   const { t } = useLanguage();
-  const [from, setFrom] = useState<City | null>(CITIES.find(c => c.code === "DEL") ?? null);
-  const [to, setTo]     = useState<City | null>(CITIES.find(c => c.code === "DXB") ?? null);
+  // Start empty so the flight search isn't pre-stuck on a route; the traveller
+  // picks their own From/To (the hero map simply shows no arc until they do).
+  const [from, setFrom] = useState<City | null>(null);
+  const [to, setTo]     = useState<City | null>(null);
   const [activeTab, setActiveTab] = useState<TabId>("flights");
   const [hotelCity, setHotelCity] = useState("");
   // Hides the headline while the traveller is actually pointing at the map,

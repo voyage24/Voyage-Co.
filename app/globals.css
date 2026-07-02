@@ -223,6 +223,20 @@ textarea:focus-visible {
   100% { filter: drop-shadow(0 0 18px rgba(37, 211, 102, 1)); }
 }
 
+/* Print — vouchers, invoices and journals rely on dark headers, gold accents
+   and photos. Mobile browsers drop backgrounds/images by default (turning those
+   into blank white with an invisible white logo), so force them to render and
+   trim the on-screen top padding that otherwise wastes the first printed page. */
+@media print {
+  *, *::before, *::after {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  html, body { background: #ffffff !important; }
+  main { padding-top: 0 !important; }
+  .pt-28, .pt-32 { padding-top: 1rem !important; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .reveal, .stagger > *, .stagger-soft > * { opacity: 1; transform: none; transition: none; }
   .page-enter { animation: none; }
