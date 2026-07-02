@@ -79,12 +79,13 @@ function isActive(pathname: string, href: string) {
 
 export default function AdminSidebar() {
   const pathname = usePathname();
+  let navIndex = 0; // flat counter for staggering the link entrance animation
 
   return (
     <nav className="hidden lg:flex flex-col w-60 shrink-0 bg-[#111110] text-gray-300 min-h-screen">
       <div className="px-5 py-5 border-b border-white/10">
         <p className="font-serif text-lg font-light text-white leading-none">Voyages &amp; Co.</p>
-        <p className="text-[10px] tracking-[0.3em] uppercase text-[#FFD400] mt-1 font-semibold">Admin</p>
+        <p className="text-[10px] tracking-[0.3em] uppercase text-[#00C4CC] mt-1 font-semibold">Admin</p>
       </div>
       <div className="flex-1 overflow-y-auto p-3 space-y-5">
         {NAV_SECTIONS.map((section, i) => (
@@ -95,17 +96,19 @@ export default function AdminSidebar() {
             <ul className="space-y-0.5">
               {section.items.map(item => {
                 const active = isActive(pathname, item.href);
+                const delay = navIndex++ * 25;
                 return (
                   <li key={item.href}>
                     <Link
                       href={item.href}
-                      className={`group flex items-center gap-3 pl-3 pr-3 py-2 rounded-md text-sm border-l-2 transition-colors ${
+                      style={{ animationDelay: `${delay}ms` }}
+                      className={`admin-nav-link group flex items-center gap-3 pl-3 pr-3 py-2 rounded-md text-sm border-l-2 transition-[background-color,color,border-color,transform] duration-200 hover:translate-x-1 ${
                         active
-                          ? "bg-[#FFD400]/[0.14] text-white border-[#FFD400]"
+                          ? "bg-[#00C4CC]/[0.14] text-white border-[#00C4CC]"
                           : "text-gray-400 border-transparent hover:bg-white/5 hover:text-white"
                       }`}
                     >
-                      <item.icon size={16} className={active ? "text-[#FFD400]" : "text-gray-500 group-hover:text-gray-300"} />
+                      <item.icon size={16} className={active ? "text-[#00C4CC]" : "text-gray-500 group-hover:text-gray-300"} />
                       {item.label}
                     </Link>
                   </li>

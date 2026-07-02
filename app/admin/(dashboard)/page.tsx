@@ -44,7 +44,7 @@ export default async function AdminDashboardPage() {
   const Tile = ({ href, n, label, Icon }: { href: string; n: number; label: string; Icon: typeof Inbox }) => {
     const active = n > 0;
     return (
-      <Link href={href} className={`admin-rise admin-lift relative block rounded-xl p-5 border ${active ? "bg-[#FFD400] border-[#FFD400] text-black" : "bg-white border-gray-200 text-gray-900"}`}>
+      <Link href={href} className={`admin-rise admin-lift relative block rounded-xl p-5 border ${active ? "bg-[#00C4CC] border-[#00C4CC] text-black" : "bg-white border-gray-200 text-gray-900"}`}>
         <Icon size={20} className="mb-3" />
         <p className="text-3xl font-bold">{n}</p>
         <p className={`text-sm mt-0.5 ${active ? "text-black/70" : "text-gray-600"}`}>{label}</p>
@@ -61,7 +61,7 @@ export default async function AdminDashboardPage() {
         </div>
         <div className="flex flex-wrap gap-2">
           {QUICK.map(q => (
-            <Link key={q.href} href={q.href} className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-2 rounded-md bg-black text-white hover:bg-[#FFD400] hover:text-black transition-colors">
+            <Link key={q.href} href={q.href} className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-2 rounded-md bg-black text-white hover:bg-[#00C4CC] hover:text-black transition-colors">
               <Plus size={14} /> {q.label}
             </Link>
           ))}
@@ -118,13 +118,13 @@ export default async function AdminDashboardPage() {
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
           {CARDS.map(c => (
             <Link key={c.key} href={c.href} className="admin-rise admin-lift bg-white border border-gray-200 rounded-xl p-5">
-              <span className="inline-flex items-center justify-center w-10 h-10 rounded-lg mb-3 bg-[#FFD400] text-black"><c.icon size={18} /></span>
+              <span className="inline-flex items-center justify-center w-10 h-10 rounded-lg mb-3 bg-[#00C4CC] text-black"><c.icon size={18} /></span>
               <p className="text-2xl font-bold text-gray-900">{counts[c.key]}</p>
               <p className="text-sm text-gray-500 mt-0.5">{c.label}</p>
             </Link>
           ))}
           <Link href="/admin/newsletter" className="admin-rise admin-lift bg-white border border-gray-200 rounded-xl p-5">
-            <span className="inline-flex items-center justify-center w-10 h-10 rounded-lg mb-3 bg-[#FFD400] text-black"><Mail size={18} /></span>
+            <span className="inline-flex items-center justify-center w-10 h-10 rounded-lg mb-3 bg-[#00C4CC] text-black"><Mail size={18} /></span>
             <p className="text-2xl font-bold text-gray-900">{newsletter}</p>
             <p className="text-sm text-gray-500 mt-0.5">Subscribers</p>
           </Link>

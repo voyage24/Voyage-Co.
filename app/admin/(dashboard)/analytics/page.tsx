@@ -7,7 +7,7 @@ const inr = (n: number) => `₹${n.toLocaleString("en-IN")}`;
 
 function Stat({ label, value, sub }: { label: string; value: string; sub?: string }) {
   return (
-    <div className="bg-white border border-gray-200 border-l-4 border-l-[#FFD400] rounded-lg p-4 admin-lift admin-rise">
+    <div className="bg-white border border-gray-200 border-l-4 border-l-[#00C4CC] rounded-lg p-4 admin-lift admin-rise">
       <p className="text-xs text-gray-500 mb-1">{label}</p>
       <p className="text-2xl font-bold text-gray-900">{value}</p>
       {sub && <p className="text-xs text-gray-400 mt-0.5">{sub}</p>}
@@ -50,6 +50,17 @@ export default async function AnalyticsPage() {
     days.push({ label: d.toLocaleDateString("en-US", { day: "numeric", month: "short" }), count });
   }
 
+  // Confirmed revenue per day, last 14 days.
+  const revDays: { label: string; count: number }[] = [];
+  for (let i = 13; i >= 0; i--) {
+    const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - i);
+    const next = new Date(d); next.setDate(next.getDate() + 1);
+    const total = confirmed.filter(b => b.createdAt >= d && b.createdAt < next).reduce((s, b) => s + (b.total || 0), 0);
+    revDays.push({ label: d.toLocaleDateString("en-US", { day: "numeric", month: "short" }), count: total });
+  }
+  const compactInr = (n: number) =>
+    n >= 1e7 ? `₹${(n / 1e7).toFixed(1)}Cr` : n >= 1e5 ? `₹${(n / 1e5).toFixed(1)}L` : n >= 1e3 ? `₹${Math.round(n / 1e3)}k` : `₹${n}`;
+
   const STAGES = ["new", "contacted", "quoted", "won", "lost"];
 
   return (
@@ -66,10 +77,16 @@ export default async function AnalyticsPage() {
         <Stat label="Customers" value={String(customerCount)} sub={`${newsletterCount} newsletter subs`} />
       </div>
 
-      {/* Bookings last 14 days */}
-      <div className="bg-white border border-gray-200 rounded-lg p-5 admin-rise">
-        <p className="text-sm font-medium text-gray-900 mb-4">Bookings — last 14 days</p>
-        <MiniAreaChart data={days} />
+      {/* Trend graphs */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="bg-white border border-gray-200 rounded-lg p-5 admin-rise admin-lift">
+          <p className="text-sm font-medium text-gray-900 mb-4">Bookings — last 14 days</p>
+          <MiniAreaChart data={days} />
+        </div>
+        <div className="bg-white border border-gray-200 rounded-lg p-5 admin-rise admin-lift">
+          <p className="text-sm font-medium text-gray-900 mb-4">Confirmed revenue — last 14 days</p>
+          <MiniAreaChart data={revDays} format={compactInr} />
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -84,7 +101,7 @@ export default async function AnalyticsPage() {
                 <div key={s} className="flex items-center gap-3">
                   <span className="w-20 text-xs text-gray-500 capitalize">{s}</span>
                   <div className="flex-1 bg-gray-100 rounded-full h-2.5 overflow-hidden">
-                    <div className="bg-[#FFD400] h-full rounded-full" style={{ width: `${pct}%` }} />
+                    <div className="bg-[#00C4CC] h-full rounded-full" style={{ width: `${pct}%` }} />
                   </div>
                   <span className="w-10 text-right text-xs text-gray-600">{c}</span>
                 </div>

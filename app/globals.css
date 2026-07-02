@@ -216,7 +216,11 @@ textarea:focus-visible {
 
 /* Admin: a gold accent bar on every page heading, applied once here so each
    page doesn't need its own markup. */
-.admin-main h1 { border-left: 5px solid #FFD400; padding-left: 0.7rem; line-height: 1.15; font-weight: 700; }
+.admin-main h1 { border-left: 5px solid #00C4CC; padding-left: 0.7rem; line-height: 1.15; font-weight: 700; }
+
+/* Admin sidebar — links slide/fade in on first mount (staggered inline). */
+.admin-nav-link { opacity: 0; animation: navIn 0.4s cubic-bezier(0.22, 0.61, 0.36, 1) forwards; }
+@keyframes navIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: none; } }
 
 /* Admin motion — a gentle rise-in for cards/sections and a hover lift. */
 .admin-rise { opacity: 0; animation: adminRise 0.6s cubic-bezier(0.22, 0.61, 0.36, 1) forwards; }
@@ -329,7 +333,7 @@ textarea:focus-visible {
   .atelier-glow, .wa-glow, .gold-glow { animation: none; }
   .text-shimmer { animation: none; -webkit-text-fill-color: #efe9df; color: #efe9df; }
   .arrow-shimmer { animation: none; color: rgb(var(--gold)); }
-  .admin-rise { opacity: 1; animation: none; transform: none; }
+  .admin-rise, .admin-nav-link { opacity: 1; animation: none; transform: none; }
   .chart-line { stroke-dashoffset: 0; animation: none; }
   .chart-area, .chart-dot { opacity: 1; animation: none; }
 }
