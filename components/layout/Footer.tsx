@@ -7,7 +7,9 @@ import Logo from "@/components/ui/Logo";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useSetting, useSettings } from "@/components/providers/SettingsProvider";
 
-const FOOTER_LINKS = {
+type FooterLink = { href: string; key?: string; label?: string };
+
+const FOOTER_LINKS: Record<string, FooterLink[]> = {
   "footer.discover": [
     { key: "common.destinations",   href: "/packages" },
     { key: "common.stays",          href: "/hotels" },
@@ -33,6 +35,9 @@ const FOOTER_LINKS = {
     { key: "common.requestCallback", href: "/callback" },
     { key: "common.giftJourney",   href: "/gift" },
     { key: "common.conciergeServices", href: "/services" },
+    { label: "Trip tools",         href: "/tools" },
+    { label: "Visa assistance",    href: "/visa" },
+    { label: "Travel insurance",   href: "/insurance" },
     { key: "common.faq",           href: "/faq" },
     { key: "common.help",          href: "/help" },
     { key: "common.cancellations", href: "/cancellations" },
@@ -134,7 +139,7 @@ export default function Footer() {
                 {links.map(link => (
                   <li key={link.href}>
                     <Link href={link.href} className="inline-block text-sm text-ink-muted hover:text-ink transition-all duration-200 font-light hover:scale-110 active:scale-95 origin-left">
-                      {t(link.key)}
+                      {link.label ?? t(link.key ?? "")}
                     </Link>
                   </li>
                 ))}

@@ -16,6 +16,7 @@ import AddToItineraryButton from "@/components/itinerary/AddToItineraryButton";
 import PhotoGallery from "@/components/ui/PhotoGallery";
 import PropertyMap from "@/components/ui/PropertyMap";
 import DestinationWeather from "@/components/ui/DestinationWeather";
+import LocalActivities from "@/components/products/LocalActivities";
 import { getHotelCityCoords } from "@/lib/hotel-coords";
 import { hotelJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
@@ -43,6 +44,19 @@ export default async function HotelDetailPage({ params }: { params: { id: string
   });
 
   const faqs = (hotel.faqs as { q: string; a: string }[] | null) ?? [];
+
+  // Local experiences & activities near this stay — prefer the same city, then
+  // fall back to the same country.
+  const nearbyRaw = await prisma.experience.findMany({
+    where: { published: true, OR: [{ location: { contains: hotel.city, mode: "insensitive" } }, { country: hotel.country }] },
+    orderBy: { createdAt: "desc" },
+    take: 6,
+    select: { id: true, title: true, location: true, image: true, category: true, duration: true },
+  });
+  const nearby = nearbyRaw
+    .sort((a, b) => Number(b.location.toLowerCase().includes(hotel.city.toLowerCase())) - Number(a.location.toLowerCase().includes(hotel.city.toLowerCase())))
+    .slice(0, 3);
+
   // Use the property's own coordinates, else fall back to its city centre so
   // the Location map + weather still show.
   const cityCoords = getHotelCityCoords(hotel.city);
@@ -138,6 +152,8 @@ export default async function HotelDetailPage({ params }: { params: { id: string
               )}
             </div>
           )}
+
+          <LocalActivities items={nearby} place={hotel.city} />
         </div>
 
         {/* Booking card */}

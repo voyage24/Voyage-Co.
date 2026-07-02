@@ -7,6 +7,7 @@ import type { Flight } from "@/lib/types";
 import { useCurrency } from "@/components/providers/CurrencyProvider";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import RouteMap from "@/components/cards/RouteMap";
+import FlightBookingRequest from "@/components/cards/FlightBookingRequest";
 
 export default function FlightCard({ flight }: { flight: Flight }) {
   const [expanded, setExpanded] = useState(false);
@@ -76,9 +77,13 @@ export default function FlightCard({ flight }: { flight: Flight }) {
                 <p className="text-[10px] text-ink-faint font-light mt-0.5">{t("card.business")} {format(flight.businessPrice)}</p>
               )}
             </div>
-            <Link href={`/book?type=flight&id=${flight.id}`} className="sm:mt-3 inline-block px-6 py-2.5 border border-line-strong text-ink hover:bg-ink hover:text-page text-xs font-normal tracking-[0.12em] uppercase rounded-sm transition-all duration-300">
-              {t("card.reserve")}
-            </Link>
+            {isLive ? (
+              <FlightBookingRequest flight={flight} />
+            ) : (
+              <Link href={`/book?type=flight&id=${flight.id}`} className="sm:mt-3 inline-block px-6 py-2.5 border border-line-strong text-ink hover:bg-ink hover:text-page text-xs font-normal tracking-[0.12em] uppercase rounded-sm transition-all duration-300">
+                {t("card.reserve")}
+              </Link>
+            )}
           </div>
         </div>
 

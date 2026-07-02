@@ -76,6 +76,9 @@ export default async function AccountPage() {
                 <span className={`text-[10px] uppercase tracking-wide px-2.5 py-1 rounded-full border ${STATUS_STYLES[b.status] ?? STATUS_STYLES.pending}`}>
                   {b.status}
                 </span>
+                {b.status !== "cancelled" && (
+                  <Link href={`/account/invoice/${b.reference}`} className="text-xs tracking-[0.12em] uppercase text-ink-muted link-underline whitespace-nowrap">Invoice</Link>
+                )}
                 {b.status === "pending" && <CancelBookingButton id={b.id} />}
                 {b.status === "confirmed" && (
                   <>
