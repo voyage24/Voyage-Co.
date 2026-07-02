@@ -28,3 +28,7 @@ next-env.d.ts
 
 .vercel
 .env*
+
+dev-server-codex.*.log
+dev-server-codex.err.log
+dev-server-codex.out.log
