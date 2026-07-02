@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { getCurrentCustomer } from "@/lib/customer/session";
-import PrintButton from "@/components/account/PrintButton";
+import DownloadPdfButton from "@/components/account/DownloadPdfButton";
 
 export const dynamic = "force-dynamic";
 
@@ -27,7 +27,24 @@ export default async function VoucherPage({ params }: { params: { ref: string } 
         <Link href="/account" className="inline-flex items-center gap-2 text-xs tracking-[0.1em] uppercase text-ink-muted hover:text-ink transition-colors">
           <ArrowLeft size={15} /> Back to my account
         </Link>
-        <PrintButton label="Download voucher" />
+        <DownloadPdfButton
+          label="Download voucher"
+          data={{
+            filename: `voucher-${b.reference}.pdf`,
+            subtitle: "Travel Voucher",
+            headingLabel: "Booking reference",
+            heading: b.reference,
+            rows: [
+              { label: "Journey", value: b.itemTitle },
+              { label: "Guest", value: b.guestName },
+              ...(b.checkIn ? [{ label: "Dates", value: `${b.checkIn}${b.checkOut ? ` to ${b.checkOut}` : ""}` }] : []),
+              { label: "Guests", value: String(b.guests) },
+              { label: "Status", value: b.status },
+              { label: "Total", value: `INR ${b.total.toLocaleString("en-IN")}` },
+            ],
+            footer: "Please present this voucher on arrival. For changes or assistance, contact our concierge at hello@voyagesco.com or +91 99199 10213. This voucher is subject to our terms and the supplier's conditions.",
+          }}
+        />
       </div>
 
       <div className="bg-panel border border-line rounded-2xl shadow-card overflow-hidden">

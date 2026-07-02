@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { getCurrentCustomer } from "@/lib/customer/session";
-import PrintButton from "@/components/account/PrintButton";
+import DownloadPdfButton from "@/components/account/DownloadPdfButton";
 
 export const dynamic = "force-dynamic";
 
@@ -25,7 +25,26 @@ export default async function JourneyJournalPage({ params }: { params: { ref: st
         <Link href="/account" className="inline-flex items-center gap-2 text-xs tracking-[0.1em] uppercase text-ink-muted hover:text-ink transition-colors">
           <ArrowLeft size={15} /> Back to my account
         </Link>
-        <PrintButton label="Save as PDF" />
+        <DownloadPdfButton
+          label="Save as PDF"
+          data={{
+            filename: `journal-${booking.reference}.pdf`,
+            subtitle: "Journey Journal",
+            heading: booking.itemTitle,
+            headingLabel: "Your journey",
+            intro: `A keepsake of your travels, ${firstName}.`,
+            rows: [
+              { label: "Reference", value: booking.reference },
+              { label: "Dates", value: booking.checkIn ? `${booking.checkIn}${booking.checkOut ? ` to ${booking.checkOut}` : ""}` : "-" },
+              { label: "Travellers", value: String(booking.guests) },
+            ],
+            paragraphs: [
+              "Every journey leaves something behind - a view, a meal, a moment of stillness. This page holds the details of yours, to revisit whenever you wish.",
+              "Thank you for travelling with Voyages & Co. When you're ready for the next chapter, your concierge is only a message away.",
+            ],
+            footer: "Voyages & Co. · hello@voyagesco.com · +91 99199 10213",
+          }}
+        />
       </div>
 
       {booking.image && (

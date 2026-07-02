@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { getCurrentCustomer } from "@/lib/customer/session";
-import PrintButton from "@/components/account/PrintButton";
+import DownloadPdfButton from "@/components/account/DownloadPdfButton";
 
 export const dynamic = "force-dynamic";
 
@@ -33,7 +33,25 @@ export default async function InvoicePage({ params }: { params: { ref: string } 
         <Link href="/account" className="inline-flex items-center gap-2 text-xs tracking-[0.1em] uppercase text-ink-muted hover:text-ink transition-colors">
           <ArrowLeft size={15} /> Back to my account
         </Link>
-        <PrintButton label="Download invoice" />
+        <DownloadPdfButton
+          label="Download invoice"
+          data={{
+            filename: `${invoiceNo}.pdf`,
+            subtitle: "Tax Invoice",
+            rows: [
+              { label: "Invoice no.", value: invoiceNo },
+              { label: "Date", value: issued.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" }) },
+              { label: "Status", value: paid ? "Paid" : "Due" },
+              { label: "Billed to", value: b.guestName },
+              { label: "Email", value: b.guestEmail },
+              ...(b.guestPhone ? [{ label: "Phone", value: b.guestPhone }] : []),
+              { label: b.itemTitle, value: `INR ${b.total.toLocaleString("en-IN")}` },
+              { label: "Taxes & fees", value: "Inclusive" },
+              { label: "Total", value: `INR ${b.total.toLocaleString("en-IN")}` },
+            ],
+            footer: "Amount shown is inclusive of all applicable taxes. This invoice is issued by Voyages & Co. For billing queries, contact hello@voyagesco.com or +91 99199 10213. Thank you for travelling with us.",
+          }}
+        />
       </div>
 
       <div className="bg-panel-raised border border-line rounded-2xl shadow-card overflow-hidden">
