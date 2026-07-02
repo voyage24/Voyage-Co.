@@ -1,15 +1,16 @@
 import { prisma } from "@/lib/prisma";
+import MiniAreaChart from "@/components/admin/MiniAreaChart";
 
 export const dynamic = "force-dynamic";
 
 const inr = (n: number) => `₹${n.toLocaleString("en-IN")}`;
 
-function Stat({ label, value, sub, accent = "from-slate-50 to-slate-100 border-slate-200 text-slate-800" }: { label: string; value: string; sub?: string; accent?: string }) {
+function Stat({ label, value, sub }: { label: string; value: string; sub?: string }) {
   return (
-    <div className={`rounded-lg p-4 border bg-gradient-to-br ${accent}`}>
+    <div className="bg-white border border-gray-200 border-l-4 border-l-[#FFD400] rounded-lg p-4 admin-lift admin-rise">
       <p className="text-xs text-gray-500 mb-1">{label}</p>
-      <p className="text-2xl font-semibold">{value}</p>
-      {sub && <p className="text-xs text-gray-500/80 mt-0.5">{sub}</p>}
+      <p className="text-2xl font-bold text-gray-900">{value}</p>
+      {sub && <p className="text-xs text-gray-400 mt-0.5">{sub}</p>}
     </div>
   );
 }
@@ -48,7 +49,6 @@ export default async function AnalyticsPage() {
     const count = bookings.filter(b => b.createdAt >= d && b.createdAt < next).length;
     days.push({ label: d.toLocaleDateString("en-US", { day: "numeric", month: "short" }), count });
   }
-  const maxDay = Math.max(1, ...days.map(d => d.count));
 
   const STAGES = ["new", "contacted", "quoted", "won", "lost"];
 
@@ -60,29 +60,21 @@ export default async function AnalyticsPage() {
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <Stat label="Confirmed revenue" value={inr(revenue)} sub={`${confirmed.length} confirmed bookings`} accent="from-emerald-50 to-green-100 border-emerald-200 text-emerald-800" />
-        <Stat label="In pipeline" value={inr(pipelineRevenue)} sub={`${statusCounts.pending || 0} pending`} accent="from-amber-50 to-orange-100 border-amber-200 text-amber-800" />
-        <Stat label="Enquiries" value={String(enquiries.length)} sub={`${wonRate}% won`} accent="from-sky-50 to-blue-100 border-sky-200 text-sky-800" />
-        <Stat label="Customers" value={String(customerCount)} sub={`${newsletterCount} newsletter subs`} accent="from-violet-50 to-purple-100 border-violet-200 text-violet-800" />
+        <Stat label="Confirmed revenue" value={inr(revenue)} sub={`${confirmed.length} confirmed bookings`} />
+        <Stat label="In pipeline" value={inr(pipelineRevenue)} sub={`${statusCounts.pending || 0} pending`} />
+        <Stat label="Enquiries" value={String(enquiries.length)} sub={`${wonRate}% won`} />
+        <Stat label="Customers" value={String(customerCount)} sub={`${newsletterCount} newsletter subs`} />
       </div>
 
       {/* Bookings last 14 days */}
-      <div className="bg-white border border-gray-200 rounded-lg p-5">
+      <div className="bg-white border border-gray-200 rounded-lg p-5 admin-rise">
         <p className="text-sm font-medium text-gray-900 mb-4">Bookings — last 14 days</p>
-        <div className="flex items-end gap-1.5 h-32">
-          {days.map((d, i) => (
-            <div key={i} className="flex-1 flex flex-col items-center justify-end gap-1" title={`${d.label}: ${d.count}`}>
-              <span className="text-[10px] text-gray-400">{d.count || ""}</span>
-              <div className="w-full bg-gradient-to-t from-indigo-600 to-indigo-400 rounded-t" style={{ height: `${(d.count / maxDay) * 100}%`, minHeight: d.count ? 4 : 0 }} />
-              <span className="text-[9px] text-gray-400 rotate-0 whitespace-nowrap">{d.label.split(" ")[0]}</span>
-            </div>
-          ))}
-        </div>
+        <MiniAreaChart data={days} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Pipeline */}
-        <div className="bg-white border border-gray-200 rounded-lg p-5">
+        <div className="bg-white border border-gray-200 rounded-lg p-5 admin-rise admin-lift">
           <p className="text-sm font-medium text-gray-900 mb-4">Enquiry pipeline</p>
           <div className="space-y-2">
             {STAGES.map(s => {
@@ -92,7 +84,7 @@ export default async function AnalyticsPage() {
                 <div key={s} className="flex items-center gap-3">
                   <span className="w-20 text-xs text-gray-500 capitalize">{s}</span>
                   <div className="flex-1 bg-gray-100 rounded-full h-2.5 overflow-hidden">
-                    <div className="bg-gray-900 h-full rounded-full" style={{ width: `${pct}%` }} />
+                    <div className="bg-[#FFD400] h-full rounded-full" style={{ width: `${pct}%` }} />
                   </div>
                   <span className="w-10 text-right text-xs text-gray-600">{c}</span>
                 </div>
@@ -102,7 +94,7 @@ export default async function AnalyticsPage() {
         </div>
 
         {/* Top items */}
-        <div className="bg-white border border-gray-200 rounded-lg p-5">
+        <div className="bg-white border border-gray-200 rounded-lg p-5 admin-rise admin-lift">
           <p className="text-sm font-medium text-gray-900 mb-4">Most-booked</p>
           {topItems.length === 0 ? (
             <p className="text-sm text-gray-400">No bookings yet.</p>

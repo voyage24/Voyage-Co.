@@ -41,13 +41,16 @@ export default async function AdminDashboardPage() {
 
   const counts: Record<string, number> = { hotel, flight, train, experience, package: pkg, cruise, blogPost, customer };
 
-  const Tile = ({ href, n, label, Icon, grad, ring, ink }: { href: string; n: number; label: string; Icon: typeof Inbox; grad: string; ring: string; ink: string }) => (
-    <Link href={href} className={`relative block rounded-xl p-5 border bg-gradient-to-br ${grad} ${ring} hover:shadow-md transition-shadow`}>
-      <Icon size={20} className={`${ink} mb-3`} />
-      <p className={`text-3xl font-semibold ${ink}`}>{n}</p>
-      <p className="text-sm text-gray-600 mt-0.5">{label}</p>
-    </Link>
-  );
+  const Tile = ({ href, n, label, Icon }: { href: string; n: number; label: string; Icon: typeof Inbox }) => {
+    const active = n > 0;
+    return (
+      <Link href={href} className={`admin-rise admin-lift relative block rounded-xl p-5 border ${active ? "bg-[#FFD400] border-[#FFD400] text-black" : "bg-white border-gray-200 text-gray-900"}`}>
+        <Icon size={20} className="mb-3" />
+        <p className="text-3xl font-bold">{n}</p>
+        <p className={`text-sm mt-0.5 ${active ? "text-black/70" : "text-gray-600"}`}>{label}</p>
+      </Link>
+    );
+  };
 
   return (
     <div className="space-y-8">
@@ -66,16 +69,16 @@ export default async function AdminDashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Tile href="/admin/bookings" n={pendingBookings} label={`Pending ${pendingBookings === 1 ? "booking" : "bookings"}`} Icon={CalendarCheck} grad="from-amber-50 to-orange-100" ring="border-amber-200" ink="text-amber-700" />
-        <Tile href="/admin/enquiries" n={newEnquiries} label={`New ${newEnquiries === 1 ? "enquiry" : "enquiries"}`} Icon={Inbox} grad="from-sky-50 to-blue-100" ring="border-sky-200" ink="text-sky-700" />
-        <Tile href="/admin/reviews" n={pendingReviews} label={`${pendingReviews === 1 ? "Review" : "Reviews"} to moderate`} Icon={Star} grad="from-rose-50 to-pink-100" ring="border-rose-200" ink="text-rose-700" />
+        <Tile href="/admin/bookings" n={pendingBookings} label={`Pending ${pendingBookings === 1 ? "booking" : "bookings"}`} Icon={CalendarCheck} />
+        <Tile href="/admin/enquiries" n={newEnquiries} label={`New ${newEnquiries === 1 ? "enquiry" : "enquiries"}`} Icon={Inbox} />
+        <Tile href="/admin/reviews" n={pendingReviews} label={`${pendingReviews === 1 ? "Review" : "Reviews"} to moderate`} Icon={Star} />
       </div>
 
       {/* Recent activity */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white border border-gray-200 rounded-xl p-5">
+        <div className="bg-white border border-gray-200 rounded-xl p-5 admin-rise admin-lift">
           <div className="flex items-center justify-between mb-3">
-            <p className="text-sm font-medium text-gray-900 flex items-center gap-2"><CalendarCheck size={15} className="text-emerald-600" /> Latest bookings</p>
+            <p className="text-sm font-medium text-gray-900 flex items-center gap-2"><CalendarCheck size={15} className="text-gray-900" /> Latest bookings</p>
             <Link href="/admin/bookings" className="text-xs text-gray-500 hover:text-gray-900 inline-flex items-center gap-1">All <ArrowRight size={12} /></Link>
           </div>
           {recentBookings.length === 0 ? <p className="text-sm text-gray-400">No bookings yet.</p> : (
@@ -90,9 +93,9 @@ export default async function AdminDashboardPage() {
             </ul>
           )}
         </div>
-        <div className="bg-white border border-gray-200 rounded-xl p-5">
+        <div className="bg-white border border-gray-200 rounded-xl p-5 admin-rise admin-lift">
           <div className="flex items-center justify-between mb-3">
-            <p className="text-sm font-medium text-gray-900 flex items-center gap-2"><Inbox size={15} className="text-sky-600" /> Latest enquiries</p>
+            <p className="text-sm font-medium text-gray-900 flex items-center gap-2"><Inbox size={15} className="text-gray-900" /> Latest enquiries</p>
             <Link href="/admin/enquiries" className="text-xs text-gray-500 hover:text-gray-900 inline-flex items-center gap-1">All <ArrowRight size={12} /></Link>
           </div>
           {recentEnquiries.length === 0 ? <p className="text-sm text-gray-400">No enquiries yet.</p> : (
@@ -114,15 +117,15 @@ export default async function AdminDashboardPage() {
         <p className="text-xs font-semibold tracking-[0.14em] uppercase text-gray-400 mb-3">Catalogue</p>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
           {CARDS.map(c => (
-            <Link key={c.key} href={c.href} className="bg-white border border-gray-200 rounded-xl p-5 hover:shadow-md hover:border-gray-300 transition-all">
-              <span className={`inline-flex items-center justify-center w-10 h-10 rounded-lg mb-3 ${c.tint}`}><c.icon size={18} /></span>
-              <p className="text-2xl font-semibold text-gray-900">{counts[c.key]}</p>
+            <Link key={c.key} href={c.href} className="admin-rise admin-lift bg-white border border-gray-200 rounded-xl p-5">
+              <span className="inline-flex items-center justify-center w-10 h-10 rounded-lg mb-3 bg-[#FFD400] text-black"><c.icon size={18} /></span>
+              <p className="text-2xl font-bold text-gray-900">{counts[c.key]}</p>
               <p className="text-sm text-gray-500 mt-0.5">{c.label}</p>
             </Link>
           ))}
-          <Link href="/admin/newsletter" className="bg-white border border-gray-200 rounded-xl p-5 hover:shadow-md hover:border-gray-300 transition-all">
-            <span className="inline-flex items-center justify-center w-10 h-10 rounded-lg mb-3 bg-fuchsia-50 text-fuchsia-600"><Mail size={18} /></span>
-            <p className="text-2xl font-semibold text-gray-900">{newsletter}</p>
+          <Link href="/admin/newsletter" className="admin-rise admin-lift bg-white border border-gray-200 rounded-xl p-5">
+            <span className="inline-flex items-center justify-center w-10 h-10 rounded-lg mb-3 bg-[#FFD400] text-black"><Mail size={18} /></span>
+            <p className="text-2xl font-bold text-gray-900">{newsletter}</p>
             <p className="text-sm text-gray-500 mt-0.5">Subscribers</p>
           </Link>
         </div>
