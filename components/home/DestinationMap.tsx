@@ -104,7 +104,7 @@ export default function DestinationMap({
   return (
     <div
       className="absolute inset-0 overflow-hidden"
-      style={{ background: "radial-gradient(125% 85% at 50% 8%, #1c3446 0%, #12222f 46%, #0a121b 100%)" }}
+      style={{ background: "radial-gradient(135% 100% at 50% 4%, #315a82 0%, #1f4063 42%, #16304d 100%)" }}
     >
       {/* Static dot grid */}
       <div

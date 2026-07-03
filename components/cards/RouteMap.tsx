@@ -45,7 +45,7 @@ export default function RouteMap({
   const routeKey = `${originCode}-${destinationCode}`;
 
   return (
-    <div className="relative w-full h-20 sm:h-24 overflow-hidden bg-[#0e1620]">
+    <div className="relative w-full h-20 sm:h-24 overflow-hidden bg-[#1c3c5c]">
       <div
         className="absolute inset-0 w-full h-full [&>svg]:w-full [&>svg]:h-full"
         dangerouslySetInnerHTML={{ __html: dotsSVG }}
