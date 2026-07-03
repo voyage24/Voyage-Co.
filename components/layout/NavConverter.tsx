@@ -19,17 +19,21 @@ export default function NavConverter({ tone = "dark" }: { tone?: "dark" | "light
   }, []);
 
   return (
-    <div className="relative" ref={ref}>
+    <div className="relative group" ref={ref}>
       <button
         onClick={() => setOpen(o => !o)}
         aria-label="Currency converter"
-        title="Currency converter"
         className={`inline-flex items-center justify-center leading-none transition-all duration-200 hover:scale-110 active:scale-95 ${
           tone === "light" ? "text-white/90 hover:text-white" : "text-ink-muted hover:text-ink"
         }`}
       >
         <ArrowLeftRight size={17} />
       </button>
+      {!open && (
+        <span className="hidden lg:block pointer-events-none absolute left-1/2 -translate-x-1/2 top-full mt-2.5 px-2.5 py-1 bg-vc-950 text-white text-[10px] tracking-[0.12em] uppercase whitespace-nowrap rounded-sm opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 z-[9999]">
+          Currency converter
+        </span>
+      )}
       {open && (
         <div className="absolute right-0 mt-3 w-80 max-w-[92vw] z-[60] shadow-luxury">
           <CurrencyConverter />
