@@ -169,7 +169,7 @@ export default function HeroSection({
       {/* Soft vignette for text legibility over the background. Desktop only —
           on mobile the map sits in its own block with the text below it on a
           solid dark background, so there's nothing to dim. */}
-      <div className="hidden sm:block absolute inset-0 bg-gradient-to-t from-vc-950/85 via-vc-950/35 to-vc-950/25 pointer-events-none" />
+      <div className="hidden sm:block absolute inset-0 bg-gradient-to-t from-page/70 via-transparent to-page/20 pointer-events-none" />
 
       {/* Top content — headline & CTA. pointer-events-none on the empty
           wrapper area so it doesn't block clicks (e.g. slide indicators) on
@@ -189,12 +189,12 @@ export default function HeroSection({
             <p className="text-[11px] sm:text-[13px] tracking-[0.28em] uppercase font-semibold mb-2 sm:mb-4 shimmer-gold">
               {tx("eyebrow")}
             </p>
-            <h1 key={`h-${activeTab}`} className="font-serif font-light text-ink sm:text-white text-3xl sm:text-6xl lg:text-7xl leading-[1.1] sm:leading-[1.04] mb-3 sm:mb-5">
+            <h1 key={`h-${activeTab}`} className="font-serif font-bold text-ink text-3xl sm:text-6xl lg:text-7xl leading-[1.1] sm:leading-[1.04] mb-3 sm:mb-5">
               {customHeadline
                 ? <AnimatedWords text={customHeadline} />
                 : <><AnimatedWords text={tx("headline1")} /><br /><AnimatedWords text={tx("headline2")} start={400} /></>}
             </h1>
-            <p className="text-ink-muted sm:text-white/85 text-sm sm:text-xl max-w-lg leading-relaxed line-clamp-3 sm:line-clamp-none">
+            <p className="text-ink-muted text-sm sm:text-xl max-w-lg leading-relaxed line-clamp-3 sm:line-clamp-none">
               {customSubtext || tx("paragraph")}
             </p>
           </div>
@@ -208,14 +208,14 @@ export default function HeroSection({
         <div className="flex flex-wrap gap-3">
           <Link
             href={TAB_EXPLORE_LINK[activeTab].href}
-            className="inline-flex items-center justify-center px-5 py-2 text-[11px] tracking-[0.16em] uppercase font-medium bg-ink text-page hover:bg-ink/90 sm:bg-white sm:text-vc-950 sm:hover:bg-white/90 transition-all duration-200 hover:scale-105 active:scale-95"
+            className="inline-flex items-center justify-center px-6 py-2.5 text-[11px] tracking-[0.16em] uppercase font-bold bg-[#eab308] text-black hover:bg-[#d69e07] transition-all duration-200 hover:scale-105 active:scale-95"
           >
             {t(TAB_EXPLORE_LINK[activeTab].labelKey)}
           </Link>
           {activeTab === "hotels" && (
             <Link
               href="/hotels"
-              className="inline-flex items-center justify-center px-5 py-2 text-[11px] tracking-[0.16em] uppercase font-medium border border-ink/30 text-ink hover:bg-ink hover:text-page sm:border-white/70 sm:text-white sm:hover:bg-white sm:hover:text-vc-950 transition-all duration-200 hover:scale-105 active:scale-95"
+              className="inline-flex items-center justify-center px-6 py-2.5 text-[11px] tracking-[0.16em] uppercase font-bold border border-ink/25 text-ink hover:bg-ink hover:text-page transition-all duration-200 hover:scale-105 active:scale-95"
             >
               {t("hero.browseStays")}
             </Link>
@@ -244,9 +244,9 @@ export default function HeroSection({
       </div>
 
       {/* Scroll cue below search */}
-      <div className="relative flex flex-col items-center gap-1.5 text-ink-faint sm:text-white/50 py-3">
+      <div className="relative flex flex-col items-center gap-1.5 text-ink-faint py-3">
         <span className="text-[9px] tracking-[0.3em] uppercase">{t("hero.scroll")}</span>
-        <span className="w-px h-5 bg-ink/25 sm:bg-white/30" />
+        <span className="w-px h-5 bg-ink/25" />
       </div>
     </section>
   );

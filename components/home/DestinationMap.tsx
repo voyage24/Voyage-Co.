@@ -106,7 +106,7 @@ export default function DestinationMap({
   return (
     <div
       className="absolute inset-0 overflow-hidden"
-      style={{ background: "radial-gradient(140% 115% at 50% 55%, #51565c 0%, #3b3f45 52%, #24272b 100%)" }}
+      style={{ background: "radial-gradient(140% 115% at 50% 45%, #f4f6f8 0%, #e8ebef 55%, #dde2e7 100%)" }}
     >
       {/* Static dot grid */}
       <div
@@ -126,8 +126,8 @@ export default function DestinationMap({
             key={`arc-${routeKey}`}
             d={arcPath}
             fill="none"
-            stroke="rgb(var(--gold-soft))"
-            strokeWidth={0.4}
+            stroke="#eab308"
+            strokeWidth={0.45}
             strokeLinecap="round"
             strokeDasharray="3.2 2.4"
             className="route-arc"
@@ -136,17 +136,17 @@ export default function DestinationMap({
         {/* Endpoints are plain pins, not planes — only the single travelling
             plane below gets a plane glyph, so there's exactly one of them. */}
         {fromPoint && (
-          <circle key={`from-${routeKey}`} cx={fromPoint.x} cy={fromPoint.y} r={0.6} fill="rgb(var(--gold-soft))" className="pulse-ring" />
+          <circle key={`from-${routeKey}`} cx={fromPoint.x} cy={fromPoint.y} r={0.6} fill="#eab308" className="pulse-ring" />
         )}
         {toPoint && (
-          <circle key={`to-${routeKey}`} cx={toPoint.x} cy={toPoint.y} r={0.6} fill="#f4f0e9" className="pulse-ring" />
+          <circle key={`to-${routeKey}`} cx={toPoint.x} cy={toPoint.y} r={0.6} fill="#18181b" className="pulse-ring" />
         )}
 
         {/* The one plane, slowly and calmly making its way from origin to
             destination — kept unhurried rather than darting back and forth. */}
         {arcPath && (
           <g key={`flying-${routeKey}`}>
-            <PlaneGlyph scale={0.09} color="#f4f0e9" />
+            <PlaneGlyph scale={0.09} color="#18181b" />
             <animateMotion dur="18s" repeatCount="indefinite" path={arcPath} rotate="auto" />
           </g>
         )}
@@ -163,7 +163,7 @@ export default function DestinationMap({
             onClick={() => onSelectDestination(city)}
           >
             <circle cx={x} cy={y} r={2.6} fill="transparent" />
-            <circle cx={x} cy={y} r={0.32} fill="#f4f0e9" opacity={0.55} />
+            <circle cx={x} cy={y} r={0.32} fill="#18181b" opacity={0.5} />
           </g>
         ))}
       </svg>

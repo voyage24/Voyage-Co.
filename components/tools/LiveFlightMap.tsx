@@ -104,12 +104,12 @@ export default function LiveFlightMap() {
 
       {nearby !== null && (
         <>
-          <div className="relative w-full overflow-hidden rounded-2xl border border-line" style={{ aspectRatio: "2 / 1", background: "radial-gradient(140% 115% at 50% 55%, #51565c 0%, #3b3f45 52%, #24272b 100%)" }}>
+          <div className="relative w-full overflow-hidden rounded-2xl border border-line" style={{ aspectRatio: "2 / 1", background: "radial-gradient(140% 115% at 50% 45%, #f4f6f8 0%, #e8ebef 55%, #dde2e7 100%)" }}>
             <div className="absolute inset-0 [&>svg]:w-full [&>svg]:h-full" dangerouslySetInnerHTML={{ __html: dotsSVG }} />
             <svg viewBox={`0 0 ${width} ${height}`} className="absolute inset-0 w-full h-full" preserveAspectRatio="xMidYMid meet">
               {nearbyPins.map(({ f, pin: pp }, i) => (
                 <g key={i} transform={`translate(${pp.x}, ${pp.y}) rotate(${f.heading}) scale(0.07) translate(-12,-12)`}>
-                  <path d={PLANE_PATH} fill="#f4f0e9" opacity={0.9} />
+                  <path d={PLANE_PATH} fill="#18181b" opacity={0.9} />
                 </g>
               ))}
             </svg>
@@ -134,18 +134,18 @@ export default function LiveFlightMap() {
 
       {tracking && (
         <>
-          <div className="relative w-full overflow-hidden rounded-2xl border border-line" style={{ aspectRatio: "2 / 1", background: "radial-gradient(140% 115% at 50% 55%, #51565c 0%, #3b3f45 52%, #24272b 100%)" }}>
+          <div className="relative w-full overflow-hidden rounded-2xl border border-line" style={{ aspectRatio: "2 / 1", background: "radial-gradient(140% 115% at 50% 45%, #f4f6f8 0%, #e8ebef 55%, #dde2e7 100%)" }}>
             <div className="absolute inset-0 [&>svg]:w-full [&>svg]:h-full" dangerouslySetInnerHTML={{ __html: dotsSVG }} />
             {pin && pos && (
               <svg viewBox={`0 0 ${width} ${height}`} className="absolute inset-0 w-full h-full" preserveAspectRatio="xMidYMid meet">
-                <circle cx={pin.x} cy={pin.y} r={0.7} fill="rgb(var(--gold-soft))" className="pulse-ring" />
+                <circle cx={pin.x} cy={pin.y} r={0.7} fill="#eab308" className="pulse-ring" />
                 <g transform={`translate(${pin.x}, ${pin.y}) rotate(${pos.heading}) scale(0.11) translate(-12,-12)`}>
-                  <path d={PLANE_PATH} fill="#f4f0e9" stroke="#f4f0e9" strokeWidth={0.6} strokeLinejoin="round" />
+                  <path d={PLANE_PATH} fill="#18181b" stroke="#18181b" strokeWidth={0.6} strokeLinejoin="round" />
                 </g>
               </svg>
             )}
             {loading && !pos && (
-              <div className="absolute inset-0 flex items-center justify-center text-white/70 text-sm gap-2"><Loader2 size={16} className="animate-spin" /> Locating aircraft…</div>
+              <div className="absolute inset-0 flex items-center justify-center text-ink-muted text-sm gap-2"><Loader2 size={16} className="animate-spin" /> Locating aircraft…</div>
             )}
           </div>
 

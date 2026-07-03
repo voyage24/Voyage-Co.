@@ -36,7 +36,7 @@ export default function ExploreMap() {
   const go = (city: City) => router.push(`/hotels?city=${encodeURIComponent(city.name)}`);
 
   return (
-    <div className="relative w-full rounded-2xl overflow-hidden border border-vc-700" style={{ aspectRatio: `${width} / ${height}`, background: "radial-gradient(135% 100% at 50% 6%, #4b4f55 0%, #3a3e43 45%, #26282c 100%)" }}>
+    <div className="relative w-full rounded-2xl overflow-hidden border border-line" style={{ aspectRatio: `${width} / ${height}`, background: "radial-gradient(140% 115% at 50% 45%, #f4f6f8 0%, #e8ebef 55%, #dde2e7 100%)" }}>
       <div className="absolute inset-0 [&>svg]:w-full [&>svg]:h-full" dangerouslySetInnerHTML={{ __html: dotsSVG }} />
       <svg viewBox={`0 0 ${width} ${height}`} className="absolute inset-0 w-full h-full" preserveAspectRatio="xMidYMid slice">
         {points.map(({ city, x, y }) => (

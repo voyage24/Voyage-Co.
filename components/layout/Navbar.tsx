@@ -77,7 +77,7 @@ export default function Navbar() {
   const overHero = pathname === "/" && !scrolled;
   // One uniform size and weight for every language — no per-language bumps.
   const linkBase = "text-[12px] font-normal tracking-[0.08em] uppercase transition-all duration-200 py-2 whitespace-nowrap shrink-0 inline-block origin-left hover:scale-110 active:scale-95";
-  const linkColor = overHero ? "text-white/90 hover:text-white" : "text-ink-muted hover:text-ink";
+  const linkColor = "text-ink-muted hover:text-ink";
 
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
@@ -87,14 +87,14 @@ export default function Navbar() {
         <div className={`flex items-center gap-x-4 lg:gap-x-6 transition-all duration-500 ${overHero ? "min-h-16" : "min-h-20"}`}>
 
           <div className="flex shrink-0">
-            <Logo size={overHero ? 26 : 24} tone={overHero ? "light" : "dark"} shimmer />
+            <Logo size={overHero ? 26 : 24} tone="dark" shimmer />
           </div>
 
           {/* Primary links — contained, scrollable as a fallback only. */}
           <div className="hidden lg:block relative min-w-0 flex-1">
             {canLeft && (
               <button type="button" aria-label="Scroll navigation left" onClick={() => scrollNav(-1)}
-                className={`absolute left-0 top-1/2 -translate-y-1/2 z-10 flex items-center justify-center w-7 h-7 rounded-full shadow-sm ${overHero ? "bg-vc-950/70 text-white" : "bg-page text-ink border border-line"}`}>
+                className={`absolute left-0 top-1/2 -translate-y-1/2 z-10 flex items-center justify-center w-7 h-7 rounded-full shadow-sm bg-page text-ink border border-line`}>
                 <ChevronLeft size={16} />
               </button>
             )}
@@ -115,7 +115,7 @@ export default function Navbar() {
             </div>
             {canRight && (
               <button type="button" aria-label="Scroll navigation right" onClick={() => scrollNav(1)}
-                className={`absolute right-0 top-1/2 -translate-y-1/2 z-10 flex items-center justify-center w-7 h-7 rounded-full shadow-sm ${overHero ? "bg-vc-950/70 text-white" : "bg-page text-ink border border-line"}`}>
+                className={`absolute right-0 top-1/2 -translate-y-1/2 z-10 flex items-center justify-center w-7 h-7 rounded-full shadow-sm bg-page text-ink border border-line`}>
                 <ChevronRight size={16} />
               </button>
             )}
@@ -123,17 +123,15 @@ export default function Navbar() {
 
           {/* Controls — search, account menu, language, currency, primary CTA. */}
           <div className="hidden lg:flex items-center gap-x-3 shrink-0">
-            <SearchOverlay tone={overHero ? "light" : "dark"} />
-            <AccountMenu tone={overHero ? "light" : "dark"} />
-            <ThemeToggle tone={overHero ? "light" : "dark"} size={17} />
-            <NavConverter tone={overHero ? "light" : "dark"} />
-            <LanguageSelector tone={overHero ? "light" : "dark"} />
-            <CurrencySelector tone={overHero ? "light" : "dark"} />
+            <SearchOverlay tone="dark" />
+            <AccountMenu tone="dark" />
+            <ThemeToggle tone="dark" size={17} />
+            <NavConverter tone="dark" />
+            <LanguageSelector tone="dark" />
+            <CurrencySelector tone="dark" />
             <Link
               href="/plan"
-              className={`text-[10px] font-medium tracking-[0.1em] uppercase px-4 py-2.5 rounded-sm border transition-all duration-200 whitespace-nowrap shrink-0 hover:scale-110 active:scale-95 ${
-                overHero ? "border-white/70 text-white hover:bg-white hover:text-ink" : "bg-ink border-ink text-page hover:bg-ink/90"
-              }`}
+              className="text-[10px] font-bold tracking-[0.1em] uppercase px-5 py-2.5 rounded-full border bg-[#eab308] border-[#eab308] text-black hover:bg-[#d69e07] transition-all duration-200 whitespace-nowrap shrink-0 hover:scale-110 active:scale-95"
             >
               {t("plan.title")}
             </Link>
@@ -141,12 +139,12 @@ export default function Navbar() {
 
           {/* Mobile/tablet — search + account + toggle */}
           <div className="flex lg:hidden items-center gap-4 ml-auto">
-            <ThemeToggle tone={overHero ? "light" : "dark"} size={20} />
-            <SearchOverlay tone={overHero ? "light" : "dark"} triggerSize={20} />
-            <Link href="/account" aria-label={t("account.account")} className={`inline-flex items-center justify-center leading-none transition-all duration-200 hover:scale-110 active:scale-95 ${overHero ? "text-white/90 hover:text-white" : "text-ink-muted hover:text-ink"}`}>
+            <ThemeToggle tone="dark" size={20} />
+            <SearchOverlay tone="dark" triggerSize={20} />
+            <Link href="/account" aria-label={t("account.account")} className="inline-flex items-center justify-center leading-none transition-all duration-200 hover:scale-110 active:scale-95 text-ink-muted hover:text-ink">
               <User size={20} />
             </Link>
-            <button className={overHero ? "text-white" : "text-ink"} onClick={() => setMobileOpen(!mobileOpen)} aria-label="Menu">
+            <button className="text-ink" onClick={() => setMobileOpen(!mobileOpen)} aria-label="Menu">
               {mobileOpen ? <X size={22} /> : <Menu size={22} />}
             </button>
           </div>
