@@ -48,27 +48,62 @@ html.dark {
    surfaces, big rounded cards, light text. The admin uses fixed grays rather
    than the theme vars, so we remap the common ones for the whole admin at once,
    regardless of the public-site light/dark setting. */
-.admin-root { background-color: #121214 !important; }
-.admin-root .bg-white { background-color: #1b1b1f !important; }
-.admin-root .bg-gray-50 { background-color: #151517 !important; }
-.admin-root .bg-gray-100 { background-color: #2a2a2f !important; }
-.admin-root .text-gray-900 { color: #f4f4f5 !important; }
-.admin-root .text-gray-800 { color: #e6e6e8 !important; }
-.admin-root .text-gray-700 { color: #d2d2d6 !important; }
-.admin-root .text-gray-600 { color: #b2b2b9 !important; }
-.admin-root .text-gray-500 { color: #90909a !important; }
-.admin-root .text-gray-400 { color: #78787f !important; }
-.admin-root .border-gray-100 { border-color: rgba(255,255,255,0.05) !important; }
-.admin-root .border-gray-200 { border-color: rgba(255,255,255,0.08) !important; }
-.admin-root .border-gray-300 { border-color: rgba(255,255,255,0.12) !important; }
-.admin-root .divide-gray-100 > * + * { border-color: rgba(255,255,255,0.06) !important; }
-/* Big rounded cards + soft shadows (override the global sharp-edge reset). */
-.admin-root .rounded-xl, .admin-root .rounded-2xl { border-radius: 1.4rem !important; }
+.admin-root { background-color: #ffffff !important; font-family: var(--font-body) !important; }
+.admin-root .font-serif, .admin-root .font-logo { font-family: var(--font-body) !important; letter-spacing: -0.01em; }
+html.dark .admin-root { background-color: #000000 !important; }
+html.dark .admin-root .bg-white { background-color: #0b0b0d !important; }
+html.dark .admin-root .bg-gray-50 { background-color: #070708 !important; }
+html.dark .admin-root .bg-gray-100 { background-color: #1c1c20 !important; }
+html.dark .admin-root .text-gray-900 { color: #f4f4f5 !important; }
+html.dark .admin-root .text-gray-800 { color: #e6e6e8 !important; }
+html.dark .admin-root .text-gray-700 { color: #d2d2d6 !important; }
+html.dark .admin-root .text-gray-600 { color: #b3b3ba !important; }
+html.dark .admin-root .text-gray-500 { color: #9a9aa2 !important; }
+html.dark .admin-root .text-gray-400 { color: #80808a !important; }
+/* No borders on tiles / dividers. */
+.admin-root .border-gray-100, .admin-root .border-gray-200 { border-color: transparent !important; }
+.admin-root .divide-gray-100 > * + * { border-color: rgba(128,128,128,0.14) !important; }
+/* Rounded cards + a soft shadow so borderless tiles still read. */
+.admin-root .rounded-xl, .admin-root .rounded-2xl { border-radius: 1.4rem !important; box-shadow: 0 10px 30px -16px rgba(20,20,35,0.16); }
 .admin-root .rounded-lg { border-radius: 1.1rem !important; }
 .admin-root .rounded-md { border-radius: 0.8rem !important; }
 .admin-root .rounded-sm { border-radius: 0.65rem !important; }
 .admin-root .rounded-full { border-radius: 9999px !important; }
-.admin-root .shadow-sm, .admin-root .shadow, .admin-root .shadow-md { box-shadow: 0 16px 40px -20px rgba(0,0,0,0.55) !important; }
+html.dark .admin-root .rounded-xl, html.dark .admin-root .rounded-2xl { box-shadow: 0 14px 36px -18px rgba(0,0,0,0.7); }
+
+/* Per-tile subtle diagonal gradients — each a distinct hue, none repeated. */
+.admin-root .tile-grad-1  { background: linear-gradient(135deg, #eef3ff 0%, #f6edff 100%) !important; }
+.admin-root .tile-grad-2  { background: linear-gradient(135deg, #e9f9ef 0%, #f2f8e4 100%) !important; }
+.admin-root .tile-grad-3  { background: linear-gradient(135deg, #fff3e2 0%, #ffeede 100%) !important; }
+.admin-root .tile-grad-4  { background: linear-gradient(135deg, #ffecf2 0%, #fbeaff 100%) !important; }
+.admin-root .tile-grad-5  { background: linear-gradient(135deg, #e2f7f6 0%, #eaf3ff 100%) !important; }
+.admin-root .tile-grad-6  { background: linear-gradient(135deg, #f1ecfe 0%, #ffeaf8 100%) !important; }
+.admin-root .tile-grad-7  { background: linear-gradient(135deg, #e6f5ff 0%, #e6fbf4 100%) !important; }
+.admin-root .tile-grad-8  { background: linear-gradient(135deg, #f3fae0 0%, #e7f8ee 100%) !important; }
+.admin-root .tile-grad-9  { background: linear-gradient(135deg, #fff0e6 0%, #fef7df 100%) !important; }
+.admin-root .tile-grad-10 { background: linear-gradient(135deg, #fdeafd 0%, #eeecff 100%) !important; }
+.admin-root .tile-grad-11 { background: linear-gradient(135deg, #ecefff 0%, #f3ecff 100%) !important; }
+.admin-root .tile-grad-12 { background: linear-gradient(135deg, #e4f8ff 0%, #e9fbf1 100%) !important; }
+.admin-root .tile-grad-13 { background: linear-gradient(135deg, #e8f8ef 0%, #eef6f9 100%) !important; }
+.admin-root .tile-grad-14 { background: linear-gradient(135deg, #fdf7dc 0%, #fef1e3 100%) !important; }
+.admin-root .tile-grad-15 { background: linear-gradient(135deg, #ffe9ef 0%, #ffedf8 100%) !important; }
+.admin-root .tile-grad-16 { background: linear-gradient(135deg, #eef1f7 0%, #f5f1f8 100%) !important; }
+html.dark .admin-root .tile-grad-1  { background: linear-gradient(135deg, #101a2e 0%, #191228 100%) !important; }
+html.dark .admin-root .tile-grad-2  { background: linear-gradient(135deg, #0e2015 0%, #182110 100%) !important; }
+html.dark .admin-root .tile-grad-3  { background: linear-gradient(135deg, #26190b 0%, #22150d 100%) !important; }
+html.dark .admin-root .tile-grad-4  { background: linear-gradient(135deg, #24121b 0%, #1e0f27 100%) !important; }
+html.dark .admin-root .tile-grad-5  { background: linear-gradient(135deg, #0a2022 0%, #0e1a2b 100%) !important; }
+html.dark .admin-root .tile-grad-6  { background: linear-gradient(135deg, #1c122e 0%, #260f20 100%) !important; }
+html.dark .admin-root .tile-grad-7  { background: linear-gradient(135deg, #0a1c28 0%, #0a2013 100%) !important; }
+html.dark .admin-root .tile-grad-8  { background: linear-gradient(135deg, #1a2409 0%, #0e2116 100%) !important; }
+html.dark .admin-root .tile-grad-9  { background: linear-gradient(135deg, #28190b 0%, #26210a 100%) !important; }
+html.dark .admin-root .tile-grad-10 { background: linear-gradient(135deg, #240d24 0%, #14122e 100%) !important; }
+html.dark .admin-root .tile-grad-11 { background: linear-gradient(135deg, #131530 0%, #1c122c 100%) !important; }
+html.dark .admin-root .tile-grad-12 { background: linear-gradient(135deg, #0a2028 0%, #0a2114 100%) !important; }
+html.dark .admin-root .tile-grad-13 { background: linear-gradient(135deg, #0d2117 0%, #122124 100%) !important; }
+html.dark .admin-root .tile-grad-14 { background: linear-gradient(135deg, #24210a 0%, #26190b 100%) !important; }
+html.dark .admin-root .tile-grad-15 { background: linear-gradient(135deg, #2a121f 0%, #23141f 100%) !important; }
+html.dark .admin-root .tile-grad-16 { background: linear-gradient(135deg, #181c26 0%, #1c1826 100%) !important; }
 
 html {
   font-size: 100%;
@@ -224,9 +259,9 @@ textarea:focus-visible {
 .word-rise { display: inline-block; opacity: 0; animation: wordRise 0.7s cubic-bezier(0.22, 0.61, 0.36, 1) forwards; }
 @keyframes wordRise { from { opacity: 0; transform: translateY(0.5em); } to { opacity: 1; transform: none; } }
 
-/* Admin: a gold accent bar on every page heading, applied once here so each
-   page doesn't need its own markup. */
-.admin-main h1 { border-left: 5px solid #E6E800; padding-left: 0.7rem; line-height: 1.15; font-weight: 700; }
+/* Admin: a subtle gradient accent bar on every page heading, applied once here
+   so each page doesn't need its own markup. */
+.admin-main h1 { border-left: 5px solid transparent; border-image: linear-gradient(180deg, #818cf8, #e879f9) 1; padding-left: 0.7rem; line-height: 1.15; font-weight: 700; }
 
 /* Admin sidebar — links slide/fade in on first mount (staggered inline). */
 .admin-nav-link { opacity: 0; animation: navIn 0.4s cubic-bezier(0.22, 0.61, 0.36, 1) forwards; }

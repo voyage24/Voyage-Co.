@@ -18,8 +18,8 @@ export default function MiniAreaChart({ data, format = (n: number) => String(n) 
       <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-auto" role="img" aria-label="Bookings over the last 14 days">
         <defs>
           <linearGradient id="chartFill" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor="#E6E800" stopOpacity="0.5" />
-            <stop offset="1" stopColor="#E6E800" stopOpacity="0" />
+            <stop offset="0" stopColor="#6366f1" stopOpacity="0.4" />
+            <stop offset="1" stopColor="#6366f1" stopOpacity="0" />
           </linearGradient>
         </defs>
 
@@ -35,7 +35,7 @@ export default function MiniAreaChart({ data, format = (n: number) => String(n) 
 
         {data.map((d, i) => (
           <g key={i}>
-            <circle cx={X(i)} cy={Y(d.count)} r="3" fill="#E6E800" stroke="currentColor" strokeWidth="1.5" className="chart-dot" style={{ animationDelay: `${0.5 + i * 0.05}s` }}>
+            <circle cx={X(i)} cy={Y(d.count)} r="3" fill="#6366f1" stroke="currentColor" strokeWidth="1.5" className="chart-dot" style={{ animationDelay: `${0.5 + i * 0.05}s` }}>
               <title>{`${d.label}: ${format(d.count)}`}</title>
             </circle>
             {i % 2 === 0 && <text x={X(i)} y={H - 8} textAnchor="middle" fontSize="9" fill="currentColor" fillOpacity="0.45">{d.label.split(" ")[0]}</text>}

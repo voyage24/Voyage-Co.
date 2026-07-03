@@ -61,16 +61,13 @@ export default async function AdminDashboardPage() {
   const todayVisits = visitMap.get(new Date().toISOString().slice(0, 10)) ?? 0;
   const weekVisits = visitDays.slice(-7).reduce((s, d) => s + d.count, 0);
 
-  const Tile = ({ href, n, label, Icon }: { href: string; n: number; label: string; Icon: typeof Inbox }) => {
-    const active = n > 0;
-    return (
-      <Link href={href} className={`admin-rise admin-lift relative block rounded-xl p-5 border ${active ? "bg-[#E6E800] border-[#E6E800] text-black" : "bg-white border-gray-200 text-gray-900"}`}>
-        <Icon size={20} className="mb-3" />
-        <p className="text-3xl font-bold">{n}</p>
-        <p className={`text-sm mt-0.5 ${active ? "text-black/70" : "text-gray-600"}`}>{label}</p>
-      </Link>
-    );
-  };
+  const Tile = ({ href, n, label, Icon, grad }: { href: string; n: number; label: string; Icon: typeof Inbox; grad: string }) => (
+    <Link href={href} className={`admin-rise admin-lift relative block rounded-xl p-5 text-gray-900 ${grad}`}>
+      <Icon size={20} className="mb-3 text-gray-700" />
+      <p className="text-3xl font-bold">{n}</p>
+      <p className="text-sm mt-0.5 text-gray-600">{label}</p>
+    </Link>
+  );
 
   return (
     <div className="space-y-8">
@@ -81,7 +78,7 @@ export default async function AdminDashboardPage() {
         </div>
         <div className="flex flex-wrap gap-2">
           {QUICK.map(q => (
-            <Link key={q.href} href={q.href} className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-2 rounded-md bg-black text-white hover:bg-[#E6E800] hover:text-black transition-colors">
+            <Link key={q.href} href={q.href} className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-2 rounded-md bg-gray-900 text-white hover:bg-gray-700 dark:bg-white/[0.12] dark:hover:bg-white/20 transition-colors">
               <Plus size={14} /> {q.label}
             </Link>
           ))}
@@ -89,13 +86,13 @@ export default async function AdminDashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Tile href="/admin/bookings" n={pendingBookings} label={`Pending ${pendingBookings === 1 ? "booking" : "bookings"}`} Icon={CalendarCheck} />
-        <Tile href="/admin/enquiries" n={newEnquiries} label={`New ${newEnquiries === 1 ? "enquiry" : "enquiries"}`} Icon={Inbox} />
-        <Tile href="/admin/reviews" n={pendingReviews} label={`${pendingReviews === 1 ? "Review" : "Reviews"} to moderate`} Icon={Star} />
+        <Tile href="/admin/bookings" n={pendingBookings} label={`Pending ${pendingBookings === 1 ? "booking" : "bookings"}`} Icon={CalendarCheck} grad="tile-grad-1" />
+        <Tile href="/admin/enquiries" n={newEnquiries} label={`New ${newEnquiries === 1 ? "enquiry" : "enquiries"}`} Icon={Inbox} grad="tile-grad-2" />
+        <Tile href="/admin/reviews" n={pendingReviews} label={`${pendingReviews === 1 ? "Review" : "Reviews"} to moderate`} Icon={Star} grad="tile-grad-3" />
       </div>
 
       {/* Visitors */}
-      <div className="bg-white border border-gray-200 rounded-xl p-5 admin-rise admin-lift">
+      <div className="tile-grad-4 rounded-xl p-5 admin-rise admin-lift">
         <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
           <p className="text-sm font-medium text-gray-900 flex items-center gap-2"><Eye size={15} className="text-gray-900" /> Visitors</p>
           <div className="flex flex-wrap gap-x-6 gap-y-2 text-right">
@@ -111,7 +108,7 @@ export default async function AdminDashboardPage() {
 
       {/* Recent activity */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white border border-gray-200 rounded-xl p-5 admin-rise admin-lift">
+        <div className="tile-grad-5 rounded-xl p-5 admin-rise admin-lift">
           <div className="flex items-center justify-between mb-3">
             <p className="text-sm font-medium text-gray-900 flex items-center gap-2"><CalendarCheck size={15} className="text-gray-900" /> Latest bookings</p>
             <Link href="/admin/bookings" className="text-xs text-gray-500 hover:text-gray-900 inline-flex items-center gap-1">All <ArrowRight size={12} /></Link>
@@ -128,7 +125,7 @@ export default async function AdminDashboardPage() {
             </ul>
           )}
         </div>
-        <div className="bg-white border border-gray-200 rounded-xl p-5 admin-rise admin-lift">
+        <div className="tile-grad-6 rounded-xl p-5 admin-rise admin-lift">
           <div className="flex items-center justify-between mb-3">
             <p className="text-sm font-medium text-gray-900 flex items-center gap-2"><Inbox size={15} className="text-gray-900" /> Latest enquiries</p>
             <Link href="/admin/enquiries" className="text-xs text-gray-500 hover:text-gray-900 inline-flex items-center gap-1">All <ArrowRight size={12} /></Link>
@@ -151,15 +148,15 @@ export default async function AdminDashboardPage() {
       <div>
         <p className="text-xs font-semibold tracking-[0.14em] uppercase text-gray-400 mb-3">Catalogue</p>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-          {CARDS.map(c => (
-            <Link key={c.key} href={c.href} className="admin-rise admin-lift bg-white border border-gray-200 rounded-xl p-5">
-              <span className="inline-flex items-center justify-center w-10 h-10 rounded-lg mb-3 bg-[#E6E800] text-black"><c.icon size={18} /></span>
+          {CARDS.map((c, i) => (
+            <Link key={c.key} href={c.href} className={`admin-rise admin-lift rounded-xl p-5 tile-grad-${7 + i}`}>
+              <span className="inline-flex items-center justify-center w-10 h-10 rounded-lg mb-3 bg-black/[0.06] dark:bg-white/10 text-gray-700"><c.icon size={18} /></span>
               <p className="text-2xl font-bold text-gray-900">{counts[c.key]}</p>
               <p className="text-sm text-gray-500 mt-0.5">{c.label}</p>
             </Link>
           ))}
-          <Link href="/admin/newsletter" className="admin-rise admin-lift bg-white border border-gray-200 rounded-xl p-5">
-            <span className="inline-flex items-center justify-center w-10 h-10 rounded-lg mb-3 bg-[#E6E800] text-black"><Mail size={18} /></span>
+          <Link href="/admin/newsletter" className="admin-rise admin-lift rounded-xl p-5 tile-grad-15">
+            <span className="inline-flex items-center justify-center w-10 h-10 rounded-lg mb-3 bg-black/[0.06] dark:bg-white/10 text-gray-700"><Mail size={18} /></span>
             <p className="text-2xl font-bold text-gray-900">{newsletter}</p>
             <p className="text-sm text-gray-500 mt-0.5">Subscribers</p>
           </Link>

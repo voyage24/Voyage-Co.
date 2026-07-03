@@ -82,10 +82,10 @@ export default function AdminSidebar() {
   let navIndex = 0; // flat counter for staggering the link entrance animation
 
   return (
-    <nav className="hidden lg:flex flex-col w-60 shrink-0 bg-[#111110] text-gray-300 min-h-screen">
-      <div className="px-5 py-5 border-b border-white/10">
-        <p className="font-serif text-lg font-light text-white leading-none">Voyages &amp; Co.</p>
-        <p className="text-[10px] tracking-[0.3em] uppercase text-[#E6E800] mt-1 font-semibold">Admin</p>
+    <nav className="hidden lg:flex flex-col w-60 shrink-0 bg-gray-100 text-gray-600 min-h-screen border-r border-black/[0.05]">
+      <div className="px-5 py-5 border-b border-black/[0.06]">
+        <p className="font-serif text-lg font-light text-gray-900 leading-none">Voyages &amp; Co.</p>
+        <p className="text-[10px] tracking-[0.3em] uppercase text-gray-400 mt-1 font-semibold">Admin</p>
       </div>
       <div className="flex-1 overflow-y-auto p-3 space-y-5">
         {NAV_SECTIONS.map((section, i) => (
@@ -104,11 +104,11 @@ export default function AdminSidebar() {
                       style={{ animationDelay: `${delay}ms` }}
                       className={`admin-nav-link group flex items-center gap-3 pl-3 pr-3 py-2 rounded-md text-sm border-l-2 transition-[background-color,color,border-color,transform] duration-200 hover:translate-x-1 ${
                         active
-                          ? "bg-[#E6E800]/[0.14] text-white border-[#E6E800]"
-                          : "text-gray-400 border-transparent hover:bg-white/5 hover:text-white"
+                          ? "bg-indigo-500/[0.12] text-gray-900 border-indigo-400"
+                          : "text-gray-500 border-transparent hover:bg-black/[0.05] dark:hover:bg-white/[0.06] hover:text-gray-900"
                       }`}
                     >
-                      <item.icon size={16} className={active ? "text-[#E6E800]" : "text-gray-500 group-hover:text-gray-300"} />
+                      <item.icon size={16} className={active ? "text-gray-900" : "text-gray-500 group-hover:text-gray-800"} />
                       {item.label}
                     </Link>
                   </li>
