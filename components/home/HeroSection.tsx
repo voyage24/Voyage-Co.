@@ -3,6 +3,7 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
+import Image from "next/image";
 import SearchWidget, { type TabId } from "@/components/search/SearchWidget";
 import DestinationMap from "@/components/home/DestinationMap";
 
@@ -134,15 +135,27 @@ export default function HeroSection({
     [trains]
   );
 
+  // A curated hero photograph for the mobile hero (from featured content), so
+  // phones get a warm, aspirational image rather than a dark map slab.
+  const heroImage = packages[0]?.image ?? hotels[0]?.image ?? experiences[0]?.image ?? null;
+
   return (
-    <section className="relative bg-vc-950 sm:bg-transparent pt-20 sm:pt-0 flex flex-col overflow-hidden sm:min-h-screen">
+    <section className="relative bg-vc-950 sm:bg-transparent pt-20 sm:pt-0 flex flex-col overflow-hidden min-h-[88vh] sm:min-h-screen">
+      {/* Mobile photographic hero background — a full-bleed image with a soft
+          scrim for legibility. Desktop keeps the interactive map background. */}
+      {heroImage && (
+        <div className="sm:hidden absolute inset-0">
+          <Image src={heroImage} alt="" fill priority sizes="100vw" className="object-cover ken-burns" />
+          <div className="absolute inset-0 bg-gradient-to-t from-vc-950/92 via-vc-950/45 to-vc-950/40" />
+        </div>
+      )}
       {/* Hero background — swaps with the active search tab. The Flights tab
           (default) shows the interactive destination map; Luxury Stays,
           Cruises, Rail Journeys, Bespoke Journeys and Experiences all show
           interactive maps plotting their own featured properties/voyages/
           itineraries/experiences, instead of static photos. */}
       <div
-        className={`relative w-full ${activeTab === "trains" ? "aspect-[4/3]" : "aspect-[16/9]"} sm:aspect-auto sm:absolute sm:inset-0`}
+        className="hidden sm:block w-full sm:aspect-auto sm:absolute sm:inset-0"
         onMouseMove={e => {
           const rect = e.currentTarget.getBoundingClientRect();
           const isLeftHalf = e.clientX - rect.left < rect.width / 2;
@@ -178,7 +191,7 @@ export default function HeroSection({
           map, and automatically a few seconds after appearing, so the text
           never sits on top of the map indefinitely — moving onto it (or
           away from the map) brings it straight back. */}
-      <div className="relative flex-none sm:flex-1 flex items-center pointer-events-none">
+      <div className="relative flex-1 flex items-center pointer-events-none">
         <div className="w-full max-w-[1500px] mx-auto px-6 lg:px-12 pt-6 pb-3 sm:pt-24 sm:pb-4">
           <div
             key={activeTab}
