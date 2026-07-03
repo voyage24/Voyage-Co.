@@ -29,22 +29,16 @@ const POPULAR_DESTINATION_CODES = [
 // greens, blues and mountains) rather than a flat grey basemap. The same
 // imagery serves both themes; dark mode is darkened in CSS to read as an
 // elegant night view while staying natural.
-const TILES = {
-  light: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-  dark: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-};
-const TILE_ATTR = 'Imagery &copy; <a href="https://www.esri.com">Esri</a>, Maxar, Earthstar Geographics';
-
-function isDark() {
-  return typeof document !== "undefined" && document.documentElement.classList.contains("dark");
-}
+const IMAGERY_URL = "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
+const LABELS_URL = "https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}";
+const IMAGERY_ATTR = 'Imagery &copy; <a href="https://www.esri.com">Esri</a>, Maxar, Earthstar Geographics';
 
 /**
  * A real, interactive Leaflet slippy map that plots the traveller's chosen
  * From/To cities plus popular destinations from live coordinate data, draws
  * the route between them, and smoothly flies/zooms to whatever location the
  * traveller selects (either a From/To in the search form or a marker click).
- * Uses key-less CARTO raster tiles that swap light/dark with the site theme.
+ * Uses key-less Esri satellite imagery + a place-name reference overlay.
  */
 export default function DestinationMap({
   from, to, onSelectDestination,
@@ -57,7 +51,6 @@ export default function DestinationMap({
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<L.Map | null>(null);
   const LRef = useRef<typeof L | null>(null);
-  const tileRef = useRef<L.TileLayer | null>(null);
   const routeLayerRef = useRef<L.LayerGroup | null>(null);
   // Keep the latest select handler without re-binding every marker.
   const onSelectRef = useRef(onSelectDestination);
@@ -100,11 +93,10 @@ export default function DestinationMap({
       });
       mapRef.current = map;
 
-      tileRef.current = Lm.tileLayer(isDark() ? TILES.dark : TILES.light, {
-        attribution: TILE_ATTR,
-        detectRetina: false,
-        maxZoom: 19,
-      }).addTo(map);
+      // Base imagery + translucent place-name/boundary overlay (kept on top
+      // via zIndex), then the route + destination markers above.
+      Lm.tileLayer(IMAGERY_URL, { attribution: IMAGERY_ATTR, detectRetina: false, maxZoom: 19, className: "vc-tiles-base", zIndex: 1 }).addTo(map);
+      Lm.tileLayer(LABELS_URL, { detectRetina: false, maxZoom: 19, className: "vc-tiles-ref", zIndex: 2, opacity: 0.9 }).addTo(map);
 
       routeLayerRef.current = Lm.layerGroup().addTo(map);
 
@@ -140,23 +132,8 @@ export default function DestinationMap({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Swap tiles when the site theme flips between light and dark.
-  useEffect(() => {
-    const el = document.documentElement;
-    const apply = () => {
-      const Lm = LRef.current, map = mapRef.current;
-      if (!Lm || !map) return;
-      tileRef.current?.remove();
-      tileRef.current = Lm.tileLayer(isDark() ? TILES.dark : TILES.light, {
-        attribution: TILE_ATTR,
-        detectRetina: false,
-        maxZoom: 19,
-      }).addTo(map);
-    };
-    const obs = new MutationObserver(apply);
-    obs.observe(el, { attributes: true, attributeFilter: ["class"] });
-    return () => obs.disconnect();
-  }, []);
+  // Dark mode is handled purely in CSS (the imagery is theme-independent), so
+  // there's no tile layer to swap on theme change.
 
   // Re-fit the world zoom when crossing the mobile breakpoint.
   useEffect(() => {

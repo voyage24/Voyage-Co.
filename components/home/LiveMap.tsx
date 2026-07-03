@@ -5,15 +5,14 @@ import type * as L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { useIsMobile } from "@/lib/useIsMobile";
 
-// Shared, key-less Esri World Imagery — real satellite/terrain earth imagery
-// (natural greens, blues and mountains) rather than a flat grey basemap. The
-// same imagery is used in both themes; dark mode is darkened in CSS so it
-// reads as an elegant night view while staying natural.
-const TILES = {
-  light: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-  dark: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-};
-const TILE_ATTR = 'Imagery &copy; <a href="https://www.esri.com">Esri</a>, Maxar, Earthstar Geographics';
+// Shared, key-less Esri basemap — real satellite/terrain earth imagery
+// (natural greens, blues and mountains) with a translucent place-name &
+// boundaries reference overlay on top for orientation. Same imagery in both
+// themes; dark mode is darkened in CSS so it reads as an elegant night view
+// while staying natural.
+const IMAGERY_URL = "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
+const LABELS_URL = "https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}";
+const IMAGERY_ATTR = 'Imagery &copy; <a href="https://www.esri.com">Esri</a>, Maxar, Earthstar Geographics';
 
 export type Tone = "gold" | "cream" | "amber" | "rose" | "teal" | "violet" | "emerald";
 const TONE_HEX: Record<Tone, string> = {
@@ -57,10 +56,6 @@ export type LiveMarker = {
 };
 export type LiveRoute = { id: string; points: [number, number][]; tone?: Tone };
 
-function isDark() {
-  return typeof document !== "undefined" && document.documentElement.classList.contains("dark");
-}
-
 /**
  * Reusable interactive Leaflet map for the homepage hero tabs. Plots markers
  * (styled per-tab glyphs from real coordinate data), optional route polylines,
@@ -87,7 +82,6 @@ export default function LiveMap({
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<L.Map | null>(null);
   const LRef = useRef<typeof L | null>(null);
-  const tileRef = useRef<L.TileLayer | null>(null);
   const markerLayerRef = useRef<L.LayerGroup | null>(null);
   const routeLayerRef = useRef<L.LayerGroup | null>(null);
   const [ready, setReady] = useState(false);
@@ -123,11 +117,10 @@ export default function LiveMap({
         attributionControl: true,
       });
       mapRef.current = map;
-      tileRef.current = Lm.tileLayer(isDark() ? TILES.dark : TILES.light, {
-        attribution: TILE_ATTR,
-        detectRetina: false,
-        maxZoom: 19,
-      }).addTo(map);
+      // Base imagery, then the label/boundary overlay above it (kept above via
+      // zIndex so it survives any later layer changes), then routes + markers.
+      Lm.tileLayer(IMAGERY_URL, { attribution: IMAGERY_ATTR, detectRetina: false, maxZoom: 19, className: "vc-tiles-base", zIndex: 1 }).addTo(map);
+      Lm.tileLayer(LABELS_URL, { detectRetina: false, maxZoom: 19, className: "vc-tiles-ref", zIndex: 2, opacity: 0.9 }).addTo(map);
       routeLayerRef.current = Lm.layerGroup().addTo(map);
       markerLayerRef.current = Lm.layerGroup().addTo(map);
       setTimeout(() => map?.invalidateSize(), 0);
@@ -141,22 +134,8 @@ export default function LiveMap({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Swap tiles when the site theme flips.
-  useEffect(() => {
-    const apply = () => {
-      const Lm = LRef.current, map = mapRef.current;
-      if (!Lm || !map) return;
-      tileRef.current?.remove();
-      tileRef.current = Lm.tileLayer(isDark() ? TILES.dark : TILES.light, {
-        attribution: TILE_ATTR,
-        detectRetina: false,
-        maxZoom: 19,
-      }).addTo(map);
-    };
-    const obs = new MutationObserver(apply);
-    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
-    return () => obs.disconnect();
-  }, []);
+  // Dark mode is handled purely in CSS (the imagery URL is theme-independent),
+  // so there's no tile layer to swap on theme change.
 
   // Redraw markers/routes and (re)frame the view whenever the data changes.
   useEffect(() => {
