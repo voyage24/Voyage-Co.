@@ -164,6 +164,11 @@ export default function HeroSection({
         ) : (
           <DestinationMap from={from} to={to} onSelectDestination={setTo} />
         )}
+
+        {/* Mobile-only top scrim — the navbar is transparent over the hero, so
+            without this its white wordmark & menu icons vanish against the
+            light map tiles. Desktop uses the full vignette below instead. */}
+        <div className="sm:hidden absolute top-0 inset-x-0 h-32 bg-gradient-to-b from-black/75 via-black/30 to-transparent pointer-events-none z-[2]" />
       </div>
 
       {/* Soft vignette for text legibility over the background. Desktop only —
