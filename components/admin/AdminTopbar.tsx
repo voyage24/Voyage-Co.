@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import AdminMobileNav from "@/components/admin/AdminMobileNav";
 import AdminSearch from "@/components/admin/AdminSearch";
+import ThemeToggle from "@/components/ui/ThemeToggle";
 
 export default function AdminTopbar({ email }: { email: string }) {
   const router = useRouter();
@@ -20,6 +21,7 @@ export default function AdminTopbar({ email }: { email: string }) {
         <AdminSearch />
       </div>
       <div className="flex items-center gap-3 shrink-0">
+        <ThemeToggle size={17} />
         <span className="hidden md:inline text-xs text-gray-400 truncate max-w-[160px]">{email}</span>
         <a
           href="https://voyagesco.com"
