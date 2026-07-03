@@ -1,30 +1,37 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fahkwang:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fahkwang:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Outfit:wght@300;400;500;600;700;800&display=swap");
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Apple-style sharp edges — no rounded corners anywhere on the site */
-*, *::before, *::after {
-  border-radius: 0 !important;
-}
+/* ── RON THEME (preview) ──────────────────────────────────────────────────
+   Rounded, modern, light grey-white with a bold sans-serif — inspired by
+   rondesignlab.com case studies. Rounded corners restored (the old sharp-edge
+   reset is disabled), a cleaner neutral palette, and Outfit as the type. */
 
 :root {
-  --page: 244 240 233;
-  --panel: 249 246 240;
-  --panel-soft: 238 233 224;
-  --panel-raised: 255 253 249;
-  --line: 214 206 192;
-  --line-strong: 186 175 158;
-  --ink: 33 29 24;
-  --ink-muted: 72 64 54;
-  --ink-faint: 108 98 84;
-  --gold: 112 92 56;
-  --gold-soft: 148 126 88;
+  --page: 249 250 251;      /* #F9FAFB clean grey-white */
+  --panel: 255 255 255;     /* white cards */
+  --panel-soft: 244 245 247;
+  --panel-raised: 255 255 255;
+  --line: 228 229 233;      /* soft grey borders */
+  --line-strong: 199 201 207;
+  --ink: 23 23 27;          /* near-black charcoal */
+  --ink-muted: 82 84 92;
+  --ink-faint: 128 130 140;
+  --gold: 168 120 12;       /* readable amber-gold accent */
+  --gold-soft: 202 154 30;
   /* Font stacks — overridable from the admin Appearance panel. */
-  --font-body: 'Inter', system-ui, sans-serif;
-  --font-heading: 'Inter', system-ui, sans-serif;
+  --font-body: 'Outfit', system-ui, sans-serif;
+  --font-heading: 'Outfit', system-ui, sans-serif;
 }
+
+/* Modern rounded corners + bold sans headings for the Ron look. */
+.font-serif, .font-logo { font-family: 'Outfit', system-ui, sans-serif !important; letter-spacing: -0.01em; }
+.rounded-2xl { border-radius: 1.25rem; }
+.rounded-xl { border-radius: 1rem; }
+.rounded-lg { border-radius: 0.85rem; }
+.rounded-sm { border-radius: 0.4rem; }
 
 /* Dark mode — redefine the theme variables the whole site is built on, so a
    single class on <html> flips every page. More specific than :root (and than
