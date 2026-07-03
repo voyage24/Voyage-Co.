@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 };
 
 const TOOLS = [
-  { icon: Plane, title: "Flight tracker", text: "Track any flight's route, times & terminals.", href: "/tools/flight-tracker" },
+  { icon: Plane, title: "Live flight tracker", text: "Follow any flight live on the world map.", href: "/tools/flight-tracker" },
   { icon: ArrowLeftRight, title: "Currency converter", text: "Live rates across 40+ currencies.", href: "/tools/currency" },
   { icon: Luggage, title: "Smart packing list", text: "A tailored list from your trip details.", href: "/tools/packing" },
   { icon: ListChecks, title: "Travel checklist", text: "A countdown of everything to sort before you go.", href: "/tools/checklist" },
