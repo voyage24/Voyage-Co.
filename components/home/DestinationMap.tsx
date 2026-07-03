@@ -1,15 +1,15 @@
 "use client";
 
-import { useMemo } from "react";
-import { getWorldMap, getWorldDotsSVG } from "@/lib/world-map-singleton";
+import { useEffect, useMemo, useRef, useState } from "react";
+import type * as L from "leaflet";
+import "leaflet/dist/leaflet.css";
 import { useIsMobile } from "@/lib/useIsMobile";
 import { getCoords } from "@/lib/geo";
 import { CITIES } from "@/lib/mock-data";
 import type { City } from "@/lib/types";
 
-// Airports plotted as clickable points whenever they aren't already the
-// active From/To — lets the map double as a quick worldwide destination
-// picker, not just a route visualiser.
+// Airports plotted as clickable points — lets the map double as a quick
+// worldwide destination picker, not just a route visualiser.
 const POPULAR_DESTINATION_CODES = [
   // South Asia & Middle East
   "DEL", "BOM", "BLR", "GOI", "DXB", "AUH", "RUH", "JED", "DOH", "IST", "TLV",
@@ -25,26 +25,25 @@ const POPULAR_DESTINATION_CODES = [
   "SYD", "AKL", "DPS", "HNL",
 ];
 
-// Lucide's "Plane" icon path data, embedded natively as SVG so it can live
-// inside the map's own coordinate space (HTML overlays don't line up
-// correctly against an SVG using preserveAspectRatio="slice").
-const PLANE_PATH =
-  "M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z";
+// CARTO's free, key-less basemaps — "Positron" (light, ash-grey) and
+// "Dark Matter" (near-black) — so the live map matches the site's luxe grey
+// aesthetic in both themes without any Mapbox/Google token.
+const TILES = {
+  light: "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+  dark: "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+};
+const TILE_ATTR = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>';
 
-function PlaneGlyph({ scale, color }: { scale: number; color: string }) {
-  return (
-    <g transform={`scale(${scale}) translate(-12,-12)`}>
-      <path d={PLANE_PATH} fill={color} stroke={color} strokeWidth={0.5} strokeLinecap="round" strokeLinejoin="round" />
-    </g>
-  );
+function isDark() {
+  return typeof document !== "undefined" && document.documentElement.classList.contains("dark");
 }
 
 /**
- * Decorative world dot-map that plots the traveller's chosen From/To cities
- * and an animated flight-path arc between them, with a plane icon at each
- * airport and one plane continuously flying the route. The dot grid is
- * precomputed and shared (lib/world-map-singleton.ts) so there's no runtime
- * cost building the world geometry — only pin lookups happen on the client.
+ * A real, interactive Leaflet slippy map that plots the traveller's chosen
+ * From/To cities plus popular destinations from live coordinate data, draws
+ * the route between them, and smoothly flies/zooms to whatever location the
+ * traveller selects (either a From/To in the search form or a marker click).
+ * Uses key-less CARTO raster tiles that swap light/dark with the site theme.
  */
 export default function DestinationMap({
   from, to, onSelectDestination,
@@ -53,120 +52,157 @@ export default function DestinationMap({
   to: City | null;
   onSelectDestination?: (city: City) => void;
 }) {
-  const map = useMemo(() => getWorldMap(), []);
   const isMobile = useIsMobile();
-  // On phones show the whole world map (letterboxed) rather than slicing/
-  // cropping it to fill; desktop keeps the full-bleed slice.
-  const fit = isMobile ? "meet" : "slice";
-  const dotsSVG = useMemo(() => getWorldDotsSVG(fit, isMobile ? 0.55 : 0.32), [fit, isMobile]);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const mapRef = useRef<L.Map | null>(null);
+  const LRef = useRef<typeof L | null>(null);
+  const tileRef = useRef<L.TileLayer | null>(null);
+  const routeLayerRef = useRef<L.LayerGroup | null>(null);
+  // Keep the latest select handler without re-binding every marker.
+  const onSelectRef = useRef(onSelectDestination);
+  onSelectRef.current = onSelectDestination;
+  const [ready, setReady] = useState(false);
 
-  // Popular destinations to plot as clickable points, excluding whichever
-  // are already the active From/To (those get their own pin + plane glyph).
-  const destinationPoints = useMemo(() => {
-    return POPULAR_DESTINATION_CODES
-      .filter(code => code !== from?.code && code !== to?.code)
-      .map(code => {
-        const city = CITIES.find(c => c.code === code);
-        if (!city) return null;
-        const [lat, lng] = getCoords(city.code, city.country);
-        const pin = map.getPin({ lat, lng });
-        return pin ? { city, ...pin } : null;
-      })
-      .filter((d): d is NonNullable<typeof d> => !!d);
-  }, [map, from, to]);
+  const worldZoom = isMobile ? 1 : 2;
 
-  const fromPoint = useMemo(() => {
-    if (!from) return null;
-    const [lat, lng] = getCoords(from.code, from.country);
-    return map.getPin({ lat, lng }) ?? null;
-  }, [map, from]);
+  const destinations = useMemo(
+    () =>
+      POPULAR_DESTINATION_CODES
+        .map(code => CITIES.find(c => c.code === code))
+        .filter((c): c is City => !!c)
+        .map(city => ({ city, coords: getCoords(city.code, city.country) as [number, number] })),
+    []
+  );
 
-  const toPoint = useMemo(() => {
-    if (!to) return null;
-    const [lat, lng] = getCoords(to.code, to.country);
-    return map.getPin({ lat, lng }) ?? null;
-  }, [map, to]);
+  // Create the map once, on mount (Leaflet is loaded lazily so it never runs
+  // during SSR and stays out of the initial bundle).
+  useEffect(() => {
+    let disposed = false;
+    let map: L.Map | null = null;
 
-  const { width, height } = map.image;
+    import("leaflet").then(mod => {
+      const Lm = (mod.default ?? mod) as typeof L;
+      if (disposed || !containerRef.current) return;
+      LRef.current = Lm;
 
-  const arcPath = useMemo(() => {
-    if (!fromPoint || !toPoint) return null;
-    const { x: x1, y: y1 } = fromPoint;
-    const { x: x2, y: y2 } = toPoint;
-    if (x1 === x2 && y1 === y2) return null;
-    const mx = (x1 + x2) / 2;
-    const my = (y1 + y2) / 2;
-    const dist = Math.hypot(x2 - x1, y2 - y1);
-    const lift = Math.min(dist * 0.5, height * 0.4);
-    return `M ${x1} ${y1} Q ${mx} ${my - lift} ${x2} ${y2}`;
-  }, [fromPoint, toPoint, height]);
+      map = Lm.map(containerRef.current, {
+        center: [22, 12],
+        zoom: worldZoom,
+        minZoom: 1,
+        maxZoom: 12,
+        zoomControl: true,
+        scrollWheelZoom: false, // don't hijack page scroll on the hero
+        attributionControl: true,
+        worldCopyJump: true,
+        zoomAnimation: true,
+        fadeAnimation: true,
+      });
+      mapRef.current = map;
 
-  const routeKey = `${from?.code ?? "none"}-${to?.code ?? "none"}`;
+      tileRef.current = Lm.tileLayer(isDark() ? TILES.dark : TILES.light, {
+        attribution: TILE_ATTR,
+        subdomains: "abcd",
+        detectRetina: true,
+        maxZoom: 20,
+      }).addTo(map);
+
+      routeLayerRef.current = Lm.layerGroup().addTo(map);
+
+      // Popular-destination markers — small gold dots; click to pick one.
+      const destLayer = Lm.layerGroup().addTo(map);
+      for (const { city, coords } of destinations) {
+        const m = Lm.circleMarker(coords, {
+          radius: 3.5,
+          color: "#d8c48f",
+          weight: 1,
+          fillColor: "#e9dcb4",
+          fillOpacity: 0.85,
+        });
+        m.bindTooltip(`${city.name} (${city.code})`, { direction: "top", offset: [0, -4], opacity: 0.9 });
+        if (onSelectRef.current) {
+          m.on("mouseover", () => m.setStyle({ radius: 5.5, fillOpacity: 1 }));
+          m.on("mouseout", () => m.setStyle({ radius: 3.5, fillOpacity: 0.85 }));
+          m.on("click", () => onSelectRef.current?.(city));
+        }
+        m.addTo(destLayer);
+      }
+
+      // Fit to the container once it has real dimensions.
+      setTimeout(() => map?.invalidateSize(), 0);
+      setReady(true);
+    });
+
+    return () => {
+      disposed = true;
+      map?.remove();
+      mapRef.current = null;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Swap tiles when the site theme flips between light and dark.
+  useEffect(() => {
+    const el = document.documentElement;
+    const apply = () => {
+      const Lm = LRef.current, map = mapRef.current;
+      if (!Lm || !map) return;
+      tileRef.current?.remove();
+      tileRef.current = Lm.tileLayer(isDark() ? TILES.dark : TILES.light, {
+        attribution: TILE_ATTR,
+        subdomains: "abcd",
+        detectRetina: true,
+        maxZoom: 20,
+      }).addTo(map);
+    };
+    const obs = new MutationObserver(apply);
+    obs.observe(el, { attributes: true, attributeFilter: ["class"] });
+    return () => obs.disconnect();
+  }, []);
+
+  // Re-fit the world zoom when crossing the mobile breakpoint.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (map && !from && !to) map.setZoom(worldZoom);
+  }, [worldZoom, from, to]);
+
+  // Draw From/To pins + route, and fly/zoom to the chosen location(s).
+  useEffect(() => {
+    const Lm = LRef.current, map = mapRef.current, layer = routeLayerRef.current;
+    if (!Lm || !map || !layer) return;
+    layer.clearLayers();
+
+    const fromC = from ? (getCoords(from.code, from.country) as [number, number]) : null;
+    const toC = to ? (getCoords(to.code, to.country) as [number, number]) : null;
+
+    const pin = (c: [number, number], fill: string, ring: string) =>
+      Lm.circleMarker(c, { radius: 6, color: ring, weight: 2, fillColor: fill, fillOpacity: 1 }).addTo(layer);
+
+    if (fromC) pin(fromC, "#e9dcb4", "#b89b52").bindTooltip(from!.name, { permanent: false, direction: "top" });
+    if (toC) pin(toC, "#ffffff", "#b89b52").bindTooltip(to!.name, { permanent: false, direction: "top" });
+
+    if (fromC && toC) {
+      Lm.polyline([fromC, toC], {
+        color: "#d8c48f",
+        weight: 2,
+        opacity: 0.9,
+        dashArray: "6 8",
+      }).addTo(layer);
+      // Frame both endpoints with breathing room.
+      map.flyToBounds(Lm.latLngBounds([fromC, toC]).pad(0.4), { duration: 1.1, maxZoom: 7 });
+    } else if (toC) {
+      map.flyTo(toC, isMobile ? 5 : 6, { duration: 1.2 });
+    } else if (fromC) {
+      map.flyTo(fromC, isMobile ? 5 : 6, { duration: 1.2 });
+    } else {
+      map.flyTo([22, 12], worldZoom, { duration: 1.0 });
+    }
+  }, [from, to, isMobile, worldZoom, ready]);
 
   return (
     <div
-      className="absolute inset-0 overflow-hidden"
+      ref={containerRef}
+      className="absolute inset-0 h-full w-full vc-live-map"
       style={{ background: "radial-gradient(140% 115% at 50% 55%, #3a3a3d 0%, #2c2c2f 55%, #202022 100%)" }}
-    >
-      {/* Static dot grid */}
-      <div
-        className="absolute inset-0 w-full h-full [&>svg]:w-full [&>svg]:h-full"
-        dangerouslySetInnerHTML={{ __html: dotsSVG }}
-      />
-
-      {/* Route overlay — re-keyed on every selection change so the pulse
-          animation replays and the arc redraws for the new pair. */}
-      <svg
-        viewBox={`0 0 ${width} ${height}`}
-        className="absolute inset-0 w-full h-full"
-        preserveAspectRatio={`xMidYMid ${fit}`}
-      >
-        {arcPath && (
-          <path
-            key={`arc-${routeKey}`}
-            d={arcPath}
-            fill="none"
-            stroke="rgb(var(--gold-soft))"
-            strokeWidth={0.4}
-            strokeLinecap="round"
-            strokeDasharray="3.2 2.4"
-            className="route-arc"
-          />
-        )}
-        {/* Endpoints are plain pins, not planes — only the single travelling
-            plane below gets a plane glyph, so there's exactly one of them. */}
-        {fromPoint && (
-          <circle key={`from-${routeKey}`} cx={fromPoint.x} cy={fromPoint.y} r={0.6} fill="rgb(var(--gold-soft))" className="pulse-ring" />
-        )}
-        {toPoint && (
-          <circle key={`to-${routeKey}`} cx={toPoint.x} cy={toPoint.y} r={0.6} fill="#f4f0e9" className="pulse-ring" />
-        )}
-
-        {/* The one plane, slowly and calmly making its way from origin to
-            destination — kept unhurried rather than darting back and forth. */}
-        {arcPath && (
-          <g key={`flying-${routeKey}`}>
-            <PlaneGlyph scale={0.09} color="#f4f0e9" />
-            <animateMotion dur="18s" repeatCount="indefinite" path={arcPath} rotate="auto" />
-          </g>
-        )}
-
-        {/* Other popular destinations — click one to set it as the
-            destination in the search form below. */}
-        {onSelectDestination && destinationPoints.map(({ city, x, y }) => (
-          <g
-            key={city.code}
-            className="dest-dot"
-            role="button"
-            aria-label={`Set destination to ${city.name} (${city.code})`}
-            style={{ cursor: "pointer", pointerEvents: "auto" }}
-            onClick={() => onSelectDestination(city)}
-          >
-            <circle cx={x} cy={y} r={2.6} fill="transparent" />
-            <circle cx={x} cy={y} r={0.32} fill="#f4f0e9" opacity={0.55} />
-          </g>
-        ))}
-      </svg>
-    </div>
+    />
   );
 }
