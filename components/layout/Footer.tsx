@@ -36,6 +36,7 @@ const FOOTER_LINKS: Record<string, FooterLink[]> = {
     { key: "common.giftJourney",   href: "/gift" },
     { key: "common.conciergeServices", href: "/services" },
     { label: "Trip tools",         href: "/tools" },
+    { label: "Flight tracker",     href: "/tools/flight-tracker" },
     { label: "Visa assistance",    href: "/visa" },
     { label: "Travel insurance",   href: "/insurance" },
     { key: "common.faq",           href: "/faq" },

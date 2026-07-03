@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowLeftRight, Luggage, ListChecks, FileText, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowLeftRight, Luggage, ListChecks, FileText, ShieldCheck, Sparkles, Plane } from "lucide-react";
 import Reveal from "@/components/ui/Reveal";
 
 export const metadata: Metadata = {
@@ -9,6 +9,7 @@ export const metadata: Metadata = {
 };
 
 const TOOLS = [
+  { icon: Plane, title: "Flight tracker", text: "Track any flight's route, times & terminals.", href: "/tools/flight-tracker" },
   { icon: ArrowLeftRight, title: "Currency converter", text: "Live rates across 40+ currencies.", href: "/tools/currency" },
   { icon: Luggage, title: "Smart packing list", text: "A tailored list from your trip details.", href: "/tools/packing" },
   { icon: ListChecks, title: "Travel checklist", text: "A countdown of everything to sort before you go.", href: "/tools/checklist" },

@@ -135,3 +135,60 @@ export async function searchFlights({
     };
   });
 }
+
+const SCHEDULE_URL = "https://test.api.amadeus.com/v2/schedule/flights";
+
+export interface FlightStatus {
+  carrier: string;
+  flightNumber: string;
+  date: string;
+  origin: string;
+  destination: string;
+  departureTime: string | null;
+  arrivalTime: string | null;
+  departureTerminal: string | null;
+  arrivalTerminal: string | null;
+  aircraft: string | null;
+  duration: string | null;
+}
+
+// Looks up a flight's scheduled status/route by carrier + number + date, using
+// the same Amadeus credentials as the flight search.
+export async function getFlightStatus({
+  carrierCode, flightNumber, date,
+}: { carrierCode: string; flightNumber: string; date: string }): Promise<FlightStatus | null> {
+  const token = await getAccessToken();
+  const params = new URLSearchParams({ carrierCode, flightNumber, scheduledDepartureDate: date });
+
+  const res = await fetch(`${SCHEDULE_URL}?${params.toString()}`, {
+    headers: { Authorization: `Bearer ${token}` },
+    cache: "no-store",
+  });
+  if (!res.ok) {
+    const body = await res.text().catch(() => "");
+    throw new Error(`Amadeus flight status failed (${res.status}): ${body.slice(0, 200)}`);
+  }
+
+  const json = await res.json();
+  const flight = (json.data ?? [])[0];
+  if (!flight) return null;
+
+  const points = flight.flightPoints ?? [];
+  const dep = points[0];
+  const arr = points[points.length - 1];
+  const leg = (flight.legs ?? [])[0];
+
+  return {
+    carrier: flight.flightDesignator?.carrierCode ?? carrierCode,
+    flightNumber: String(flight.flightDesignator?.flightNumber ?? flightNumber),
+    date: flight.scheduledDepartureDate ?? date,
+    origin: dep?.iataCode ?? "",
+    destination: arr?.iataCode ?? "",
+    departureTime: dep?.departure?.timings?.[0]?.value ?? null,
+    arrivalTime: arr?.arrival?.timings?.[0]?.value ?? null,
+    departureTerminal: dep?.departure?.terminal?.code ?? null,
+    arrivalTerminal: arr?.arrival?.terminal?.code ?? null,
+    aircraft: leg?.aircraftEquipment?.aircraftType ?? null,
+    duration: leg?.scheduledLegDuration ? parseISODuration(leg.scheduledLegDuration) : null,
+  };
+}
