@@ -258,6 +258,15 @@ textarea:focus-visible {
 html.dark .shimmer-gold {
   background-image: linear-gradient(100deg, #cbab6e 0%, #cbab6e 26%, #f4e7bf 50%, #cbab6e 74%, #cbab6e 100%);
 }
+/* Bright gold for use OVER dark backgrounds (the hero map), where the dark
+   shimmer above would disappear. */
+.shimmer-gold-hero {
+  background-image: linear-gradient(100deg, #d9bd7e 0%, #d9bd7e 26%, #f8eed4 50%, #d9bd7e 74%, #d9bd7e 100%);
+  background-size: 220% auto;
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; color: transparent;
+  animation: goldShimmer 4s linear infinite;
+}
 @keyframes goldShimmer { to { background-position: 220% center; } }
 
 /* Floating-control halos — a slow, breathing glow so the concierge & WhatsApp
@@ -335,7 +344,7 @@ html.dark .shimmer-gold {
   .page-enter { animation: none; }
   .lift:hover { transform: none; }
   .word-rise { opacity: 1; animation: none; }
-  .shimmer-gold { animation: none; }
+  .shimmer-gold, .shimmer-gold-hero { animation: none; }
   .ken-burns { animation: none; }
   .atelier-glow, .wa-glow, .gold-glow { animation: none; }
   .text-shimmer { animation: none; -webkit-text-fill-color: #efe9df; color: #efe9df; }
