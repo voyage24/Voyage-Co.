@@ -3,7 +3,6 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import Image from "next/image";
 import SearchWidget, { type TabId } from "@/components/search/SearchWidget";
 import DestinationMap from "@/components/home/DestinationMap";
 
@@ -135,27 +134,15 @@ export default function HeroSection({
     [trains]
   );
 
-  // A curated hero photograph for the mobile hero (from featured content), so
-  // phones get a warm, aspirational image rather than a dark map slab.
-  const heroImage = packages[0]?.image ?? hotels[0]?.image ?? experiences[0]?.image ?? null;
-
   return (
-    <section className="relative bg-vc-950 sm:bg-transparent pt-20 sm:pt-0 flex flex-col overflow-hidden min-h-[88vh] sm:min-h-screen">
-      {/* Mobile photographic hero background — a full-bleed image with a soft
-          scrim for legibility. Desktop keeps the interactive map background. */}
-      {heroImage && (
-        <div className="sm:hidden absolute inset-0">
-          <Image src={heroImage} alt="" fill priority sizes="100vw" className="object-cover ken-burns" />
-          <div className="absolute inset-0 bg-gradient-to-t from-vc-950/92 via-vc-950/45 to-vc-950/40" />
-        </div>
-      )}
+    <section className="relative bg-vc-950 sm:bg-transparent pt-20 sm:pt-0 flex flex-col overflow-hidden min-h-[86vh] sm:min-h-screen">
       {/* Hero background — swaps with the active search tab. The Flights tab
           (default) shows the interactive destination map; Luxury Stays,
           Cruises, Rail Journeys, Bespoke Journeys and Experiences all show
           interactive maps plotting their own featured properties/voyages/
           itineraries/experiences, instead of static photos. */}
       <div
-        className="hidden sm:block w-full sm:aspect-auto sm:absolute sm:inset-0"
+        className="absolute inset-0 w-full"
         onMouseMove={e => {
           const rect = e.currentTarget.getBoundingClientRect();
           const isLeftHalf = e.clientX - rect.left < rect.width / 2;
@@ -183,6 +170,9 @@ export default function HeroSection({
           on mobile the map sits in its own block with the text below it on a
           solid dark background, so there's nothing to dim. */}
       <div className="hidden sm:block absolute inset-0 bg-gradient-to-t from-vc-950/85 via-vc-950/35 to-vc-950/25 pointer-events-none" />
+      {/* Mobile scrim — darkens top (headline) & bottom (search) while leaving
+          the middle of the map clear and tappable. */}
+      <div className="sm:hidden absolute inset-0 bg-gradient-to-b from-vc-950/55 via-vc-950/10 to-vc-950/80 pointer-events-none" />
 
       {/* Top content — headline & CTA. pointer-events-none on the empty
           wrapper area so it doesn't block clicks (e.g. slide indicators) on
