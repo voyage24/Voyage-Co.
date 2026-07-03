@@ -9,7 +9,7 @@ export default function StatsBand({ stats }: { stats: StatItem[] }) {
       <div className="max-w-[1500px] mx-auto px-6 lg:px-12 grid grid-cols-2 lg:grid-cols-4 gap-8 text-center">
         {stats.map(s => (
           <div key={s.label}>
-            <p className="font-serif text-4xl sm:text-5xl font-bold text-[#eab308]">
+            <p className="font-serif text-4xl sm:text-5xl font-bold text-[#E6E800]">
               <Counter value={s.value} suffix={s.suffix ?? ""} />
             </p>
             <p className="text-[11px] tracking-[0.18em] uppercase text-[#f4f0e9]/60 mt-2">{s.label}</p>

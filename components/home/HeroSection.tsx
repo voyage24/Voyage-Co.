@@ -208,14 +208,14 @@ export default function HeroSection({
         <div className="flex flex-wrap gap-3">
           <Link
             href={TAB_EXPLORE_LINK[activeTab].href}
-            className="inline-flex items-center justify-center px-6 py-2.5 text-[11px] tracking-[0.16em] uppercase font-bold bg-[#eab308] text-black hover:bg-[#d69e07] transition-all duration-200 hover:scale-105 active:scale-95"
+            className="inline-flex items-center justify-center px-7 py-3 rounded-full text-[11px] tracking-[0.16em] uppercase font-bold bg-[#E6E800] text-black hover:bg-[#d7d900] transition-all duration-200 hover:scale-105 active:scale-95"
           >
             {t(TAB_EXPLORE_LINK[activeTab].labelKey)}
           </Link>
           {activeTab === "hotels" && (
             <Link
               href="/hotels"
-              className="inline-flex items-center justify-center px-6 py-2.5 text-[11px] tracking-[0.16em] uppercase font-bold border border-ink/25 text-ink hover:bg-ink hover:text-page transition-all duration-200 hover:scale-105 active:scale-95"
+              className="inline-flex items-center justify-center px-7 py-3 rounded-full text-[11px] tracking-[0.16em] uppercase font-bold border border-ink/25 text-ink hover:bg-ink hover:text-page transition-all duration-200 hover:scale-105 active:scale-95"
             >
               {t("hero.browseStays")}
             </Link>

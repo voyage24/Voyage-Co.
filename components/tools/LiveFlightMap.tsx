@@ -138,7 +138,7 @@ export default function LiveFlightMap() {
             <div className="absolute inset-0 [&>svg]:w-full [&>svg]:h-full" dangerouslySetInnerHTML={{ __html: dotsSVG }} />
             {pin && pos && (
               <svg viewBox={`0 0 ${width} ${height}`} className="absolute inset-0 w-full h-full" preserveAspectRatio="xMidYMid meet">
-                <circle cx={pin.x} cy={pin.y} r={0.7} fill="#eab308" className="pulse-ring" />
+                <circle cx={pin.x} cy={pin.y} r={0.7} fill="#16a34a" className="pulse-ring" />
                 <g transform={`translate(${pin.x}, ${pin.y}) rotate(${pos.heading}) scale(0.11) translate(-12,-12)`}>
                   <path d={PLANE_PATH} fill="#18181b" stroke="#18181b" strokeWidth={0.6} strokeLinejoin="round" />
                 </g>

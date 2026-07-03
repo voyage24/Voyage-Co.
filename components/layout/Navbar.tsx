@@ -131,7 +131,7 @@ export default function Navbar() {
             <CurrencySelector tone="dark" />
             <Link
               href="/plan"
-              className="text-[10px] font-bold tracking-[0.1em] uppercase px-5 py-2.5 rounded-full border bg-[#eab308] border-[#eab308] text-black hover:bg-[#d69e07] transition-all duration-200 whitespace-nowrap shrink-0 hover:scale-110 active:scale-95"
+              className="text-[10px] font-bold tracking-[0.1em] uppercase px-5 py-2.5 rounded-full border bg-[#E6E800] border-[#E6E800] text-black hover:bg-[#d7d900] transition-all duration-200 whitespace-nowrap shrink-0 hover:scale-110 active:scale-95"
             >
               {t("plan.title")}
             </Link>

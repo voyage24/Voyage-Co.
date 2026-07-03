@@ -84,9 +84,9 @@ export default function SearchWidget({
 
   return (
     // Warm atelier card on the cream canvas.
-    <div className="bg-panel-raised rounded-sm shadow-widget overflow-visible border border-line">
+    <div className="bg-panel-raised rounded-2xl shadow-widget overflow-visible border border-line">
       {/* Tab bar */}
-      <div className="rounded-t-sm overflow-hidden border-b border-line">
+      <div className="rounded-t-2xl overflow-hidden border-b border-line">
         <div ref={tabsRef} className="flex overflow-x-auto scrollbar-none">
           {TABS.map(tab => {
             const Icon = tab.icon;

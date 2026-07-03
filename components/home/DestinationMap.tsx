@@ -126,7 +126,7 @@ export default function DestinationMap({
             key={`arc-${routeKey}`}
             d={arcPath}
             fill="none"
-            stroke="#eab308"
+            stroke="#16a34a"
             strokeWidth={0.45}
             strokeLinecap="round"
             strokeDasharray="3.2 2.4"
@@ -136,7 +136,7 @@ export default function DestinationMap({
         {/* Endpoints are plain pins, not planes — only the single travelling
             plane below gets a plane glyph, so there's exactly one of them. */}
         {fromPoint && (
-          <circle key={`from-${routeKey}`} cx={fromPoint.x} cy={fromPoint.y} r={0.6} fill="#eab308" className="pulse-ring" />
+          <circle key={`from-${routeKey}`} cx={fromPoint.x} cy={fromPoint.y} r={0.6} fill="#16a34a" className="pulse-ring" />
         )}
         {toPoint && (
           <circle key={`to-${routeKey}`} cx={toPoint.x} cy={toPoint.y} r={0.6} fill="#18181b" className="pulse-ring" />
