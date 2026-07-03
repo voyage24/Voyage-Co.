@@ -14,6 +14,10 @@ export async function GET(req: NextRequest) {
     if (!status) return NextResponse.json({ error: "No flight found for that number and date." }, { status: 404 });
     return NextResponse.json({ status });
   } catch (err) {
-    return NextResponse.json({ error: err instanceof Error ? err.message : "Unknown error fetching flight status" }, { status: 502 });
+    const msg = err instanceof Error ? err.message : "";
+    const friendly = msg.includes("not configured")
+      ? "Flight tracking is being set up and isn't available just yet."
+      : "We couldn't reach the flight service — please try again shortly.";
+    return NextResponse.json({ error: friendly }, { status: 502 });
   }
 }
