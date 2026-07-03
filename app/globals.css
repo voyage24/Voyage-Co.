@@ -44,21 +44,31 @@ html.dark {
   --gold-soft: 218 192 142; /* #DAC08E */
 }
 
-/* Admin surfaces use fixed grays rather than the theme vars, so remap the
-   common ones under dark for the whole admin at once. */
-.dark .admin-root .bg-white { background-color: #16202c !important; }
-.dark .admin-root .bg-gray-50 { background-color: #101823 !important; }
-.dark .admin-root .bg-gray-100 { background-color: #26333f !important; }
-.dark .admin-root .text-gray-900 { color: #e9e4d8 !important; }
-.dark .admin-root .text-gray-800 { color: #dde1e6 !important; }
-.dark .admin-root .text-gray-700 { color: #c8cfd7 !important; }
-.dark .admin-root .text-gray-600 { color: #aab2bd !important; }
-.dark .admin-root .text-gray-500 { color: #939ca8 !important; }
-.dark .admin-root .text-gray-400 { color: #7c8794 !important; }
-.dark .admin-root .border-gray-100 { border-color: rgba(255,255,255,0.06) !important; }
-.dark .admin-root .border-gray-200 { border-color: rgba(255,255,255,0.10) !important; }
-.dark .admin-root .border-gray-300 { border-color: rgba(255,255,255,0.14) !important; }
-.dark .admin-root .divide-gray-100 > * + * { border-color: rgba(255,255,255,0.07) !important; }
+/* Admin — always-dark Ron dashboard (SavingPro-inspired): dark charcoal
+   surfaces, big rounded cards, light text. The admin uses fixed grays rather
+   than the theme vars, so we remap the common ones for the whole admin at once,
+   regardless of the public-site light/dark setting. */
+.admin-root { background-color: #121214 !important; }
+.admin-root .bg-white { background-color: #1b1b1f !important; }
+.admin-root .bg-gray-50 { background-color: #151517 !important; }
+.admin-root .bg-gray-100 { background-color: #2a2a2f !important; }
+.admin-root .text-gray-900 { color: #f4f4f5 !important; }
+.admin-root .text-gray-800 { color: #e6e6e8 !important; }
+.admin-root .text-gray-700 { color: #d2d2d6 !important; }
+.admin-root .text-gray-600 { color: #b2b2b9 !important; }
+.admin-root .text-gray-500 { color: #90909a !important; }
+.admin-root .text-gray-400 { color: #78787f !important; }
+.admin-root .border-gray-100 { border-color: rgba(255,255,255,0.05) !important; }
+.admin-root .border-gray-200 { border-color: rgba(255,255,255,0.08) !important; }
+.admin-root .border-gray-300 { border-color: rgba(255,255,255,0.12) !important; }
+.admin-root .divide-gray-100 > * + * { border-color: rgba(255,255,255,0.06) !important; }
+/* Big rounded cards + soft shadows (override the global sharp-edge reset). */
+.admin-root .rounded-xl, .admin-root .rounded-2xl { border-radius: 1.4rem !important; }
+.admin-root .rounded-lg { border-radius: 1.1rem !important; }
+.admin-root .rounded-md { border-radius: 0.8rem !important; }
+.admin-root .rounded-sm { border-radius: 0.65rem !important; }
+.admin-root .rounded-full { border-radius: 9999px !important; }
+.admin-root .shadow-sm, .admin-root .shadow, .admin-root .shadow-md { box-shadow: 0 16px 40px -20px rgba(0,0,0,0.55) !important; }
 
 html {
   font-size: 100%;
@@ -216,7 +226,7 @@ textarea:focus-visible {
 
 /* Admin: a gold accent bar on every page heading, applied once here so each
    page doesn't need its own markup. */
-.admin-main h1 { border-left: 5px solid #00C4CC; padding-left: 0.7rem; line-height: 1.15; font-weight: 700; }
+.admin-main h1 { border-left: 5px solid #E6E800; padding-left: 0.7rem; line-height: 1.15; font-weight: 700; }
 
 /* Admin sidebar — links slide/fade in on first mount (staggered inline). */
 .admin-nav-link { opacity: 0; animation: navIn 0.4s cubic-bezier(0.22, 0.61, 0.36, 1) forwards; }

@@ -15,7 +15,7 @@ export default function AdminTopbar({ email }: { email: string }) {
   };
 
   return (
-    <header className="flex items-center justify-between gap-3 border-b-2 border-[#00C4CC] px-4 sm:px-6 py-3 bg-white">
+    <header className="flex items-center justify-between gap-3 border-b-2 border-[#E6E800] px-4 sm:px-6 py-3 bg-white">
       <div className="flex items-center gap-3 min-w-0 flex-1">
         <AdminMobileNav />
         <AdminSearch />

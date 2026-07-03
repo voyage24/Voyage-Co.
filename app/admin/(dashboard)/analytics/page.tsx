@@ -7,7 +7,7 @@ const inr = (n: number) => `₹${n.toLocaleString("en-IN")}`;
 
 function Stat({ label, value, sub }: { label: string; value: string; sub?: string }) {
   return (
-    <div className="bg-white border border-gray-200 border-l-4 border-l-[#00C4CC] rounded-lg p-4 admin-lift admin-rise">
+    <div className="bg-white border border-gray-200 border-l-4 border-l-[#E6E800] rounded-lg p-4 admin-lift admin-rise">
       <p className="text-xs text-gray-500 mb-1">{label}</p>
       <p className="text-2xl font-bold text-gray-900">{value}</p>
       {sub && <p className="text-xs text-gray-400 mt-0.5">{sub}</p>}
@@ -101,7 +101,7 @@ export default async function AnalyticsPage() {
                 <div key={s} className="flex items-center gap-3">
                   <span className="w-20 text-xs text-gray-500 capitalize">{s}</span>
                   <div className="flex-1 bg-gray-100 rounded-full h-2.5 overflow-hidden">
-                    <div className="bg-[#00C4CC] h-full rounded-full" style={{ width: `${pct}%` }} />
+                    <div className="bg-[#E6E800] h-full rounded-full" style={{ width: `${pct}%` }} />
                   </div>
                   <span className="w-10 text-right text-xs text-gray-600">{c}</span>
                 </div>
