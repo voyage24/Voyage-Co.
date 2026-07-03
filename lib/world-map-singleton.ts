@@ -24,7 +24,7 @@ export function getWorldDotsSVG(fit: "slice" | "meet" = "slice", radius = 0.32) 
     const raw = getWorldMap().getSVG({
       shape: "circle",
       radius,
-      color: "rgba(244,240,233,0.28)",
+      color: "rgba(248,244,236,0.5)",
       backgroundColor: "transparent",
     });
     sharedDotsSVG[key] = raw.replace("<svg ", `<svg preserveAspectRatio="xMidYMid ${fit}" `);
