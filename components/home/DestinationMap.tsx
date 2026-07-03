@@ -102,7 +102,10 @@ export default function DestinationMap({
   const routeKey = `${from?.code ?? "none"}-${to?.code ?? "none"}`;
 
   return (
-    <div className="absolute inset-0 overflow-hidden bg-[#0e1620]">
+    <div
+      className="absolute inset-0 overflow-hidden"
+      style={{ background: "radial-gradient(125% 85% at 50% 8%, #1c3446 0%, #12222f 46%, #0a121b 100%)" }}
+    >
       {/* Static dot grid */}
       <div
         className="absolute inset-0 w-full h-full [&>svg]:w-full [&>svg]:h-full"

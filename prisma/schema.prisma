@@ -462,3 +462,9 @@ model SiteStat {
   key   String @id
   count Int    @default(0)
 }
+
+// Per-day visit buckets for today / this-week / trend breakdowns.
+model DailyVisit {
+  day   String @id // YYYY-MM-DD
+  count Int    @default(0)
+}

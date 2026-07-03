@@ -2,8 +2,9 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import {
   Plus, ArrowRight, CalendarCheck, Inbox, Star, BedDouble, Package, Sparkles,
-  Ship, Plane, TrainFront, Newspaper, Users, Mail,
+  Ship, Plane, TrainFront, Newspaper, Users, Mail, Eye,
 } from "lucide-react";
+import MiniAreaChart from "@/components/admin/MiniAreaChart";
 
 export const dynamic = "force-dynamic";
 
@@ -41,6 +42,21 @@ export default async function AdminDashboardPage() {
 
   const counts: Record<string, number> = { hotel, flight, train, experience, package: pkg, cruise, blogPost, customer };
 
+  // Visitor metrics (day-bucketed).
+  const [visitStat, dailyVisits] = await Promise.all([
+    prisma.siteStat.findUnique({ where: { key: "visits" } }).catch(() => null),
+    prisma.dailyVisit.findMany({ orderBy: { day: "desc" }, take: 60 }).catch(() => []),
+  ]);
+  const visitMap = new Map(dailyVisits.map(d => [d.day, d.count]));
+  const visitDays: { label: string; count: number }[] = [];
+  for (let i = 13; i >= 0; i--) {
+    const dt = new Date(); dt.setHours(0, 0, 0, 0); dt.setDate(dt.getDate() - i);
+    visitDays.push({ label: dt.toLocaleDateString("en-US", { day: "numeric", month: "short" }), count: visitMap.get(dt.toISOString().slice(0, 10)) ?? 0 });
+  }
+  const totalVisits = visitStat?.count ?? 0;
+  const todayVisits = visitMap.get(new Date().toISOString().slice(0, 10)) ?? 0;
+  const weekVisits = visitDays.slice(-7).reduce((s, d) => s + d.count, 0);
+
   const Tile = ({ href, n, label, Icon }: { href: string; n: number; label: string; Icon: typeof Inbox }) => {
     const active = n > 0;
     return (
@@ -72,6 +88,19 @@ export default async function AdminDashboardPage() {
         <Tile href="/admin/bookings" n={pendingBookings} label={`Pending ${pendingBookings === 1 ? "booking" : "bookings"}`} Icon={CalendarCheck} />
         <Tile href="/admin/enquiries" n={newEnquiries} label={`New ${newEnquiries === 1 ? "enquiry" : "enquiries"}`} Icon={Inbox} />
         <Tile href="/admin/reviews" n={pendingReviews} label={`${pendingReviews === 1 ? "Review" : "Reviews"} to moderate`} Icon={Star} />
+      </div>
+
+      {/* Visitors */}
+      <div className="bg-white border border-gray-200 rounded-xl p-5 admin-rise admin-lift">
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+          <p className="text-sm font-medium text-gray-900 flex items-center gap-2"><Eye size={15} className="text-gray-900" /> Visitors</p>
+          <div className="flex gap-6 text-right">
+            <div><p className="text-xl font-bold text-gray-900">{totalVisits.toLocaleString("en-IN")}</p><p className="text-[10px] uppercase tracking-wide text-gray-500">Total</p></div>
+            <div><p className="text-xl font-bold text-gray-900">{todayVisits.toLocaleString("en-IN")}</p><p className="text-[10px] uppercase tracking-wide text-gray-500">Today</p></div>
+            <div><p className="text-xl font-bold text-gray-900">{weekVisits.toLocaleString("en-IN")}</p><p className="text-[10px] uppercase tracking-wide text-gray-500">Last 7 days</p></div>
+          </div>
+        </div>
+        <MiniAreaChart data={visitDays} />
       </div>
 
       {/* Recent activity */}

@@ -5,7 +5,7 @@ export type StatItem = { value: number; suffix?: string; label: string };
 // Real figures are passed from the homepage (catalogue counts + live visits).
 export default function StatsBand({ stats }: { stats: StatItem[] }) {
   return (
-    <section className="bg-[#15212D] text-[#f4f0e9] py-14">
+    <section className="text-[#f4f0e9] py-16" style={{ background: "radial-gradient(120% 140% at 50% 0%, #1e3245 0%, #15222f 50%, #0e1a26 100%)" }}>
       <div className="max-w-[1500px] mx-auto px-6 lg:px-12 grid grid-cols-2 lg:grid-cols-4 gap-8 text-center">
         {stats.map(s => (
           <div key={s.label}>
