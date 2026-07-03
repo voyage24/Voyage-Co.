@@ -25,14 +25,15 @@ const POPULAR_DESTINATION_CODES = [
   "SYD", "AKL", "DPS", "HNL",
 ];
 
-// CARTO's free, key-less basemaps — "Positron" (light, ash-grey) and
-// "Dark Matter" (near-black) — so the live map matches the site's luxe grey
-// aesthetic in both themes without any Mapbox/Google token.
+// Key-less Esri World Imagery — real satellite/terrain earth imagery (natural
+// greens, blues and mountains) rather than a flat grey basemap. The same
+// imagery serves both themes; dark mode is darkened in CSS to read as an
+// elegant night view while staying natural.
 const TILES = {
-  light: "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
-  dark: "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+  light: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+  dark: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
 };
-const TILE_ATTR = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>';
+const TILE_ATTR = 'Imagery &copy; <a href="https://www.esri.com">Esri</a>, Maxar, Earthstar Geographics';
 
 function isDark() {
   return typeof document !== "undefined" && document.documentElement.classList.contains("dark");
@@ -101,9 +102,8 @@ export default function DestinationMap({
 
       tileRef.current = Lm.tileLayer(isDark() ? TILES.dark : TILES.light, {
         attribution: TILE_ATTR,
-        subdomains: "abcd",
-        detectRetina: true,
-        maxZoom: 20,
+        detectRetina: false,
+        maxZoom: 19,
       }).addTo(map);
 
       routeLayerRef.current = Lm.layerGroup().addTo(map);
@@ -149,9 +149,8 @@ export default function DestinationMap({
       tileRef.current?.remove();
       tileRef.current = Lm.tileLayer(isDark() ? TILES.dark : TILES.light, {
         attribution: TILE_ATTR,
-        subdomains: "abcd",
-        detectRetina: true,
-        maxZoom: 20,
+        detectRetina: false,
+        maxZoom: 19,
       }).addTo(map);
     };
     const obs = new MutationObserver(apply);
@@ -202,7 +201,7 @@ export default function DestinationMap({
     <div
       ref={containerRef}
       className="absolute inset-0 h-full w-full vc-live-map"
-      style={{ background: "radial-gradient(140% 115% at 50% 55%, #3a3a3d 0%, #2c2c2f 55%, #202022 100%)" }}
+      style={{ background: "radial-gradient(140% 115% at 50% 55%, #1c3a4a 0%, #122a37 55%, #0b1a24 100%)" }}
     />
   );
 }

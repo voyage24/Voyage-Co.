@@ -285,12 +285,11 @@ textarea:focus-visible {
    always paints above it, and dress the controls/tiles to suit the luxe look. */
 .vc-live-map { isolation: isolate; }
 .vc-live-map .leaflet-container { background: transparent; font-family: var(--font-body), sans-serif; }
-/* Tiles: gently desaturate so the map reads as an elegant ash canvas, not a
-   loud consumer map. Dark mode is lifted to a refined charcoal (rather than
-   the near-black CARTO default, which reads muddy) with the loud labels/roads
-   toned down. */
-.vc-live-map .leaflet-tile-pane { filter: saturate(0.66) brightness(0.99) contrast(0.96); }
-html.dark .vc-live-map .leaflet-tile-pane { filter: saturate(0.55) brightness(1.12) contrast(0.86); }
+/* Tiles: natural satellite imagery. Light mode gets a whisper of extra
+   richness; dark mode is darkened into an elegant night view while keeping
+   the natural greens/blues rather than flattening to grey. */
+.vc-live-map .leaflet-tile-pane { filter: saturate(1.06) contrast(1.03) brightness(1.0); }
+html.dark .vc-live-map .leaflet-tile-pane { filter: brightness(0.66) saturate(0.98) contrast(1.05); }
 /* Zoom control — small, borderless, theme-aware pills. */
 .vc-live-map .leaflet-bar { border: none; box-shadow: 0 6px 18px -8px rgba(0,0,0,0.4); }
 .vc-live-map .leaflet-bar a {
@@ -317,7 +316,8 @@ html.dark .vc-live-map .leaflet-control-attribution { background: rgba(10,10,12,
    coloured inline per marker and lifts on hover. */
 .vc-live-map .vc-mk-wrap { background: none; border: none; }
 .vc-mk { width: 26px; height: 26px; display: flex; align-items: center; justify-content: center;
-  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.55)); transition: transform 0.2s ease; }
+  filter: drop-shadow(0 0 3px rgba(0,0,0,0.85)) drop-shadow(0 1px 2px rgba(0,0,0,0.6));
+  transition: transform 0.2s ease; }
 .vc-mk svg { width: 20px; height: 20px; overflow: visible; }
 .vc-live-map .leaflet-marker-icon:hover .vc-mk { transform: scale(1.32); }
 
