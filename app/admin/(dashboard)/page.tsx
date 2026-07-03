@@ -42,11 +42,15 @@ export default async function AdminDashboardPage() {
 
   const counts: Record<string, number> = { hotel, flight, train, experience, package: pkg, cruise, blogPost, customer };
 
-  // Visitor metrics (day-bucketed).
-  const [visitStat, dailyVisits] = await Promise.all([
+  // Visitor metrics (day-bucketed + device split).
+  const [visitStat, dailyVisits, mobileStat, desktopStat] = await Promise.all([
     prisma.siteStat.findUnique({ where: { key: "visits" } }).catch(() => null),
     prisma.dailyVisit.findMany({ orderBy: { day: "desc" }, take: 60 }).catch(() => []),
+    prisma.siteStat.findUnique({ where: { key: "visits:mobile" } }).catch(() => null),
+    prisma.siteStat.findUnique({ where: { key: "visits:desktop" } }).catch(() => null),
   ]);
+  const mobileVisits = mobileStat?.count ?? 0;
+  const desktopVisits = desktopStat?.count ?? 0;
   const visitMap = new Map(dailyVisits.map(d => [d.day, d.count]));
   const visitDays: { label: string; count: number }[] = [];
   for (let i = 13; i >= 0; i--) {
@@ -94,10 +98,12 @@ export default async function AdminDashboardPage() {
       <div className="bg-white border border-gray-200 rounded-xl p-5 admin-rise admin-lift">
         <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
           <p className="text-sm font-medium text-gray-900 flex items-center gap-2"><Eye size={15} className="text-gray-900" /> Visitors</p>
-          <div className="flex gap-6 text-right">
+          <div className="flex flex-wrap gap-x-6 gap-y-2 text-right">
             <div><p className="text-xl font-bold text-gray-900">{totalVisits.toLocaleString("en-IN")}</p><p className="text-[10px] uppercase tracking-wide text-gray-500">Total</p></div>
             <div><p className="text-xl font-bold text-gray-900">{todayVisits.toLocaleString("en-IN")}</p><p className="text-[10px] uppercase tracking-wide text-gray-500">Today</p></div>
             <div><p className="text-xl font-bold text-gray-900">{weekVisits.toLocaleString("en-IN")}</p><p className="text-[10px] uppercase tracking-wide text-gray-500">Last 7 days</p></div>
+            <div><p className="text-xl font-bold text-gray-900">{mobileVisits.toLocaleString("en-IN")}</p><p className="text-[10px] uppercase tracking-wide text-gray-500">Mobile</p></div>
+            <div><p className="text-xl font-bold text-gray-900">{desktopVisits.toLocaleString("en-IN")}</p><p className="text-[10px] uppercase tracking-wide text-gray-500">Desktop</p></div>
           </div>
         </div>
         <MiniAreaChart data={visitDays} />

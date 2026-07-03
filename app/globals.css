@@ -246,7 +246,7 @@ textarea:focus-visible {
 
 /* Animated gold shimmer for accent labels. */
 .shimmer-gold {
-  background: linear-gradient(100deg, rgb(var(--gold)) 0%, #e6d7b0 25%, rgb(var(--gold)) 50%, rgb(var(--gold)) 100%);
+  background: linear-gradient(100deg, #5a4526 0%, #5a4526 30%, #9c7d3f 50%, #5a4526 70%, #5a4526 100%);
   background-size: 220% auto;
   -webkit-background-clip: text; background-clip: text; color: transparent;
   animation: goldShimmer 4s linear infinite;

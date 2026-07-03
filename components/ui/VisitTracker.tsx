@@ -11,7 +11,15 @@ export default function VisitTracker() {
       const today = new Date().toISOString().slice(0, 10);
       if (localStorage.getItem("vc-visit-day") === today) return;
       localStorage.setItem("vc-visit-day", today);
-      fetch("/api/visit", { method: "POST" }).catch(() => {});
+      const device =
+        window.matchMedia("(max-width: 767px)").matches || /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
+          ? "mobile"
+          : "desktop";
+      fetch("/api/visit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ device }),
+      }).catch(() => {});
     } catch {
       /* ignore */
     }
