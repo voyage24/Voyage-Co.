@@ -10,6 +10,7 @@ import LanguageSelector from "@/components/ui/LanguageSelector";
 import SearchOverlay from "@/components/layout/SearchOverlay";
 import AccountMenu from "@/components/layout/AccountMenu";
 import ThemeToggle from "@/components/ui/ThemeToggle";
+import NavConverter from "@/components/layout/NavConverter";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 
 type NavLink = { key?: string; label?: string; href: string };
@@ -86,7 +87,7 @@ export default function Navbar() {
         <div className={`flex items-center gap-x-4 lg:gap-x-6 transition-all duration-500 ${overHero ? "min-h-16" : "min-h-20"}`}>
 
           <div className="flex shrink-0">
-            <Logo size={overHero ? 26 : 24} tone={overHero ? "light" : "dark"} />
+            <Logo size={overHero ? 26 : 24} tone={overHero ? "light" : "dark"} shimmer />
           </div>
 
           {/* Primary links — contained, scrollable as a fallback only. */}
@@ -125,6 +126,7 @@ export default function Navbar() {
             <SearchOverlay tone={overHero ? "light" : "dark"} />
             <AccountMenu tone={overHero ? "light" : "dark"} />
             <ThemeToggle tone={overHero ? "light" : "dark"} size={17} />
+            <NavConverter tone={overHero ? "light" : "dark"} />
             <LanguageSelector tone={overHero ? "light" : "dark"} />
             <CurrencySelector tone={overHero ? "light" : "dark"} />
             <Link

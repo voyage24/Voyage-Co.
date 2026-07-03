@@ -8,7 +8,7 @@ export default function PropertyMap({ lat, lng, name }: { lat: number; lng: numb
   return (
     <div>
       <div className="relative rounded-2xl overflow-hidden border border-line aspect-[16/9]">
-        <iframe title={`Map of ${name}`} src={src} loading="lazy" className="absolute inset-0 w-full h-full" style={{ border: 0 }} />
+        <iframe title={`Map of ${name}`} src={src} loading="lazy" className="absolute inset-0 w-full h-full dark:brightness-[0.82] dark:contrast-95" style={{ border: 0 }} />
       </div>
       <a href={link} target="_blank" rel="noopener noreferrer" className="inline-block mt-2 text-xs tracking-[0.1em] uppercase text-gold link-underline">View larger map →</a>
     </div>

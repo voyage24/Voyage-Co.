@@ -135,7 +135,7 @@ export default async function HotelDetailPage({ params }: { params: { id: string
               <div className="rounded-xl overflow-hidden border border-line aspect-[16/9]">
                 <iframe
                   src={`https://maps.google.com/maps?q=${hotel.lat},${hotel.lng}&z=14&output=embed`}
-                  className="w-full h-full"
+                  className="w-full h-full dark:brightness-[0.82] dark:contrast-95"
                   loading="lazy"
                   title={`Map showing ${hotel.name}`}
                 />

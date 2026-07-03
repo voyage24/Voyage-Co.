@@ -12,11 +12,13 @@ export default function Logo({
   size = 24,
   href = "/",
   tone = "dark",
+  shimmer = false,
 }: {
   className?: string;
   size?: number;
   href?: string | null;
   tone?: "dark" | "light";
+  shimmer?: boolean;
 }) {
   const customLogo = useSetting(tone === "light" ? "logo.light" : "logo.dark");
   const color = tone === "light" ? "text-[#f4f0e9]" : "text-ink";
@@ -26,7 +28,7 @@ export default function Logo({
     <img src={customLogo} alt="Voyages & Co." style={{ height: size * 1.15 }} className="inline-block w-auto" />
   ) : (
     <span
-      className={`font-logo font-normal leading-none tracking-[0.04em] ${color} transition-colors duration-300`}
+      className={`font-logo font-normal leading-none tracking-[0.04em] ${shimmer ? "shimmer-gold" : color} transition-colors duration-300`}
       style={{ fontSize: size }}
     >
       Voyages <span className="italic font-light">&amp;</span> Co.
