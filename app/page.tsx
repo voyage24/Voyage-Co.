@@ -36,6 +36,18 @@ async function getHomeData() {
 export default async function Home() {
   const [hotels, cruises, trains, packages, experiences, testimonials] = await getHomeData();
 
+  // Real figures for the stats band.
+  const visitStat = await prisma.siteStat.findUnique({ where: { key: "visits" } }).catch(() => null);
+  const countries = new Set<string>();
+  hotels.forEach(h => h.country && countries.add(h.country));
+  experiences.forEach(e => e.country && countries.add(e.country));
+  const stats = [
+    { value: countries.size, suffix: "+", label: "Destinations" },
+    { value: hotels.length, suffix: "+", label: "Luxury stays" },
+    { value: experiences.length, suffix: "+", label: "Experiences" },
+    { value: visitStat?.count ?? 0, suffix: "", label: "Site visits" },
+  ];
+
   return (
     <>
       <JsonLd data={[organizationJsonLd(), websiteJsonLd()]} />
@@ -43,7 +55,7 @@ export default async function Home() {
       <RecentlyViewed />
       <Reveal><PopularDestinations /></Reveal>
       <Reveal variant="left"><SignatureExperiences /></Reveal>
-      <StatsBand />
+      <StatsBand stats={stats} />
       <Reveal variant="right"><PackagesPreview packages={packages} /></Reveal>
       <PressStrip />
       <Reveal variant="zoom"><TestimonialsSection testimonials={testimonials} /></Reveal>

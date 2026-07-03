@@ -456,3 +456,9 @@ model FeaturedDestination {
   sortOrder  Int     @default(0)
   published  Boolean @default(true)
 }
+
+// Simple key/count store for live site metrics (e.g. total visits).
+model SiteStat {
+  key   String @id
+  count Int    @default(0)
+}
