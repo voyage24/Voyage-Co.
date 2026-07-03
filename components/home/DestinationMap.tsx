@@ -55,8 +55,10 @@ export default function DestinationMap({
 }) {
   const map = useMemo(() => getWorldMap(), []);
   const isMobile = useIsMobile();
-  const fit = "slice";
-  const dotsSVG = useMemo(() => getWorldDotsSVG(fit, isMobile ? 0.6 : 0.32), [fit, isMobile]);
+  // On phones show the whole world map (letterboxed) rather than slicing/
+  // cropping it to fill; desktop keeps the full-bleed slice.
+  const fit = isMobile ? "meet" : "slice";
+  const dotsSVG = useMemo(() => getWorldDotsSVG(fit, isMobile ? 0.55 : 0.32), [fit, isMobile]);
 
   // Popular destinations to plot as clickable points, excluding whichever
   // are already the active From/To (those get their own pin + plane glyph).
@@ -104,7 +106,7 @@ export default function DestinationMap({
   return (
     <div
       className="absolute inset-0 overflow-hidden"
-      style={{ background: "radial-gradient(135% 100% at 50% 4%, #315a82 0%, #1f4063 42%, #16304d 100%)" }}
+      style={{ background: "radial-gradient(135% 100% at 50% 6%, #4b4f55 0%, #3a3e43 45%, #26282c 100%)" }}
     >
       {/* Static dot grid */}
       <div

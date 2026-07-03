@@ -135,14 +135,14 @@ export default function HeroSection({
   );
 
   return (
-    <section className="relative bg-vc-950 sm:bg-transparent pt-20 sm:pt-0 flex flex-col overflow-hidden min-h-[86vh] sm:min-h-screen">
+    <section className="relative bg-vc-950 sm:bg-transparent pt-20 sm:pt-0 flex flex-col overflow-hidden sm:min-h-screen">
       {/* Hero background — swaps with the active search tab. The Flights tab
           (default) shows the interactive destination map; Luxury Stays,
           Cruises, Rail Journeys, Bespoke Journeys and Experiences all show
           interactive maps plotting their own featured properties/voyages/
           itineraries/experiences, instead of static photos. */}
       <div
-        className="absolute inset-0 w-full"
+        className={`relative w-full ${activeTab === "trains" ? "aspect-[4/3]" : "aspect-[2/1]"} sm:aspect-auto sm:absolute sm:inset-0`}
         onMouseMove={e => {
           const rect = e.currentTarget.getBoundingClientRect();
           const isLeftHalf = e.clientX - rect.left < rect.width / 2;
@@ -170,9 +170,6 @@ export default function HeroSection({
           on mobile the map sits in its own block with the text below it on a
           solid dark background, so there's nothing to dim. */}
       <div className="hidden sm:block absolute inset-0 bg-gradient-to-t from-vc-950/85 via-vc-950/35 to-vc-950/25 pointer-events-none" />
-      {/* Mobile scrim — darkens top (headline) & bottom (search) while leaving
-          the middle of the map clear and tappable. */}
-      <div className="sm:hidden absolute inset-0 bg-gradient-to-b from-vc-950/55 via-vc-950/10 to-vc-950/80 pointer-events-none" />
 
       {/* Top content — headline & CTA. pointer-events-none on the empty
           wrapper area so it doesn't block clicks (e.g. slide indicators) on
@@ -181,7 +178,7 @@ export default function HeroSection({
           map, and automatically a few seconds after appearing, so the text
           never sits on top of the map indefinitely — moving onto it (or
           away from the map) brings it straight back. */}
-      <div className="relative flex-1 flex items-center pointer-events-none">
+      <div className="relative flex-none sm:flex-1 flex items-center pointer-events-none">
         <div className="w-full max-w-[1500px] mx-auto px-6 lg:px-12 pt-6 pb-3 sm:pt-24 sm:pb-4">
           <div
             key={activeTab}
