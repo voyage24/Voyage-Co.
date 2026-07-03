@@ -85,13 +85,17 @@ export default function DestinationMap({
         minZoom: 1,
         maxZoom: 12,
         zoomControl: true,
-        scrollWheelZoom: false, // don't hijack page scroll on the hero
+        scrollWheelZoom: true, // trackpad / mouse-wheel zoom
         attributionControl: true,
         worldCopyJump: true,
         zoomAnimation: true,
         fadeAnimation: true,
       });
       mapRef.current = map;
+      // Move the +/- control to the free bottom-left corner (top-left collides
+      // with the navbar wordmark on mobile; bottom-right holds attribution and
+      // the floating concierge/WhatsApp buttons).
+      map.zoomControl?.setPosition("bottomleft");
 
       // Base imagery + translucent place-name/boundary overlay (kept on top
       // via zIndex), then the route + destination markers above.

@@ -112,11 +112,15 @@ export default function LiveMap({
         zoom: isMobile ? 1 : 2,
         minZoom: 1,
         maxZoom: 12,
-        scrollWheelZoom: false,
+        scrollWheelZoom: true, // trackpad / mouse-wheel zoom
         worldCopyJump: true,
         attributionControl: true,
       });
       mapRef.current = map;
+      // Move the +/- control off the top-left corner (collides with the navbar
+      // wordmark on mobile) to the free bottom-left — attribution sits bottom-
+      // right and the floating concierge/WhatsApp buttons own that corner.
+      map.zoomControl?.setPosition("bottomleft");
       // Base imagery, then the label/boundary overlay above it (kept above via
       // zIndex so it survives any later layer changes), then routes + markers.
       Lm.tileLayer(IMAGERY_URL, { attribution: IMAGERY_ATTR, detectRetina: false, maxZoom: 19, className: "vc-tiles-base", zIndex: 1 }).addTo(map);
