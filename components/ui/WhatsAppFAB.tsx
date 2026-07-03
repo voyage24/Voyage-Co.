@@ -2,15 +2,16 @@
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useSetting } from "@/components/providers/SettingsProvider";
+import { useShowOnScroll } from "@/lib/useShowOnScroll";
 
-// Persistent floating action button, visible on every page, that opens a
-// WhatsApp chat with the concierge number — the simplest "chatbox" the site
-// needs, since live support already happens over WhatsApp (see Help page's
-// "Live Concierge" option) rather than through a separate chat platform. It
-// periodically peeks out from the right corner then hides again (peek-fab-right).
+// Floating WhatsApp launcher that opens a chat with the concierge number — the
+// simplest "chatbox" the site needs, since live support already happens over
+// WhatsApp. It stays hidden at rest and only slides in from the right corner
+// while the user is scrolling, so it never distracts.
 export default function WhatsAppFAB() {
   const { t } = useLanguage();
   const wa = useSetting("contact.whatsapp") || "919919910213";
+  const show = useShowOnScroll();
 
   return (
     <a
@@ -18,7 +19,7 @@ export default function WhatsAppFAB() {
       target="_blank"
       rel="noopener noreferrer"
       aria-label={t("help.whatsapp")}
-      className="fixed bottom-[5.25rem] right-4 sm:bottom-5 sm:right-5 z-40 w-11 h-11 sm:w-10 sm:h-10 flex items-center justify-center drop-shadow-md peek-fab-right"
+      className={`fixed bottom-[5.25rem] right-4 sm:bottom-5 sm:right-5 z-40 w-11 h-11 sm:w-10 sm:h-10 flex items-center justify-center drop-shadow-md transition-[transform,opacity] duration-500 ease-out hover:scale-110 ${show ? "translate-x-0 opacity-100" : "translate-x-[150%] opacity-0 pointer-events-none"}`}
     >
       <svg viewBox="0 0 32 32" className="w-full h-full" aria-hidden="true">
         <defs>

@@ -85,17 +85,21 @@ export default function DestinationMap({
         minZoom: 1,
         maxZoom: 12,
         zoomControl: true,
-        scrollWheelZoom: true, // trackpad / mouse-wheel zoom
+        scrollWheelZoom: false, // click-to-activate (enabled below on map click)
         attributionControl: true,
         worldCopyJump: true,
         zoomAnimation: true,
         fadeAnimation: true,
       });
       mapRef.current = map;
-      // Move the +/- control to the free bottom-left corner (top-left collides
-      // with the navbar wordmark on mobile; bottom-right holds attribution and
-      // the floating concierge/WhatsApp buttons).
-      map.zoomControl?.setPosition("bottomleft");
+      // Bottom-right is the corner reliably clear of hero content (headline
+      // sits left, the full-width search widget spans the bottom band above it,
+      // the navbar owns the top).
+      map.zoomControl?.setPosition("bottomright");
+      // Wheel/trackpad zoom only after the map is clicked, and off once the
+      // pointer leaves — so scrolling the page over the hero never zooms it.
+      map.on("click", () => map!.scrollWheelZoom.enable());
+      map.getContainer().addEventListener("mouseleave", () => map!.scrollWheelZoom.disable());
 
       // Base imagery + translucent place-name/boundary overlay (kept on top
       // via zIndex), then the route + destination markers above.

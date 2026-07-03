@@ -361,39 +361,19 @@ html.dark .shimmer-gold {
 }
 @keyframes goldShimmer { to { background-position: 220% center; } }
 
-/* White shimmer for the "Voyages & Co." wordmark over the hero map — a bright
-   pearl-white sweep with a soft dark halo so it stays legible over both the
-   light (ash) and dark map tiles. */
+/* White shimmer for the "Voyages & Co." wordmark — a bright pearl-white sweep
+   used in every state (over the hero map AND the scrolled navbar). A tight
+   dark rim plus a soft halo keep the white letters legible on both the light
+   (cream) scrolled navbar and the darker map tiles. */
 .shimmer-white {
   background-image: linear-gradient(100deg, #e6e6e7 0%, #e6e6e7 20%, #ffffff 50%, #e6e6e7 80%, #e6e6e7 100%);
   background-size: 220% auto;
   -webkit-background-clip: text; background-clip: text;
   -webkit-text-fill-color: transparent; color: transparent;
-  filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.5));
+  filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.55)) drop-shadow(0 1px 3px rgba(0, 0, 0, 0.45));
   animation: goldShimmer 3.4s linear infinite;
 }
 
-/* Floating FABs (concierge / WhatsApp) periodically peek out from their corner
-   then slide back and hide, drawing the eye without permanently occupying the
-   screen. The two are offset half a cycle so they alternate. Hovering pauses
-   the loop so a button stays put long enough to click; reduced-motion users
-   just get them permanently visible. */
-@keyframes peekFromLeft {
-  0%, 100% { transform: translateX(calc(-100% - 1.75rem)); opacity: 0; }
-  6%, 55%  { transform: translateX(0); opacity: 1; }
-  64%      { transform: translateX(calc(-100% - 1.75rem)); opacity: 0; }
-}
-@keyframes peekFromRight {
-  0%, 100% { transform: translateX(calc(100% + 1.75rem)); opacity: 0; }
-  6%, 55%  { transform: translateX(0); opacity: 1; }
-  64%      { transform: translateX(calc(100% + 1.75rem)); opacity: 0; }
-}
-.peek-fab-left  { animation: peekFromLeft 9s ease-in-out infinite; will-change: transform, opacity; }
-.peek-fab-right { animation: peekFromRight 9s ease-in-out infinite; animation-delay: -4.5s; will-change: transform, opacity; }
-.peek-fab-left:hover, .peek-fab-right:hover { animation-play-state: paused; }
-@media (prefers-reduced-motion: reduce) {
-  .peek-fab-left, .peek-fab-right { animation: none; transform: none; opacity: 1; }
-}
 
 /* Floating-control halos — a slow, breathing glow so the concierge & WhatsApp
    buttons feel like a lit atelier window rather than a loud notification. */

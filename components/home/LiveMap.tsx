@@ -112,15 +112,20 @@ export default function LiveMap({
         zoom: isMobile ? 1 : 2,
         minZoom: 1,
         maxZoom: 12,
-        scrollWheelZoom: true, // trackpad / mouse-wheel zoom
+        scrollWheelZoom: false, // click-to-activate (enabled below on map click)
         worldCopyJump: true,
         attributionControl: true,
       });
       mapRef.current = map;
-      // Move the +/- control off the top-left corner (collides with the navbar
-      // wordmark on mobile) to the free bottom-left — attribution sits bottom-
-      // right and the floating concierge/WhatsApp buttons own that corner.
-      map.zoomControl?.setPosition("bottomleft");
+      // Bottom-right is the only corner reliably clear of hero content (the
+      // headline sits left, the full-width search widget spans the bottom band
+      // above it, the navbar owns the top).
+      map.zoomControl?.setPosition("bottomright");
+      // Wheel/trackpad zoom only after the map is clicked, and off again once
+      // the pointer leaves — so scrolling the page over the hero never zooms
+      // the map by accident.
+      map.on("click", () => map!.scrollWheelZoom.enable());
+      map.getContainer().addEventListener("mouseleave", () => map!.scrollWheelZoom.disable());
       // Base imagery, then the label/boundary overlay above it (kept above via
       // zIndex so it survives any later layer changes), then routes + markers.
       Lm.tileLayer(IMAGERY_URL, { attribution: IMAGERY_ATTR, detectRetina: false, maxZoom: 19, className: "vc-tiles-base", zIndex: 1 }).addTo(map);

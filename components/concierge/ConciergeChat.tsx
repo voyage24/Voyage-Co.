@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { Sparkles, X, Send } from "lucide-react";
+import { useShowOnScroll } from "@/lib/useShowOnScroll";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
@@ -29,6 +30,7 @@ function Rendered({ text }: { text: string }) {
 
 export default function ConciergeChat() {
   const [open, setOpen] = useState(false);
+  const show = useShowOnScroll();
   const [messages, setMessages] = useState<Msg[]>([{ role: "assistant", content: GREETING }]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -65,7 +67,7 @@ export default function ConciergeChat() {
       <button
         onClick={() => setOpen(true)}
         aria-label="Ask the concierge"
-        className="fixed bottom-[5.25rem] left-4 sm:bottom-5 sm:left-5 z-40 flex items-center gap-2 bg-[#15212D] text-[#f4f0e9] pl-3 pr-4 py-2.5 rounded-full shadow-luxury peek-fab-left"
+        className={`fixed bottom-[5.25rem] left-4 sm:bottom-5 sm:left-5 z-40 flex items-center gap-2 bg-[#15212D] text-[#f4f0e9] pl-3 pr-4 py-2.5 rounded-full shadow-luxury transition-[transform,opacity] duration-500 ease-out hover:scale-105 ${show ? "translate-x-0 opacity-100" : "-translate-x-[150%] opacity-0 pointer-events-none"}`}
       >
         <Sparkles size={16} className="text-gold" />
         <span className="text-shimmer text-[11px] tracking-[0.12em] uppercase">Ask the Concierge</span>
