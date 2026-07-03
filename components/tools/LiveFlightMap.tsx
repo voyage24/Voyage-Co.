@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Plane, Loader2 } from "lucide-react";
+import { Plane, Loader2, MapPin } from "lucide-react";
 import { getWorldMap, getWorldDotsSVG } from "@/lib/world-map-singleton";
 import { AIRLINES } from "@/lib/airlines";
 
@@ -27,6 +27,33 @@ export default function LiveFlightMap() {
   const airlines = useMemo(() => [...AIRLINES].sort((a, b) => a.name.localeCompare(b.name)), []);
   const pin = useMemo(() => (pos ? map.getPin({ lat: pos.lat, lng: pos.lng }) : null), [pos, map]);
 
+  type Near = { callsign: string; lat: number; lng: number; heading: number; altitude: number | null; speed: number | null };
+  const [nearby, setNearby] = useState<Near[] | null>(null);
+  const [nearbyBusy, setNearbyBusy] = useState(false);
+  const [nearbyErr, setNearbyErr] = useState("");
+  const nearbyPins = useMemo(
+    () => (nearby ?? []).map(f => ({ f, pin: map.getPin({ lat: f.lat, lng: f.lng }) })).filter((x): x is { f: Near; pin: { x: number; y: number } } => !!x.pin),
+    [nearby, map],
+  );
+
+  const findNearby = () => {
+    setNearbyErr(""); setNearbyBusy(true); setTracking(false); setPos(null); clearInterval(timer.current);
+    if (!navigator.geolocation) { setNearbyErr("Location isn't available on this device."); setNearbyBusy(false); return; }
+    navigator.geolocation.getCurrentPosition(
+      async ({ coords }) => {
+        try {
+          const res = await fetch(`/api/flights/nearby?lat=${coords.latitude}&lng=${coords.longitude}&dist=200`);
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error ?? "error");
+          setNearby(data.flights ?? []);
+        } catch { setNearbyErr("Couldn't load nearby flights."); setNearby([]); }
+        finally { setNearbyBusy(false); }
+      },
+      () => { setNearbyErr("Couldn't get your location — please allow location access."); setNearbyBusy(false); },
+      { timeout: 10000 },
+    );
+  };
+
   const fetchPos = async (c: string, n: string) => {
     setLoading(true);
     try {
@@ -45,7 +72,7 @@ export default function LiveFlightMap() {
   const start = (e: React.FormEvent) => {
     e.preventDefault();
     if (!carrier.trim() || !number.trim()) return;
-    setTracking(true); setError(""); setPos(null);
+    setTracking(true); setError(""); setPos(null); setNearby(null); setNearbyErr("");
     fetchPos(carrier.trim(), number.trim());
     clearInterval(timer.current);
     timer.current = setInterval(() => fetchPos(carrier.trim(), number.trim()), 15000);
@@ -70,7 +97,40 @@ export default function LiveFlightMap() {
         <button type="submit" disabled={loading} className="inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-ink text-page text-xs tracking-[0.16em] uppercase rounded-sm hover:bg-ink/90 disabled:opacity-50">
           {loading ? <Loader2 size={15} className="animate-spin" /> : <Plane size={15} />} Track live
         </button>
+        <button type="button" onClick={findNearby} disabled={nearbyBusy} className="sm:col-span-3 inline-flex items-center justify-center gap-2 text-xs tracking-[0.12em] uppercase text-gold hover:underline disabled:opacity-50">
+          {nearbyBusy ? <Loader2 size={13} className="animate-spin" /> : <MapPin size={13} />} Or show flights near me
+        </button>
       </form>
+
+      {nearby !== null && (
+        <>
+          <div className="relative w-full overflow-hidden rounded-2xl border border-line" style={{ aspectRatio: "2 / 1", background: "radial-gradient(140% 115% at 50% 55%, #51565c 0%, #3b3f45 52%, #24272b 100%)" }}>
+            <div className="absolute inset-0 [&>svg]:w-full [&>svg]:h-full" dangerouslySetInnerHTML={{ __html: dotsSVG }} />
+            <svg viewBox={`0 0 ${width} ${height}`} className="absolute inset-0 w-full h-full" preserveAspectRatio="xMidYMid meet">
+              {nearbyPins.map(({ f, pin: pp }, i) => (
+                <g key={i} transform={`translate(${pp.x}, ${pp.y}) rotate(${f.heading}) scale(0.07) translate(-12,-12)`}>
+                  <path d={PLANE_PATH} fill="#f4f0e9" opacity={0.9} />
+                </g>
+              ))}
+            </svg>
+          </div>
+          {nearbyErr ? (
+            <p className="text-sm text-ink-muted mt-4 text-center">{nearbyErr}</p>
+          ) : (
+            <div className="mt-5">
+              <p className="text-sm text-ink-muted mb-3">{nearby.length} {nearby.length === 1 ? "flight" : "flights"} in the skies near you</p>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-64 overflow-y-auto">
+                {[...nearby].sort((a, b) => (b.altitude ?? 0) - (a.altitude ?? 0)).map((f, i) => (
+                  <div key={i} className="flex items-center justify-between gap-2 bg-panel-soft border border-line rounded-sm px-3 py-2">
+                    <span className="text-sm font-medium text-ink truncate">{f.callsign}</span>
+                    <span className="text-xs text-ink-faint shrink-0">{f.altitude != null ? `${(f.altitude / 1000).toFixed(0)}k ft` : "—"}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </>
+      )}
 
       {tracking && (
         <>

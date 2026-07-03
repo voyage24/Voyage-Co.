@@ -2,16 +2,33 @@
 // identifies flights by their ICAO callsign (airline ICAO code + number), so we
 // map the IATA airline code the traveller enters to its ICAO designator.
 const IATA_TO_ICAO: Record<string, string> = {
-  AI: "AIC", "6E": "IGO", UK: "VTI", SG: "SEJ", IX: "AXB", "9I": "LLR", QP: "AKJ", I5: "IAD",
-  EK: "UAE", EY: "ETD", FZ: "FDB", QR: "QTR", SV: "SVA", GF: "GFA", WY: "OMA", KU: "KAC", RJ: "RJA", ME: "MEA",
-  SQ: "SIA", TG: "THA", MH: "MAS", CX: "CPA", BR: "EVA", CI: "CAL", JL: "JAL", NH: "ANA", KE: "KAL", OZ: "AAR",
-  GA: "GIA", VN: "HVN", PR: "PAL", CZ: "CSN", MU: "CES", CA: "CCA", HU: "CHH", BI: "RBA", UL: "ALK", PG: "BKP",
-  QF: "QFA", NZ: "ANZ", VA: "VOZ", FJ: "FJI",
-  BA: "BAW", VS: "VIR", LH: "DLH", AF: "AFR", KL: "KLM", LX: "SWR", AZ: "ITY", IB: "IBE", TP: "TAP", SK: "SAS",
-  AY: "FIN", OS: "AUA", SN: "BEL", LO: "LOT", TK: "THY", SU: "AFL", EW: "EWG", U2: "EZY", FR: "RYR", VY: "VLG",
-  AA: "AAL", UA: "UAL", DL: "DAL", AC: "ACA", WN: "SWA", B6: "JBU", AS: "ASA", F9: "FFT", NK: "NKS", WS: "WJA",
-  AM: "AMX", LA: "LAN", AV: "AVA", CM: "CMP", AR: "ARG", G3: "GLO", AD: "AZU", ET: "ETH", MS: "MSR", SA: "SAA",
-  AT: "RAM", KQ: "KQA", RW: "RWD",
+  // India
+  AI: "AIC", "6E": "IGO", UK: "VTI", SG: "SEJ", QP: "AKJ", G8: "GOW", I5: "IAD", "9I": "LLR", IX: "AXB", S5: "SDG",
+  // Middle East
+  EK: "UAE", EY: "ETD", FZ: "FDB", G9: "ABY", QR: "QTR", SV: "SVA", F3: "FNS", GF: "GFA", WY: "OMA", KU: "KAC",
+  J9: "JZR", RJ: "RJA", LY: "ELY", ME: "MEA", IA: "IAW", IR: "IRA",
+  // South & Southeast Asia
+  SQ: "SIA", TR: "TGW", TG: "THA", FD: "AIQ", PG: "BKP", MH: "MAS", AK: "AXM", D7: "XAX", GA: "GIA", ID: "BTK",
+  JT: "LNI", QZ: "AWQ", PR: "PAL", "5J": "CEB", VN: "HVN", VJ: "VJC", QH: "BAV", UL: "ALK", Q2: "DQA", RA: "RNA",
+  KB: "DRK", B3: "BBA", PK: "PIA", BG: "BBC", K6: "KHV", QV: "LAO",
+  // East Asia
+  CX: "CPA", HX: "CRK", CI: "CAL", BR: "EVA", CA: "CCA", MU: "CES", CZ: "CSN", HU: "CHH", FM: "CSH", MF: "CXA",
+  ZH: "CSZ", KE: "KAL", OZ: "AAR", TW: "TWB", NH: "ANA", JL: "JAL", MM: "APJ", GK: "JJP",
+  // Oceania
+  QF: "QFA", VA: "VOZ", JQ: "JST", NZ: "ANZ", FJ: "FJI",
+  // Europe
+  BA: "BAW", VS: "VIR", U2: "EZY", AF: "AFR", TX: "FWI", LH: "DLH", EW: "EWG", DE: "CFG", KL: "KLM", LX: "SWR",
+  OS: "AUA", IB: "IBE", VY: "VLG", AZ: "ITY", A3: "AEE", TK: "THY", PC: "PGT", SK: "SAS", DY: "NAX", AY: "FIN",
+  FI: "ICE", SN: "BEL", TP: "TAP", EI: "EIN", FR: "RYR", LO: "LOT", OK: "CSA", W6: "WZZ", SU: "AFL", S7: "SBI",
+  RO: "ROT", FB: "LZB", JU: "ASL", OU: "CTN", BT: "BTI",
+  // North America
+  AA: "AAL", DL: "DAL", UA: "UAL", WN: "SWA", B6: "JBU", AS: "ASA", NK: "NKS", F9: "FFT", G4: "AAY", HA: "HAL",
+  SY: "SCX", AC: "ACA", WS: "WJA", PD: "POE", AM: "AMX", Y4: "VOI", VB: "VIV", CM: "CMP", TA: "AVA", AV: "AVA",
+  // South America
+  LA: "LAN", G3: "GLO", AD: "AZU", AR: "ARG", H2: "SKU", "5U": "BOV",
+  // Africa
+  ET: "ETH", KQ: "KQA", SA: "SAA", MN: "LNK", MS: "MSR", AT: "RAM", AH: "DAH", TU: "TAR", WB: "RWD", MK: "MAU",
+  HM: "SEY", W3: "ARA", P4: "PCE", KP: "SKK", TC: "ATC", RW: "RWD", BI: "RBA",
 };
 
 export interface LivePosition {
@@ -26,6 +43,36 @@ export interface LivePosition {
 
 export function isSupportedAirline(carrier: string) {
   return !!IATA_TO_ICAO[carrier.toUpperCase()];
+}
+
+export interface NearbyFlight {
+  callsign: string;
+  lat: number;
+  lng: number;
+  heading: number;
+  altitude: number | null;
+  speed: number | null;
+}
+
+// All aircraft currently within `dist` nautical miles of a point.
+export async function getNearbyFlights(lat: number, lng: number, dist = 150): Promise<NearbyFlight[]> {
+  const res = await fetch(`https://api.adsb.lol/v2/lat/${lat}/lon/${lng}/dist/${dist}`, {
+    headers: { Accept: "application/json" },
+    next: { revalidate: 8 },
+  });
+  if (!res.ok) throw new Error(`ADS-B error ${res.status}`);
+  const json = await res.json();
+  return (json.ac ?? [])
+    .filter((a: { lat?: number; lon?: number; flight?: string }) => a.lat != null && a.lon != null && a.flight)
+    .slice(0, 80)
+    .map((a: { flight?: string; lat: number; lon: number; track?: number; alt_baro?: number | string; gs?: number }) => ({
+      callsign: (a.flight ?? "").trim(),
+      lat: a.lat,
+      lng: a.lon,
+      heading: typeof a.track === "number" ? a.track : 0,
+      altitude: typeof a.alt_baro === "number" ? a.alt_baro : null,
+      speed: typeof a.gs === "number" ? Math.round(a.gs) : null,
+    }));
 }
 
 export async function getLivePosition(carrier: string, number: string): Promise<LivePosition | null> {

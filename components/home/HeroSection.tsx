@@ -186,7 +186,7 @@ export default function HeroSection({
             style={{ opacity: headlineHidden ? 0 : 1, pointerEvents: headlineHidden ? "none" : "auto" }}
             onMouseEnter={() => { setMapHoverRaw(false); setMapHover(false); scheduleAutoHide(); }}
           >
-            <p className="text-[11px] sm:text-[13px] tracking-[0.28em] uppercase mb-2 sm:mb-4 shimmer-gold">
+            <p className="text-[11px] sm:text-[13px] tracking-[0.28em] uppercase font-semibold mb-2 sm:mb-4 shimmer-gold">
               {tx("eyebrow")}
             </p>
             <h1 key={`h-${activeTab}`} className="font-serif font-light text-ink sm:text-white text-3xl sm:text-6xl lg:text-7xl leading-[1.1] sm:leading-[1.04] mb-3 sm:mb-5">
