@@ -248,24 +248,27 @@ textarea:focus-visible {
 /* Light mode: a rich, deep gold with a brighter sweep — high contrast on the
    cream canvas so the wordmark/eyebrow read clearly. */
 .shimmer-gold {
-  background-image: linear-gradient(100deg, #6a4e12 0%, #6a4e12 26%, #c39a2c 50%, #6a4e12 74%, #6a4e12 100%);
+  background-image: linear-gradient(100deg, #7a5410 0%, #7a5410 22%, #e8af22 50%, #7a5410 78%, #7a5410 100%);
   background-size: 220% auto;
   -webkit-background-clip: text; background-clip: text;
   -webkit-text-fill-color: transparent; color: transparent;
-  animation: goldShimmer 4s linear infinite;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.14));
+  animation: goldShimmer 3.4s linear infinite;
 }
 /* Dark mode: a bright champagne gold so it pops on the navy canvas. */
 html.dark .shimmer-gold {
-  background-image: linear-gradient(100deg, #cbab6e 0%, #cbab6e 26%, #f4e7bf 50%, #cbab6e 74%, #cbab6e 100%);
+  background-image: linear-gradient(100deg, #ddbc72 0%, #ddbc72 22%, #fdf3d2 50%, #ddbc72 78%, #ddbc72 100%);
+  filter: drop-shadow(0 0 8px rgba(221, 188, 114, 0.5));
 }
 /* Bright gold for use OVER dark backgrounds (the hero map), where the dark
    shimmer above would disappear. */
 .shimmer-gold-hero {
-  background-image: linear-gradient(100deg, #d9bd7e 0%, #d9bd7e 26%, #f8eed4 50%, #d9bd7e 74%, #d9bd7e 100%);
+  background-image: linear-gradient(100deg, #f2d174 0%, #f2d174 22%, #fff7d8 50%, #f2d174 78%, #f2d174 100%);
   background-size: 220% auto;
   -webkit-background-clip: text; background-clip: text;
   -webkit-text-fill-color: transparent; color: transparent;
-  animation: goldShimmer 4s linear infinite;
+  filter: drop-shadow(0 0 10px rgba(242, 209, 116, 0.65));
+  animation: goldShimmer 3.4s linear infinite;
 }
 @keyframes goldShimmer { to { background-position: 220% center; } }
 
