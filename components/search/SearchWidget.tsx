@@ -49,36 +49,54 @@ export default function SearchWidget({
   useEffect(() => {
     const el = tabsRef.current;
     if (!el) return;
-    if (!window.matchMedia("(max-width: 639px)").matches) return;
-    if (el.scrollWidth <= el.clientWidth + 4) return;
+    if (typeof window === "undefined") return;
+    if (!window.matchMedia("(max-width: 767px)").matches) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
+    // Keep the position in a float accumulator and re-measure overflow every
+    // frame: sub-pixel increments written straight to scrollLeft get rounded
+    // away on many mobile browsers (so it never moved), and the row's overflow
+    // isn't known until after fonts/layout settle.
+    el.style.scrollBehavior = "auto";
     let dir = 1;
     let paused = false;
     let raf = 0;
+    let pos = el.scrollLeft;
     let resumeT: ReturnType<typeof setTimeout>;
+    const speed = 0.6;
+
     const step = () => {
-      if (!paused) {
-        el.scrollLeft += dir * 0.4;
-        if (el.scrollLeft >= el.scrollWidth - el.clientWidth - 1) dir = -1;
-        else if (el.scrollLeft <= 0) dir = 1;
+      const max = el.scrollWidth - el.clientWidth;
+      if (!paused && max > 2) {
+        pos += dir * speed;
+        if (pos >= max) { pos = max; dir = -1; }
+        else if (pos <= 0) { pos = 0; dir = 1; }
+        el.scrollLeft = pos;
       }
       raf = requestAnimationFrame(step);
     };
     raf = requestAnimationFrame(step);
 
+    const syncPos = () => { if (paused) pos = el.scrollLeft; };
     const pause = () => { paused = true; clearTimeout(resumeT); };
-    const resume = () => { clearTimeout(resumeT); resumeT = setTimeout(() => { paused = false; }, 3000); };
+    const resume = () => { clearTimeout(resumeT); resumeT = setTimeout(() => { pos = el.scrollLeft; paused = false; }, 2500); };
+    el.addEventListener("scroll", syncPos, { passive: true });
     el.addEventListener("touchstart", pause, { passive: true });
     el.addEventListener("touchend", resume, { passive: true });
     el.addEventListener("pointerdown", pause);
     el.addEventListener("pointerup", resume);
+    el.addEventListener("mouseenter", pause);
+    el.addEventListener("mouseleave", resume);
     return () => {
       cancelAnimationFrame(raf);
       clearTimeout(resumeT);
+      el.removeEventListener("scroll", syncPos);
       el.removeEventListener("touchstart", pause);
       el.removeEventListener("touchend", resume);
       el.removeEventListener("pointerdown", pause);
       el.removeEventListener("pointerup", resume);
+      el.removeEventListener("mouseenter", pause);
+      el.removeEventListener("mouseleave", resume);
     };
   }, []);
 
