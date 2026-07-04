@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Check, Luggage } from "lucide-react";
+import { Check, Luggage, Download } from "lucide-react";
 
 type Climate = "hot" | "mild" | "cold" | "tropical";
 const CLIMATES: { key: Climate; label: string }[] = [
@@ -11,12 +11,30 @@ const CLIMATES: { key: Climate; label: string }[] = [
   { key: "tropical", label: "Tropical / Rainy" },
 ];
 const ACTIVITIES = ["Beach & pool", "City & sightseeing", "Adventure & hiking", "Business", "Fine dining", "Wildlife / safari"];
+const PRESETS: { n: number; label: string }[] = [
+  { n: 2, label: "Weekend" },
+  { n: 7, label: "1 week" },
+  { n: 14, label: "2 weeks" },
+  { n: 30, label: "1 month" },
+];
 
-// Builds a categorised packing list from trip length, climate and activities.
+// Builds a categorised packing list whose quantities scale with the trip
+// length — with a laundry assumption on longer trips so you don't pack 30 of
+// everything — and toiletry sizing / medication supply that grow with the days.
 function buildList(nights: number, climate: Climate, acts: string[], intl: boolean) {
   const n = Math.max(1, nights || 1);
-  const tops = Math.min(n + 1, 12);
-  const bottoms = Math.min(Math.ceil(n / 2) + 1, 7);
+  const longTrip = n > 8;
+  // Past ~a week you'll do laundry, so pack roughly a week's clothing + buffer
+  // rather than one of everything per night.
+  const wearDays = longTrip ? 8 : n;
+  const tops = Math.min(wearDays + 1, 12);
+  const bottoms = Math.min(Math.ceil(wearDays / 2) + 1, 8);
+  const underwear = Math.min(wearDays + 2, 12);
+  const laundry = longTrip ? " — plan laundry every ~7 days" : "";
+
+  // Toiletries & consumables scale up with trip length.
+  const size = n <= 5 ? "travel-size" : n <= 12 ? "medium bottles" : "full-size";
+  const sunscreen = n > 7 ? "High-SPF sunscreen (large / 2 tubes)" : "High-SPF sunscreen";
 
   const cats: { title: string; items: string[] }[] = [
     { title: "Documents & money", items: [
@@ -24,20 +42,36 @@ function buildList(nights: number, climate: Climate, acts: string[], intl: boole
       "Travel insurance papers", "Booking confirmations & vouchers", "Debit / credit cards", "Some local currency",
     ].filter(Boolean) },
     { title: "Clothing", items: [
-      `${tops} tops / t-shirts`, `${bottoms} trousers / shorts`, `${Math.min(n + 2, 14)} sets underwear & socks`,
-      "1 light jacket / layer", climate === "cold" ? "Warm coat, thermals, gloves & hat" : "",
-      climate === "hot" ? "Sun hat & sunglasses" : "", "Comfortable walking shoes", "Sleepwear",
+      `${tops} tops / t-shirts${laundry}`,
+      `${bottoms} trousers / shorts`,
+      `${underwear} sets underwear & socks`,
+      "1–2 light layers / jacket",
+      climate === "cold" ? "Warm coat, thermals, gloves & hat" : "",
+      climate === "hot" ? "Sun hat & sunglasses" : "",
+      "Comfortable walking shoes", "Sleepwear",
+      longTrip ? "A couple of reusable laundry bags" : "",
     ].filter(Boolean) },
     { title: "Toiletries", items: [
-      "Toothbrush & toothpaste", "Deodorant", "Shampoo & soap (travel size)", "Skincare & moisturiser",
-      climate === "hot" || climate === "tropical" ? "High-SPF sunscreen" : "SPF moisturiser", "Razor / grooming kit",
-    ] },
+      `Toothbrush & toothpaste (${size})`,
+      "Deodorant",
+      `Shampoo, conditioner & soap (${size})`,
+      "Skincare & moisturiser",
+      climate === "hot" || climate === "tropical" ? sunscreen : "SPF moisturiser",
+      "Razor / grooming kit",
+      longTrip ? "Nail clippers, cotton buds & spares" : "",
+    ].filter(Boolean) },
     { title: "Health", items: [
-      "Personal medication", "Basic first-aid (plasters, painkillers)",
-      climate === "tropical" ? "Insect repellent & anti-itch" : "", "Hand sanitiser", "Rehydration sachets",
+      `Personal medication (${n + 3} days' supply)`,
+      "Basic first-aid (plasters, painkillers)",
+      climate === "tropical" ? "Insect repellent & anti-itch" : "",
+      "Hand sanitiser",
+      n > 3 ? "Vitamins / daily supplements" : "",
+      "Rehydration sachets",
+      intl && n > 7 ? "Copy of prescriptions & doctor's note" : "",
     ].filter(Boolean) },
     { title: "Tech", items: [
-      "Phone & charger", intl ? "Universal travel adapter" : "", "Power bank", "Earphones", "E-reader / camera (optional)",
+      "Phone & charger", intl ? "Universal travel adapter" : "", "Power bank", "Earphones",
+      longTrip ? "Multi-port charger / spare cables" : "", "E-reader / camera (optional)",
     ].filter(Boolean) },
   ];
 
@@ -59,6 +93,7 @@ export default function PackingListGenerator() {
   const [acts, setActs] = useState<string[]>(["City & sightseeing"]);
   const [intl, setIntl] = useState(true);
   const [done, setDone] = useState<Set<string>>(new Set());
+  const [busy, setBusy] = useState(false);
 
   const list = useMemo(() => buildList(nights, climate, acts, intl), [nights, climate, acts, intl]);
   const total = list.reduce((s, c) => s + c.items.length, 0);
@@ -66,15 +101,85 @@ export default function PackingListGenerator() {
 
   const toggleAct = (a: string) => setActs(p => p.includes(a) ? p.filter(x => x !== a) : [...p, a]);
   const toggleItem = (k: string) => setDone(p => { const n = new Set(p); n.has(k) ? n.delete(k) : n.add(k); return n; });
+  const setN = (v: number) => setNights(Math.max(1, Math.min(120, Math.round(v || 1))));
+
+  // Real, downloadable PDF — window.print() silently no-ops in many mobile / in-
+  // app browsers (which is why "print" didn't work), so we build the document.
+  const downloadPdf = async () => {
+    if (busy) return;
+    setBusy(true);
+    try {
+      const { jsPDF } = await import("jspdf");
+      const doc = new jsPDF({ unit: "mm", format: "a4" });
+      const W = 210, M = 16;
+
+      doc.setFillColor(33, 29, 24);
+      doc.rect(0, 0, W, 26, "F");
+      doc.setTextColor(244, 240, 233);
+      doc.setFont("times", "normal"); doc.setFontSize(20);
+      doc.text("Voyages & Co.", M, 14);
+      doc.setTextColor(201, 174, 119);
+      doc.setFont("helvetica", "normal"); doc.setFontSize(8);
+      doc.text("SMART PACKING LIST", M, 21, { charSpace: 1.2 });
+
+      let y = 38;
+      doc.setTextColor(60, 54, 46); doc.setFont("helvetica", "normal"); doc.setFontSize(11);
+      doc.text(`${nights} night${nights > 1 ? "s" : ""}  ·  ${CLIMATES.find(c => c.key === climate)?.label}  ·  ${intl ? "International" : "Domestic"}`, M, y);
+      y += 5.5;
+      if (acts.length) {
+        doc.setTextColor(140, 140, 140); doc.setFontSize(9);
+        doc.text(doc.splitTextToSize(acts.join("  ·  "), W - M * 2), M, y);
+        y += 8;
+      } else y += 3;
+
+      for (const cat of list) {
+        if (y > 272) { doc.addPage(); y = 20; }
+        doc.setTextColor(201, 174, 119); doc.setFont("helvetica", "bold"); doc.setFontSize(9);
+        doc.text(cat.title.toUpperCase(), M, y, { charSpace: 1 });
+        y += 6;
+        doc.setFont("helvetica", "normal"); doc.setFontSize(10.5); doc.setTextColor(33, 29, 24);
+        for (const item of cat.items) {
+          if (y > 285) { doc.addPage(); y = 20; }
+          doc.setDrawColor(150, 150, 150);
+          doc.rect(M, y - 3.1, 3.4, 3.4);
+          const lines = doc.splitTextToSize(item, W - M * 2 - 8);
+          doc.text(lines, M + 6, y);
+          y += Math.max(1, lines.length) * 5 + 1.4;
+        }
+        y += 4.5;
+      }
+
+      doc.setTextColor(150, 150, 150); doc.setFontSize(8);
+      doc.text("Generated by Voyages & Co. · voyagesco.com", M, 290);
+      doc.save(`packing-list-${nights}n.pdf`);
+    } finally {
+      setBusy(false);
+    }
+  };
 
   return (
     <div className="grid lg:grid-cols-5 gap-8">
       {/* Controls */}
       <div className="lg:col-span-2 space-y-5 print:hidden">
         <div>
-          <label className="block text-[10px] tracking-[0.2em] uppercase text-ink-faint mb-2">Nights away</label>
-          <input type="number" min={1} value={nights} onChange={e => setNights(parseInt(e.target.value) || 1)}
-            className="w-full bg-panel-raised border border-line px-4 py-3 text-ink focus:outline-none focus:border-gold" />
+          <div className="flex items-center justify-between mb-2">
+            <label className="text-[10px] tracking-[0.2em] uppercase text-ink-faint">Nights away</label>
+            <span className="font-serif text-lg text-ink leading-none">{nights}<span className="text-xs text-ink-faint ml-1">{nights === 1 ? "night" : "nights"}</span></span>
+          </div>
+          <div className="flex items-center gap-3">
+            <input type="range" min={1} max={30} value={Math.min(nights, 30)} onChange={e => setN(+e.target.value)}
+              className="flex-1 accent-gold" aria-label="Nights away slider" />
+            <input type="number" min={1} max={120} value={nights} onChange={e => setN(+e.target.value)}
+              className="w-16 bg-panel-raised border border-line px-2 py-2 text-base text-ink text-center focus:outline-none focus:border-gold" />
+          </div>
+          <div className="flex flex-wrap gap-2 mt-3">
+            {PRESETS.map(p => (
+              <button key={p.n} onClick={() => setNights(p.n)}
+                className={`px-3 py-1.5 text-[11px] tracking-wide border transition-colors ${nights === p.n ? "bg-gold/15 text-ink border-gold" : "border-line text-ink-muted hover:border-ink"}`}>
+                {p.label}
+              </button>
+            ))}
+          </div>
         </div>
         <div>
           <label className="block text-[10px] tracking-[0.2em] uppercase text-ink-faint mb-2">Climate</label>
@@ -107,7 +212,10 @@ export default function PackingListGenerator() {
       <div className="lg:col-span-3">
         <div className="flex items-center justify-between mb-4">
           <p className="text-sm text-ink-muted flex items-center gap-2"><Luggage size={16} className="text-gold" /> {checked}/{total} packed</p>
-          <button onClick={() => window.print()} className="text-xs tracking-[0.1em] uppercase text-ink-muted hover:text-ink print:hidden">Print list</button>
+          <button onClick={downloadPdf} disabled={busy}
+            className="inline-flex items-center gap-1.5 text-xs tracking-[0.1em] uppercase text-ink-muted hover:text-ink disabled:opacity-50 transition-colors print:hidden">
+            <Download size={14} /> {busy ? "Preparing…" : "Download list"}
+          </button>
         </div>
         <div className="space-y-6">
           {list.map(cat => (

@@ -5,6 +5,7 @@ import { ArrowLeft } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { getCurrentCustomer } from "@/lib/customer/session";
 import DownloadPdfButton from "@/components/account/DownloadPdfButton";
+import FlightBoardingPass from "@/components/account/FlightBoardingPass";
 
 export const dynamic = "force-dynamic";
 
@@ -13,6 +14,29 @@ export default async function VoucherPage({ params }: { params: { ref: string } 
   if (!customer) redirect("/login");
   const b = await prisma.booking.findFirst({ where: { reference: params.ref, customerId: customer.id } });
   if (!b) redirect("/account");
+
+  // Flight bookings render as a boarding pass, using the referenced flight's
+  // real route/times/airline.
+  const flight = b.type === "flight" ? await prisma.flight.findUnique({ where: { id: b.itemId } }) : null;
+  const pdfRows = flight
+    ? [
+        { label: "Flight", value: `${flight.airline} · ${flight.flightNumber}` },
+        { label: "Route", value: `${flight.originCity} (${flight.origin}) → ${flight.destinationCity} (${flight.destination})` },
+        { label: "Departs", value: `${flight.departure}${flight.arrival ? ` → ${flight.arrival}` : ""}` },
+        { label: "Passenger", value: b.guestName },
+        ...(b.checkIn ? [{ label: "Date", value: b.checkIn }] : []),
+        { label: "Guests", value: String(b.guests) },
+        { label: "Status", value: b.status },
+        { label: "Total", value: `INR ${b.total.toLocaleString("en-IN")}` },
+      ]
+    : [
+        { label: "Journey", value: b.itemTitle },
+        { label: "Guest", value: b.guestName },
+        ...(b.checkIn ? [{ label: "Dates", value: `${b.checkIn}${b.checkOut ? ` to ${b.checkOut}` : ""}` }] : []),
+        { label: "Guests", value: String(b.guests) },
+        { label: "Status", value: b.status },
+        { label: "Total", value: `INR ${b.total.toLocaleString("en-IN")}` },
+      ];
 
   const Row = ({ label, value }: { label: string; value: string }) => (
     <div className="flex justify-between py-2.5 border-b border-line">
@@ -28,26 +52,40 @@ export default async function VoucherPage({ params }: { params: { ref: string } 
           <ArrowLeft size={15} /> Back to my account
         </Link>
         <DownloadPdfButton
-          label="Download voucher"
+          label={flight ? "Download boarding pass" : "Download voucher"}
           data={{
-            filename: `voucher-${b.reference}.pdf`,
-            subtitle: "Travel Voucher",
-            image: b.image || undefined,
+            filename: flight ? `boarding-pass-${b.reference}.pdf` : `voucher-${b.reference}.pdf`,
+            subtitle: flight ? "Boarding Pass" : "Travel Voucher",
+            image: flight ? undefined : b.image || undefined,
             headingLabel: "Booking reference",
             heading: b.reference,
-            rows: [
-              { label: "Journey", value: b.itemTitle },
-              { label: "Guest", value: b.guestName },
-              ...(b.checkIn ? [{ label: "Dates", value: `${b.checkIn}${b.checkOut ? ` to ${b.checkOut}` : ""}` }] : []),
-              { label: "Guests", value: String(b.guests) },
-              { label: "Status", value: b.status },
-              { label: "Total", value: `INR ${b.total.toLocaleString("en-IN")}` },
-            ],
-            footer: "Please present this voucher on arrival. For changes or assistance, contact our concierge at hello@voyagesco.com or +91 99199 10213. This voucher is subject to our terms and the supplier's conditions.",
+            rows: pdfRows,
+            footer: flight
+              ? "Seat, gate & boarding are indicative — the airline confirms final details at online check-in. Carry a valid photo ID/passport. For changes contact our concierge at hello@voyagesco.com or +91 99199 10213."
+              : "Please present this voucher on arrival. For changes or assistance, contact our concierge at hello@voyagesco.com or +91 99199 10213. This voucher is subject to our terms and the supplier's conditions.",
           }}
         />
       </div>
 
+      {flight ? (
+        <FlightBoardingPass
+          airline={flight.airline}
+          flightNumber={flight.flightNumber}
+          origin={flight.origin}
+          originCity={flight.originCity}
+          destination={flight.destination}
+          destinationCity={flight.destinationCity}
+          departure={flight.departure}
+          arrival={flight.arrival}
+          duration={flight.duration}
+          businessPrice={flight.businessPrice}
+          passenger={b.guestName}
+          reference={b.reference}
+          date={b.checkIn}
+          guests={b.guests}
+          total={b.total}
+        />
+      ) : (
       <div className="bg-panel border border-line rounded-2xl shadow-card overflow-hidden">
         <div className="bg-ink text-page px-8 py-6 flex items-center justify-between">
           <div>
@@ -82,6 +120,7 @@ export default async function VoucherPage({ params }: { params: { ref: string } 
           </p>
         </div>
       </div>
+      )}
     </div>
   );
 }
