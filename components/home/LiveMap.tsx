@@ -3,8 +3,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type * as L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import { MousePointerClick } from "lucide-react";
 import { useIsMobile } from "@/lib/useIsMobile";
-import { attachModifierWheelZoom, zoomModifierLabel } from "@/lib/mapWheelZoom";
 
 // Shared, key-less Esri basemap — real satellite/terrain earth imagery
 // (natural greens, blues and mountains) with a translucent place-name &
@@ -86,10 +86,7 @@ export default function LiveMap({
   const markerLayerRef = useRef<L.LayerGroup | null>(null);
   const routeLayerRef = useRef<L.LayerGroup | null>(null);
   const [ready, setReady] = useState(false);
-  const [hint, setHint] = useState(false);
-  const hintTimer = useRef<ReturnType<typeof setTimeout>>();
-  const wheelCleanupRef = useRef<() => void>();
-  const zoomMod = useMemo(() => zoomModifierLabel(), []);
+  const [zoomActive, setZoomActive] = useState(false);
 
   // Signature of everything drawable so the redraw effect only fires on a real
   // change (marker arrays are recreated every render).
@@ -128,13 +125,11 @@ export default function LiveMap({
       // top, the headline the centre-left, the full-width search widget the
       // bottom band. Corner positions get hidden behind those.
       map.zoomControl?.setPosition("topright");
-      // Google-Maps-style zoom: plain scroll passes through to the page and
-      // flashes the hint; modifier + scroll (and trackpad pinch) zooms.
-      wheelCleanupRef.current = attachModifierWheelZoom(Lm, map, () => {
-        setHint(true);
-        clearTimeout(hintTimer.current);
-        hintTimer.current = setTimeout(() => setHint(false), 1500);
-      });
+      // "Click to zoom": scroll/trackpad zoom activates once the map is clicked
+      // (so plain scrolling over the hero never zooms by accident) and switches
+      // back off — re-showing the hint — when the pointer leaves the map.
+      map.on("click", () => { map!.scrollWheelZoom.enable(); setZoomActive(true); });
+      map.getContainer().addEventListener("mouseleave", () => { map!.scrollWheelZoom.disable(); setZoomActive(false); });
       // Base imagery, then the label/boundary overlay above it (kept above via
       // zIndex so it survives any later layer changes), then routes + markers.
       Lm.tileLayer(IMAGERY_URL, { attribution: IMAGERY_ATTR, detectRetina: false, maxZoom: 19, className: "vc-tiles-base", zIndex: 1 }).addTo(map);
@@ -146,8 +141,6 @@ export default function LiveMap({
     });
     return () => {
       disposed = true;
-      wheelCleanupRef.current?.();
-      clearTimeout(hintTimer.current);
       map?.remove();
       mapRef.current = null;
     };
@@ -214,16 +207,14 @@ export default function LiveMap({
         className="absolute inset-0 h-full w-full vc-live-map"
         style={{ background: "radial-gradient(140% 115% at 50% 55%, #1c3a4a 0%, #122a37 55%, #0b1a24 100%)" }}
       />
-      {/* Contextual zoom hint — flashes only when the traveller scrolls over
-          the map without the modifier, teaching the gesture Google-Maps style. */}
+      {/* Persistent "Click to zoom" affordance next to the +/- control, shown
+          whenever zoom is inactive so it never gets lost. */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 z-[1000] flex items-center justify-center transition-opacity duration-300"
-        style={{ opacity: hint ? 1 : 0 }}
+        className="pointer-events-none absolute top-1/2 -translate-y-1/2 right-14 z-[1000] flex items-center gap-1.5 bg-black/60 text-white text-[11px] tracking-wide px-3 py-1.5 backdrop-blur-sm transition-opacity duration-300"
+        style={{ opacity: zoomActive ? 0 : 1 }}
       >
-        <span className="bg-black/70 text-white text-xs sm:text-sm tracking-wide px-4 py-2 backdrop-blur-sm">
-          Hold {zoomMod} and scroll to zoom
-        </span>
+        <MousePointerClick size={13} /> Click to zoom
       </div>
     </div>
   );
