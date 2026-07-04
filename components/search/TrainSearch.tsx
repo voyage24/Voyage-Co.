@@ -96,8 +96,10 @@ function StationAutocomplete({
 export default function TrainSearch() {
   const { t } = useLanguage();
   const router = useRouter();
-  const [from, setFrom] = useState<Station>(STATIONS.find(s => s.code === "NDLS") ?? STATIONS[0]);
-  const [to, setTo]   = useState<Station>(STATIONS.find(s => s.code === "CSTM") ?? STATIONS[6]);
+  // Start empty rather than a fixed New Delhi → Mumbai CST default, so the bar
+  // isn't "stuck" on a route the traveller didn't choose.
+  const [from, setFrom] = useState<Station | null>(null);
+  const [to, setTo]   = useState<Station | null>(null);
   const [date, setDate] = useState("");
   const [tClass, setTClass] = useState("3A");
   const [showClass, setShowClass] = useState(false);
@@ -176,10 +178,15 @@ export default function TrainSearch() {
         </div>
       </div>
 
-      <div className="flex justify-end">
+      <div className="flex items-center justify-between gap-3">
+        <p className="text-[11px] text-ink-faint font-light">
+          {from && to ? `${from.city} → ${to.city}` : t("flightSearch.selectOriginDestination")}
+        </p>
         <button
           type="button"
+          disabled={!from || !to}
           onClick={() => {
+            if (!from || !to) return;
             const p = new URLSearchParams();
             p.set("from", from.code);
             p.set("to", to.code);
@@ -187,7 +194,7 @@ export default function TrainSearch() {
             p.set("class", tClass);
             router.push(`/trains?${p.toString()}`);
           }}
-          className="flex items-center gap-2 px-8 py-3 bg-ink hover:bg-ink/90 text-page font-medium tracking-[0.12em] uppercase rounded-sm transition-all duration-200 text-xs hover:scale-105 active:scale-95"
+          className="flex items-center gap-2 px-8 py-3 bg-ink hover:bg-ink/90 disabled:opacity-40 disabled:cursor-not-allowed text-page font-medium tracking-[0.12em] uppercase rounded-sm transition-all duration-200 text-xs hover:scale-105 active:scale-95 disabled:hover:scale-100"
         >
           <Search size={15} /> {t("trainSearch.searchTrains")}
         </button>
