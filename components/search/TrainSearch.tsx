@@ -76,7 +76,7 @@ function StationAutocomplete({
         readOnly={isMobile}
         inputMode={isMobile ? "none" : undefined}
         placeholder={t("trainSearch.cityOrStation")}
-        className={`w-full bg-transparent text-sm text-ink placeholder:text-ink-faint focus:outline-none font-light ${isMobile ? "cursor-pointer" : ""}`}
+        className={`w-full bg-transparent text-base text-ink placeholder:text-ink-faint focus:outline-none font-light ${isMobile ? "cursor-pointer" : ""}`}
       />
       {open && (isMobile ? (
         <MobilePickerSheet title={label} query={search} onQueryChange={setSearch} onClose={close} searchPlaceholder={t("trainSearch.cityOrStation")}>
@@ -149,7 +149,7 @@ export default function TrainSearch() {
         <div className={fieldCls}>
           <label className={labelCls}><Calendar size={10} className="inline mr-1" />{t("trainSearch.dateOfJourney")}</label>
           <input type="date" value={date} onChange={e => setDate(e.target.value)}
-            className="w-full bg-transparent text-sm text-ink focus:outline-none font-light" />
+            className="w-full bg-transparent text-base text-ink focus:outline-none font-light" />
         </div>
 
         {/* Class */}

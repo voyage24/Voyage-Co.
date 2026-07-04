@@ -59,7 +59,7 @@ function CityAutocomplete({
         readOnly={isMobile}
         inputMode={isMobile ? "none" : undefined}
         placeholder={t("hotelSearch.cityOrHotel")}
-        className={`w-full bg-transparent text-sm text-ink placeholder:text-ink-faint focus:outline-none font-light ${isMobile ? "cursor-pointer" : ""}`}
+        className={`w-full bg-transparent text-base text-ink placeholder:text-ink-faint focus:outline-none font-light ${isMobile ? "cursor-pointer" : ""}`}
       />
       {open && (isMobile ? (
         <MobilePickerSheet title={t("hotelSearch.destination")} query={query} onQueryChange={setQuery} onClose={close} searchPlaceholder={t("hotelSearch.cityOrHotel")}>
@@ -121,14 +121,14 @@ export default function HotelSearch({
         <div className={fieldCls}>
           <label className={labelCls}><Calendar size={10} className="inline mr-1" />{t("hotelSearch.checkIn")}</label>
           <input type="date" value={checkIn} onChange={e => setCheckIn(e.target.value)}
-            className="w-full bg-transparent text-sm text-ink focus:outline-none font-light" />
+            className="w-full bg-transparent text-base text-ink focus:outline-none font-light" />
         </div>
 
         {/* Check-out */}
         <div className={fieldCls}>
           <label className={labelCls}><Calendar size={10} className="inline mr-1" />{t("hotelSearch.checkOut")}</label>
           <input type="date" value={checkOut} onChange={e => setCheckOut(e.target.value)}
-            className="w-full bg-transparent text-sm text-ink focus:outline-none font-light" />
+            className="w-full bg-transparent text-base text-ink focus:outline-none font-light" />
         </div>
 
         {/* Rooms & Guests */}

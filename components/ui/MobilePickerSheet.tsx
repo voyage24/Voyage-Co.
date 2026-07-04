@@ -41,7 +41,7 @@ export default function MobilePickerSheet({
           <p className="text-sm font-medium text-ink truncate">{title}</p>
         </div>
         <div className="px-3 pb-3 pt-2">
-          <div className="flex items-center gap-2 bg-panel-soft border border-line px-3">
+          <div className="flex items-center gap-2 bg-panel-soft border border-line-strong px-3">
             <Search size={16} className="text-ink-faint shrink-0" />
             <input
               value={query}

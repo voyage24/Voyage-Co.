@@ -726,7 +726,7 @@ export default function FlightSearch({
                   type="date"
                   value={leg.date ? toISO(leg.date) : ""}
                   onChange={e => updateLeg(i, { date: e.target.value ? new Date(e.target.value) : null })}
-                  className="w-full bg-transparent text-sm text-ink focus:outline-none font-light cursor-pointer"
+                  className="w-full bg-transparent text-base text-ink focus:outline-none font-light cursor-pointer"
                 />
               </div>
               {legs.length > 2 && (
