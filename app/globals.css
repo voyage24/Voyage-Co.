@@ -364,17 +364,17 @@ html.dark .shimmer-gold {
 }
 @keyframes goldShimmer { to { background-position: 220% center; } }
 
-/* White shimmer for the "Voyages & Co." wordmark — a bright pearl-white sweep
-   used in every state (over the hero map AND the scrolled navbar). A tight
-   dark rim plus a soft halo keep the white letters legible on both the light
-   (cream) scrolled navbar and the darker map tiles. */
+/* White shimmer for the "Voyages & Co." wordmark on the dark navbar band — a
+   luminous white with a bright travelling glint. The silver base keeps it
+   reading as white while making the sweep pronounced; a soft white glow adds
+   the prominent shimmer. */
 .shimmer-white {
-  background-image: linear-gradient(100deg, #e6e6e7 0%, #e6e6e7 20%, #ffffff 50%, #e6e6e7 80%, #e6e6e7 100%);
-  background-size: 220% auto;
+  background-image: linear-gradient(100deg, #c4c7cf 0%, #c4c7cf 26%, #ffffff 46%, #ffffff 54%, #c4c7cf 74%, #c4c7cf 100%);
+  background-size: 210% auto;
   -webkit-background-clip: text; background-clip: text;
   -webkit-text-fill-color: transparent; color: transparent;
-  filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.55)) drop-shadow(0 1px 3px rgba(0, 0, 0, 0.45));
-  animation: goldShimmer 3.4s linear infinite;
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.45)) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35));
+  animation: goldShimmer 2.6s linear infinite;
 }
 
 

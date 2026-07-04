@@ -64,21 +64,19 @@ export default function Navbar() {
     return () => window.removeEventListener("resize", check);
   }, [t]);
 
-  // The navbar is now always a solid band that sits ABOVE the hero map (rather
-  // than a transparent bar overlaid on it), so it never reads as "over the
-  // hero" — this keeps the wordmark & links on their own band, like the
-  // post-scroll state, on every page.
-  const overHero = false;
+  // The navbar is a solid DARK band that sits ABOVE the hero map on every page.
+  // Its contents are light (white wordmark + links), so `overHero` — which
+  // drives the light-on-dark tone throughout — stays true; only the background
+  // is a fixed dark band rather than the transparent-over-map bar it once was.
+  const overHero = true;
   // One uniform size and weight for every language — no per-language bumps.
   const linkBase = "text-[12px] font-normal tracking-[0.08em] uppercase transition-all duration-200 py-2 whitespace-nowrap shrink-0 inline-block origin-left hover:scale-110 active:scale-95";
   const linkColor = overHero ? "text-white/90 hover:text-white" : "text-ink-muted hover:text-ink";
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-      overHero ? "bg-transparent py-6" : "bg-page/95 backdrop-blur-md border-b border-line py-0"
-    }`}>
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-vc-950/95 backdrop-blur-md border-b border-white/10">
       <div className="max-w-[1500px] mx-auto px-6 lg:px-12">
-        <div className={`flex items-center gap-x-4 lg:gap-x-6 transition-all duration-500 ${overHero ? "min-h-16" : "min-h-20"}`}>
+        <div className="flex items-center gap-x-4 lg:gap-x-6 min-h-20">
 
           <div className="flex shrink-0">
             <Logo size={overHero ? 26 : 24} tone={overHero ? "light" : "dark"} shimmer />
