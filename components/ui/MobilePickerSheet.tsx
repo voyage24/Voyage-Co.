@@ -26,7 +26,23 @@ export default function MobilePickerSheet({
   useEffect(() => {
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    return () => { document.body.style.overflow = prev; };
+    return () => {
+      document.body.style.overflow = prev;
+      // On close, force iOS back to 1× and its origin. A field focus can auto-
+      // zoom and pan the page (esp. the right-hand "To" field) and leave it
+      // shifted left even after the field is gone; this realigns it.
+      (document.activeElement as HTMLElement | null)?.blur?.();
+      const meta = document.querySelector('meta[name="viewport"]') as HTMLMetaElement | null;
+      if (meta) {
+        // Toggling to a non-scalable value snaps the zoom back to 1×; restore
+        // the base a beat later so the page behaves normally afterwards.
+        const base = "width=device-width, initial-scale=1, maximum-scale=1";
+        meta.setAttribute("content", base + ", user-scalable=no");
+        window.setTimeout(() => meta.setAttribute("content", base), 400);
+      }
+      // Reset any horizontal scroll offset.
+      window.scrollTo({ left: 0, top: window.scrollY });
+    };
   }, []);
   if (!mounted) return null;
 

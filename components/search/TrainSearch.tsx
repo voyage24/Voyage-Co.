@@ -68,16 +68,19 @@ function StationAutocomplete({
   return (
     <div ref={ref} className="relative">
       <p className="text-[10px] tracking-[0.16em] uppercase text-ink-faint mb-1">{label}</p>
-      <input
-        value={query}
-        onChange={e => { if (!isMobile) { setQuery(e.target.value); setOpen(true); } }}
-        onFocus={isMobile ? undefined : () => setOpen(true)}
-        onClick={isMobile ? () => { setSearch(""); setOpen(true); } : undefined}
-        readOnly={isMobile}
-        inputMode={isMobile ? "none" : undefined}
-        placeholder={t("trainSearch.cityOrStation")}
-        className={`w-full bg-transparent text-base text-ink placeholder:text-ink-faint focus:outline-none font-light ${isMobile ? "cursor-pointer" : ""}`}
-      />
+      {isMobile ? (
+        <button type="button" onClick={() => { setSearch(""); setOpen(true); }} className="w-full text-left bg-transparent text-base font-light leading-tight truncate">
+          {query ? <span className="text-ink">{query}</span> : <span className="text-ink-faint">{t("trainSearch.cityOrStation")}</span>}
+        </button>
+      ) : (
+        <input
+          value={query}
+          onChange={e => { setQuery(e.target.value); setOpen(true); }}
+          onFocus={() => setOpen(true)}
+          placeholder={t("trainSearch.cityOrStation")}
+          className="w-full bg-transparent text-base text-ink placeholder:text-ink-faint focus:outline-none font-light"
+        />
+      )}
       {open && (isMobile ? (
         <MobilePickerSheet title={label} query={search} onQueryChange={setSearch} onClose={close} searchPlaceholder={t("trainSearch.cityOrStation")}>
           <div className="py-1">{items}</div>

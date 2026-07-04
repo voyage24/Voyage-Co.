@@ -51,16 +51,19 @@ function CityAutocomplete({
   return (
     <div ref={ref} className="relative flex-1">
       <p className="text-[10px] tracking-[0.16em] uppercase text-ink-faint mb-1">{t("hotelSearch.destination")}</p>
-      <input
-        value={value}
-        onChange={e => { if (!isMobile) { onChange(e.target.value); setOpen(true); } }}
-        onFocus={isMobile ? undefined : () => setOpen(true)}
-        onClick={isMobile ? () => { setQuery(""); setOpen(true); } : undefined}
-        readOnly={isMobile}
-        inputMode={isMobile ? "none" : undefined}
-        placeholder={t("hotelSearch.cityOrHotel")}
-        className={`w-full bg-transparent text-base text-ink placeholder:text-ink-faint focus:outline-none font-light ${isMobile ? "cursor-pointer" : ""}`}
-      />
+      {isMobile ? (
+        <button type="button" onClick={() => { setQuery(""); setOpen(true); }} className="w-full text-left bg-transparent text-base font-light leading-tight truncate">
+          {value ? <span className="text-ink">{value}</span> : <span className="text-ink-faint">{t("hotelSearch.cityOrHotel")}</span>}
+        </button>
+      ) : (
+        <input
+          value={value}
+          onChange={e => { onChange(e.target.value); setOpen(true); }}
+          onFocus={() => setOpen(true)}
+          placeholder={t("hotelSearch.cityOrHotel")}
+          className="w-full bg-transparent text-base text-ink placeholder:text-ink-faint focus:outline-none font-light"
+        />
+      )}
       {open && (isMobile ? (
         <MobilePickerSheet title={t("hotelSearch.destination")} query={query} onQueryChange={setQuery} onClose={close} searchPlaceholder={t("hotelSearch.cityOrHotel")}>
           <div className="py-1">{items}</div>

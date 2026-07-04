@@ -245,19 +245,22 @@ function AirportInput({
     <div ref={wrapRef} className="min-w-0 w-full">
       <p className="text-[10px] tracking-[0.14em] uppercase text-ink-faint mb-1 font-medium select-none truncate">{label}</p>
       <div className="flex items-center gap-1">
-        <input
-          ref={inputRef}
-          type="text"
-          value={displayText}
-          onChange={handleChange}
-          onFocus={handleFocus}
-          onClick={isMobile ? handleFocus : undefined}
-          readOnly={isMobile}
-          inputMode={isMobile ? "none" : undefined}
-          placeholder={!isMobile && focused ? t("flightSearch.typeCityOrCode") : t("flightSearch.cityOrAirport")}
-          autoComplete="off"
-          className={`w-full bg-transparent text-base text-ink placeholder:text-ink-faint focus:outline-none font-light leading-tight ${isMobile ? "cursor-pointer" : "cursor-text"}`}
-        />
+        {isMobile ? (
+          <button type="button" onClick={handleFocus} className="w-full text-left bg-transparent text-base font-light leading-tight truncate">
+            {value ? <span className="text-ink">{value.name} · {value.code}</span> : <span className="text-ink-faint">{t("flightSearch.cityOrAirport")}</span>}
+          </button>
+        ) : (
+          <input
+            ref={inputRef}
+            type="text"
+            value={displayText}
+            onChange={handleChange}
+            onFocus={handleFocus}
+            placeholder={focused ? t("flightSearch.typeCityOrCode") : t("flightSearch.cityOrAirport")}
+            autoComplete="off"
+            className="w-full bg-transparent text-base text-ink placeholder:text-ink-faint focus:outline-none font-light leading-tight cursor-text"
+          />
+        )}
         {value && focused && !isMobile && (
           <button type="button" onMouseDown={e => e.preventDefault()} onClick={() => { setQuery(""); inputRef.current?.focus(); }} className="shrink-0 text-ink-faint hover:text-ink">
             <X size={13} />
