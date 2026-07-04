@@ -197,7 +197,7 @@ export default function DestinationMap({
           whenever zoom is inactive so it never gets lost. */}
       <div
         aria-hidden
-        className="pointer-events-none absolute top-1/2 -translate-y-1/2 right-14 z-[1000] flex items-center gap-1.5 bg-black/60 text-white text-[11px] tracking-wide px-3 py-1.5 backdrop-blur-sm transition-opacity duration-300"
+        className="glass-pill glass-pill-pulse pointer-events-none absolute top-1/2 -translate-y-1/2 right-14 z-[1000] flex items-center gap-1.5 text-[11px] tracking-wide px-3 py-1.5 transition-opacity duration-300"
         style={{ opacity: zoomActive ? 0 : 1 }}
       >
         <MousePointerClick size={13} /> Click to zoom

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { Menu, X, ChevronLeft, ChevronRight, User } from "lucide-react";
+import { Menu, X, ChevronLeft, ChevronRight } from "lucide-react";
 import Logo from "@/components/ui/Logo";
 import CurrencySelector from "@/components/ui/CurrencySelector";
 import LanguageSelector from "@/components/ui/LanguageSelector";
@@ -70,7 +70,7 @@ export default function Navbar() {
   // is a fixed dark band rather than the transparent-over-map bar it once was.
   const overHero = true;
   // One uniform size and weight for every language — no per-language bumps.
-  const linkBase = "text-[12px] font-normal tracking-[0.08em] uppercase transition-all duration-200 py-2 whitespace-nowrap shrink-0 inline-block origin-left hover:scale-110 active:scale-95";
+  const linkBase = "nav-underline text-[12px] font-normal tracking-[0.08em] uppercase transition-colors duration-200 py-2 whitespace-nowrap shrink-0 inline-block";
   const linkColor = overHero ? "text-white/90 hover:text-white" : "text-ink-muted hover:text-ink";
 
   return (
@@ -131,13 +131,12 @@ export default function Navbar() {
             </Link>
           </div>
 
-          {/* Mobile/tablet — search + account + toggle */}
+          {/* Mobile/tablet — search + toggle + menu. Account is intentionally
+              omitted here: it already lives in the bottom tab bar, so showing
+              it at the top too would duplicate it. */}
           <div className="flex lg:hidden items-center gap-4 ml-auto">
             <ThemeToggle tone={overHero ? "light" : "dark"} size={20} />
             <SearchOverlay tone={overHero ? "light" : "dark"} triggerSize={20} />
-            <Link href="/account" aria-label={t("account.account")} className={`inline-flex items-center justify-center leading-none transition-all duration-200 hover:scale-110 active:scale-95 ${overHero ? "text-white/90 hover:text-white" : "text-ink-muted hover:text-ink"}`}>
-              <User size={20} />
-            </Link>
             <button className={overHero ? "text-white" : "text-ink"} onClick={() => setMobileOpen(!mobileOpen)} aria-label="Menu">
               {mobileOpen ? <X size={22} /> : <Menu size={22} />}
             </button>
