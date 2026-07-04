@@ -1,5 +1,5 @@
 import { Plane } from "lucide-react";
-import { hashRef, fmtDate, boardingDetails } from "@/lib/boarding-pass";
+import { hashRef, fmtDate, flightClass } from "@/lib/boarding-pass";
 
 type BP = {
   airline: string;
@@ -17,6 +17,7 @@ type BP = {
   date?: string | null;
   guests: number;
   total: number;
+  seat?: string | null; // actual seat if one was booked; otherwise blank
 };
 
 function Field({ label, value, className = "" }: { label: string; value: string; className?: string }) {
@@ -50,13 +51,14 @@ function Barcode({ seed }: { seed: string }) {
 }
 
 /**
- * Renders a flight booking as a stylised boarding pass — real route, airline,
- * times and passenger from the booking/flight, with seat/gate/zone/boarding
- * derived deterministically from the reference (the airline issues the binding
- * ones at check-in). A perforated tear-off stub carries a barcode.
+ * Renders a flight booking as a stylised boarding pass. Only genuinely-known
+ * details are shown (route, times, passenger, PNR, fare class); seat appears
+ * only if one was actually booked, and gate/zone are left blank because the
+ * airline assigns them at the airport — so nothing on the pass is misleading.
  */
 export default function FlightBoardingPass(props: BP) {
-  const { klass, seat, gate, zone, boarding } = boardingDetails(props);
+  const klass = flightClass(props);
+  const seat = props.seat?.trim() || "—";
 
   return (
     <div className="bg-panel border border-line rounded-2xl shadow-card overflow-hidden">
@@ -95,18 +97,18 @@ export default function FlightBoardingPass(props: BP) {
             </div>
           </div>
 
-          {/* details */}
+          {/* details — known values are filled; seat/gate/zone stay blank
+              until the airline assigns them at check-in. */}
           <div className="grid grid-cols-3 gap-y-5 gap-x-3">
             <Field label="Passenger" value={props.passenger} className="col-span-2" />
             <Field label="Class" value={klass} />
             <Field label="Date" value={fmtDate(props.date)} className="col-span-2" />
             <Field label="Departs" value={props.departure || "—"} />
-            <Field label="Boarding" value={boarding} />
-            <Field label="Gate" value={gate} />
-            <Field label="Seat" value={seat} />
-            <Field label="Zone" value={String(zone)} />
             <Field label="Arrives" value={props.arrival || "—"} />
-            {props.duration && <Field label="Duration" value={props.duration} />}
+            <Field label="Duration" value={props.duration || "—"} />
+            <Field label="Seat" value={seat} />
+            <Field label="Gate" value="—" />
+            <Field label="Zone" value="—" />
           </div>
         </div>
 
@@ -121,7 +123,7 @@ export default function FlightBoardingPass(props: BP) {
             <Stub label="Flight" value={props.flightNumber} />
             <div className="grid grid-cols-2 gap-x-2">
               <Stub label="Seat" value={seat} />
-              <Stub label="Gate" value={gate} />
+              <Stub label="Class" value={klass} />
             </div>
             <Stub label="Booking" value={props.reference} />
           </div>
@@ -133,7 +135,7 @@ export default function FlightBoardingPass(props: BP) {
       </div>
 
       <p className="px-6 sm:px-8 py-4 border-t border-line text-[11px] text-ink-faint font-light leading-relaxed">
-        Seat, gate &amp; boarding shown are indicative — the airline confirms final details at online check-in. Please carry a valid photo ID/passport. For changes contact our concierge at hello@voyagesco.com or +91&nbsp;99199&nbsp;10213.
+        Seat (unless pre-booked), gate &amp; zone are assigned by the airline at online check-in / the airport. Please carry a valid photo ID/passport. For changes contact our concierge at hello@voyagesco.com or +91&nbsp;99199&nbsp;10213.
       </p>
     </div>
   );

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Download } from "lucide-react";
-import { hashRef, fmtDate, boardingDetails } from "@/lib/boarding-pass";
+import { hashRef, fmtDate, flightClass } from "@/lib/boarding-pass";
 
 export type BoardingPassData = {
   airline: string;
@@ -20,6 +20,7 @@ export type BoardingPassData = {
   date?: string | null;
   guests: number;
   total: number;
+  seat?: string | null;
 };
 
 // Draws a real boarding-pass-shaped PDF (landscape card + tear-off stub +
@@ -33,7 +34,8 @@ export default function DownloadBoardingPassButton({ data, label = "Download boa
     try {
       const { jsPDF } = await import("jspdf");
       const doc = new jsPDF({ unit: "mm", format: "a4", orientation: "landscape" });
-      const { klass, seat, gate, zone, boarding } = boardingDetails(data);
+      const klass = flightClass(data);
+      const seat = data.seat?.trim() || "—";
 
       // palette
       const ink = () => doc.setTextColor(33, 29, 24);
@@ -85,16 +87,16 @@ export default function DownloadBoardingPassButton({ data, label = "Download boa
       doc.triangle(STUB - 58, midY - 1.6, STUB - 58, midY + 1.6, STUB - 54, midY, "F");
       if (data.duration) { faint(); doc.setFontSize(8); doc.text(data.duration, (CX + 78 + STUB - 58) / 2, midY - 2.5, { align: "center" }); }
 
-      // detail grid
+      // detail grid — known values filled; seat/gate/zone blank until check-in
       field("Passenger", data.passenger, CX + 12, CY + 72);
       field("Class", klass, CX + 128, CY + 72);
       field("Date", fmtDate(data.date), CX + 12, CY + 88);
       field("Departs", data.departure || "—", CX + 92, CY + 88);
       field("Arrives", data.arrival || "—", CX + 140, CY + 88);
-      field("Boarding", boarding, CX + 12, CY + 104);
-      field("Gate", gate, CX + 60, CY + 104);
-      field("Seat", seat, CX + 100, CY + 104, true);
-      field("Zone", String(zone), CX + 140, CY + 104);
+      field("Seat", seat, CX + 12, CY + 104, seat !== "—");
+      field("Gate", "—", CX + 60, CY + 104);
+      field("Zone", "—", CX + 100, CY + 104);
+      field("Duration", data.duration || "—", CX + 140, CY + 104);
 
       // perforation
       doc.setDrawColor(150, 150, 150); doc.setLineWidth(0.2);
@@ -108,8 +110,8 @@ export default function DownloadBoardingPassButton({ data, label = "Download boa
       doc.text("BOARDING PASS", SX, CY + 12, { charSpace: 1 });
       field("Passenger", data.passenger, SX, CY + 24);
       field("Flight", data.flightNumber, SX, CY + 38, true);
-      field("Seat", seat, SX, CY + 52, true);
-      field("Gate", gate, SX + 30, CY + 52);
+      field("Seat", seat, SX, CY + 52, seat !== "—");
+      field("Class", klass, SX + 30, CY + 52);
       field("Booking", data.reference, SX, CY + 66, true);
 
       // barcode
@@ -129,7 +131,7 @@ export default function DownloadBoardingPassButton({ data, label = "Download boa
       // footer
       faint(); doc.setFont("helvetica", "normal"); doc.setFontSize(7.5);
       doc.text(
-        "Seat, gate & boarding are indicative — the airline confirms final details at online check-in. Carry a valid photo ID/passport.  Voyages & Co. · voyagesco.com",
+        "Seat (unless pre-booked), gate & zone are assigned by the airline at online check-in / the airport. Carry a valid photo ID/passport.  Voyages & Co. · voyagesco.com",
         CX, CY + CH + 8
       );
 
