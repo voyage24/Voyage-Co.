@@ -189,6 +189,38 @@ export const PAGE_REGISTRY: ContentPage[] = [
     ],
   },
   {
+    page: "tools", label: "Trip Tools Hub", path: "/tools",
+    fields: [
+      { key: "tools.eyebrow", label: "Eyebrow" },
+      { key: "tools.title", label: "Title" },
+      { key: "tools.intro", label: "Intro", type: "textarea" },
+    ],
+  },
+  {
+    page: "destinations", label: "Destinations", path: "/destinations",
+    fields: [
+      { key: "destinations.eyebrow", label: "Eyebrow" },
+      { key: "destinations.title", label: "Title" },
+      { key: "destinations.intro", label: "Intro", type: "textarea" },
+    ],
+  },
+  {
+    page: "login", label: "Sign In", path: "/login",
+    fields: [
+      { key: "login.eyebrow", label: "Eyebrow" },
+      { key: "login.title", label: "Title" },
+      { key: "login.subtitle", label: "Intro", type: "textarea" },
+    ],
+  },
+  {
+    page: "signup", label: "Create Account", path: "/signup",
+    fields: [
+      { key: "signup.eyebrow", label: "Eyebrow" },
+      { key: "signup.title", label: "Title" },
+      { key: "signup.subtitle", label: "Intro", type: "textarea" },
+    ],
+  },
+  {
     page: "nav", label: "Navigation menu", path: "/",
     fields: [
       { key: "nav.destinations", label: "Destinations link" },
@@ -307,6 +339,22 @@ export const PAGE_DEFAULTS: Record<string, string> = {
   "itinerary.eyebrow": "Trip builder",
   "itinerary.title": "Your itinerary",
   "itinerary.intro": "Bundle stays, journeys, cruises and experiences, then request a single tailored quote.",
+
+  "tools.eyebrow": "Plan with ease",
+  "tools.title": "Trip tools & services",
+  "tools.intro": "Practical companions for every journey — from quick conversions to visas, insurance and the concierge.",
+
+  "destinations.eyebrow": "Explore",
+  "destinations.title": "Destinations",
+  "destinations.intro": "A world of extraordinary places, each with its own collection of stays, experiences and journeys.",
+
+  "login.eyebrow": "Members' Access",
+  "login.title": "Welcome back",
+  "login.subtitle": "Sign in to manage your journeys",
+
+  "signup.eyebrow": "Membership",
+  "signup.title": "Create Your Account",
+  "signup.subtitle": "Join Voyages & Co. to plan, book and manage your journeys.",
 
   "nav.destinations": "Destinations",
   "nav.stays": "Stays",

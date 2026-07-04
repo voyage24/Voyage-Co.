@@ -6,9 +6,11 @@ import { useRouter } from "next/navigation";
 import { User, Mail, Lock, Phone, Eye, EyeOff, ArrowRight } from "lucide-react";
 import Logo from "@/components/ui/Logo";
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { useContent } from "@/components/providers/ContentProvider";
 
 export default function SignupPage() {
   const { t } = useLanguage();
+  const c = useContent();
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -55,9 +57,9 @@ export default function SignupPage() {
         </div>
 
         <div className="bg-panel rounded-2xl shadow-luxury border border-line p-8">
-          <p className="text-[10px] tracking-[0.28em] uppercase text-gold mb-2">{t("signup.eyebrow")}</p>
-          <h1 className="font-serif text-3xl font-light text-ink mb-1">{t("signup.title")}</h1>
-          <p className="text-sm text-ink-muted mb-7 font-light">{t("signup.subtitle")}</p>
+          <p className="text-[10px] tracking-[0.28em] uppercase text-gold mb-2">{c("signup.eyebrow") || t("signup.eyebrow")}</p>
+          <h1 className="font-serif text-3xl font-light text-ink mb-1">{c("signup.title") || t("signup.title")}</h1>
+          <p className="text-sm text-ink-muted mb-7 font-light">{c("signup.subtitle") || t("signup.subtitle")}</p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {[

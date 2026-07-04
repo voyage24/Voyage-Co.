@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import type { Metadata } from "next";
 import { getDestinations } from "@/lib/destinations";
+import { getPageContent } from "@/lib/page-content";
 import Reveal from "@/components/ui/Reveal";
 
 export const revalidate = 300;
@@ -13,13 +14,14 @@ export const metadata: Metadata = {
 
 export default async function DestinationsPage() {
   const destinations = await getDestinations();
+  const c = await getPageContent();
 
   return (
     <div className="max-w-[1500px] mx-auto px-6 lg:px-12 pt-28 pb-20">
       <div className="text-center mb-12">
-        <p className="text-[11px] tracking-[0.3em] uppercase text-gold mb-3">Explore</p>
-        <h1 className="font-serif text-3xl sm:text-5xl font-light text-ink mb-3">Destinations</h1>
-        <p className="text-ink-muted font-light max-w-xl mx-auto">A world of extraordinary places, each with its own collection of stays, experiences and journeys.</p>
+        <p className="text-[11px] tracking-[0.3em] uppercase text-gold mb-3">{c("destinations.eyebrow")}</p>
+        <h1 className="font-serif text-3xl sm:text-5xl font-light text-ink mb-3">{c("destinations.title")}</h1>
+        <p className="text-ink-muted font-light max-w-xl mx-auto">{c("destinations.intro")}</p>
       </div>
 
       <Reveal stagger className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">

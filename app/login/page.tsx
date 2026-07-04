@@ -6,9 +6,11 @@ import { useRouter } from "next/navigation";
 import { Mail, Lock, Eye, EyeOff, ArrowRight } from "lucide-react";
 import Logo from "@/components/ui/Logo";
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { useContent } from "@/components/providers/ContentProvider";
 
 export default function LoginPage() {
   const { t } = useLanguage();
+  const c = useContent();
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -54,9 +56,9 @@ export default function LoginPage() {
         </div>
 
         <div className="bg-panel rounded-2xl shadow-luxury border border-line p-8">
-          <p className="text-[10px] tracking-[0.28em] uppercase text-gold mb-2">{t("login.eyebrow")}</p>
-          <h1 className="font-serif text-3xl font-light text-ink mb-1">{t("login.title")}</h1>
-          <p className="text-sm text-ink-muted mb-7 font-light">{t("login.subtitle")}</p>
+          <p className="text-[10px] tracking-[0.28em] uppercase text-gold mb-2">{c("login.eyebrow") || t("login.eyebrow")}</p>
+          <h1 className="font-serif text-3xl font-light text-ink mb-1">{c("login.title") || t("login.title")}</h1>
+          <p className="text-sm text-ink-muted mb-7 font-light">{c("login.subtitle") || t("login.subtitle")}</p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>

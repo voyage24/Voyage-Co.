@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeftRight, Luggage, ListChecks, FileText, ShieldCheck, Sparkles, Plane } from "lucide-react";
 import Reveal from "@/components/ui/Reveal";
+import { getPageContent } from "@/lib/page-content";
 
 export const metadata: Metadata = {
   title: "Trip Tools & Travel Services — Voyages & Co.",
@@ -18,13 +19,14 @@ const TOOLS = [
   { icon: Sparkles, title: "Concierge services", text: "Transfers, chefs, charters — anything, arranged.", href: "/services" },
 ];
 
-export default function ToolsHubPage() {
+export default async function ToolsHubPage() {
+  const c = await getPageContent();
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20">
       <div className="text-center mb-12">
-        <p className="text-[11px] tracking-[0.3em] uppercase text-gold mb-3">Plan with ease</p>
-        <h1 className="font-serif text-3xl sm:text-5xl font-light text-ink mb-4">Trip tools &amp; services</h1>
-        <p className="text-ink-muted font-light max-w-xl mx-auto">Practical companions for every journey — from quick conversions to visas, insurance and the concierge.</p>
+        <p className="text-[11px] tracking-[0.3em] uppercase text-gold mb-3">{c("tools.eyebrow")}</p>
+        <h1 className="font-serif text-3xl sm:text-5xl font-light text-ink mb-4">{c("tools.title")}</h1>
+        <p className="text-ink-muted font-light max-w-xl mx-auto">{c("tools.intro")}</p>
       </div>
 
       <Reveal soft className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
