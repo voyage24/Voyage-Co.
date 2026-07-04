@@ -19,21 +19,16 @@ const PRESETS: { n: number; label: string }[] = [
 ];
 
 // Builds a categorised packing list whose quantities scale with the trip
-// length — with a laundry assumption on longer trips so you don't pack 30 of
-// everything — and toiletry sizing / medication supply that grow with the days.
+// length — clothing, toiletry sizing, sunscreen and medication all grow with
+// the number of nights (with a gentle cap + laundry note on very long trips).
 function buildList(nights: number, climate: Climate, acts: string[], intl: boolean) {
-  const n = Math.max(1, nights || 1);
-  const longTrip = n > 8;
-  // Past ~a week you'll do laundry, so pack roughly a week's clothing + buffer
-  // rather than one of everything per night.
-  const wearDays = longTrip ? 8 : n;
-  const tops = Math.min(wearDays + 1, 12);
-  const bottoms = Math.min(Math.ceil(wearDays / 2) + 1, 8);
-  const underwear = Math.min(wearDays + 2, 12);
-  const laundry = longTrip ? " — plan laundry every ~7 days" : "";
-
-  // Toiletries & consumables scale up with trip length.
-  const size = n <= 5 ? "travel-size" : n <= 12 ? "medium bottles" : "full-size";
+  const n = Math.max(1, nights);
+  const tops = Math.min(n + 1, 21);
+  const bottoms = Math.min(Math.ceil(n / 2) + 1, 12);
+  const underwear = Math.min(n + 2, 21);
+  const longTrip = n > 10;
+  const laundry = longTrip ? " — or pack ~1 week's worth & do laundry" : "";
+  const size = n <= 4 ? "travel-size" : n <= 10 ? "medium bottles" : "full-size";
   const sunscreen = n > 7 ? "High-SPF sunscreen (large / 2 tubes)" : "High-SPF sunscreen";
 
   const cats: { title: string; items: string[] }[] = [
@@ -88,25 +83,27 @@ function buildList(nights: number, climate: Climate, acts: string[], intl: boole
 }
 
 export default function PackingListGenerator() {
-  const [nights, setNights] = useState(5);
+  // Empty by default (no assumed length) and no upper limit.
+  const [nightsStr, setNightsStr] = useState("");
   const [climate, setClimate] = useState<Climate>("mild");
   const [acts, setActs] = useState<string[]>(["City & sightseeing"]);
   const [intl, setIntl] = useState(true);
   const [done, setDone] = useState<Set<string>>(new Set());
   const [busy, setBusy] = useState(false);
 
-  const list = useMemo(() => buildList(nights, climate, acts, intl), [nights, climate, acts, intl]);
+  const nights = Math.max(0, parseInt(nightsStr, 10) || 0);
+  const hasNights = nights > 0;
+
+  const list = useMemo(() => (hasNights ? buildList(nights, climate, acts, intl) : []), [nights, hasNights, climate, acts, intl]);
   const total = list.reduce((s, c) => s + c.items.length, 0);
   const checked = list.reduce((s, c) => s + c.items.filter(i => done.has(`${c.title}:${i}`)).length, 0);
 
   const toggleAct = (a: string) => setActs(p => p.includes(a) ? p.filter(x => x !== a) : [...p, a]);
   const toggleItem = (k: string) => setDone(p => { const n = new Set(p); n.has(k) ? n.delete(k) : n.add(k); return n; });
-  const setN = (v: number) => setNights(Math.max(1, Math.min(120, Math.round(v || 1))));
 
-  // Real, downloadable PDF — window.print() silently no-ops in many mobile / in-
-  // app browsers (which is why "print" didn't work), so we build the document.
+  // Real PDF — window.print() silently no-ops in many mobile / in-app browsers.
   const downloadPdf = async () => {
-    if (busy) return;
+    if (busy || !hasNights) return;
     setBusy(true);
     try {
       const { jsPDF } = await import("jspdf");
@@ -164,17 +161,18 @@ export default function PackingListGenerator() {
         <div>
           <div className="flex items-center justify-between mb-2">
             <label className="text-[10px] tracking-[0.2em] uppercase text-ink-faint">Nights away</label>
-            <span className="font-serif text-lg text-ink leading-none">{nights}<span className="text-xs text-ink-faint ml-1">{nights === 1 ? "night" : "nights"}</span></span>
+            {hasNights && <span className="font-serif text-lg text-ink leading-none">{nights}<span className="text-xs text-ink-faint ml-1">{nights === 1 ? "night" : "nights"}</span></span>}
           </div>
           <div className="flex items-center gap-3">
-            <input type="range" min={1} max={30} value={Math.min(nights, 30)} onChange={e => setN(+e.target.value)}
+            <input type="range" min={1} max={30} value={Math.min(nights || 1, 30)} onChange={e => setNightsStr(e.target.value)}
               className="flex-1 accent-gold" aria-label="Nights away slider" />
-            <input type="number" min={1} max={120} value={nights} onChange={e => setN(+e.target.value)}
-              className="w-16 bg-panel-raised border border-line px-2 py-2 text-base text-ink text-center focus:outline-none focus:border-gold" />
+            <input type="number" min={1} inputMode="numeric" placeholder="—" value={nightsStr}
+              onChange={e => setNightsStr(e.target.value.replace(/[^0-9]/g, ""))}
+              className="w-16 bg-panel-raised border border-line px-2 py-2 text-base text-ink text-center placeholder:text-ink-faint focus:outline-none focus:border-gold" />
           </div>
           <div className="flex flex-wrap gap-2 mt-3">
             {PRESETS.map(p => (
-              <button key={p.n} onClick={() => setNights(p.n)}
+              <button key={p.n} onClick={() => setNightsStr(String(p.n))}
                 className={`px-3 py-1.5 text-[11px] tracking-wide border transition-colors ${nights === p.n ? "bg-gold/15 text-ink border-gold" : "border-line text-ink-muted hover:border-ink"}`}>
                 {p.label}
               </button>
@@ -210,36 +208,45 @@ export default function PackingListGenerator() {
 
       {/* List */}
       <div className="lg:col-span-3">
-        <div className="flex items-center justify-between mb-4">
-          <p className="text-sm text-ink-muted flex items-center gap-2"><Luggage size={16} className="text-gold" /> {checked}/{total} packed</p>
-          <button onClick={downloadPdf} disabled={busy}
-            className="inline-flex items-center gap-1.5 text-xs tracking-[0.1em] uppercase text-ink-muted hover:text-ink disabled:opacity-50 transition-colors print:hidden">
-            <Download size={14} /> {busy ? "Preparing…" : "Download list"}
-          </button>
-        </div>
-        <div className="space-y-6">
-          {list.map(cat => (
-            <div key={cat.title}>
-              <p className="text-[11px] tracking-[0.18em] uppercase text-gold mb-2">{cat.title}</p>
-              <ul className="space-y-1">
-                {cat.items.map(item => {
-                  const k = `${cat.title}:${item}`;
-                  const on = done.has(k);
-                  return (
-                    <li key={k}>
-                      <button onClick={() => toggleItem(k)} className="flex items-center gap-3 w-full text-left py-1 group">
-                        <span className={`w-4 h-4 border flex items-center justify-center shrink-0 ${on ? "bg-gold border-gold" : "border-line-strong group-hover:border-ink"}`}>
-                          {on && <Check size={12} className="text-page" />}
-                        </span>
-                        <span className={`text-sm ${on ? "text-ink-faint line-through" : "text-ink"}`}>{item}</span>
-                      </button>
-                    </li>
-                  );
-                })}
-              </ul>
+        {!hasNights ? (
+          <div className="border border-dashed border-line rounded-lg py-16 px-6 text-center">
+            <Luggage size={26} className="text-gold mx-auto mb-3" />
+            <p className="text-ink-muted font-light">Enter your nights away to generate a tailored list.</p>
+          </div>
+        ) : (
+          <>
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-sm text-ink-muted flex items-center gap-2"><Luggage size={16} className="text-gold" /> {checked}/{total} packed</p>
+              <button onClick={downloadPdf} disabled={busy}
+                className="inline-flex items-center gap-1.5 text-xs tracking-[0.1em] uppercase text-ink-muted hover:text-ink disabled:opacity-50 transition-colors print:hidden">
+                <Download size={14} /> {busy ? "Preparing…" : "Download list"}
+              </button>
             </div>
-          ))}
-        </div>
+            <div className="space-y-6">
+              {list.map(cat => (
+                <div key={cat.title}>
+                  <p className="text-[11px] tracking-[0.18em] uppercase text-gold mb-2">{cat.title}</p>
+                  <ul className="space-y-1">
+                    {cat.items.map(item => {
+                      const k = `${cat.title}:${item}`;
+                      const on = done.has(k);
+                      return (
+                        <li key={k}>
+                          <button onClick={() => toggleItem(k)} className="flex items-center gap-3 w-full text-left py-1 group">
+                            <span className={`w-4 h-4 border flex items-center justify-center shrink-0 ${on ? "bg-gold border-gold" : "border-line-strong group-hover:border-ink"}`}>
+                              {on && <Check size={12} className="text-page" />}
+                            </span>
+                            <span className={`text-sm ${on ? "text-ink-faint line-through" : "text-ink"}`}>{item}</span>
+                          </button>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
