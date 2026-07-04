@@ -4,6 +4,9 @@ import { useMemo, useState } from "react";
 import { Check, Luggage, Download } from "lucide-react";
 
 type Climate = "hot" | "mild" | "cold" | "tropical";
+type Item = { label: string; qty?: number };
+type Cat = { title: string; items: Item[] };
+
 const CLIMATES: { key: Climate; label: string }[] = [
   { key: "hot", label: "Hot / Desert" },
   { key: "mild", label: "Mild / Temperate" },
@@ -18,10 +21,9 @@ const PRESETS: { n: number; label: string }[] = [
   { n: 30, label: "1 month" },
 ];
 
-// Builds a categorised packing list whose quantities scale with the trip
-// length — clothing, toiletry sizing, sunscreen and medication all grow with
-// the number of nights (with a gentle cap + laundry note on very long trips).
-function buildList(nights: number, climate: Climate, acts: string[], intl: boolean) {
+// A categorised packing list whose quantities scale with the trip length.
+// Clothing carries an explicit count (shown next to each item).
+function buildList(nights: number, climate: Climate, acts: string[], intl: boolean): Cat[] {
   const n = Math.max(1, nights);
   const tops = Math.min(n + 1, 21);
   const bottoms = Math.min(Math.ceil(n / 2) + 1, 12);
@@ -31,43 +33,49 @@ function buildList(nights: number, climate: Climate, acts: string[], intl: boole
   const size = n <= 4 ? "travel-size" : n <= 10 ? "medium bottles" : "full-size";
   const sunscreen = n > 7 ? "High-SPF sunscreen (large / 2 tubes)" : "High-SPF sunscreen";
 
-  const cats: { title: string; items: string[] }[] = [
+  const cats: Cat[] = [
     { title: "Documents & money", items: [
-      "Photo ID", intl ? "Passport (valid 6+ months)" : "", intl ? "Visa / entry permit" : "",
-      "Travel insurance papers", "Booking confirmations & vouchers", "Debit / credit cards", "Some local currency",
-    ].filter(Boolean) },
+      { label: "Photo ID" },
+      ...(intl ? [{ label: "Passport (valid 6+ months)" }, { label: "Visa / entry permit" }] : []),
+      { label: "Travel insurance papers" }, { label: "Booking confirmations & vouchers" },
+      { label: "Debit / credit cards" }, { label: "Some local currency" },
+    ] },
     { title: "Clothing", items: [
-      `${tops} tops / t-shirts${laundry}`,
-      `${bottoms} trousers / shorts`,
-      `${underwear} sets underwear & socks`,
-      "1–2 light layers / jacket",
-      climate === "cold" ? "Warm coat, thermals, gloves & hat" : "",
-      climate === "hot" ? "Sun hat & sunglasses" : "",
-      "Comfortable walking shoes", "Sleepwear",
-      longTrip ? "A couple of reusable laundry bags" : "",
-    ].filter(Boolean) },
+      { label: `Tops / t-shirts${laundry}`, qty: tops },
+      { label: "Trousers / shorts", qty: bottoms },
+      { label: "Underwear & socks (sets)", qty: underwear },
+      { label: "Light layers / jacket", qty: 2 },
+      ...(climate === "cold" ? [{ label: "Warm coat, thermals, gloves & hat" }] : []),
+      ...(climate === "hot" ? [{ label: "Sun hat & sunglasses" }] : []),
+      { label: "Comfortable walking shoes", qty: 2 },
+      { label: "Sleepwear" },
+      ...(longTrip ? [{ label: "A couple of reusable laundry bags" }] : []),
+    ] },
     { title: "Toiletries", items: [
-      `Toothbrush & toothpaste (${size})`,
-      "Deodorant",
-      `Shampoo, conditioner & soap (${size})`,
-      "Skincare & moisturiser",
-      climate === "hot" || climate === "tropical" ? sunscreen : "SPF moisturiser",
-      "Razor / grooming kit",
-      longTrip ? "Nail clippers, cotton buds & spares" : "",
-    ].filter(Boolean) },
+      { label: `Toothbrush & toothpaste (${size})` },
+      { label: "Deodorant" },
+      { label: `Shampoo, conditioner & soap (${size})` },
+      { label: "Skincare & moisturiser" },
+      { label: climate === "hot" || climate === "tropical" ? sunscreen : "SPF moisturiser" },
+      { label: "Razor / grooming kit" },
+      ...(longTrip ? [{ label: "Nail clippers, cotton buds & spares" }] : []),
+    ] },
     { title: "Health", items: [
-      `Personal medication (${n + 3} days' supply)`,
-      "Basic first-aid (plasters, painkillers)",
-      climate === "tropical" ? "Insect repellent & anti-itch" : "",
-      "Hand sanitiser",
-      n > 3 ? "Vitamins / daily supplements" : "",
-      "Rehydration sachets",
-      intl && n > 7 ? "Copy of prescriptions & doctor's note" : "",
-    ].filter(Boolean) },
+      { label: `Personal medication (${n + 3} days' supply)` },
+      { label: "Basic first-aid (plasters, painkillers)" },
+      ...(climate === "tropical" ? [{ label: "Insect repellent & anti-itch" }] : []),
+      { label: "Hand sanitiser" },
+      ...(n > 3 ? [{ label: "Vitamins / daily supplements" }] : []),
+      { label: "Rehydration sachets" },
+      ...(intl && n > 7 ? [{ label: "Copy of prescriptions & doctor's note" }] : []),
+    ] },
     { title: "Tech", items: [
-      "Phone & charger", intl ? "Universal travel adapter" : "", "Power bank", "Earphones",
-      longTrip ? "Multi-port charger / spare cables" : "", "E-reader / camera (optional)",
-    ].filter(Boolean) },
+      { label: "Phone & charger" },
+      ...(intl ? [{ label: "Universal travel adapter" }] : []),
+      { label: "Power bank" }, { label: "Earphones" },
+      ...(longTrip ? [{ label: "Multi-port charger / spare cables" }] : []),
+      { label: "E-reader / camera (optional)" },
+    ] },
   ];
 
   const extra: string[] = [];
@@ -77,13 +85,12 @@ function buildList(nights: number, climate: Climate, acts: string[], intl: boole
   if (acts.includes("Fine dining")) extra.push("Smart-casual evening outfit", "Dress shoes");
   if (acts.includes("Wildlife / safari")) extra.push("Neutral-colour clothing", "Binoculars", "Wide-brim hat");
   if (climate === "tropical" || acts.includes("City & sightseeing")) extra.push("Compact umbrella");
-  if (extra.length) cats.push({ title: "For your activities", items: Array.from(new Set(extra)) });
+  if (extra.length) cats.push({ title: "For your activities", items: Array.from(new Set(extra)).map(label => ({ label })) });
 
   return cats;
 }
 
 export default function PackingListGenerator() {
-  // Empty by default (no assumed length) and no upper limit.
   const [nightsStr, setNightsStr] = useState("");
   const [climate, setClimate] = useState<Climate>("mild");
   const [acts, setActs] = useState<string[]>(["City & sightseeing"]);
@@ -96,7 +103,7 @@ export default function PackingListGenerator() {
 
   const list = useMemo(() => (hasNights ? buildList(nights, climate, acts, intl) : []), [nights, hasNights, climate, acts, intl]);
   const total = list.reduce((s, c) => s + c.items.length, 0);
-  const checked = list.reduce((s, c) => s + c.items.filter(i => done.has(`${c.title}:${i}`)).length, 0);
+  const checked = list.reduce((s, c) => s + c.items.filter(i => done.has(`${c.title}:${i.label}`)).length, 0);
 
   const toggleAct = (a: string) => setActs(p => p.includes(a) ? p.filter(x => x !== a) : [...p, a]);
   const toggleItem = (k: string) => setDone(p => { const n = new Set(p); n.has(k) ? n.delete(k) : n.add(k); return n; });
@@ -134,19 +141,24 @@ export default function PackingListGenerator() {
         doc.setTextColor(201, 174, 119); doc.setFont("helvetica", "bold"); doc.setFontSize(9);
         doc.text(cat.title.toUpperCase(), M, y, { charSpace: 1 });
         y += 6;
-        doc.setFont("helvetica", "normal"); doc.setFontSize(10.5); doc.setTextColor(33, 29, 24);
+        doc.setFontSize(10.5);
         for (const item of cat.items) {
           if (y > 285) { doc.addPage(); y = 20; }
           doc.setDrawColor(150, 150, 150);
           doc.rect(M, y - 3.1, 3.4, 3.4);
-          const lines = doc.splitTextToSize(item, W - M * 2 - 8);
+          doc.setFont("helvetica", "normal"); doc.setTextColor(33, 29, 24);
+          const lines = doc.splitTextToSize(item.label, W - M * 2 - 8 - (item.qty ? 12 : 0));
           doc.text(lines, M + 6, y);
+          if (item.qty) {
+            doc.setFont("helvetica", "bold"); doc.setTextColor(150, 120, 40);
+            doc.text(`× ${item.qty}`, W - M, y, { align: "right" });
+          }
           y += Math.max(1, lines.length) * 5 + 1.4;
         }
         y += 4.5;
       }
 
-      doc.setTextColor(150, 150, 150); doc.setFontSize(8);
+      doc.setTextColor(150, 150, 150); doc.setFont("helvetica", "normal"); doc.setFontSize(8);
       doc.text("Generated by Voyages & Co. · voyagesco.com", M, 290);
       doc.save(`packing-list-${nights}n.pdf`);
     } finally {
@@ -228,7 +240,7 @@ export default function PackingListGenerator() {
                   <p className="text-[11px] tracking-[0.18em] uppercase text-gold mb-2">{cat.title}</p>
                   <ul className="space-y-1">
                     {cat.items.map(item => {
-                      const k = `${cat.title}:${item}`;
+                      const k = `${cat.title}:${item.label}`;
                       const on = done.has(k);
                       return (
                         <li key={k}>
@@ -236,7 +248,10 @@ export default function PackingListGenerator() {
                             <span className={`w-4 h-4 border flex items-center justify-center shrink-0 ${on ? "bg-gold border-gold" : "border-line-strong group-hover:border-ink"}`}>
                               {on && <Check size={12} className="text-page" />}
                             </span>
-                            <span className={`text-sm ${on ? "text-ink-faint line-through" : "text-ink"}`}>{item}</span>
+                            <span className={`text-sm flex-1 min-w-0 ${on ? "text-ink-faint line-through" : "text-ink"}`}>{item.label}</span>
+                            {item.qty !== undefined && (
+                              <span className={`text-sm font-semibold shrink-0 tabular-nums ${on ? "text-ink-faint" : "text-gold"}`}>× {item.qty}</span>
+                            )}
                           </button>
                         </li>
                       );
