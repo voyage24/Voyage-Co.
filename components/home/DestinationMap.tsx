@@ -3,11 +3,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type * as L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { MousePointerClick } from "lucide-react";
 import { useIsMobile } from "@/lib/useIsMobile";
 import { getCoords } from "@/lib/geo";
 import { CITIES } from "@/lib/mock-data";
-import { useZoomHint } from "@/lib/useZoomHint";
+import { attachModifierWheelZoom, zoomModifierLabel } from "@/lib/mapWheelZoom";
 import type { City } from "@/lib/types";
 
 // Airports plotted as clickable points — lets the map double as a quick
@@ -58,9 +57,10 @@ export default function DestinationMap({
   const onSelectRef = useRef(onSelectDestination);
   onSelectRef.current = onSelectDestination;
   const [ready, setReady] = useState(false);
-  const { show: showHint, dismiss: dismissHint } = useZoomHint();
-  const dismissRef = useRef(dismissHint);
-  dismissRef.current = dismissHint;
+  const [hint, setHint] = useState(false);
+  const hintTimer = useRef<ReturnType<typeof setTimeout>>();
+  const wheelCleanupRef = useRef<() => void>();
+  const zoomMod = useMemo(() => zoomModifierLabel(), []);
 
   const worldZoom = isMobile ? 1 : 2;
 
@@ -90,7 +90,8 @@ export default function DestinationMap({
         minZoom: 1,
         maxZoom: 12,
         zoomControl: true,
-        scrollWheelZoom: false, // click-to-activate (enabled below on map click)
+        zoomSnap: 0, // smooth fractional zoom for modifier-scroll
+        scrollWheelZoom: false, // handled manually (modifier + scroll only)
         attributionControl: true,
         worldCopyJump: true,
         zoomAnimation: true,
@@ -101,10 +102,13 @@ export default function DestinationMap({
       // right), is the only zone no hero element covers — navbar owns the top,
       // headline the centre-left, the full-width search widget the bottom band.
       map.zoomControl?.setPosition("topright");
-      // Wheel/trackpad zoom only after the map is clicked, and off once the
-      // pointer leaves — so scrolling the page over the hero never zooms it.
-      map.on("click", () => { map!.scrollWheelZoom.enable(); dismissRef.current(); });
-      map.getContainer().addEventListener("mouseleave", () => map!.scrollWheelZoom.disable());
+      // Google-Maps-style zoom: plain scroll passes through to the page and
+      // flashes the hint; modifier + scroll (and trackpad pinch) zooms.
+      wheelCleanupRef.current = attachModifierWheelZoom(Lm, map, () => {
+        setHint(true);
+        clearTimeout(hintTimer.current);
+        hintTimer.current = setTimeout(() => setHint(false), 1500);
+      });
 
       // Base imagery + translucent place-name/boundary overlay (kept on top
       // via zIndex), then the route + destination markers above.
@@ -139,6 +143,8 @@ export default function DestinationMap({
 
     return () => {
       disposed = true;
+      wheelCleanupRef.current?.();
+      clearTimeout(hintTimer.current);
       map?.remove();
       mapRef.current = null;
     };
@@ -194,12 +200,16 @@ export default function DestinationMap({
         className="absolute inset-0 h-full w-full vc-live-map"
         style={{ background: "radial-gradient(140% 115% at 50% 55%, #1c3a4a 0%, #122a37 55%, #0b1a24 100%)" }}
       />
+      {/* Contextual zoom hint — flashes only when the traveller scrolls over
+          the map without the modifier, teaching the gesture Google-Maps style. */}
       <div
         aria-hidden
-        className="pointer-events-none absolute top-1/2 -translate-y-1/2 right-14 z-[1000] flex items-center gap-1.5 bg-black/55 text-white/90 text-[10px] tracking-wide px-2.5 py-1.5 backdrop-blur-sm transition-opacity duration-700"
-        style={{ opacity: showHint ? 1 : 0 }}
+        className="pointer-events-none absolute inset-0 z-[1000] flex items-center justify-center transition-opacity duration-300"
+        style={{ opacity: hint ? 1 : 0 }}
       >
-        <MousePointerClick size={12} /> Click to zoom
+        <span className="bg-black/70 text-white text-xs sm:text-sm tracking-wide px-4 py-2 backdrop-blur-sm">
+          Hold {zoomMod} and scroll to zoom
+        </span>
       </div>
     </div>
   );
