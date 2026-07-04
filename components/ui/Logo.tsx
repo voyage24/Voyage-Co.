@@ -28,7 +28,7 @@ export default function Logo({
     <img src={customLogo} alt="Voyages & Co." style={{ height: size * 1.15 }} className="inline-block w-auto" />
   ) : (
     <span
-      className={`font-logo ${shimmer ? "font-semibold" : "font-normal"} leading-none tracking-[0.04em] ${shimmer ? "shimmer-white" : color} transition-colors duration-300`}
+      className={`font-logo ${shimmer ? "font-semibold" : "font-normal"} leading-none tracking-[0.04em] ${shimmer ? (tone === "light" ? "shimmer-white" : "shimmer-gold") : color} transition-colors duration-300`}
       style={{ fontSize: size }}
     >
       Voyages <span className="italic font-light">&amp;</span> Co.

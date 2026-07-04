@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { Menu, X, ChevronLeft, ChevronRight, User } from "lucide-react";
 import Logo from "@/components/ui/Logo";
 import CurrencySelector from "@/components/ui/CurrencySelector";
@@ -41,8 +40,6 @@ const MOBILE_LINKS = [...PRIMARY_LINKS, ...SECONDARY_LINKS];
 export default function Navbar() {
   const { t } = useLanguage();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-  const pathname = usePathname();
   const linksRef = useRef<HTMLDivElement>(null);
   const [linksOverflow, setLinksOverflow] = useState(false);
   const [canLeft, setCanLeft] = useState(false);
@@ -56,13 +53,6 @@ export default function Navbar() {
   };
   const scrollNav = (dir: 1 | -1) => linksRef.current?.scrollBy({ left: dir * 240, behavior: "smooth" });
 
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 60);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
   // Fallback only: if a very long language still doesn't fit even after
   // consolidation, the row stays scrollable with arrows rather than clipping.
   useEffect(() => {
@@ -74,7 +64,11 @@ export default function Navbar() {
     return () => window.removeEventListener("resize", check);
   }, [t]);
 
-  const overHero = pathname === "/" && !scrolled;
+  // The navbar is now always a solid band that sits ABOVE the hero map (rather
+  // than a transparent bar overlaid on it), so it never reads as "over the
+  // hero" — this keeps the wordmark & links on their own band, like the
+  // post-scroll state, on every page.
+  const overHero = false;
   // One uniform size and weight for every language — no per-language bumps.
   const linkBase = "text-[12px] font-normal tracking-[0.08em] uppercase transition-all duration-200 py-2 whitespace-nowrap shrink-0 inline-block origin-left hover:scale-110 active:scale-95";
   const linkColor = overHero ? "text-white/90 hover:text-white" : "text-ink-muted hover:text-ink";

@@ -17,13 +17,17 @@ import VisitTracker from "@/components/ui/VisitTracker";
 export default function SiteChrome({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isAdmin = pathname?.startsWith("/admin");
+  const isHome = pathname === "/";
 
   if (isAdmin) return <>{children}</>;
 
   return (
     <>
       <div className="print:hidden"><Navbar /></div>
-      <main id="main">{children}</main>
+      {/* The navbar is a fixed solid band. Content pages set their own top
+          padding; the homepage hero used to sit *under* a transparent navbar,
+          so it now needs the same offset to start below the band. */}
+      <main id="main" className={isHome ? "pt-20" : undefined}>{children}</main>
       <div className="print:hidden pb-14 sm:pb-0"><Footer /></div>
       <div className="print:hidden">
         <WhatsAppFAB />
