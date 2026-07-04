@@ -3,6 +3,8 @@
 import { useState, useRef, useEffect, useMemo } from "react";
 import { MapPin, Search, Building2, Hotel } from "lucide-react";
 import { HOTELS } from "@/lib/mock-data";
+import { useIsMobile } from "@/lib/useIsMobile";
+import MobilePickerSheet from "@/components/ui/MobilePickerSheet";
 
 interface HotelCityInputProps {
   value: string;
@@ -29,6 +31,7 @@ const POPULAR_CITIES = [
 export default function HotelCityInput({ value, onChange }: HotelCityInputProps) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const isMobile = useIsMobile();
   const ref = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -62,6 +65,7 @@ export default function HotelCityInput({ value, onChange }: HotelCityInputProps)
   }, [query, cityData]);
 
   useEffect(() => {
+    if (isMobile) return; // mobile sheet manages its own dismissal
     const handler = (e: MouseEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) {
         setOpen(false);
@@ -70,13 +74,14 @@ export default function HotelCityInput({ value, onChange }: HotelCityInputProps)
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
-  }, []);
+  }, [isMobile]);
 
   const handleOpen = () => {
     setOpen(true);
     setQuery("");
-    setTimeout(() => inputRef.current?.focus(), 50);
+    if (!isMobile) setTimeout(() => inputRef.current?.focus(), 50);
   };
+  const close = () => { setOpen(false); setQuery(""); };
 
   const selectCity = (city: string) => {
     onChange(city);
@@ -89,6 +94,66 @@ export default function HotelCityInput({ value, onChange }: HotelCityInputProps)
     setOpen(false);
     setQuery("");
   };
+
+  const hotelBody = (
+    <>
+      {matchedCities.length > 0 && (
+        <div>
+          <p className="px-4 py-1.5 text-[10px] font-bold text-gray-600 uppercase tracking-widest bg-gray-50 border-y border-gray-100 flex items-center gap-1.5">
+            <Building2 size={10} /> {query ? "Matching cities" : "Popular destinations"}
+          </p>
+          {matchedCities.map(({ city, count, country }) => (
+            <button
+              key={city}
+              type="button"
+              onClick={() => selectCity(city)}
+              className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-blue-50 transition-colors text-left"
+            >
+              <div className="w-9 h-9 rounded-lg bg-blue-50 flex items-center justify-center shrink-0">
+                <MapPin size={15} className="text-brand-blue" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-gray-800">{city}</p>
+                <p className="text-xs text-gray-600">{country} · {count} hotel{count > 1 ? "s" : ""}</p>
+              </div>
+            </button>
+          ))}
+        </div>
+      )}
+      {matchedHotels.length > 0 && (
+        <div>
+          <p className="px-4 py-1.5 text-[10px] font-bold text-gray-600 uppercase tracking-widest bg-gray-50 border-y border-gray-100 flex items-center gap-1.5">
+            <Hotel size={10} /> Hotels
+          </p>
+          {matchedHotels.map(h => (
+            <button
+              key={h.id}
+              type="button"
+              onClick={() => selectHotel(h.name)}
+              className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-blue-50 transition-colors text-left"
+            >
+              <div className="w-9 h-9 rounded-lg bg-yellow-50 flex items-center justify-center shrink-0">
+                <Hotel size={15} className="text-brand-yellow-dark" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-gray-800 truncate">{h.name}</p>
+                <p className="text-xs text-gray-600 truncate">{h.location} · {"⭐".repeat(h.stars)}</p>
+              </div>
+            </button>
+          ))}
+        </div>
+      )}
+      {matchedCities.length === 0 && matchedHotels.length === 0 && (
+        <p className="px-4 py-4 text-sm text-gray-600 text-center">No results found</p>
+      )}
+    </>
+  );
+
+  const hotelFooter = !query ? (
+    <div className="px-4 py-2.5 border-t border-gray-100">
+      <p className="text-[11px] text-gray-600">Showing popular destinations · Type to search all</p>
+    </div>
+  ) : null;
 
   return (
     <div ref={ref} className="relative flex-1">
@@ -104,7 +169,12 @@ export default function HotelCityInput({ value, onChange }: HotelCityInputProps)
         </div>
       </button>
 
-      {open && (
+      {open && (isMobile ? (
+        <MobilePickerSheet title="Where are you going?" query={query} onQueryChange={setQuery} onClose={close} searchPlaceholder="Search city or hotel…">
+          <div className="py-1">{hotelBody}</div>
+          {hotelFooter}
+        </MobilePickerSheet>
+      ) : (
         <div className="absolute top-full left-0 mt-2 w-80 max-w-[90vw] bg-white rounded-2xl shadow-widget border border-gray-100 z-50 animate-slide-down">
           {/* Search bar */}
           <div className="p-3 border-b border-gray-100">
@@ -119,70 +189,10 @@ export default function HotelCityInput({ value, onChange }: HotelCityInputProps)
               />
             </div>
           </div>
-
-          <div className="max-h-80 overflow-y-auto py-1">
-            {/* Cities */}
-            {matchedCities.length > 0 && (
-              <div>
-                <p className="px-4 py-1.5 text-[10px] font-bold text-gray-600 uppercase tracking-widest bg-gray-50 border-y border-gray-100 flex items-center gap-1.5">
-                  <Building2 size={10} /> {query ? "Matching cities" : "Popular destinations"}
-                </p>
-                {matchedCities.map(({ city, count, country }) => (
-                  <button
-                    key={city}
-                    type="button"
-                    onClick={() => selectCity(city)}
-                    className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-blue-50 transition-colors text-left"
-                  >
-                    <div className="w-9 h-9 rounded-lg bg-blue-50 flex items-center justify-center shrink-0">
-                      <MapPin size={15} className="text-brand-blue" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-gray-800">{city}</p>
-                      <p className="text-xs text-gray-600">{country} · {count} hotel{count > 1 ? "s" : ""}</p>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            )}
-
-            {/* Individual hotels */}
-            {matchedHotels.length > 0 && (
-              <div>
-                <p className="px-4 py-1.5 text-[10px] font-bold text-gray-600 uppercase tracking-widest bg-gray-50 border-y border-gray-100 flex items-center gap-1.5">
-                  <Hotel size={10} /> Hotels
-                </p>
-                {matchedHotels.map(h => (
-                  <button
-                    key={h.id}
-                    type="button"
-                    onClick={() => selectHotel(h.name)}
-                    className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-blue-50 transition-colors text-left"
-                  >
-                    <div className="w-9 h-9 rounded-lg bg-yellow-50 flex items-center justify-center shrink-0">
-                      <Hotel size={15} className="text-brand-yellow-dark" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-gray-800 truncate">{h.name}</p>
-                      <p className="text-xs text-gray-600 truncate">{h.location} · {"⭐".repeat(h.stars)}</p>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            )}
-
-            {matchedCities.length === 0 && matchedHotels.length === 0 && (
-              <p className="px-4 py-4 text-sm text-gray-600 text-center">No results found</p>
-            )}
-          </div>
-
-          {!query && (
-            <div className="px-4 py-2.5 border-t border-gray-100">
-              <p className="text-[11px] text-gray-600">Showing popular destinations · Type to search all</p>
-            </div>
-          )}
+          <div className="max-h-80 overflow-y-auto py-1">{hotelBody}</div>
+          {hotelFooter}
         </div>
-      )}
+      ))}
     </div>
   );
 }

@@ -4,6 +4,8 @@ import { useState, useRef, useEffect } from "react";
 import { MapPin, Search } from "lucide-react";
 import { CITIES } from "@/lib/mock-data";
 import type { City } from "@/lib/types";
+import { useIsMobile } from "@/lib/useIsMobile";
+import MobilePickerSheet from "@/components/ui/MobilePickerSheet";
 
 interface CityInputProps {
   label: string;
@@ -16,6 +18,7 @@ interface CityInputProps {
 export default function CityInput({ label, value, onChange, placeholder = "City or airport", icon }: CityInputProps) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const isMobile = useIsMobile();
   const ref = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -28,6 +31,7 @@ export default function CityInput({ label, value, onChange, placeholder = "City 
     : CITIES.slice(0, 8);
 
   useEffect(() => {
+    if (isMobile) return; // mobile sheet manages its own dismissal
     const handler = (e: MouseEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) {
         setOpen(false);
@@ -36,19 +40,40 @@ export default function CityInput({ label, value, onChange, placeholder = "City 
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
-  }, []);
+  }, [isMobile]);
 
   const handleOpen = () => {
     setOpen(true);
     setQuery("");
-    setTimeout(() => inputRef.current?.focus(), 50);
+    // Desktop only: auto-focus the search box. On mobile it stays opt-in so the
+    // keyboard never pops up until the traveller taps to type.
+    if (!isMobile) setTimeout(() => inputRef.current?.focus(), 50);
   };
+  const close = () => { setOpen(false); setQuery(""); };
 
   const handleSelect = (city: City) => {
     onChange(city);
     setOpen(false);
     setQuery("");
   };
+
+  const cityItems = filtered.map(city => (
+    <li key={city.code}>
+      <button
+        type="button"
+        onClick={() => handleSelect(city)}
+        className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-blue-50 transition-colors text-left"
+      >
+        <div className="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center shrink-0">
+          <span className="text-xs font-bold text-gray-600">{city.code}</span>
+        </div>
+        <div className="min-w-0">
+          <p className="text-sm font-semibold text-gray-800">{city.name}</p>
+          <p className="text-xs text-gray-600 truncate">{city.fullName}</p>
+        </div>
+      </button>
+    </li>
+  ));
 
   return (
     <div ref={ref} className="relative">
@@ -67,7 +92,11 @@ export default function CityInput({ label, value, onChange, placeholder = "City 
         </div>
       </button>
 
-      {open && (
+      {open && (isMobile ? (
+        <MobilePickerSheet title="Select city" query={query} onQueryChange={setQuery} onClose={close} searchPlaceholder="Search city or airport…">
+          <ul className="py-1">{cityItems}</ul>
+        </MobilePickerSheet>
+      ) : (
         <div className="absolute top-full left-0 mt-2 w-72 max-w-[90vw] bg-white rounded-2xl shadow-widget border border-gray-100 z-50 animate-slide-down overflow-hidden">
           <div className="p-3 border-b border-gray-100">
             <div className="flex items-center gap-2 bg-gray-50 rounded-xl px-3 py-2">
@@ -81,27 +110,9 @@ export default function CityInput({ label, value, onChange, placeholder = "City 
               />
             </div>
           </div>
-          <ul className="max-h-64 overflow-y-auto py-1">
-            {filtered.map(city => (
-              <li key={city.code}>
-                <button
-                  type="button"
-                  onClick={() => handleSelect(city)}
-                  className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-blue-50 transition-colors text-left"
-                >
-                  <div className="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center shrink-0">
-                    <span className="text-xs font-bold text-gray-600">{city.code}</span>
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-sm font-semibold text-gray-800">{city.name}</p>
-                    <p className="text-xs text-gray-600 truncate">{city.fullName}</p>
-                  </div>
-                </button>
-              </li>
-            ))}
-          </ul>
+          <ul className="max-h-64 overflow-y-auto py-1">{cityItems}</ul>
         </div>
-      )}
+      ))}
     </div>
   );
 }

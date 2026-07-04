@@ -9,6 +9,7 @@ import { AIRLINES } from "@/lib/airlines";
 import type { City } from "@/lib/types";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useIsMobile } from "@/lib/useIsMobile";
+import MobilePickerSheet from "@/components/ui/MobilePickerSheet";
 
 // Stable English values — used as the API query param / state value, so
 // only their displayed labels (via CABIN_LABEL_KEYS) are translated.
@@ -52,18 +53,14 @@ const QUICK_PICKS = [
   { label: "Next Month",  tKey: "flightSearch.quickNextMonth",  offset: 30 },
 ];
 
-/* ─── Airport Portal Dropdown ────────────────────────────────────────── */
-function AirportDropdown({
-  style, query, exclude, onSelect, dropRef, mobile, onQueryChange, onClose,
+/* ─── Airport Results (header + list) — shared by the desktop dropdown and
+   the mobile full-screen picker sheet ─────────────────────────────────── */
+function AirportResults({
+  query, exclude, onSelect,
 }: {
-  style: React.CSSProperties;
   query: string;
   exclude?: string;
   onSelect: (c: City) => void;
-  dropRef: React.RefObject<HTMLDivElement>;
-  mobile?: boolean;
-  onQueryChange?: (q: string) => void;
-  onClose?: () => void;
 }) {
   const { t } = useLanguage();
   const { matches, isFallback } = useMemo(() => {
@@ -111,71 +108,60 @@ function AirportDropdown({
     return { matches: CITIES.filter(c => POPULAR.includes(c.code) && c.code !== exclude), isFallback: true };
   }, [query, exclude]);
 
-  return createPortal(
+  return (
     <>
-      {/* On phones a dimmed backdrop turns the picker into a tap-to-dismiss
-          sheet (and the keyboard only appears if the search box is tapped). */}
-      {mobile && <div className="fixed inset-0 z-[9998] bg-vc-950/40 backdrop-blur-sm" onClick={onClose} />}
-      <div
-        ref={dropRef}
-        style={{ ...style, position: "fixed", zIndex: 9999 }}
-        className="bg-panel-raised border border-line rounded-xl shadow-luxury overflow-hidden max-w-[95vw]"
-      >
-        {/* Opt-in search — phones only. It is NOT auto-focused, so tapping a
-            field opens the list without popping the keyboard; tap here to type. */}
-        {mobile && (
-          <div className="p-2.5 border-b border-line">
-            <div className="flex items-center gap-2 bg-panel-soft border border-line rounded-lg px-3">
-              <Search size={15} className="text-ink-faint shrink-0" />
-              <input
-                type="text"
-                value={query}
-                onChange={e => onQueryChange?.(e.target.value)}
-                placeholder={t("flightSearch.typeCityOrCode")}
-                autoComplete="off"
-                inputMode="text"
-                className="w-full bg-transparent py-2.5 text-sm text-ink placeholder:text-ink-faint focus:outline-none font-light"
-              />
-              {query && (
-                <button type="button" onClick={() => onQueryChange?.("")} className="shrink-0 text-ink-faint hover:text-ink">
-                  <X size={14} />
-                </button>
-              )}
-            </div>
-          </div>
-        )}
-        <div className="px-4 py-2 border-b border-line">
-          <p className="text-[10px] tracking-[0.16em] uppercase text-ink-faint font-medium">
-            {query.length === 0
-              ? t("flightSearch.popularAirports")
-              : isFallback
-                ? t("flightSearch.noExactMatch")
-                : t("flightSearch.matchingAirports")}
-          </p>
-        </div>
-        <div className="max-h-72 overflow-y-auto">
-        {matches.map((c, i) => (
-          <button
-            key={c.code}
-            type="button"
-            onMouseDown={e => e.preventDefault()}
-            onClick={() => onSelect(c)}
-            className={`w-full px-4 py-2.5 text-left hover:bg-panel-soft transition-colors flex items-center gap-2.5 ${
-              i < matches.length - 1 ? "border-b border-line" : ""
-            }`}
-          >
-            <div className="shrink-0 w-10 h-10 rounded-lg bg-panel-soft border border-line flex items-center justify-center">
-              <span className="text-[11px] font-bold text-gold tracking-widest">{c.code}</span>
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-ink leading-tight truncate">{c.name}</p>
-              <p className="text-[11px] text-ink-faint font-light truncate">{c.fullName} · {c.country}</p>
-            </div>
-          </button>
-        ))}
-        </div>
+      <div className="px-4 py-2 border-b border-line">
+        <p className="text-[10px] tracking-[0.16em] uppercase text-ink-faint font-medium">
+          {query.length === 0
+            ? t("flightSearch.popularAirports")
+            : isFallback
+              ? t("flightSearch.noExactMatch")
+              : t("flightSearch.matchingAirports")}
+        </p>
       </div>
-    </>,
+      {matches.map((c, i) => (
+        <button
+          key={c.code}
+          type="button"
+          onMouseDown={e => e.preventDefault()}
+          onClick={() => onSelect(c)}
+          className={`w-full px-4 py-2.5 text-left hover:bg-panel-soft transition-colors flex items-center gap-2.5 ${
+            i < matches.length - 1 ? "border-b border-line" : ""
+          }`}
+        >
+          <div className="shrink-0 w-10 h-10 rounded-lg bg-panel-soft border border-line flex items-center justify-center">
+            <span className="text-[11px] font-bold text-gold tracking-widest">{c.code}</span>
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-ink leading-tight truncate">{c.name}</p>
+            <p className="text-[11px] text-ink-faint font-light truncate">{c.fullName} · {c.country}</p>
+          </div>
+        </button>
+      ))}
+    </>
+  );
+}
+
+/* ─── Desktop positioned dropdown (portaled) ─────────────────────────── */
+function AirportDropdown({
+  style, query, exclude, onSelect, dropRef,
+}: {
+  style: React.CSSProperties;
+  query: string;
+  exclude?: string;
+  onSelect: (c: City) => void;
+  dropRef: React.RefObject<HTMLDivElement>;
+}) {
+  return createPortal(
+    <div
+      ref={dropRef}
+      style={{ ...style, position: "fixed", zIndex: 9999 }}
+      className="bg-panel-raised border border-line rounded-xl shadow-luxury overflow-hidden max-w-[90vw]"
+    >
+      <div className="max-h-72 overflow-y-auto">
+        <AirportResults query={query} exclude={exclude} onSelect={onSelect} />
+      </div>
+    </div>,
     document.body
   );
 }
@@ -205,17 +191,15 @@ function AirportInput({
 
   const calcDropPos = () => {
     if (!wrapRef.current) return;
-    if (isMobile) {
-      // Full-width sheet anchored near the top, so if the traveller taps the
-      // opt-in search box the keyboard (bottom) never covers it or the list.
-      setDropStyle({ top: 84, left: 8, width: window.innerWidth - 16 });
-      return;
-    }
     const r = wrapRef.current.getBoundingClientRect();
     setDropStyle({ top: r.bottom + 8, left: r.left, width: Math.max(320, r.width) });
   };
 
   useEffect(() => {
+    // The mobile picker is a full-screen sheet that manages its own dismissal;
+    // this outside-click close is desktop-only (otherwise a tap inside the
+    // portaled sheet would read as "outside" and close it).
+    if (isMobile) return;
     const handler = (e: MouseEvent) => {
       const target = e.target as Node;
       const insideWrap = wrapRef.current?.contains(target);
@@ -228,7 +212,7 @@ function AirportInput({
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
-  }, []);
+  }, [isMobile]);
 
   // Keeps the dropdown anchored to the input as the page scrolls — it's
   // portaled with position:fixed (viewport coordinates), so without this
@@ -282,9 +266,13 @@ function AirportInput({
       </div>
       {value && !focused && <p className="text-[11px] text-ink-faint font-light truncate mt-0.5">{value.fullName}</p>}
 
-      {open && mounted && (
-        <AirportDropdown style={dropStyle} query={query} exclude={exclude} onSelect={handleSelect} dropRef={dropRef} mobile={isMobile} onQueryChange={setQuery} onClose={close} />
-      )}
+      {open && mounted && (isMobile ? (
+        <MobilePickerSheet title={label} query={query} onQueryChange={setQuery} onClose={close} searchPlaceholder={t("flightSearch.typeCityOrCode")}>
+          <AirportResults query={query} exclude={exclude} onSelect={handleSelect} />
+        </MobilePickerSheet>
+      ) : (
+        <AirportDropdown style={dropStyle} query={query} exclude={exclude} onSelect={handleSelect} dropRef={dropRef} />
+      ))}
     </div>
   );
 }
