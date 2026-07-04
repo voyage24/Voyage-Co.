@@ -20,6 +20,12 @@ model SiteSetting {
   value String @db.Text
 }
 
+model PageContent {
+  key       String   @id
+  value     String   @db.Text
+  updatedAt DateTime @updatedAt
+}
+
 model Testimonial {
   id        String   @id @default(cuid())
   quote     String   @db.Text

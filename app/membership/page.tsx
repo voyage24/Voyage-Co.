@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Check } from "lucide-react";
 import MembershipStatus from "@/components/account/MembershipStatus";
 import Reveal from "@/components/ui/Reveal";
+import { getPageContent } from "@/lib/page-content";
 
 export const metadata: Metadata = {
   title: "Membership — Voyages & Co.",
@@ -15,13 +16,14 @@ const TIERS = [
   { name: "Gold", at: "5,000 points", perks: ["Everything in Silver", "Complimentary upgrades when available", "A dedicated travel advisor"] },
 ];
 
-export default function MembershipPage() {
+export default async function MembershipPage() {
+  const c = await getPageContent();
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20">
       <div className="text-center mb-10">
-        <p className="text-[11px] tracking-[0.3em] uppercase text-gold mb-3">Membership</p>
-        <h1 className="font-serif text-3xl sm:text-5xl font-light text-ink mb-4">Travel, rewarded.</h1>
-        <p className="text-ink-muted font-light max-w-xl mx-auto">Earn one point for every ₹1,000 spent on confirmed journeys. As your points grow, so do your privileges.</p>
+        <p className="text-[11px] tracking-[0.3em] uppercase text-gold mb-3">{c("membership.eyebrow")}</p>
+        <h1 className="font-serif text-3xl sm:text-5xl font-light text-ink mb-4">{c("membership.title")}</h1>
+        <p className="text-ink-muted font-light max-w-xl mx-auto">{c("membership.intro")}</p>
       </div>
 
       <div className="mb-12"><MembershipStatus /></div>

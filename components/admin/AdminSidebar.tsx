@@ -6,7 +6,7 @@ import {
   LayoutDashboard, BarChart3, CalendarCheck, Inbox, FileText, Star, Users,
   BedDouble, Plane, TrainFront, Sparkles, Package, Ship, Newspaper, MapPin,
   Quote, Award, Image as ImageIcon, Store, FolderOpen, Mail, Gift, Tag, Bell,
-  Palette, UserCog, Settings, type LucideIcon,
+  Palette, UserCog, Settings, LayoutTemplate, type LucideIcon,
 } from "lucide-react";
 
 // Grouped ("indexed") navigation so the growing admin stays organised.
@@ -48,6 +48,7 @@ export const NAV_SECTIONS: { title: string | null; items: { href: string; label:
     title: "Storefront",
     items: [
       { href: "/admin/storefront", label: "Storefront", icon: Store },
+      { href: "/admin/pages", label: "Pages", icon: LayoutTemplate },
       { href: "/admin/media", label: "Media Library", icon: FolderOpen },
     ],
   },

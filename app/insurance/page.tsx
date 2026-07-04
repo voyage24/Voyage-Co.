@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Check } from "lucide-react";
 import RequestForm from "@/components/tools/RequestForm";
 import Reveal from "@/components/ui/Reveal";
+import { getPageContent } from "@/lib/page-content";
 
 export const metadata: Metadata = {
   title: "Travel Insurance — Voyages & Co.",
@@ -14,13 +15,14 @@ const PLANS = [
   { name: "Elite", tag: "Comprehensive", perks: ["Everything in Signature", "Top-tier medical worldwide", "Cancel-for-any-reason option", "Business equipment cover", "Concierge medical support"] },
 ];
 
-export default function InsurancePage() {
+export default async function InsurancePage() {
+  const c = await getPageContent();
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20">
       <div className="text-center mb-12">
-        <p className="text-[11px] tracking-[0.3em] uppercase text-gold mb-3">Travel Services</p>
-        <h1 className="font-serif text-3xl sm:text-5xl font-light text-ink mb-4">Travel insurance</h1>
-        <p className="text-ink-muted font-light max-w-xl mx-auto">Journey with confidence. We&apos;ll match you to cover that fits your trip — from a weekend away to a months-long expedition.</p>
+        <p className="text-[11px] tracking-[0.3em] uppercase text-gold mb-3">{c("insurance.eyebrow")}</p>
+        <h1 className="font-serif text-3xl sm:text-5xl font-light text-ink mb-4">{c("insurance.title")}</h1>
+        <p className="text-ink-muted font-light max-w-xl mx-auto">{c("insurance.intro")}</p>
       </div>
 
       <Reveal soft className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
@@ -39,7 +41,7 @@ export default function InsurancePage() {
       </Reveal>
 
       <p className="text-xs text-ink-faint font-light leading-relaxed mb-10 text-center max-w-2xl mx-auto">
-        Plans are illustrative; final terms, limits and premiums are confirmed on your quote. Cover is arranged through regulated insurance partners — pre-existing conditions and exclusions may apply.
+        {c("insurance.footnote")}
       </p>
 
       <RequestForm

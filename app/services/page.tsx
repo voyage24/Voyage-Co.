@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Plane, ChefHat, Ship, UtensilsCrossed, Camera, ShieldCheck, Car, Sparkles } from "lucide-react";
 import ServiceRequestForm from "@/components/services/ServiceRequestForm";
 import Reveal from "@/components/ui/Reveal";
+import { getPageContent } from "@/lib/page-content";
 
 export const metadata: Metadata = {
   title: "Concierge Services — Voyages & Co.",
@@ -19,13 +20,14 @@ const SERVICES = [
   { icon: Sparkles, title: "Bespoke Requests", text: "Proposals, surprises, access and the impossible — simply ask." },
 ];
 
-export default function ServicesPage() {
+export default async function ServicesPage() {
+  const c = await getPageContent();
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20">
       <div className="text-center mb-12">
-        <p className="text-[11px] tracking-[0.3em] uppercase text-gold mb-3">Concierge</p>
-        <h1 className="font-serif text-3xl sm:text-5xl font-light text-ink mb-4">Anything, arranged.</h1>
-        <p className="text-ink-muted font-light max-w-xl mx-auto">Beyond the journey itself, our concierge orchestrates every detail — the transfers, the tables, the moments that turn a trip into a story.</p>
+        <p className="text-[11px] tracking-[0.3em] uppercase text-gold mb-3">{c("services.eyebrow")}</p>
+        <h1 className="font-serif text-3xl sm:text-5xl font-light text-ink mb-4">{c("services.title")}</h1>
+        <p className="text-ink-muted font-light max-w-xl mx-auto">{c("services.intro")}</p>
       </div>
 
       <Reveal soft className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-14">
