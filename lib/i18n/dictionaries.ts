@@ -361,6 +361,7 @@ export const EN: Dictionary = {
   "hotelsPage.amenities": "Amenities",
   "hotelsPage.any": "Any",
   "hotelsPage.found": "found",
+  "hotelsPage.loadMore": "Load more",
   "hotelsPage.property": "property",
   "hotelsPage.properties": "properties",
   "hotelsPage.available": "available",

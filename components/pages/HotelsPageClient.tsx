@@ -26,6 +26,9 @@ export default function HotelsPageClient({ hotels }: { hotels: Hotel[] }) {
   const [activeRegion, setActiveRegion] = useState("All");
   const [activeCategory, setActiveCategory] = useState("All");
   const [searchTerm, setSearchTerm] = useState("");
+  // Paginate the list so phones never render the whole catalogue at once.
+  const PAGE = 15;
+  const [visible, setVisible] = useState(PAGE);
 
   const toggleAmenity = (a: string) =>
     setAmenities(prev => prev.includes(a) ? prev.filter(x => x !== a) : [...prev, a]);
@@ -41,6 +44,11 @@ export default function HotelsPageClient({ hotels }: { hotels: Hotel[] }) {
       if (found) setActiveRegion(found);
     }
   }, []);
+
+  // Any filter change resets the list back to the first page.
+  useEffect(() => {
+    setVisible(PAGE);
+  }, [searchTerm, activeRegion, activeCategory, minStars, amenities, maxPrice, sortBy]);
 
   const filtered = useMemo(() => hotels
     .filter(h => {
@@ -207,9 +215,21 @@ export default function HotelsPageClient({ hotels }: { hotels: Hotel[] }) {
 
           <div>
             {filtered.length > 0 ? (
-              <Reveal soft className="space-y-5">
-                {filtered.map((hotel, i) => <HotelCard key={hotel.id} hotel={hotel} priority={i === 0} />)}
-              </Reveal>
+              <>
+                <Reveal soft className="space-y-5">
+                  {filtered.slice(0, visible).map((hotel, i) => <HotelCard key={hotel.id} hotel={hotel} priority={i === 0} />)}
+                </Reveal>
+                {filtered.length > visible && (
+                  <div className="flex justify-center mt-8">
+                    <button
+                      onClick={() => setVisible(v => v + PAGE)}
+                      className="px-8 py-3 border border-line-strong text-ink hover:bg-ink hover:text-page text-xs font-medium tracking-[0.14em] uppercase rounded-sm transition-all duration-300"
+                    >
+                      {t("hotelsPage.loadMore")} · {filtered.length - visible}
+                    </button>
+                  </div>
+                )}
+              </>
             ) : (
               <div className="text-center py-20">
                 <p className="font-serif text-2xl font-light text-ink mb-2">{t("hotelsPage.noMatch")}</p>
