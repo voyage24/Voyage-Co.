@@ -2,9 +2,11 @@
 
 import { ArrowRight, CheckCircle } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { useContent } from "@/components/providers/ContentProvider";
 
 export default function PartnersPage() {
   const { t } = useLanguage();
+  const c = useContent();
 
   const PARTNER_TYPES = [
     {
@@ -30,10 +32,10 @@ export default function PartnersPage() {
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-16">
       <div className="text-center mb-14">
-        <p className="text-[10px] tracking-[0.3em] uppercase text-gold mb-4">{t("partners.eyebrow")}</p>
-        <h1 className="font-serif text-3xl sm:text-5xl font-light text-ink mb-4">{t("partners.title")}</h1>
+        <p className="text-[10px] tracking-[0.3em] uppercase text-gold mb-4">{c("partners.eyebrow") || t("partners.eyebrow")}</p>
+        <h1 className="font-serif text-3xl sm:text-5xl font-light text-ink mb-4">{c("partners.title") || t("partners.title")}</h1>
         <p className="text-lg text-ink-muted max-w-xl mx-auto font-light leading-relaxed">
-          {t("partners.intro")}
+          {c("partners.intro") || t("partners.intro")}
         </p>
       </div>
 

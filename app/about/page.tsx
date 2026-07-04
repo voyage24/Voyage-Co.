@@ -3,9 +3,11 @@
 import Link from "next/link";
 import { Target, Globe, Award } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { useContent } from "@/components/providers/ContentProvider";
 
 export default function AboutPage() {
   const { t } = useLanguage();
+  const c = useContent();
   const VALUES = [
     { icon: Target, title: t("about.value1Title"), desc: t("about.value1Desc") },
     { icon: Globe, title: t("about.value2Title"), desc: t("about.value2Desc") },
@@ -16,10 +18,10 @@ export default function AboutPage() {
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-16">
       {/* Hero */}
       <div className="text-center mb-16">
-        <p className="text-[11px] tracking-[0.3em] uppercase text-gold mb-4">{t("about.eyebrow")}</p>
-        <h1 className="font-serif text-3xl sm:text-5xl font-light text-ink mb-5">{t("about.title")}</h1>
+        <p className="text-[11px] tracking-[0.3em] uppercase text-gold mb-4">{c("about.eyebrow") || t("about.eyebrow")}</p>
+        <h1 className="font-serif text-3xl sm:text-5xl font-light text-ink mb-5">{c("about.title") || t("about.title")}</h1>
         <p className="text-lg text-ink-muted max-w-2xl mx-auto leading-relaxed font-light">
-          {t("about.intro")}
+          {c("about.intro") || t("about.intro")}
         </p>
       </div>
 

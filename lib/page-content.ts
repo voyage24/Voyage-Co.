@@ -72,6 +72,54 @@ export const PAGE_REGISTRY: ContentPage[] = [
     ],
   },
   {
+    page: "about", label: "About", path: "/about",
+    fields: [
+      { key: "about.eyebrow", label: "Eyebrow" },
+      { key: "about.title", label: "Title" },
+      { key: "about.intro", label: "Intro", type: "textarea" },
+    ],
+  },
+  {
+    page: "plan", label: "Plan Your Journey", path: "/plan",
+    fields: [
+      { key: "plan.eyebrow", label: "Eyebrow" },
+      { key: "plan.title", label: "Title" },
+      { key: "plan.subtitle", label: "Intro", type: "textarea" },
+    ],
+  },
+  {
+    page: "explore", label: "Explore", path: "/explore",
+    fields: [
+      { key: "explore.eyebrow", label: "Eyebrow" },
+      { key: "explore.title", label: "Title" },
+      { key: "explore.subtitle", label: "Intro", type: "textarea" },
+    ],
+  },
+  {
+    page: "careers", label: "Careers", path: "/careers",
+    fields: [
+      { key: "careers.eyebrow", label: "Eyebrow" },
+      { key: "careers.title", label: "Title" },
+      { key: "careers.intro", label: "Intro", type: "textarea" },
+    ],
+  },
+  {
+    page: "partners", label: "Partners", path: "/partners",
+    fields: [
+      { key: "partners.eyebrow", label: "Eyebrow" },
+      { key: "partners.title", label: "Title" },
+      { key: "partners.intro", label: "Intro", type: "textarea" },
+    ],
+  },
+  {
+    page: "press", label: "Press", path: "/press",
+    fields: [
+      { key: "press.eyebrow", label: "Eyebrow" },
+      { key: "press.title", label: "Title" },
+      { key: "press.intro", label: "Intro", type: "textarea" },
+    ],
+  },
+  {
     page: "nav", label: "Navigation menu", path: "/",
     fields: [
       { key: "nav.destinations", label: "Destinations link" },
@@ -133,6 +181,30 @@ export const PAGE_DEFAULTS: Record<string, string> = {
   "callback.eyebrow": "Speak to an advisor",
   "callback.title": "Request a callback",
   "callback.intro": "Tell us when suits you and one of our travel advisors will call to help plan your journey — no obligation.",
+
+  "about.eyebrow": "Our Ethos",
+  "about.title": "The Voyages & Co. Maison",
+  "about.intro": "A private travel atelier, devoted to crafting journeys of rare beauty for those who expect the extraordinary — and accept nothing less.",
+
+  "plan.eyebrow": "Bespoke Travel",
+  "plan.title": "Plan Your Journey",
+  "plan.subtitle": "Tell us a little about the trip you have in mind, and a travel designer will craft a tailored proposal.",
+
+  "explore.eyebrow": "Explore the World",
+  "explore.title": "Explore by Map",
+  "explore.subtitle": "Wander the globe and tap a destination to discover the stays that await.",
+
+  "careers.eyebrow": "Careers",
+  "careers.title": "Join the Maison",
+  "careers.intro": "We are always glad to hear from exceptional people who share our devotion to the art of travel.",
+
+  "partners.eyebrow": "Partnerships",
+  "partners.title": "Partner with Voyages & Co.",
+  "partners.intro": "We collaborate with the world's finest properties and curators to create journeys our members will never forget.",
+
+  "press.eyebrow": "Press",
+  "press.title": "Press & Media",
+  "press.intro": "For interviews, press materials or partnership stories, our communications team would be glad to assist.",
 
   "nav.destinations": "Destinations",
   "nav.stays": "Stays",

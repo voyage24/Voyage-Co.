@@ -1,9 +1,11 @@
 "use client";
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { useContent } from "@/components/providers/ContentProvider";
 
 export default function CareersPage() {
   const { t } = useLanguage();
+  const c = useContent();
 
   const OPEN_ROLES = [
     { title: t("careers.role1"), department: t("careers.deptJourneyDesign"), location: "Mumbai, India", type: t("careers.typeFullTime") },
@@ -26,10 +28,10 @@ export default function CareersPage() {
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-24">
       {/* Hero */}
       <div className="text-center mb-16">
-        <p className="text-[11px] tracking-[0.3em] uppercase text-gold mb-4">{t("careers.eyebrow")}</p>
-        <h1 className="font-serif text-3xl sm:text-5xl font-light text-ink mb-5">{t("careers.title")}</h1>
+        <p className="text-[11px] tracking-[0.3em] uppercase text-gold mb-4">{c("careers.eyebrow") || t("careers.eyebrow")}</p>
+        <h1 className="font-serif text-3xl sm:text-5xl font-light text-ink mb-5">{c("careers.title") || t("careers.title")}</h1>
         <p className="text-lg text-ink-muted max-w-xl mx-auto font-light leading-relaxed">
-          {t("careers.intro")}
+          {c("careers.intro") || t("careers.intro")}
         </p>
       </div>
 
