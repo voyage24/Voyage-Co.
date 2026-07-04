@@ -162,7 +162,7 @@ export default function HeroSection({
         ) : activeTab === "experiences" ? (
           <ExperienceMapBackground experiences={experiences} />
         ) : (
-          <DestinationMap from={from} to={to} onSelectDestination={setTo} />
+          <DestinationMap from={from} to={to} onSelectDestination={setTo} bottomInset={isMobile ? 0 : 0.42} />
         )}
 
       </div>

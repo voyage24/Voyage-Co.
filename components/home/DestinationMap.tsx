@@ -42,11 +42,15 @@ const IMAGERY_ATTR = 'Imagery &copy; <a href="https://www.esri.com">Esri</a>, Ma
  * Uses key-less Esri satellite imagery + a place-name reference overlay.
  */
 export default function DestinationMap({
-  from, to, onSelectDestination,
+  from, to, onSelectDestination, bottomInset = 0,
 }: {
   from: City | null;
   to: City | null;
   onSelectDestination?: (city: City) => void;
+  // Fraction (0-1) of the map's height that's visually covered at the bottom
+  // (e.g. by the hero search widget). The route is framed into the remaining
+  // visible area so both endpoints stay clear of that overlay.
+  bottomInset?: number;
 }) {
   const isMobile = useIsMobile();
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -168,6 +172,12 @@ export default function DestinationMap({
     if (fromC) pin(fromC, "#e9dcb4", "#b89b52").bindTooltip(from!.name, { permanent: false, direction: "top" });
     if (toC) pin(toC, "#ffffff", "#b89b52").bindTooltip(to!.name, { permanent: false, direction: "top" });
 
+    // Reserve the overlay-covered bottom strip (search widget) so endpoints are
+    // framed into the visible area, not hidden behind it.
+    const padB = Math.round(map.getSize().y * bottomInset);
+    const padTL: [number, number] = [40, 40];
+    const padBR: [number, number] = [40, 40 + padB];
+
     if (fromC && toC) {
       Lm.polyline([fromC, toC], {
         color: "#d8c48f",
@@ -175,16 +185,14 @@ export default function DestinationMap({
         opacity: 0.9,
         dashArray: "6 8",
       }).addTo(layer);
-      // Frame both endpoints with breathing room.
-      map.flyToBounds(Lm.latLngBounds([fromC, toC]).pad(0.4), { duration: 1.1, maxZoom: 7 });
-    } else if (toC) {
-      map.flyTo(toC, isMobile ? 5 : 6, { duration: 1.2 });
-    } else if (fromC) {
-      map.flyTo(fromC, isMobile ? 5 : 6, { duration: 1.2 });
+      map.flyToBounds(Lm.latLngBounds([fromC, toC]), { duration: 1.1, maxZoom: 7, paddingTopLeft: padTL, paddingBottomRight: padBR });
+    } else if (toC || fromC) {
+      const pt = (toC ?? fromC)!;
+      map.flyToBounds(Lm.latLngBounds([pt, pt]), { duration: 1.2, maxZoom: isMobile ? 5 : 6, paddingTopLeft: padTL, paddingBottomRight: padBR });
     } else {
       map.flyTo([22, 12], worldZoom, { duration: 1.0 });
     }
-  }, [from, to, isMobile, worldZoom, ready]);
+  }, [from, to, isMobile, worldZoom, ready, bottomInset]);
 
   return (
     <div className="absolute inset-0 h-full w-full">
