@@ -120,10 +120,10 @@ export default function LiveMap({
         attributionControl: true,
       });
       mapRef.current = map;
-      // The right edge, vertically centred (via CSS on .leaflet-top.leaflet-
-      // right), is the only zone no hero element covers — the navbar owns the
-      // top, the headline the centre-left, the full-width search widget the
-      // bottom band. Corner positions get hidden behind those.
+      // Top-right — clear now that the navbar is a band above the map (it no
+      // longer overlaps it). Previously the bottom/centre corners were hidden
+      // behind the full-width search widget, which left the lower "−" button
+      // unclickable on desktop.
       map.zoomControl?.setPosition("topright");
       // "Click to zoom": scroll/trackpad zoom activates once the map is clicked
       // (so plain scrolling over the hero never zooms by accident) and switches
@@ -211,7 +211,7 @@ export default function LiveMap({
           whenever zoom is inactive so it never gets lost. */}
       <div
         aria-hidden
-        className="glass-pill glass-pill-pulse pointer-events-none absolute top-1/2 -translate-y-1/2 right-14 z-[1000] flex items-center gap-1.5 text-[11px] tracking-wide px-3 py-1.5 transition-opacity duration-300"
+        className="glass-pill glass-pill-pulse pointer-events-none absolute top-3 right-14 z-[1000] flex items-center gap-1.5 text-[11px] tracking-wide px-3 py-1.5 transition-opacity duration-300"
         style={{ opacity: zoomActive ? 0 : 1 }}
       >
         <MousePointerClick size={13} /> Click to zoom
