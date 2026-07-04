@@ -5,11 +5,13 @@ import { Lock } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { getCurrentCustomer } from "@/lib/customer/session";
 import Reveal from "@/components/ui/Reveal";
+import { getPageContent } from "@/lib/page-content";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Offers — Voyages & Co.", description: "Exclusive offers and member-only rates on luxury journeys." };
 
 export default async function OffersPage() {
+  const c = await getPageContent();
   const customer = await getCurrentCustomer();
   const offers = await prisma.offer.findMany({
     where: { published: true, ...(customer ? {} : { memberOnly: false }) },
@@ -20,9 +22,9 @@ export default async function OffersPage() {
   return (
     <div className="max-w-[1500px] mx-auto px-6 lg:px-12 pt-28 pb-20">
       <div className="text-center mb-12">
-        <p className="text-[11px] tracking-[0.3em] uppercase text-gold mb-3">Exclusive</p>
-        <h1 className="font-serif text-3xl sm:text-5xl font-light text-ink mb-3">Offers</h1>
-        <p className="text-ink-muted font-light max-w-xl mx-auto">Curated offers and member-only rates on extraordinary journeys.</p>
+        <p className="text-[11px] tracking-[0.3em] uppercase text-gold mb-3">{c("offers.eyebrow")}</p>
+        <h1 className="font-serif text-3xl sm:text-5xl font-light text-ink mb-3">{c("offers.title")}</h1>
+        <p className="text-ink-muted font-light max-w-xl mx-auto">{c("offers.intro")}</p>
       </div>
 
       {offers.length === 0 ? (

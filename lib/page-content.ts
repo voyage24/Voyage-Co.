@@ -45,6 +45,32 @@ export const PAGE_REGISTRY: ContentPage[] = [
       { key: "membership.intro", label: "Intro", type: "textarea" },
     ],
   },
+  {
+    page: "faq", label: "FAQ", path: "/faq",
+    fields: [
+      { key: "faq.eyebrow", label: "Eyebrow" },
+      { key: "faq.title", label: "Title" },
+      { key: "faq.intro", label: "Intro (before the contact link)", type: "textarea" },
+      { key: "faq.ctaTitle", label: "Bottom card — title" },
+      { key: "faq.ctaText", label: "Bottom card — text" },
+    ],
+  },
+  {
+    page: "offers", label: "Offers", path: "/offers",
+    fields: [
+      { key: "offers.eyebrow", label: "Eyebrow" },
+      { key: "offers.title", label: "Title" },
+      { key: "offers.intro", label: "Intro", type: "textarea" },
+    ],
+  },
+  {
+    page: "callback", label: "Request a Callback", path: "/callback",
+    fields: [
+      { key: "callback.eyebrow", label: "Eyebrow" },
+      { key: "callback.title", label: "Title" },
+      { key: "callback.intro", label: "Intro", type: "textarea" },
+    ],
+  },
 ];
 
 export const PAGE_DEFAULTS: Record<string, string> = {
@@ -65,6 +91,20 @@ export const PAGE_DEFAULTS: Record<string, string> = {
   "membership.eyebrow": "Membership",
   "membership.title": "Travel, rewarded.",
   "membership.intro": "Earn one point for every ₹1,000 spent on confirmed journeys. As your points grow, so do your privileges.",
+
+  "faq.eyebrow": "Help",
+  "faq.title": "Frequently asked questions",
+  "faq.intro": "Everything you need to know about planning, booking and travelling with us. Can't find your answer?",
+  "faq.ctaTitle": "Still have a question?",
+  "faq.ctaText": "Our advisors are always happy to help.",
+
+  "offers.eyebrow": "Exclusive",
+  "offers.title": "Offers",
+  "offers.intro": "Curated offers and member-only rates on extraordinary journeys.",
+
+  "callback.eyebrow": "Speak to an advisor",
+  "callback.title": "Request a callback",
+  "callback.intro": "Tell us when suits you and one of our travel advisors will call to help plan your journey — no obligation.",
 };
 
 export const PAGE_CONTENT_KEYS = new Set(Object.keys(PAGE_DEFAULTS));
