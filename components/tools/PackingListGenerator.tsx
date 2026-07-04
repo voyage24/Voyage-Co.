@@ -38,7 +38,7 @@ function buildList(nights: number, climate: Climate, acts: string[], intl: boole
       { label: "Photo ID" },
       ...(intl ? [{ label: "Passport (valid 6+ months)" }, { label: "Visa / entry permit" }] : []),
       { label: "Travel insurance papers" }, { label: "Booking confirmations & vouchers" },
-      { label: "Debit / credit cards" }, { label: "Some local currency" },
+      { label: "Debit / credit cards", qty: 2 }, { label: "Some local currency" },
     ] },
     { title: "Clothing", items: [
       { label: `Tops / t-shirts${laundry}`, qty: tops },
@@ -71,21 +71,23 @@ function buildList(nights: number, climate: Climate, acts: string[], intl: boole
     ] },
     { title: "Tech", items: [
       { label: "Phone & charger" },
-      ...(intl ? [{ label: "Universal travel adapter" }] : []),
-      { label: "Power bank" }, { label: "Earphones" },
-      ...(longTrip ? [{ label: "Multi-port charger / spare cables" }] : []),
+      ...(intl ? [{ label: "Universal travel adapter", qty: 2 }] : []),
+      { label: "Power bank", qty: 1 }, { label: "Charging cables", qty: 2 }, { label: "Earphones" },
+      ...(longTrip ? [{ label: "Multi-port charger / travel plug" }] : []),
       { label: "E-reader / camera (optional)" },
     ] },
   ];
 
-  const extra: string[] = [];
-  if (acts.includes("Beach & pool")) extra.push("Swimwear", "Flip-flops", "Quick-dry towel");
-  if (acts.includes("Adventure & hiking")) extra.push("Hiking boots", "Daypack", "Reusable water bottle", "Rain shell");
-  if (acts.includes("Business")) extra.push("Formal outfit / suit", "Laptop & charger", "Business cards");
-  if (acts.includes("Fine dining")) extra.push("Smart-casual evening outfit", "Dress shoes");
-  if (acts.includes("Wildlife / safari")) extra.push("Neutral-colour clothing", "Binoculars", "Wide-brim hat");
-  if (climate === "tropical" || acts.includes("City & sightseeing")) extra.push("Compact umbrella");
-  if (extra.length) cats.push({ title: "For your activities", items: Array.from(new Set(extra)).map(label => ({ label })) });
+  const extra: Item[] = [];
+  const beachSwim = Math.min(Math.max(2, Math.ceil(n / 3)), 6);
+  if (acts.includes("Beach & pool")) extra.push({ label: "Swimwear", qty: beachSwim }, { label: "Flip-flops" }, { label: "Quick-dry towel", qty: 1 });
+  if (acts.includes("Adventure & hiking")) extra.push({ label: "Hiking boots" }, { label: "Daypack" }, { label: "Reusable water bottle", qty: 1 }, { label: "Rain shell" });
+  if (acts.includes("Business")) extra.push({ label: "Formal outfit / suit", qty: Math.min(Math.max(1, Math.ceil(n / 3)), 5) }, { label: "Laptop & charger" }, { label: "Business cards" });
+  if (acts.includes("Fine dining")) extra.push({ label: "Smart-casual evening outfit", qty: Math.min(Math.max(1, Math.ceil(n / 4)), 4) }, { label: "Dress shoes" });
+  if (acts.includes("Wildlife / safari")) extra.push({ label: "Neutral-colour clothing" }, { label: "Binoculars" }, { label: "Wide-brim hat" });
+  if (climate === "tropical" || acts.includes("City & sightseeing")) extra.push({ label: "Compact umbrella" });
+  const uniqueExtra = extra.filter((it, i) => extra.findIndex(x => x.label === it.label) === i);
+  if (uniqueExtra.length) cats.push({ title: "For your activities", items: uniqueExtra });
 
   return cats;
 }
