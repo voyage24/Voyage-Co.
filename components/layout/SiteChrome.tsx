@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import PageTransition from "@/components/layout/PageTransition";
 import WhatsAppFAB from "@/components/ui/WhatsAppFAB";
 import ScrollButtons from "@/components/ui/ScrollButtons";
 import ConciergeChat from "@/components/concierge/ConciergeChat";
@@ -27,7 +28,7 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
       {/* The navbar is a fixed solid band. Content pages set their own top
           padding; the homepage hero used to sit *under* a transparent navbar,
           so it now needs the same offset to start below the band. */}
-      <main id="main" className={isHome ? "pt-20" : undefined}>{children}</main>
+      <main id="main" className={isHome ? "pt-20" : undefined}><PageTransition>{children}</PageTransition></main>
       <div className="print:hidden pb-14 sm:pb-0"><Footer /></div>
       <div className="print:hidden">
         <WhatsAppFAB />

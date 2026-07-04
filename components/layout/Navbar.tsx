@@ -153,9 +153,9 @@ export default function Navbar() {
               href={l.href}
               onClick={() => setMobileOpen(false)}
               style={{ animationDelay: `${i * 50}ms`, animationFillMode: "both" }}
-              className="block text-base font-normal tracking-[0.1em] uppercase text-ink-muted hover:text-ink transition-all duration-200 py-1.5 origin-left hover:scale-105 active:scale-95 animate-slide-down"
+              className="block text-base font-normal tracking-[0.1em] uppercase text-ink-muted hover:text-ink transition-colors duration-200 py-1.5 animate-slide-down"
             >
-              {l.label ?? t(l.key ?? "")}
+              <span className="nav-underline">{l.label ?? t(l.key ?? "")}</span>
             </Link>
           ))}
           <div className="py-1.5 flex items-center gap-5 animate-slide-down" style={{ animationDelay: `${MOBILE_LINKS.length * 50}ms`, animationFillMode: "both" }}>

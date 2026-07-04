@@ -228,7 +228,7 @@ export default function HeroSection({
           drives the map above via onFlightRouteChange; switching tabs drives
           which background is shown. */}
       <div
-        className="relative w-full max-w-[1500px] mx-auto px-6 lg:px-12 pb-0"
+        className="hero-search-in relative w-full max-w-[1500px] mx-auto px-6 lg:px-12 pb-0"
         onMouseEnter={() => { setMapHoverRaw(false); setMapHover(false); }}
         onMouseMove={() => { setMapHoverRaw(false); setMapHover(false); }}
       >
