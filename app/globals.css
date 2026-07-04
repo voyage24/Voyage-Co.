@@ -293,6 +293,9 @@ textarea:focus-visible {
 .vc-live-map .vc-tiles-base { filter: saturate(1.06) contrast(1.03) brightness(1.0); }
 html.dark .vc-live-map .vc-tiles-base { filter: brightness(0.6) saturate(0.98) contrast(1.05); }
 html.dark .vc-live-map .vc-tiles-ref { filter: brightness(1.2) contrast(1.05); }
+/* Zoom control lives on the right edge, vertically centred — the one hero zone
+   no other element covers (see the map components' setPosition comment). */
+.vc-live-map .leaflet-top.leaflet-right { top: 50%; bottom: auto; transform: translateY(-50%); }
 /* Zoom control — small, borderless, theme-aware pills. */
 .vc-live-map .leaflet-bar { border: none; box-shadow: 0 6px 18px -8px rgba(0,0,0,0.4); }
 .vc-live-map .leaflet-bar a {

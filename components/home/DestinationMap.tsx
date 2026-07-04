@@ -97,10 +97,10 @@ export default function DestinationMap({
         fadeAnimation: true,
       });
       mapRef.current = map;
-      // Bottom-right is the corner reliably clear of hero content (headline
-      // sits left, the full-width search widget spans the bottom band above it,
-      // the navbar owns the top).
-      map.zoomControl?.setPosition("bottomright");
+      // The right edge, vertically centred (via CSS on .leaflet-top.leaflet-
+      // right), is the only zone no hero element covers — navbar owns the top,
+      // headline the centre-left, the full-width search widget the bottom band.
+      map.zoomControl?.setPosition("topright");
       // Wheel/trackpad zoom only after the map is clicked, and off once the
       // pointer leaves — so scrolling the page over the hero never zooms it.
       map.on("click", () => { map!.scrollWheelZoom.enable(); dismissRef.current(); });
@@ -196,7 +196,7 @@ export default function DestinationMap({
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute bottom-2.5 right-14 z-[1000] flex items-center gap-1.5 bg-black/55 text-white/90 text-[10px] tracking-wide px-2.5 py-1.5 backdrop-blur-sm transition-opacity duration-700"
+        className="pointer-events-none absolute top-1/2 -translate-y-1/2 right-14 z-[1000] flex items-center gap-1.5 bg-black/55 text-white/90 text-[10px] tracking-wide px-2.5 py-1.5 backdrop-blur-sm transition-opacity duration-700"
         style={{ opacity: showHint ? 1 : 0 }}
       >
         <MousePointerClick size={12} /> Click to zoom
