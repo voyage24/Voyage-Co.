@@ -3,9 +3,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type * as L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import { MousePointerClick } from "lucide-react";
 import { useIsMobile } from "@/lib/useIsMobile";
 import { getCoords } from "@/lib/geo";
 import { CITIES } from "@/lib/mock-data";
+import { useZoomHint } from "@/lib/useZoomHint";
 import type { City } from "@/lib/types";
 
 // Airports plotted as clickable points — lets the map double as a quick
@@ -56,6 +58,9 @@ export default function DestinationMap({
   const onSelectRef = useRef(onSelectDestination);
   onSelectRef.current = onSelectDestination;
   const [ready, setReady] = useState(false);
+  const { show: showHint, dismiss: dismissHint } = useZoomHint();
+  const dismissRef = useRef(dismissHint);
+  dismissRef.current = dismissHint;
 
   const worldZoom = isMobile ? 1 : 2;
 
@@ -98,7 +103,7 @@ export default function DestinationMap({
       map.zoomControl?.setPosition("bottomright");
       // Wheel/trackpad zoom only after the map is clicked, and off once the
       // pointer leaves — so scrolling the page over the hero never zooms it.
-      map.on("click", () => map!.scrollWheelZoom.enable());
+      map.on("click", () => { map!.scrollWheelZoom.enable(); dismissRef.current(); });
       map.getContainer().addEventListener("mouseleave", () => map!.scrollWheelZoom.disable());
 
       // Base imagery + translucent place-name/boundary overlay (kept on top
@@ -183,10 +188,19 @@ export default function DestinationMap({
   }, [from, to, isMobile, worldZoom, ready]);
 
   return (
-    <div
-      ref={containerRef}
-      className="absolute inset-0 h-full w-full vc-live-map"
-      style={{ background: "radial-gradient(140% 115% at 50% 55%, #1c3a4a 0%, #122a37 55%, #0b1a24 100%)" }}
-    />
+    <div className="absolute inset-0 h-full w-full">
+      <div
+        ref={containerRef}
+        className="absolute inset-0 h-full w-full vc-live-map"
+        style={{ background: "radial-gradient(140% 115% at 50% 55%, #1c3a4a 0%, #122a37 55%, #0b1a24 100%)" }}
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute bottom-2.5 right-14 z-[1000] flex items-center gap-1.5 bg-black/55 text-white/90 text-[10px] tracking-wide px-2.5 py-1.5 backdrop-blur-sm transition-opacity duration-700"
+        style={{ opacity: showHint ? 1 : 0 }}
+      >
+        <MousePointerClick size={12} /> Click to zoom
+      </div>
+    </div>
   );
 }

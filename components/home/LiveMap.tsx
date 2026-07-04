@@ -3,7 +3,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type * as L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import { MousePointerClick } from "lucide-react";
 import { useIsMobile } from "@/lib/useIsMobile";
+import { useZoomHint } from "@/lib/useZoomHint";
 
 // Shared, key-less Esri basemap — real satellite/terrain earth imagery
 // (natural greens, blues and mountains) with a translucent place-name &
@@ -85,6 +87,9 @@ export default function LiveMap({
   const markerLayerRef = useRef<L.LayerGroup | null>(null);
   const routeLayerRef = useRef<L.LayerGroup | null>(null);
   const [ready, setReady] = useState(false);
+  const { show: showHint, dismiss: dismissHint } = useZoomHint();
+  const dismissRef = useRef(dismissHint);
+  dismissRef.current = dismissHint;
 
   // Signature of everything drawable so the redraw effect only fires on a real
   // change (marker arrays are recreated every render).
@@ -124,7 +129,7 @@ export default function LiveMap({
       // Wheel/trackpad zoom only after the map is clicked, and off again once
       // the pointer leaves — so scrolling the page over the hero never zooms
       // the map by accident.
-      map.on("click", () => map!.scrollWheelZoom.enable());
+      map.on("click", () => { map!.scrollWheelZoom.enable(); dismissRef.current(); });
       map.getContainer().addEventListener("mouseleave", () => map!.scrollWheelZoom.disable());
       // Base imagery, then the label/boundary overlay above it (kept above via
       // zIndex so it survives any later layer changes), then routes + markers.
@@ -197,10 +202,19 @@ export default function LiveMap({
   }, [sig, ready, isMobile]);
 
   return (
-    <div
-      ref={containerRef}
-      className={`absolute inset-0 h-full w-full vc-live-map ${className}`}
-      style={{ background: "radial-gradient(140% 115% at 50% 55%, #1c3a4a 0%, #122a37 55%, #0b1a24 100%)" }}
-    />
+    <div className={`absolute inset-0 h-full w-full ${className}`}>
+      <div
+        ref={containerRef}
+        className="absolute inset-0 h-full w-full vc-live-map"
+        style={{ background: "radial-gradient(140% 115% at 50% 55%, #1c3a4a 0%, #122a37 55%, #0b1a24 100%)" }}
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute bottom-2.5 right-14 z-[1000] flex items-center gap-1.5 bg-black/55 text-white/90 text-[10px] tracking-wide px-2.5 py-1.5 backdrop-blur-sm transition-opacity duration-700"
+        style={{ opacity: showHint ? 1 : 0 }}
+      >
+        <MousePointerClick size={12} /> Click to zoom
+      </div>
+    </div>
   );
 }
