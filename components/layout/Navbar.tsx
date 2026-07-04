@@ -11,18 +11,19 @@ import AccountMenu from "@/components/layout/AccountMenu";
 import ThemeToggle from "@/components/ui/ThemeToggle";
 import NavConverter from "@/components/layout/NavConverter";
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { useContent } from "@/components/providers/ContentProvider";
 
-type NavLink = { key?: string; label?: string; href: string };
+type NavLink = { key?: string; label?: string; href: string; cKey?: string };
 
 // Consolidated primary nav — the links that always sit in the bar.
 const PRIMARY_LINKS: NavLink[] = [
-  { key: "common.destinations", href: "/packages" },
-  { key: "common.stays",        href: "/hotels" },
-  { key: "common.cruises",      href: "/cruises" },
-  { key: "common.flights",      href: "/flights" },
-  { key: "common.experiences",  href: "/experiences" },
-  { key: "common.journal",      href: "/blog" },
-  { label: "Trip Tools",        href: "/tools" },
+  { key: "common.destinations", cKey: "nav.destinations", href: "/packages" },
+  { key: "common.stays",        cKey: "nav.stays",        href: "/hotels" },
+  { key: "common.cruises",      cKey: "nav.cruises",      href: "/cruises" },
+  { key: "common.flights",      cKey: "nav.flights",      href: "/flights" },
+  { key: "common.experiences",  cKey: "nav.experiences",  href: "/experiences" },
+  { key: "common.journal",      cKey: "nav.journal",      href: "/blog" },
+  { label: "Trip Tools", cKey: "nav.tripTools",           href: "/tools" },
 ];
 
 // Secondary links — reached via the Account icon / mobile menu, plus the
@@ -39,6 +40,7 @@ const MOBILE_LINKS = [...PRIMARY_LINKS, ...SECONDARY_LINKS];
 
 export default function Navbar() {
   const { t } = useLanguage();
+  const c = useContent();
   const [mobileOpen, setMobileOpen] = useState(false);
   const linksRef = useRef<HTMLDivElement>(null);
   const [linksOverflow, setLinksOverflow] = useState(false);
@@ -101,7 +103,7 @@ export default function Navbar() {
             >
               <div className="flex items-center gap-x-5 w-max pr-2">
                 {PRIMARY_LINKS.map(l => (
-                  <Link key={l.href} href={l.href} className={`${linkBase} ${linkColor}`}>{l.label ?? t(l.key ?? "")}</Link>
+                  <Link key={l.href} href={l.href} className={`${linkBase} ${linkColor}`}>{c(l.cKey ?? "") || l.label || t(l.key ?? "")}</Link>
                 ))}
               </div>
             </div>
@@ -127,7 +129,7 @@ export default function Navbar() {
                 overHero ? "border-white/70 text-white hover:bg-white hover:text-ink" : "bg-ink border-ink text-page hover:bg-ink/90"
               }`}
             >
-              {t("plan.title")}
+              {c("nav.planCta") || t("plan.title")}
             </Link>
           </div>
 
@@ -155,7 +157,7 @@ export default function Navbar() {
               style={{ animationDelay: `${i * 50}ms`, animationFillMode: "both" }}
               className="block text-base font-normal tracking-[0.1em] uppercase text-ink-muted hover:text-ink transition-colors duration-200 py-1.5 animate-slide-down"
             >
-              <span className="nav-underline">{l.label ?? t(l.key ?? "")}</span>
+              <span className="nav-underline">{c(l.cKey ?? "") || l.label || t(l.key ?? "")}</span>
             </Link>
           ))}
           <div className="py-1.5 flex items-center gap-5 animate-slide-down" style={{ animationDelay: `${MOBILE_LINKS.length * 50}ms`, animationFillMode: "both" }}>
@@ -168,7 +170,7 @@ export default function Navbar() {
             style={{ animationDelay: `${(MOBILE_LINKS.length + 1) * 50}ms`, animationFillMode: "both" }}
             className="block mt-4 text-center text-sm font-medium tracking-[0.16em] uppercase bg-ink text-page py-3.5 rounded-sm transition-transform duration-200 hover:scale-105 active:scale-95 animate-slide-down"
           >
-            {t("plan.title")}
+            {c("nav.planCta") || t("plan.title")}
           </Link>
         </div>
       )}

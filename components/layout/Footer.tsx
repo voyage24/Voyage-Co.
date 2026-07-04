@@ -6,8 +6,16 @@ import { MessageCircle } from "lucide-react";
 import Logo from "@/components/ui/Logo";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useSetting, useSettings } from "@/components/providers/SettingsProvider";
+import { useContent } from "@/components/providers/ContentProvider";
 
 type FooterLink = { href: string; key?: string; label?: string };
+
+// Column heading translation-key → admin content-override key.
+const COL_CONTENT: Record<string, string> = {
+  "footer.discover": "footer.colDiscover",
+  "footer.maison": "footer.colMaison",
+  "footer.care": "footer.colCare",
+};
 
 const FOOTER_LINKS: Record<string, FooterLink[]> = {
   "footer.discover": [
@@ -55,6 +63,7 @@ const SOCIAL = [
 
 export default function Footer() {
   const { t, language } = useLanguage();
+  const c = useContent();
   const phone = useSetting("contact.phone") || "+91 99199 10213";
   const whatsapp = useSetting("contact.whatsapp") || "919919910213";
   const settings = useSettings();
@@ -83,9 +92,9 @@ export default function Footer() {
     <footer className="bg-page border-t border-line">
       {/* Newsletter */}
       <div className="max-w-3xl mx-auto px-6 py-24 text-center border-b border-line">
-        <p className="text-[11px] tracking-[0.32em] uppercase text-gold mb-6">{t("footer.stayInTouch")}</p>
+        <p className="text-[11px] tracking-[0.32em] uppercase text-gold mb-6">{c("footer.stayInTouch") || t("footer.stayInTouch")}</p>
         <h2 className="font-serif font-light text-ink text-3xl sm:text-4xl mb-8 leading-snug">
-          {t("footer.dispatchLine1")}<br className="hidden sm:block" /> {t("footer.dispatchLine2")}
+          {c("footer.dispatchLine1") || t("footer.dispatchLine1")}<br className="hidden sm:block" /> {c("footer.dispatchLine2") || t("footer.dispatchLine2")}
         </h2>
         {status === "success" ? (
           <p className="text-sm text-ink-muted max-w-md mx-auto">{t("footer.subscribeSuccess")}</p>
@@ -96,7 +105,7 @@ export default function Footer() {
               required
               value={email}
               onChange={e => setEmail(e.target.value)}
-              placeholder={t("footer.emailPlaceholder")}
+              placeholder={c("footer.emailPlaceholder") || t("footer.emailPlaceholder")}
               className="flex-1 bg-transparent py-3 text-sm text-ink placeholder:text-ink-faint outline-none"
             />
             <button
@@ -104,7 +113,7 @@ export default function Footer() {
               disabled={status === "loading"}
               className="text-[11px] tracking-[0.22em] uppercase text-ink hover:text-gold transition-colors pl-4 disabled:opacity-50"
             >
-              {status === "loading" ? t("footer.subscribing") : t("footer.subscribe")}
+              {status === "loading" ? t("footer.subscribing") : (c("footer.subscribe") || t("footer.subscribe"))}
             </button>
           </form>
         )}
@@ -120,7 +129,7 @@ export default function Footer() {
           <div className="col-span-2 md:col-span-1">
             <Logo size={26} className="mb-5" />
             <p className="text-sm text-ink-muted leading-relaxed font-light max-w-xs">
-              {t("footer.tagline")}
+              {c("footer.tagline") || t("footer.tagline")}
             </p>
             <a
               href={`https://wa.me/${whatsapp}`}
@@ -135,7 +144,7 @@ export default function Footer() {
 
           {Object.entries(FOOTER_LINKS).map(([headingKey, links]) => (
             <div key={headingKey}>
-              <h3 className="text-[10px] font-normal tracking-[0.24em] uppercase text-ink-faint mb-5">{t(headingKey)}</h3>
+              <h3 className="text-[10px] font-normal tracking-[0.24em] uppercase text-ink-faint mb-5">{c(COL_CONTENT[headingKey]) || t(headingKey)}</h3>
               <ul className="space-y-3">
                 {links.map(link => (
                   <li key={link.href}>
@@ -152,7 +161,7 @@ export default function Footer() {
         {/* Bottom bar */}
         <div className="mt-16 pt-8 border-t border-line flex flex-col sm:flex-row items-center justify-between gap-5">
           <p className="text-xs text-ink-faint font-light tracking-wide order-2 sm:order-1">
-            © 2026 Voyages &amp; Co. (by Lighthouse Ventures) · voyagesco.com
+            {c("footer.copyright") || "© 2026 Voyages & Co. (by Lighthouse Ventures) · voyagesco.com"}
           </p>
           <div className="flex items-center gap-6 order-1 sm:order-2">
             {SOCIAL.map(s => {

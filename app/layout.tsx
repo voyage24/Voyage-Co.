@@ -5,7 +5,9 @@ import { TripsProvider } from "@/components/providers/TripsProvider";
 import { CurrencyProvider } from "@/components/providers/CurrencyProvider";
 import { LanguageProvider } from "@/components/providers/LanguageProvider";
 import { SettingsProvider } from "@/components/providers/SettingsProvider";
+import { ContentProvider } from "@/components/providers/ContentProvider";
 import { getSiteSettings, buildThemeHead } from "@/lib/site-settings";
+import { getPageContentMap } from "@/lib/page-content";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import CookieConsent from "@/components/layout/CookieConsent";
@@ -45,6 +47,7 @@ export const viewport: Viewport = {
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const settings = await getSiteSettings();
+  const content = await getPageContentMap();
   const { css, fontHref } = buildThemeHead(settings);
 
   const jsonLd = {
@@ -73,6 +76,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body className="bg-page text-ink">
         <a href="#main" className="skip-link">Skip to content</a>
         <SettingsProvider settings={settings}>
+          <ContentProvider content={content}>
           <LanguageProvider>
             <CurrencyProvider>
               <TripsProvider>
@@ -81,6 +85,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               </TripsProvider>
             </CurrencyProvider>
           </LanguageProvider>
+          </ContentProvider>
         </SettingsProvider>
         <Haptics />
         <ServiceWorkerRegister />

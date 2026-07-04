@@ -71,6 +71,34 @@ export const PAGE_REGISTRY: ContentPage[] = [
       { key: "callback.intro", label: "Intro", type: "textarea" },
     ],
   },
+  {
+    page: "nav", label: "Navigation menu", path: "/",
+    fields: [
+      { key: "nav.destinations", label: "Destinations link" },
+      { key: "nav.stays", label: "Stays link" },
+      { key: "nav.cruises", label: "Cruises link" },
+      { key: "nav.flights", label: "Flights link" },
+      { key: "nav.experiences", label: "Experiences link" },
+      { key: "nav.journal", label: "Journal link" },
+      { key: "nav.tripTools", label: "Trip Tools link" },
+      { key: "nav.planCta", label: "Plan CTA button" },
+    ],
+  },
+  {
+    page: "footer", label: "Footer", path: "/",
+    fields: [
+      { key: "footer.stayInTouch", label: "Newsletter — eyebrow" },
+      { key: "footer.dispatchLine1", label: "Newsletter — headline line 1" },
+      { key: "footer.dispatchLine2", label: "Newsletter — headline line 2" },
+      { key: "footer.emailPlaceholder", label: "Newsletter — email placeholder" },
+      { key: "footer.subscribe", label: "Newsletter — button label" },
+      { key: "footer.tagline", label: "Brand tagline", type: "textarea" },
+      { key: "footer.colDiscover", label: "Column heading — Discover" },
+      { key: "footer.colMaison", label: "Column heading — Maison" },
+      { key: "footer.colCare", label: "Column heading — Care" },
+      { key: "footer.copyright", label: "Copyright line" },
+    ],
+  },
 ];
 
 export const PAGE_DEFAULTS: Record<string, string> = {
@@ -105,6 +133,26 @@ export const PAGE_DEFAULTS: Record<string, string> = {
   "callback.eyebrow": "Speak to an advisor",
   "callback.title": "Request a callback",
   "callback.intro": "Tell us when suits you and one of our travel advisors will call to help plan your journey — no obligation.",
+
+  "nav.destinations": "Destinations",
+  "nav.stays": "Stays",
+  "nav.cruises": "Cruises",
+  "nav.flights": "Flights",
+  "nav.experiences": "Experiences",
+  "nav.journal": "Journal",
+  "nav.tripTools": "Trip Tools",
+  "nav.planCta": "Plan Your Journey",
+
+  "footer.stayInTouch": "Stay in Touch",
+  "footer.dispatchLine1": "Receive our private dispatches &",
+  "footer.dispatchLine2": "rare invitations.",
+  "footer.emailPlaceholder": "Email address",
+  "footer.subscribe": "Subscribe",
+  "footer.tagline": "A private travel atelier crafting extraordinary journeys for the discerning.",
+  "footer.colDiscover": "Discover",
+  "footer.colMaison": "Maison",
+  "footer.colCare": "Care",
+  "footer.copyright": "© 2026 Voyages & Co. (by Lighthouse Ventures) · voyagesco.com",
 };
 
 export const PAGE_CONTENT_KEYS = new Set(Object.keys(PAGE_DEFAULTS));
@@ -129,3 +177,8 @@ export const getPageContent = cache(async (): Promise<(key: string) => string> =
   const overrides = await loadPageContent();
   return (key: string) => overrides[key] ?? PAGE_DEFAULTS[key] ?? "";
 });
+
+// Raw admin overrides (no defaults) — passed to the client ContentProvider so
+// client components (navbar/footer) can prefer an override and otherwise fall
+// back to their translated label.
+export const getPageContentMap = cache(async (): Promise<Record<string, string>> => loadPageContent());
