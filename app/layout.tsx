@@ -34,6 +34,13 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: "#15212D",
+  width: "device-width",
+  initialScale: 1,
+  // Prevent iOS Safari from auto-zooming the page when a form field is focused
+  // — that zoom shifts the whole layout (incl. fixed nav) left and never resets,
+  // which broke the search pickers. Interactive maps use Leaflet's own pinch
+  // gestures, so they still zoom independently of the page.
+  maximumScale: 1,
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
