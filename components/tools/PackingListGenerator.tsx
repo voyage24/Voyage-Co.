@@ -62,11 +62,12 @@ function buildList(nights: number, climate: Climate, acts: string[], intl: boole
       { label: "Skincare & moisturiser", qty: 1 },
       { label: climate === "hot" || climate === "tropical" ? sunscreen : "SPF moisturiser", qty: 1 },
       { label: "Razor / grooming kit", qty: 1 },
-      { label: "Travel towel", qty: 1 },
+      { label: "Quick-dry towel", qty: 1 },
       ...(longTrip ? [{ label: "Nail clippers, cotton buds & spares", qty: 1 }] : []),
     ] },
     { title: "Health", items: [
       { label: `Personal medication (${n + 3} days' supply)` },
+      { label: "Reusable water bottle", qty: 1 },
       { label: "Basic first-aid kit (plasters, painkillers)", qty: 1 },
       ...(climate === "tropical" ? [{ label: "Insect repellent & anti-itch", qty: 1 }] : []),
       { label: "Hand sanitiser", qty: 1 },
@@ -87,8 +88,8 @@ function buildList(nights: number, climate: Climate, acts: string[], intl: boole
 
   const extra: Item[] = [];
   const beachSwim = Math.min(Math.max(2, Math.ceil(n / 3)), 6);
-  if (acts.includes("Beach & pool")) extra.push({ label: "Swimwear", qty: beachSwim }, { label: "Flip-flops", qty: 1 }, { label: "Quick-dry towel", qty: 1 });
-  if (acts.includes("Adventure & hiking")) extra.push({ label: "Hiking boots", qty: 1 }, { label: "Daypack", qty: 1 }, { label: "Reusable water bottle", qty: 1 }, { label: "Rain shell", qty: 1 });
+  if (acts.includes("Beach & pool")) extra.push({ label: "Swimwear", qty: beachSwim }, { label: "Flip-flops", qty: 1 }, { label: "Beach towel", qty: 1 });
+  if (acts.includes("Adventure & hiking")) extra.push({ label: "Hiking boots", qty: 1 }, { label: "Daypack", qty: 1 }, { label: "Rain shell", qty: 1 });
   if (acts.includes("Business")) extra.push({ label: "Formal outfit / suit", qty: Math.min(Math.max(1, Math.ceil(n / 3)), 5) }, { label: "Laptop & charger", qty: 1 }, { label: "Business cards" });
   if (acts.includes("Fine dining")) extra.push({ label: "Smart-casual evening outfit", qty: Math.min(Math.max(1, Math.ceil(n / 4)), 4) }, { label: "Dress shoes", qty: 1 });
   if (acts.includes("Wildlife / safari")) extra.push({ label: "Neutral-colour outfits", qty: 3 }, { label: "Binoculars", qty: 1 }, { label: "Wide-brim hat", qty: 1 });
