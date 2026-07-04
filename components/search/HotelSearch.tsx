@@ -4,6 +4,8 @@ import { useState, useRef, useEffect } from "react";
 import { Calendar, Users, Search, ChevronDown } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { useIsMobile } from "@/lib/useIsMobile";
+import MobilePickerSheet from "@/components/ui/MobilePickerSheet";
 
 function CityAutocomplete({
   cities, value, onChange, onSelect,
@@ -14,44 +16,62 @@ function CityAutocomplete({
   onSelect: (city: string) => void;
 }) {
   const { t } = useLanguage();
+  const isMobile = useIsMobile();
   const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState(""); // mobile sheet search (desktop uses `value`)
   const ref = useRef<HTMLDivElement>(null);
-  const matches = value.length > 0
-    ? cities.filter(c => c.toLowerCase().includes(value.toLowerCase()))
+  const term = isMobile ? query : value;
+  const matches = term.length > 0
+    ? cities.filter(c => c.toLowerCase().includes(term.toLowerCase()))
     : cities;
 
   useEffect(() => {
+    if (isMobile) return; // mobile sheet manages its own dismissal
     const handler = (e: MouseEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
-  }, []);
+  }, [isMobile]);
+
+  const pick = (c: string) => { onChange(c); onSelect(c); setOpen(false); setQuery(""); };
+  const close = () => { setOpen(false); setQuery(""); };
+
+  const items = matches.map(c => (
+    <button
+      key={c}
+      type="button"
+      onClick={() => pick(c)}
+      className="w-full px-4 py-2.5 text-left hover:bg-panel-soft transition-colors border-b border-line last:border-0 text-sm text-ink font-light"
+    >
+      {c}
+    </button>
+  ));
 
   return (
     <div ref={ref} className="relative flex-1">
       <p className="text-[10px] tracking-[0.16em] uppercase text-ink-faint mb-1">{t("hotelSearch.destination")}</p>
       <input
         value={value}
-        onChange={e => { onChange(e.target.value); setOpen(true); }}
-        onFocus={() => setOpen(true)}
+        onChange={e => { if (!isMobile) { onChange(e.target.value); setOpen(true); } }}
+        onFocus={isMobile ? undefined : () => setOpen(true)}
+        onClick={isMobile ? () => { setQuery(""); setOpen(true); } : undefined}
+        readOnly={isMobile}
+        inputMode={isMobile ? "none" : undefined}
         placeholder={t("hotelSearch.cityOrHotel")}
-        className="w-full bg-transparent text-sm text-ink placeholder:text-ink-faint focus:outline-none font-light"
+        className={`w-full bg-transparent text-sm text-ink placeholder:text-ink-faint focus:outline-none font-light ${isMobile ? "cursor-pointer" : ""}`}
       />
-      {open && matches.length > 0 && (
-        <div className="absolute top-full left-0 mt-2 w-64 max-w-[90vw] max-h-72 overflow-y-auto bg-panel-raised border border-line rounded-xl shadow-widget z-50">
-          {matches.map(c => (
-            <button
-              key={c}
-              type="button"
-              onClick={() => { onChange(c); onSelect(c); setOpen(false); }}
-              className="w-full px-4 py-2.5 text-left hover:bg-panel-soft transition-colors border-b border-line last:border-0 text-sm text-ink font-light"
-            >
-              {c}
-            </button>
-          ))}
-        </div>
-      )}
+      {open && (isMobile ? (
+        <MobilePickerSheet title={t("hotelSearch.destination")} query={query} onQueryChange={setQuery} onClose={close} searchPlaceholder={t("hotelSearch.cityOrHotel")}>
+          <div className="py-1">{items}</div>
+        </MobilePickerSheet>
+      ) : (
+        matches.length > 0 && (
+          <div className="absolute top-full left-0 mt-2 w-64 max-w-[90vw] max-h-72 overflow-y-auto bg-panel-raised border border-line rounded-xl shadow-widget z-50">
+            {items}
+          </div>
+        )
+      ))}
     </div>
   );
 }

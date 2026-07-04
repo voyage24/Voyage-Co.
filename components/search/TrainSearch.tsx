@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import { STATIONS } from "@/lib/mock-data";
 import type { Station } from "@/lib/types";
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { useIsMobile } from "@/lib/useIsMobile";
+import MobilePickerSheet from "@/components/ui/MobilePickerSheet";
 
 // `tClass` state stores the English code and is sent as the API query param;
 // only the displayed label is translated, via this lookup.
@@ -19,7 +21,9 @@ function StationAutocomplete({
   label, value, onChange,
 }: { label: string; value: Station | null; onChange: (s: Station) => void }) {
   const { t } = useLanguage();
-  const [query, setQuery] = useState(value ? `${value.name} (${value.code})` : "");
+  const isMobile = useIsMobile();
+  const [query, setQuery] = useState(value ? `${value.name} (${value.code})` : ""); // display value
+  const [search, setSearch] = useState(""); // mobile sheet search
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -28,47 +32,63 @@ function StationAutocomplete({
   }, [value]);
 
   useEffect(() => {
+    if (isMobile) return; // mobile sheet manages its own dismissal
     const handler = (e: MouseEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
-  }, []);
+  }, [isMobile]);
 
-  const matches = query.length > 1
+  const term = isMobile ? search : query;
+  const matches = term.length > 1
     ? STATIONS.filter(s =>
-        s.name.toLowerCase().includes(query.toLowerCase()) ||
-        s.city.toLowerCase().includes(query.toLowerCase()) ||
-        s.code.toLowerCase().includes(query.toLowerCase())
+        s.name.toLowerCase().includes(term.toLowerCase()) ||
+        s.city.toLowerCase().includes(term.toLowerCase()) ||
+        s.code.toLowerCase().includes(term.toLowerCase())
       ).slice(0, 6)
     : STATIONS.slice(0, 6);
+
+  const pick = (s: Station) => { onChange(s); setQuery(`${s.name} (${s.code})`); setOpen(false); setSearch(""); };
+  const close = () => { setOpen(false); setSearch(""); };
+
+  const items = matches.map(s => (
+    <button
+      key={s.code}
+      type="button"
+      onClick={() => pick(s)}
+      className="w-full px-4 py-2.5 text-left hover:bg-panel-soft transition-colors border-b border-line last:border-0"
+    >
+      <span className="font-medium text-ink text-sm">{s.name}</span>
+      <span className="text-xs text-ink-faint ml-2">{s.code}</span>
+      <span className="text-xs text-ink-faint ml-2">· {s.city}</span>
+    </button>
+  ));
 
   return (
     <div ref={ref} className="relative">
       <p className="text-[10px] tracking-[0.16em] uppercase text-ink-faint mb-1">{label}</p>
       <input
         value={query}
-        onChange={e => { setQuery(e.target.value); setOpen(true); }}
-        onFocus={() => setOpen(true)}
+        onChange={e => { if (!isMobile) { setQuery(e.target.value); setOpen(true); } }}
+        onFocus={isMobile ? undefined : () => setOpen(true)}
+        onClick={isMobile ? () => { setSearch(""); setOpen(true); } : undefined}
+        readOnly={isMobile}
+        inputMode={isMobile ? "none" : undefined}
         placeholder={t("trainSearch.cityOrStation")}
-        className="w-full bg-transparent text-sm text-ink placeholder:text-ink-faint focus:outline-none font-light"
+        className={`w-full bg-transparent text-sm text-ink placeholder:text-ink-faint focus:outline-none font-light ${isMobile ? "cursor-pointer" : ""}`}
       />
-      {open && matches.length > 0 && (
-        <div className="absolute top-full left-0 mt-2 w-72 max-w-[90vw] bg-panel-raised border border-line rounded-xl shadow-widget z-50 overflow-hidden">
-          {matches.map(s => (
-            <button
-              key={s.code}
-              type="button"
-              onClick={() => { onChange(s); setQuery(`${s.name} (${s.code})`); setOpen(false); }}
-              className="w-full px-4 py-2.5 text-left hover:bg-panel-soft transition-colors border-b border-line last:border-0"
-            >
-              <span className="font-medium text-ink text-sm">{s.name}</span>
-              <span className="text-xs text-ink-faint ml-2">{s.code}</span>
-              <span className="text-xs text-ink-faint ml-2">· {s.city}</span>
-            </button>
-          ))}
-        </div>
-      )}
+      {open && (isMobile ? (
+        <MobilePickerSheet title={label} query={search} onQueryChange={setSearch} onClose={close} searchPlaceholder={t("trainSearch.cityOrStation")}>
+          <div className="py-1">{items}</div>
+        </MobilePickerSheet>
+      ) : (
+        matches.length > 0 && (
+          <div className="absolute top-full left-0 mt-2 w-72 max-w-[90vw] bg-panel-raised border border-line rounded-xl shadow-widget z-50 overflow-hidden">
+            {items}
+          </div>
+        )
+      ))}
     </div>
   );
 }
