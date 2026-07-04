@@ -17,7 +17,7 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 // Bookings". Payment (later) will flip the status to "confirmed".
 export async function POST(req: Request) {
   const b = await req.json().catch(() => ({}));
-  const { name, email, phone, itemType, itemId, itemTitle, image, total, checkIn, checkOut, guests, notes, ref } = b ?? {};
+  const { name, email, phone, itemType, itemId, itemTitle, image, total, checkIn, checkOut, guests, seat, notes, ref } = b ?? {};
 
   if (!name || !String(name).trim() || !email || typeof email !== "string" || !EMAIL_RE.test(email)) {
     return NextResponse.json({ error: "Name and a valid email are required" }, { status: 400 });
@@ -59,6 +59,7 @@ export async function POST(req: Request) {
         total: typeof total === "number" ? Math.round(total) : 0,
         status: "pending",
         reference,
+        seat: (itemType === "flight" && typeof seat === "string" && seat.trim()) ? seat.trim() : null,
         notes: notes || null,
       },
     });
@@ -91,6 +92,7 @@ export async function POST(req: Request) {
       <p style="margin:0 0 6px;"><strong>Reference:</strong> ${reference}</p>
       <p style="margin:0 0 6px;"><strong>${itemTitle}</strong></p>
       ${dates}
+      ${itemType === "flight" && typeof seat === "string" && seat.trim() ? `<p style="margin:0 0 6px;"><strong>Seat:</strong> ${seat.trim()}</p>` : ""}
       <p style="margin:0 0 6px;"><strong>Guests:</strong> ${guests ?? 1}</p>
       ${typeof total === "number" && total > 0 ? `<p style="margin:0;"><strong>Estimated total:</strong> ${inr(Math.round(total))}</p>` : ""}
     `;

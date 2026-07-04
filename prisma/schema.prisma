@@ -143,6 +143,7 @@ model Booking {
   currency    String    @default("INR")
   status      String    @default("pending") // pending | confirmed | cancelled
   reference   String    @unique
+  seat        String?   // flight bookings: seat chosen at booking (e.g. "14A")
   notes       String?   @db.Text
   documents   Json      @default("[]") // [{ label, url }] — vouchers, tickets, itineraries
   preTripSentAt  DateTime?

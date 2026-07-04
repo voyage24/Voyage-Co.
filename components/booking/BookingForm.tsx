@@ -8,6 +8,7 @@ import { useTrips } from "@/components/providers/TripsProvider";
 import { useCurrency } from "@/components/providers/CurrencyProvider";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import NotifyMe from "@/components/booking/NotifyMe";
+import SeatMap from "@/components/booking/SeatMap";
 
 export interface BookingItem {
   type: "hotel" | "flight" | "package" | "experience" | "train" | "cruise";
@@ -23,8 +24,9 @@ export interface BookingItem {
 export default function BookingForm({ item, soldOut = false }: { item: BookingItem; soldOut?: boolean }) {
   const [form, setForm] = useState({
     name: "", email: "", phone: "",
-    checkIn: "", checkOut: "", guests: 2,
+    checkIn: "", checkOut: "", guests: 2, seat: "",
   });
+  const setSeat = (s: string) => setForm(p => ({ ...p, seat: s }));
   const [confirmed, setConfirmed] = useState(false);
   const [reference, setReference] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -72,6 +74,7 @@ export default function BookingForm({ item, soldOut = false }: { item: BookingIt
           name: form.name, email: form.email, phone: form.phone,
           itemType: item.type, itemId: item.id, itemTitle: item.title, image: item.image,
           checkIn: form.checkIn || null, checkOut: form.checkOut || null, guests: form.guests,
+          seat: item.type === "flight" ? form.seat || null : null,
           total, ref,
         }),
       });
@@ -109,6 +112,12 @@ export default function BookingForm({ item, soldOut = false }: { item: BookingIt
           <div className="flex justify-between text-sm">
             <span className="text-ink-faint font-light">{item.subtitle}</span>
           </div>
+          {item.type === "flight" && form.seat && (
+            <div className="flex justify-between text-sm pt-2">
+              <span className="text-ink-muted font-light">Seat</span>
+              <span className="text-ink font-medium">{form.seat}</span>
+            </div>
+          )}
           <div className="flex justify-between text-sm pt-2">
             <span className="text-ink-muted font-light">{t("booking.total")}</span>
             <span className="font-serif text-xl text-ink">{format(total)}</span>
@@ -164,6 +173,16 @@ export default function BookingForm({ item, soldOut = false }: { item: BookingIt
               <label className={labelClass}><Users size={11} className="inline mr-1" />{t("hotelSearch.guests")} *</label>
               <input required type="number" min={1} max={12} value={form.guests} onChange={set("guests")} className={inputClass} />
             </div>
+          </div>
+        )}
+
+        {item.type === "flight" && (
+          <div>
+            <label className={labelClass}>Choose your seat <span className="text-ink-faint normal-case tracking-normal">(optional)</span></label>
+            <SeatMap seed={item.id} value={form.seat} onChange={setSeat} />
+            <p className="text-xs text-ink-faint font-light mt-2">
+              {form.seat ? `Seat ${form.seat} selected — it will appear on your boarding pass.` : "Leave blank to have a seat assigned at check-in."}
+            </p>
           </div>
         )}
 

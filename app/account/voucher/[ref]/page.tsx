@@ -41,7 +41,7 @@ export default async function VoucherPage({ params }: { params: { ref: string } 
               destination: flight.destination, destinationCity: flight.destinationCity,
               departure: flight.departure, arrival: flight.arrival, duration: flight.duration,
               businessPrice: flight.businessPrice, passenger: b.guestName, reference: b.reference,
-              date: b.checkIn, guests: b.guests, total: b.total,
+              date: b.checkIn, guests: b.guests, total: b.total, seat: b.seat,
             }}
           />
         ) : (
@@ -84,6 +84,7 @@ export default async function VoucherPage({ params }: { params: { ref: string } 
           date={b.checkIn}
           guests={b.guests}
           total={b.total}
+          seat={b.seat}
         />
       ) : (
       <div className="bg-panel border border-line rounded-2xl shadow-card overflow-hidden">
