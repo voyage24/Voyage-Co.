@@ -1,4 +1,5 @@
 import { Plane } from "lucide-react";
+import { hashRef, fmtDate, boardingDetails } from "@/lib/boarding-pass";
 
 type BP = {
   airline: string;
@@ -17,29 +18,6 @@ type BP = {
   guests: number;
   total: number;
 };
-
-function hash(s: string): number {
-  let h = 7;
-  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
-  return h;
-}
-
-// Boarding time = 40 min before departure (typical); parsed from "HH:MM".
-function minusMinutes(hhmm: string, mins: number): string {
-  const m = /(\d{1,2}):(\d{2})/.exec(hhmm || "");
-  if (!m) return hhmm || "—";
-  let total = (+m[1]) * 60 + (+m[2]) - mins;
-  total = ((total % 1440) + 1440) % 1440;
-  return `${String(Math.floor(total / 60)).padStart(2, "0")}:${String(total % 60).padStart(2, "0")}`;
-}
-
-function fmtDate(d?: string | null): string {
-  if (!d) return "—";
-  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(d);
-  if (!m) return d;
-  const dt = new Date(+m[1], +m[2] - 1, +m[3]);
-  return dt.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", year: "numeric" });
-}
 
 function Field({ label, value, className = "" }: { label: string; value: string; className?: string }) {
   return (
@@ -61,7 +39,7 @@ function Stub({ label, value }: { label: string; value: string }) {
 
 // A decorative barcode built from the booking reference (stable per booking).
 function Barcode({ seed }: { seed: string }) {
-  let h = hash(seed);
+  let h = hashRef(seed);
   const bars = Array.from({ length: 52 }, (_, i) => {
     h = (h * 1103515245 + 12345) & 0x7fffffff;
     const w = 1 + (h % 3);
@@ -78,13 +56,7 @@ function Barcode({ seed }: { seed: string }) {
  * ones at check-in). A perforated tear-off stub carries a barcode.
  */
 export default function FlightBoardingPass(props: BP) {
-  const h = hash(props.reference);
-  const perGuest = props.guests > 0 ? props.total / props.guests : props.total;
-  const klass = props.businessPrice && perGuest >= props.businessPrice * 0.9 ? "Business" : "Economy";
-  const seat = `${(klass === "Business" ? 1 : 12) + (h % 30)}${"ABCDEFHJK"[h % 8]}`;
-  const gate = `${"ABCDE"[h % 5]}${1 + (h % 30)}`;
-  const zone = 1 + (h % 4);
-  const boarding = minusMinutes(props.departure, 40);
+  const { klass, seat, gate, zone, boarding } = boardingDetails(props);
 
   return (
     <div className="bg-panel border border-line rounded-2xl shadow-card overflow-hidden">
