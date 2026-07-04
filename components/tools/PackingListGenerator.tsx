@@ -32,60 +32,67 @@ function buildList(nights: number, climate: Climate, acts: string[], intl: boole
   const laundry = longTrip ? " — or pack ~1 week's worth & do laundry" : "";
   const size = n <= 4 ? "travel-size" : n <= 10 ? "medium bottles" : "full-size";
   const sunscreen = n > 7 ? "High-SPF sunscreen (large / 2 tubes)" : "High-SPF sunscreen";
+  const sleepwear = Math.min(Math.ceil(n / 6) + 1, 4);
+  const sachets = Math.min(Math.max(2, Math.ceil(n / 2)), 20);
 
   const cats: Cat[] = [
     { title: "Documents & money", items: [
-      { label: "Photo ID" },
-      ...(intl ? [{ label: "Passport (valid 6+ months)" }, { label: "Visa / entry permit" }] : []),
-      { label: "Travel insurance papers" }, { label: "Booking confirmations & vouchers" },
-      { label: "Debit / credit cards", qty: 2 }, { label: "Some local currency" },
+      { label: "Photo ID", qty: 1 },
+      ...(intl ? [{ label: "Passport (valid 6+ months)", qty: 1 }, { label: "Visa / entry permit", qty: 1 }] : []),
+      { label: "Travel insurance papers", qty: 1 },
+      { label: "Booking confirmations & vouchers", qty: 1 },
+      { label: "Debit / credit cards", qty: 2 },
+      { label: "Some local currency" },
     ] },
     { title: "Clothing", items: [
       { label: `Tops / t-shirts${laundry}`, qty: tops },
       { label: "Trousers / shorts", qty: bottoms },
       { label: "Underwear & socks (sets)", qty: underwear },
       { label: "Light layers / jacket", qty: 2 },
-      ...(climate === "cold" ? [{ label: "Warm coat, thermals, gloves & hat" }] : []),
-      ...(climate === "hot" ? [{ label: "Sun hat & sunglasses" }] : []),
+      ...(climate === "cold" ? [{ label: "Warm coat", qty: 1 }, { label: "Thermals, gloves & hat" }] : []),
+      ...(climate === "hot" ? [{ label: "Sun hat", qty: 1 }, { label: "Sunglasses", qty: 1 }] : []),
       { label: "Comfortable walking shoes", qty: 2 },
-      { label: "Sleepwear" },
-      ...(longTrip ? [{ label: "A couple of reusable laundry bags" }] : []),
+      { label: "Sleepwear", qty: sleepwear },
+      ...(longTrip ? [{ label: "Reusable laundry bags", qty: 2 }] : []),
     ] },
     { title: "Toiletries", items: [
-      { label: `Toothbrush & toothpaste (${size})` },
-      { label: "Deodorant" },
-      { label: `Shampoo, conditioner & soap (${size})` },
-      { label: "Skincare & moisturiser" },
-      { label: climate === "hot" || climate === "tropical" ? sunscreen : "SPF moisturiser" },
-      { label: "Razor / grooming kit" },
-      ...(longTrip ? [{ label: "Nail clippers, cotton buds & spares" }] : []),
+      { label: `Toothbrush & toothpaste (${size})`, qty: 1 },
+      { label: "Deodorant", qty: 1 },
+      { label: `Shampoo, conditioner & soap (${size})`, qty: 1 },
+      { label: "Skincare & moisturiser", qty: 1 },
+      { label: climate === "hot" || climate === "tropical" ? sunscreen : "SPF moisturiser", qty: 1 },
+      { label: "Razor / grooming kit", qty: 1 },
+      { label: "Travel towel", qty: 1 },
+      ...(longTrip ? [{ label: "Nail clippers, cotton buds & spares", qty: 1 }] : []),
     ] },
     { title: "Health", items: [
       { label: `Personal medication (${n + 3} days' supply)` },
-      { label: "Basic first-aid (plasters, painkillers)" },
-      ...(climate === "tropical" ? [{ label: "Insect repellent & anti-itch" }] : []),
-      { label: "Hand sanitiser" },
-      ...(n > 3 ? [{ label: "Vitamins / daily supplements" }] : []),
-      { label: "Rehydration sachets" },
-      ...(intl && n > 7 ? [{ label: "Copy of prescriptions & doctor's note" }] : []),
+      { label: "Basic first-aid kit (plasters, painkillers)", qty: 1 },
+      ...(climate === "tropical" ? [{ label: "Insect repellent & anti-itch", qty: 1 }] : []),
+      { label: "Hand sanitiser", qty: 1 },
+      ...(n > 3 ? [{ label: "Vitamins / daily supplements", qty: 1 }] : []),
+      { label: "Rehydration sachets", qty: sachets },
+      ...(intl && n > 7 ? [{ label: "Copy of prescriptions & doctor's note", qty: 1 }] : []),
     ] },
     { title: "Tech", items: [
-      { label: "Phone & charger" },
+      { label: "Phone & charger", qty: 1 },
       ...(intl ? [{ label: "Universal travel adapter", qty: 2 }] : []),
-      { label: "Power bank", qty: 1 }, { label: "Charging cables", qty: 2 }, { label: "Earphones" },
-      ...(longTrip ? [{ label: "Multi-port charger / travel plug" }] : []),
-      { label: "E-reader / camera (optional)" },
+      { label: "Power bank", qty: 1 },
+      { label: "Charging cables", qty: 2 },
+      { label: "Earphones", qty: 1 },
+      ...(longTrip ? [{ label: "Multi-port charger / travel plug", qty: 1 }] : []),
+      { label: "E-reader / camera (optional)", qty: 1 },
     ] },
   ];
 
   const extra: Item[] = [];
   const beachSwim = Math.min(Math.max(2, Math.ceil(n / 3)), 6);
-  if (acts.includes("Beach & pool")) extra.push({ label: "Swimwear", qty: beachSwim }, { label: "Flip-flops" }, { label: "Quick-dry towel", qty: 1 });
-  if (acts.includes("Adventure & hiking")) extra.push({ label: "Hiking boots" }, { label: "Daypack" }, { label: "Reusable water bottle", qty: 1 }, { label: "Rain shell" });
-  if (acts.includes("Business")) extra.push({ label: "Formal outfit / suit", qty: Math.min(Math.max(1, Math.ceil(n / 3)), 5) }, { label: "Laptop & charger" }, { label: "Business cards" });
-  if (acts.includes("Fine dining")) extra.push({ label: "Smart-casual evening outfit", qty: Math.min(Math.max(1, Math.ceil(n / 4)), 4) }, { label: "Dress shoes" });
-  if (acts.includes("Wildlife / safari")) extra.push({ label: "Neutral-colour clothing" }, { label: "Binoculars" }, { label: "Wide-brim hat" });
-  if (climate === "tropical" || acts.includes("City & sightseeing")) extra.push({ label: "Compact umbrella" });
+  if (acts.includes("Beach & pool")) extra.push({ label: "Swimwear", qty: beachSwim }, { label: "Flip-flops", qty: 1 }, { label: "Quick-dry towel", qty: 1 });
+  if (acts.includes("Adventure & hiking")) extra.push({ label: "Hiking boots", qty: 1 }, { label: "Daypack", qty: 1 }, { label: "Reusable water bottle", qty: 1 }, { label: "Rain shell", qty: 1 });
+  if (acts.includes("Business")) extra.push({ label: "Formal outfit / suit", qty: Math.min(Math.max(1, Math.ceil(n / 3)), 5) }, { label: "Laptop & charger", qty: 1 }, { label: "Business cards" });
+  if (acts.includes("Fine dining")) extra.push({ label: "Smart-casual evening outfit", qty: Math.min(Math.max(1, Math.ceil(n / 4)), 4) }, { label: "Dress shoes", qty: 1 });
+  if (acts.includes("Wildlife / safari")) extra.push({ label: "Neutral-colour outfits", qty: 3 }, { label: "Binoculars", qty: 1 }, { label: "Wide-brim hat", qty: 1 });
+  if (climate === "tropical" || acts.includes("City & sightseeing")) extra.push({ label: "Compact umbrella", qty: 1 });
   const uniqueExtra = extra.filter((it, i) => extra.findIndex(x => x.label === it.label) === i);
   if (uniqueExtra.length) cats.push({ title: "For your activities", items: uniqueExtra });
 
