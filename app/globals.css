@@ -121,6 +121,21 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* ── Mobile hardening ───────────────────────────────────────────────────
+   Applied site-wide. Stops the page ever scrolling/shifting sideways (no
+   sticky positioning is used, so clipping horizontal overflow is safe),
+   removes the grey tap-flash for a native feel, and stops iOS inflating
+   text on rotation. Page zoom is capped in the viewport (see app/layout);
+   the interactive maps keep their own pinch zoom via Leaflet. */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+body { overflow-x: hidden; }
+/* Media never forces the layout wider than the screen. */
+img, video { max-width: 100%; }
+
 .skip-link {
   position: absolute;
   top: -4rem;
