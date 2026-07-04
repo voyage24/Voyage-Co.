@@ -2,10 +2,12 @@
 
 import { useState } from "react";
 import { Gift, Check } from "lucide-react";
+import { useContent } from "@/components/providers/ContentProvider";
 
 const AMOUNTS = [25000, 50000, 100000, 250000];
 
 export default function GiftPage() {
+  const c = useContent();
   const [form, setForm] = useState({ senderName: "", senderEmail: "", recipientName: "", recipientEmail: "", amount: AMOUNTS[1], message: "" });
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
@@ -36,9 +38,9 @@ export default function GiftPage() {
     <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20">
       <div className="text-center mb-8">
         <Gift size={26} className="text-gold mx-auto mb-3" />
-        <p className="text-[11px] tracking-[0.3em] uppercase text-gold mb-2">The gift of travel</p>
-        <h1 className="font-serif text-3xl sm:text-4xl font-light text-ink mb-3">Gift a journey</h1>
-        <p className="text-ink-muted font-light max-w-lg mx-auto">Give someone an unforgettable escape. Tell us the details and our concierge will arrange a beautifully presented gift card.</p>
+        <p className="text-[11px] tracking-[0.3em] uppercase text-gold mb-2">{c("gift.eyebrow") || "The gift of travel"}</p>
+        <h1 className="font-serif text-3xl sm:text-4xl font-light text-ink mb-3">{c("gift.title") || "Gift a journey"}</h1>
+        <p className="text-ink-muted font-light max-w-lg mx-auto">{c("gift.intro") || "Give someone an unforgettable escape. Tell us the details and our concierge will arrange a beautifully presented gift card."}</p>
       </div>
 
       {done ? (

@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { X } from "lucide-react";
 import { useCompare, removeCompare, clearCompare, type CompareItem } from "@/lib/compare";
+import { useContent } from "@/components/providers/ContentProvider";
 
 const TYPE_LABEL: Record<string, string> = {
   hotel: "Stays", cruise: "Cruises", package: "Journeys", experience: "Experiences",
@@ -52,6 +53,7 @@ function Group({ type, items }: { type: string; items: CompareItem[] }) {
 }
 
 export default function ComparePage() {
+  const c = useContent();
   const list = useCompare();
   const types = Array.from(new Set(list.map(i => i.type)));
 
@@ -59,8 +61,8 @@ export default function ComparePage() {
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <p className="text-[11px] tracking-[0.3em] uppercase text-gold mb-2">Compare</p>
-          <h1 className="font-serif text-3xl sm:text-4xl font-light text-ink">Side by side</h1>
+          <p className="text-[11px] tracking-[0.3em] uppercase text-gold mb-2">{c("compare.eyebrow") || "Compare"}</p>
+          <h1 className="font-serif text-3xl sm:text-4xl font-light text-ink">{c("compare.title") || "Side by side"}</h1>
         </div>
         {list.length > 0 && <button onClick={clearCompare} className="text-xs tracking-[0.12em] uppercase text-ink-muted hover:text-ink">Clear all</button>}
       </div>

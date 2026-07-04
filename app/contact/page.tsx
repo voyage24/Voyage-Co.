@@ -4,9 +4,11 @@ import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Mail, Send } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { useContent } from "@/components/providers/ContentProvider";
 
 function ContactContent() {
   const { t, language } = useLanguage();
+  const c = useContent();
   const searchParams = useSearchParams();
   const [form, setForm] = useState({
     name: "", email: "", phone: "",
@@ -44,9 +46,9 @@ function ContactContent() {
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-16">
       <div className="text-center mb-12">
-        <p className="text-[10px] tracking-[0.3em] uppercase text-gold mb-3">{t("contact.eyebrow")}</p>
-        <h1 className="font-serif text-3xl sm:text-5xl font-light text-ink mb-3">{t("contact.title")}</h1>
-        <p className="text-ink-muted font-light">{t("contact.subtitle")}</p>
+        <p className="text-[10px] tracking-[0.3em] uppercase text-gold mb-3">{c("contact.eyebrow") || t("contact.eyebrow")}</p>
+        <h1 className="font-serif text-3xl sm:text-5xl font-light text-ink mb-3">{c("contact.title") || t("contact.title")}</h1>
+        <p className="text-ink-muted font-light">{c("contact.subtitle") || t("contact.subtitle")}</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-10">

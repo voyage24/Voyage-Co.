@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { ChevronDown, ChevronUp, Search, Phone, Mail, MessageCircle } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { useContent } from "@/components/providers/ContentProvider";
 
 const FAQS = [
   {
@@ -47,6 +48,7 @@ function FaqItem({ q, a }: { q: string; a: string }) {
 
 export default function HelpPage() {
   const { t } = useLanguage();
+  const c = useContent();
   const [query, setQuery] = useState("");
 
   const q = query.trim().toLowerCase();
@@ -64,9 +66,9 @@ export default function HelpPage() {
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-16">
       <div className="text-center mb-10">
-        <p className="text-[10px] tracking-[0.3em] uppercase text-gold mb-3">{t("help.eyebrow")}</p>
-        <h1 className="font-serif text-3xl sm:text-5xl font-light text-ink mb-3">{t("help.title")}</h1>
-        <p className="text-ink-muted font-light">{t("help.subtitle")}</p>
+        <p className="text-[10px] tracking-[0.3em] uppercase text-gold mb-3">{c("help.eyebrow") || t("help.eyebrow")}</p>
+        <h1 className="font-serif text-3xl sm:text-5xl font-light text-ink mb-3">{c("help.title") || t("help.title")}</h1>
+        <p className="text-ink-muted font-light">{c("help.subtitle") || t("help.subtitle")}</p>
       </div>
 
       {/* Search */}

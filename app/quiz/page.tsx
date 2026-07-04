@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Check, RotateCcw } from "lucide-react";
+import { useContent } from "@/components/providers/ContentProvider";
 
 type Choice = { label: string; tag: string };
 const QUESTIONS: { id: string; q: string; choices: Choice[] }[] = [
@@ -33,6 +34,7 @@ const RESULTS: Record<string, { title: string; blurb: string; links: { label: st
 };
 
 export default function QuizPage() {
+  const c = useContent();
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [lead, setLead] = useState({ name: "", email: "" });
@@ -59,8 +61,8 @@ export default function QuizPage() {
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20">
       <div className="text-center mb-8">
-        <p className="text-[11px] tracking-[0.3em] uppercase text-gold mb-2">Find your journey</p>
-        <h1 className="font-serif text-3xl sm:text-4xl font-light text-ink">What kind of traveller are you?</h1>
+        <p className="text-[11px] tracking-[0.3em] uppercase text-gold mb-2">{c("quiz.eyebrow") || "Find your journey"}</p>
+        <h1 className="font-serif text-3xl sm:text-4xl font-light text-ink">{c("quiz.title") || "What kind of traveller are you?"}</h1>
       </div>
 
       {!done ? (

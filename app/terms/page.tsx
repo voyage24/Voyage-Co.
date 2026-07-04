@@ -2,9 +2,11 @@
 
 import Link from "next/link";
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { useContent } from "@/components/providers/ContentProvider";
 
 export default function TermsPage() {
   const { t } = useLanguage();
+  const c = useContent();
   const sections = [
     { titleKey: "terms.section1.title", bodyKey: "terms.section1.body" },
     { titleKey: "terms.section2.title", bodyKey: "terms.section2.body" },
@@ -23,13 +25,13 @@ export default function TermsPage() {
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-16">
       <div className="mb-10">
-        <p className="text-[10px] tracking-[0.3em] uppercase text-gold mb-3">{t("legal.eyebrow")}</p>
-        <h1 className="font-serif text-3xl sm:text-5xl font-light text-ink mb-3">{t("terms.title")}</h1>
+        <p className="text-[10px] tracking-[0.3em] uppercase text-gold mb-3">{c("terms.eyebrow") || t("legal.eyebrow")}</p>
+        <h1 className="font-serif text-3xl sm:text-5xl font-light text-ink mb-3">{c("terms.title") || t("terms.title")}</h1>
         <p className="text-ink-faint font-light">{t("legal.lastUpdated")}: June 1, 2026</p>
       </div>
 
       <p className="text-ink-muted mb-8 leading-relaxed font-light">
-        {t("terms.intro")}
+        {c("terms.intro") || t("terms.intro")}
       </p>
 
       <div className="space-y-5">

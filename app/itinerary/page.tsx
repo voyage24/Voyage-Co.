@@ -6,10 +6,12 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { X, Route, Trash2 } from "lucide-react";
 import { useItineraryDraft, removeItinerary, clearItineraryDraft } from "@/lib/itinerary-draft";
+import { useContent } from "@/components/providers/ContentProvider";
 
 type SavedItinerary = { id: string; title: string; estimate: number; status: string; items: { title: string }[] };
 
 export default function ItineraryPage() {
+  const c = useContent();
   const draft = useItineraryDraft();
   const router = useRouter();
   const [title, setTitle] = useState("");
@@ -48,9 +50,9 @@ export default function ItineraryPage() {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20">
       <div className="mb-8">
-        <p className="text-[11px] tracking-[0.3em] uppercase text-gold mb-2">Trip builder</p>
-        <h1 className="font-serif text-3xl sm:text-4xl font-light text-ink">Your itinerary</h1>
-        <p className="text-ink-muted font-light mt-2">Bundle stays, journeys, cruises and experiences, then request a single tailored quote.</p>
+        <p className="text-[11px] tracking-[0.3em] uppercase text-gold mb-2">{c("itinerary.eyebrow") || "Trip builder"}</p>
+        <h1 className="font-serif text-3xl sm:text-4xl font-light text-ink">{c("itinerary.title") || "Your itinerary"}</h1>
+        <p className="text-ink-muted font-light mt-2">{c("itinerary.intro") || "Bundle stays, journeys, cruises and experiences, then request a single tailored quote."}</p>
       </div>
 
       {msg && <p className="mb-6 text-sm text-gold bg-panel border border-line rounded-xl px-4 py-3">{msg}</p>}

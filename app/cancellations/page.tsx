@@ -1,9 +1,11 @@
 "use client";
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { useContent } from "@/components/providers/ContentProvider";
 
 export default function CancellationsPage() {
   const { t } = useLanguage();
+  const c = useContent();
   const sections = [
     {
       titleKey: "cancellations.flight.title",
@@ -35,8 +37,8 @@ export default function CancellationsPage() {
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-16">
       <div className="mb-10">
-        <p className="text-[10px] tracking-[0.3em] uppercase text-gold mb-3">{t("legal.eyebrow")}</p>
-        <h1 className="font-serif text-3xl sm:text-5xl font-light text-ink mb-3">{t("cancellations.title")}</h1>
+        <p className="text-[10px] tracking-[0.3em] uppercase text-gold mb-3">{c("cancellations.eyebrow") || t("legal.eyebrow")}</p>
+        <h1 className="font-serif text-3xl sm:text-5xl font-light text-ink mb-3">{c("cancellations.title") || t("cancellations.title")}</h1>
         <p className="text-ink-faint font-light">{t("legal.lastUpdated")}: June 2026</p>
       </div>
 

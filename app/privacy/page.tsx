@@ -1,9 +1,11 @@
 "use client";
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { useContent } from "@/components/providers/ContentProvider";
 
 export default function PrivacyPage() {
   const { t } = useLanguage();
+  const c = useContent();
   const sections = [
     { titleKey: "privacy.section1.title", bodyKey: "privacy.section1.body" },
     { titleKey: "privacy.section2.title", bodyKey: "privacy.section2.body" },
@@ -17,13 +19,13 @@ export default function PrivacyPage() {
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-16">
       <div className="mb-10">
-        <p className="text-[10px] tracking-[0.3em] uppercase text-gold mb-3">{t("legal.eyebrow")}</p>
-        <h1 className="font-serif text-3xl sm:text-5xl font-light text-ink mb-3">{t("privacy.title")}</h1>
+        <p className="text-[10px] tracking-[0.3em] uppercase text-gold mb-3">{c("privacy.eyebrow") || t("legal.eyebrow")}</p>
+        <h1 className="font-serif text-3xl sm:text-5xl font-light text-ink mb-3">{c("privacy.title") || t("privacy.title")}</h1>
         <p className="text-ink-faint font-light">{t("legal.lastUpdated")}: June 1, 2026</p>
       </div>
 
       <p className="text-ink-muted mb-8 leading-relaxed font-light">
-        {t("privacy.intro")}
+        {c("privacy.intro") || t("privacy.intro")}
       </p>
 
       <div className="space-y-5">

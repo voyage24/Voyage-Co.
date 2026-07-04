@@ -120,6 +120,75 @@ export const PAGE_REGISTRY: ContentPage[] = [
     ],
   },
   {
+    page: "help", label: "Help Centre", path: "/help",
+    fields: [
+      { key: "help.eyebrow", label: "Eyebrow" },
+      { key: "help.title", label: "Title" },
+      { key: "help.subtitle", label: "Intro", type: "textarea" },
+    ],
+  },
+  {
+    page: "contact", label: "Contact / Concierge", path: "/contact",
+    fields: [
+      { key: "contact.eyebrow", label: "Eyebrow" },
+      { key: "contact.title", label: "Title" },
+      { key: "contact.subtitle", label: "Intro", type: "textarea" },
+    ],
+  },
+  {
+    page: "terms", label: "Terms of Service", path: "/terms",
+    fields: [
+      { key: "terms.eyebrow", label: "Eyebrow" },
+      { key: "terms.title", label: "Title" },
+      { key: "terms.intro", label: "Intro", type: "textarea" },
+    ],
+  },
+  {
+    page: "privacy", label: "Privacy Policy", path: "/privacy",
+    fields: [
+      { key: "privacy.eyebrow", label: "Eyebrow" },
+      { key: "privacy.title", label: "Title" },
+      { key: "privacy.intro", label: "Intro", type: "textarea" },
+    ],
+  },
+  {
+    page: "cancellations", label: "Cancellation Policy", path: "/cancellations",
+    fields: [
+      { key: "cancellations.eyebrow", label: "Eyebrow" },
+      { key: "cancellations.title", label: "Title" },
+    ],
+  },
+  {
+    page: "gift", label: "Gift a Journey", path: "/gift",
+    fields: [
+      { key: "gift.eyebrow", label: "Eyebrow" },
+      { key: "gift.title", label: "Title" },
+      { key: "gift.intro", label: "Intro", type: "textarea" },
+    ],
+  },
+  {
+    page: "quiz", label: "Travel Quiz", path: "/quiz",
+    fields: [
+      { key: "quiz.eyebrow", label: "Eyebrow" },
+      { key: "quiz.title", label: "Title" },
+    ],
+  },
+  {
+    page: "compare", label: "Compare", path: "/compare",
+    fields: [
+      { key: "compare.eyebrow", label: "Eyebrow" },
+      { key: "compare.title", label: "Title" },
+    ],
+  },
+  {
+    page: "itinerary", label: "Trip Builder", path: "/itinerary",
+    fields: [
+      { key: "itinerary.eyebrow", label: "Eyebrow" },
+      { key: "itinerary.title", label: "Title" },
+      { key: "itinerary.intro", label: "Intro", type: "textarea" },
+    ],
+  },
+  {
     page: "nav", label: "Navigation menu", path: "/",
     fields: [
       { key: "nav.destinations", label: "Destinations link" },
@@ -205,6 +274,39 @@ export const PAGE_DEFAULTS: Record<string, string> = {
   "press.eyebrow": "Press",
   "press.title": "Press & Media",
   "press.intro": "For interviews, press materials or partnership stories, our communications team would be glad to assist.",
+
+  "help.eyebrow": "How May We Help?",
+  "help.title": "Help Centre",
+  "help.subtitle": "Answers to questions our members often ask",
+
+  "contact.eyebrow": "At Your Service",
+  "contact.title": "The Concierge",
+  "contact.subtitle": "A specialist would be glad to assist with your enquiry.",
+
+  "terms.eyebrow": "Legal",
+  "terms.title": "Terms of Service",
+  "terms.intro": "Welcome to Voyages & Co. Please read these Terms of Service carefully before using our services. These terms constitute a legally binding agreement between you and Voyages & Co. Ltd.",
+
+  "privacy.eyebrow": "Legal",
+  "privacy.title": "Privacy Policy",
+  "privacy.intro": "Voyages & Co. Ltd. (\"Voyages & Co.\", \"we\", \"us\") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, and safeguard your information when you use our services at voyagesco.com.",
+
+  "cancellations.eyebrow": "Legal",
+  "cancellations.title": "Cancellation Policy",
+
+  "gift.eyebrow": "The gift of travel",
+  "gift.title": "Gift a journey",
+  "gift.intro": "Give someone an unforgettable escape. Tell us the details and our concierge will arrange a beautifully presented gift card.",
+
+  "quiz.eyebrow": "Find your journey",
+  "quiz.title": "What kind of traveller are you?",
+
+  "compare.eyebrow": "Compare",
+  "compare.title": "Side by side",
+
+  "itinerary.eyebrow": "Trip builder",
+  "itinerary.title": "Your itinerary",
+  "itinerary.intro": "Bundle stays, journeys, cruises and experiences, then request a single tailored quote.",
 
   "nav.destinations": "Destinations",
   "nav.stays": "Stays",
