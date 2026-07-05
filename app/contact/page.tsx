@@ -109,7 +109,7 @@ function ContactContent() {
               </div>
 
               <div>
-                <label className="text-[11px] font-medium text-ink-faint uppercase tracking-[0.12em] block mb-1.5">{t("contact.subject")}</label>
+                <label className="text-[11px] font-medium text-ink-faint uppercase tracking-[0.12em] block mb-1.5">{t("contact.subject")} <span className="text-gold">*</span></label>
                 <select value={form.subject} onChange={set("subject")} required className={`${inputClass} text-ink-muted`}>
                   <option value="">{t("contact.selectTopic")}</option>
                   <option>{t("contact.topicNewJourney")}</option>

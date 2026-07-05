@@ -61,12 +61,12 @@ export default function RequestForm({
     <form id={id} onSubmit={submit} className="bg-panel border border-line rounded-2xl p-6 sm:p-8 space-y-4 scroll-mt-28">
       <h2 className="font-serif text-2xl font-light text-ink">{title}</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div><Label>Name *</Label><input required className={cls} value={form.name} onChange={e => set("name", e.target.value)} /></div>
-        <div><Label>Email *</Label><input required type="email" className={cls} value={form.email} onChange={e => set("email", e.target.value)} /></div>
+        <div><Label>Name <span className="text-gold">*</span></Label><input required className={cls} value={form.name} onChange={e => set("name", e.target.value)} /></div>
+        <div><Label>Email <span className="text-gold">*</span></Label><input required type="email" className={cls} value={form.email} onChange={e => set("email", e.target.value)} /></div>
         <div><Label>Phone</Label><input className={cls} value={form.phone} onChange={e => set("phone", e.target.value)} /></div>
         {fields.map(f => (
           <div key={f.key} className={f.full || f.type === "textarea" ? "sm:col-span-2" : ""}>
-            <Label>{f.label}{f.required ? " *" : ""}</Label>
+            <Label>{f.label}{f.required ? <span className="text-gold"> *</span> : ""}</Label>
             {f.type === "textarea" ? (
               <textarea rows={3} required={f.required} className={cls} placeholder={f.placeholder} value={form[f.key]} onChange={e => set(f.key, e.target.value)} />
             ) : f.type === "select" ? (

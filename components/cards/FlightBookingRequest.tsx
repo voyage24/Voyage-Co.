@@ -71,8 +71,8 @@ export default function FlightBookingRequest({ flight }: { flight: Flight }) {
             ) : (
               <form onSubmit={submit} className="p-6 space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div><label className="block text-xs tracking-[0.1em] uppercase text-ink-faint mb-1.5">Name *</label><input required className={field} value={form.name} onChange={e => set("name", e.target.value)} /></div>
-                  <div><label className="block text-xs tracking-[0.1em] uppercase text-ink-faint mb-1.5">Email *</label><input required type="email" className={field} value={form.email} onChange={e => set("email", e.target.value)} /></div>
+                  <div><label className="block text-xs tracking-[0.1em] uppercase text-ink-faint mb-1.5">Name <span className="text-gold">*</span></label><input required className={field} value={form.name} onChange={e => set("name", e.target.value)} /></div>
+                  <div><label className="block text-xs tracking-[0.1em] uppercase text-ink-faint mb-1.5">Email <span className="text-gold">*</span></label><input required type="email" className={field} value={form.email} onChange={e => set("email", e.target.value)} /></div>
                   <div><label className="block text-xs tracking-[0.1em] uppercase text-ink-faint mb-1.5">Phone</label><input className={field} value={form.phone} onChange={e => set("phone", e.target.value)} /></div>
                   <div><label className="block text-xs tracking-[0.1em] uppercase text-ink-faint mb-1.5">Passengers</label><input type="number" min={1} className={field} value={form.passengers} onChange={e => set("passengers", e.target.value)} /></div>
                   <div className="sm:col-span-2"><label className="block text-xs tracking-[0.1em] uppercase text-ink-faint mb-1.5">Travel date</label><input type="date" className={field} value={form.date} onChange={e => set("date", e.target.value)} /></div>

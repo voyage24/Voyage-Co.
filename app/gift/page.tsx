@@ -65,8 +65,8 @@ export default function GiftPage() {
             </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div><label className="block text-xs tracking-[0.1em] uppercase text-ink-faint mb-1.5">Your name *</label><input required className={field} value={form.senderName} onChange={e => set("senderName", e.target.value)} /></div>
-            <div><label className="block text-xs tracking-[0.1em] uppercase text-ink-faint mb-1.5">Your email *</label><input required type="email" className={field} value={form.senderEmail} onChange={e => set("senderEmail", e.target.value)} /></div>
+            <div><label className="block text-xs tracking-[0.1em] uppercase text-ink-faint mb-1.5">Your name <span className="text-gold">*</span></label><input required className={field} value={form.senderName} onChange={e => set("senderName", e.target.value)} /></div>
+            <div><label className="block text-xs tracking-[0.1em] uppercase text-ink-faint mb-1.5">Your email <span className="text-gold">*</span></label><input required type="email" className={field} value={form.senderEmail} onChange={e => set("senderEmail", e.target.value)} /></div>
             <div><label className="block text-xs tracking-[0.1em] uppercase text-ink-faint mb-1.5">Recipient name</label><input className={field} value={form.recipientName} onChange={e => set("recipientName", e.target.value)} /></div>
             <div><label className="block text-xs tracking-[0.1em] uppercase text-ink-faint mb-1.5">Recipient email</label><input type="email" className={field} value={form.recipientEmail} onChange={e => set("recipientEmail", e.target.value)} /></div>
           </div>
