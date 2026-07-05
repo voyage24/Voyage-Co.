@@ -16,6 +16,13 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Incorrect email or password" }, { status: 401 });
   }
 
+  if (!customer.emailVerified) {
+    return NextResponse.json(
+      { error: "Please confirm your email first — check your inbox for the link.", unverified: true },
+      { status: 403 },
+    );
+  }
+
   await prisma.customer.update({ where: { id: customer.id }, data: { lastLoginAt: new Date() } });
   const { token } = await createCustomerSession(customer.id);
   const res = NextResponse.json({ ok: true, customer: { id: customer.id, email: customer.email, name: customer.name } });

@@ -23,8 +23,9 @@ export function renderConciergeEmailHTML(opts: {
   bodyHtml: string;
   signoff: string;
   ctaLabel?: string;
+  ctaHref?: string;
 }) {
-  const { eyebrow, heading, bodyHtml, signoff, ctaLabel } = opts;
+  const { eyebrow, heading, bodyHtml, signoff, ctaLabel, ctaHref } = opts;
   return `
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${PAGE};padding:32px 16px;">
   <tr><td align="center">
@@ -42,7 +43,7 @@ export function renderConciergeEmailHTML(opts: {
         ${ctaLabel ? `
         <table role="presentation" cellpadding="0" cellspacing="0" style="margin-top:28px;">
           <tr><td style="background:${NAVY};">
-            <a href="${WHATSAPP_URL}" style="display:inline-block;padding:14px 28px;font-family:Arial,Helvetica,sans-serif;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:#FFFFFF;text-decoration:none;">${ctaLabel}</a>
+            <a href="${ctaHref ?? WHATSAPP_URL}" style="display:inline-block;padding:14px 28px;font-family:Arial,Helvetica,sans-serif;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:#FFFFFF;text-decoration:none;">${ctaLabel}</a>
           </td></tr>
         </table>` : ""}
         <p style="margin:32px 0 0;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:${INK};">

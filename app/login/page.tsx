@@ -17,11 +17,14 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [unverified, setUnverified] = useState(false);
+  const [verified] = useState(() => typeof window !== "undefined" && new URLSearchParams(window.location.search).get("verified") === "1");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
+    setUnverified(false);
     try {
       const res = await fetch("/api/account/login", {
         method: "POST",
@@ -29,7 +32,7 @@ export default function LoginPage() {
         body: JSON.stringify({ email, password }),
       });
       const data = await res.json().catch(() => ({}));
-      if (!res.ok) { setError(data.error ?? "Sign in failed"); setLoading(false); return; }
+      if (!res.ok) { setError(data.error ?? "Sign in failed"); setUnverified(!!data.unverified); setLoading(false); return; }
       router.push("/account");
       router.refresh();
     } catch {
@@ -59,6 +62,12 @@ export default function LoginPage() {
           <p className="text-[10px] tracking-[0.28em] uppercase text-gold mb-2">{c("login.eyebrow") || t("login.eyebrow")}</p>
           <h1 className="font-serif text-3xl font-light text-ink mb-1">{c("login.title") || t("login.title")}</h1>
           <p className="text-sm text-ink-muted mb-7 font-light">{c("login.subtitle") || t("login.subtitle")}</p>
+
+          {verified && (
+            <div className="mb-5 rounded-sm border border-gold/40 bg-gold/10 px-4 py-3 text-sm text-ink font-light">
+              Your email is confirmed. Please sign in to continue.
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
@@ -91,7 +100,14 @@ export default function LoginPage() {
               </div>
             </div>
 
-            {error && <p className="text-sm text-red-600 font-light">{error}</p>}
+            {error && (
+              <p className="text-sm text-red-600 font-light">
+                {error}
+                {unverified && (
+                  <>{" "}<Link href={`/verify?pending=${encodeURIComponent(email)}`} className="text-gold link-underline">Resend link</Link>.</>
+                )}
+              </p>
+            )}
             <button
               type="submit" disabled={loading}
               className="w-full py-3.5 bg-ink hover:bg-ink/90 text-page font-normal text-xs tracking-[0.16em] uppercase rounded-sm transition-colors flex items-center justify-center gap-2 disabled:opacity-60"

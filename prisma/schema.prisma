@@ -53,12 +53,17 @@ model Customer {
   birthday     String?           // YYYY-MM-DD
   anniversary  String?           // YYYY-MM-DD
   occasionSentYear Int?          // last year an occasion email was sent (de-dupe)
+  emailVerified   DateTime?      // set when the account's email is confirmed; null = pending
+  verifyTokenHash String?        // HMAC of the current email-verification token
+  verifyExpiresAt DateTime?      // expiry for the verification token
   sessions     CustomerSession[]
   bookings     Booking[]
   reviews      Review[]
   saved        SavedItem[]
   searches     SavedSearch[]
   itineraries  Itinerary[]
+
+  @@index([verifyTokenHash])
 }
 
 model Itinerary {
