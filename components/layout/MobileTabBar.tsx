@@ -40,7 +40,7 @@ export default function MobileTabBar() {
               {/* Gold indicator bar that slides in for the active tab */}
               <span className="tab-indicator pointer-events-none absolute top-0 h-[2px] w-7 rounded-full bg-gold" />
               <Icon size={18} className="tab-pop" />
-              <span className="text-[9px] tracking-[0.08em] uppercase">{label}</span>
+              <span className="text-[8.5px] tracking-[0.02em] uppercase leading-none">{label}</span>
             </Link>
           );
         })}
