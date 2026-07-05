@@ -81,6 +81,7 @@ export default function Navbar() {
               <LanguageSelector tone="light" />
               <CurrencySelector tone="light" />
             </div>
+            <ThemeToggle tone="light" size={19} />
             <div className="hidden lg:block"><NavConverter tone="light" /></div>
             <SearchOverlay tone="light" triggerSize={20} />
             <div className="hidden lg:block"><AccountMenu tone="light" /></div>
@@ -172,13 +173,6 @@ export default function Navbar() {
                   })}
                 </div>
 
-                {/* Preferences */}
-                <div className="flex flex-wrap items-center gap-6 pt-7 border-t border-white/10 animate-fade-in" style={{ animationDelay: `${(delay++) * 45}ms`, animationFillMode: "both" }}>
-                  <ThemeToggle tone="light" size={18} showLabel />
-                  <LanguageSelector tone="light" />
-                  <CurrencySelector tone="light" />
-                  <NavConverter tone="light" />
-                </div>
               </div>
             </div>
           </div>
