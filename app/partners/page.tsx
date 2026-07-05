@@ -2,11 +2,12 @@
 
 import { ArrowRight, CheckCircle } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
-import { useContent } from "@/components/providers/ContentProvider";
+import { useContent, useContentList } from "@/components/providers/ContentProvider";
 
 export default function PartnersPage() {
   const { t } = useLanguage();
   const c = useContent();
+  const typesOverride = useContentList("list.partnersTypes");
 
   const PARTNER_TYPES = [
     {
@@ -29,6 +30,15 @@ export default function PartnersPage() {
     },
   ];
 
+  const types = typesOverride
+    ? typesOverride.map(p => ({
+        title: p.title || "",
+        desc: p.desc || "",
+        cta: p.cta || "",
+        benefits: (p.benefits || "").split("\n").map(s => s.trim()).filter(Boolean),
+      }))
+    : PARTNER_TYPES;
+
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-16">
       <div className="text-center mb-14">
@@ -40,8 +50,8 @@ export default function PartnersPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-14">
-        {PARTNER_TYPES.map(p => (
-          <div key={p.title} className="bg-panel rounded-2xl border border-line shadow-card p-6 flex flex-col">
+        {types.map((p, i) => (
+          <div key={`${p.title}-${i}`} className="bg-panel rounded-2xl border border-line shadow-card p-6 flex flex-col">
             <h2 className="font-serif text-xl font-light text-ink mb-2">{p.title}</h2>
             <p className="text-sm text-ink-muted mb-4 flex-1 font-light">{p.desc}</p>
             <ul className="space-y-2 mb-5">

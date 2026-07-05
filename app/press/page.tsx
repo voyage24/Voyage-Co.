@@ -1,11 +1,13 @@
 "use client";
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
-import { useContent } from "@/components/providers/ContentProvider";
+import { useContent, useContentList } from "@/components/providers/ContentProvider";
 
 export default function PressPage() {
   const { t } = useLanguage();
   const c = useContent();
+  const mentionsOverride = useContentList("list.pressMentions");
+  const factsOverride = useContentList("list.pressFacts");
 
   // Fictional publications — this is a demonstration site, so real magazine
   // names (and any implied endorsement) are deliberately avoided.
@@ -24,6 +26,9 @@ export default function PressPage() {
     { label: t("press.factLabel4"), value: t("press.factValue4") },
   ];
 
+  const mentions = mentionsOverride ?? MENTIONS;
+  const facts = factsOverride ?? FACTS;
+
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-24">
       <div className="text-center mb-16">
@@ -38,8 +43,8 @@ export default function PressPage() {
       <div className="mb-16">
         <h2 className="font-serif text-2xl font-light text-ink mb-6 text-center">{t("press.asFeaturedIn")}</h2>
         <div className="space-y-4">
-          {MENTIONS.map(m => (
-            <div key={m.outlet} className="bg-panel border border-line rounded-xl p-6">
+          {mentions.map((m, i) => (
+            <div key={`${m.outlet}-${i}`} className="bg-panel border border-line rounded-xl p-6">
               <p className="text-base text-ink-muted font-light italic leading-relaxed mb-3">&ldquo;{m.quote}&rdquo;</p>
               <div className="flex items-center gap-2 text-xs text-ink-faint font-light">
                 <span className="text-gold font-medium tracking-[0.08em] uppercase">{m.outlet}</span>
@@ -53,8 +58,8 @@ export default function PressPage() {
 
       {/* Quick facts */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-5 mb-16">
-        {FACTS.map(f => (
-          <div key={f.label} className="text-center bg-panel-soft border border-line rounded-xl p-5">
+        {facts.map((f, i) => (
+          <div key={`${f.label}-${i}`} className="text-center bg-panel-soft border border-line rounded-xl p-5">
             <p className="font-serif text-xl font-light text-ink mb-1">{f.value}</p>
             <p className="text-[10px] tracking-[0.14em] uppercase text-ink-faint font-light">{f.label}</p>
           </div>

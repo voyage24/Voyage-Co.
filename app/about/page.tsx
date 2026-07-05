@@ -1,18 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import { Target, Globe, Award } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
-import { useContent } from "@/components/providers/ContentProvider";
+import { useContent, useContentList } from "@/components/providers/ContentProvider";
+import { resolveIcon } from "@/lib/icon-map";
 
 export default function AboutPage() {
   const { t } = useLanguage();
   const c = useContent();
   const VALUES = [
-    { icon: Target, title: t("about.value1Title"), desc: t("about.value1Desc") },
-    { icon: Globe, title: t("about.value2Title"), desc: t("about.value2Desc") },
-    { icon: Award, title: t("about.value3Title"), desc: t("about.value3Desc") },
+    { icon: "Target", title: t("about.value1Title"), desc: t("about.value1Desc") },
+    { icon: "Globe", title: t("about.value2Title"), desc: t("about.value2Desc") },
+    { icon: "Award", title: t("about.value3Title"), desc: t("about.value3Desc") },
   ];
+  const values = useContentList("list.aboutValues") ?? VALUES;
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-16">
@@ -38,10 +39,10 @@ export default function AboutPage() {
       <div className="mb-12">
         <h2 className="font-serif text-3xl font-light text-ink mb-6">{t("about.valuesTitle")}</h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-          {VALUES.map(v => {
-            const Icon = v.icon;
+          {values.map((v, i) => {
+            const Icon = resolveIcon(v.icon);
             return (
-              <div key={v.title} className="bg-panel rounded-2xl border border-line shadow-card p-6">
+              <div key={`${v.title}-${i}`} className="bg-panel rounded-2xl border border-line shadow-card p-6">
                 <div className="w-11 h-11 rounded-sm border border-gold/30 bg-gold/5 flex items-center justify-center mb-4">
                   <Icon size={19} className="text-gold" />
                 </div>

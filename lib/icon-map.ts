@@ -3,6 +3,7 @@ import {
   Gift, Star, Globe, Heart, MapPin, Wine, Music, Compass, Users, Bell, Luggage,
   ListChecks, FileText, ArrowLeftRight, CalendarHeart, Gem, Headset, Anchor,
   Mountain, TreePalm, TrainFront, Coffee, Key, Crown, Diamond, Briefcase,
+  Target, Award, Leaf, Landmark, Sun, Snowflake, Waves, Building2,
   type LucideIcon,
 } from "lucide-react";
 
@@ -13,6 +14,7 @@ export const ICON_MAP: Record<string, LucideIcon> = {
   Gift, Star, Globe, Heart, MapPin, Wine, Music, Compass, Users, Bell, Luggage,
   ListChecks, FileText, ArrowLeftRight, CalendarHeart, Gem, Headset, Anchor,
   Mountain, TreePalm, TrainFront, Coffee, Key, Crown, Diamond, Briefcase,
+  Target, Award, Leaf, Landmark, Sun, Snowflake, Waves, Building2,
 };
 
 export function resolveIcon(name: string | undefined): LucideIcon {
