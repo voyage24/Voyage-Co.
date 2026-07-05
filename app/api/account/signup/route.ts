@@ -8,12 +8,18 @@ import { verifyTurnstile, clientIp } from "@/lib/security/turnstile";
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export async function POST(req: Request) {
-  const { name, email, password, turnstileToken } = await req.json().catch(() => ({}));
+  const { name, email, phone, password, turnstileToken } = await req.json().catch(() => ({}));
   if (!(await verifyTurnstile(turnstileToken, clientIp(req)))) {
     return NextResponse.json({ error: "Verification failed. Please try again." }, { status: 400 });
   }
+  if (!name || typeof name !== "string" || !name.trim()) {
+    return NextResponse.json({ error: "Please enter your name" }, { status: 400 });
+  }
   if (!email || typeof email !== "string" || !EMAIL_RE.test(email)) {
     return NextResponse.json({ error: "Please enter a valid email address" }, { status: 400 });
+  }
+  if (!phone || typeof phone !== "string" || !phone.trim()) {
+    return NextResponse.json({ error: "Please enter your mobile number" }, { status: 400 });
   }
   if (!password || typeof password !== "string" || password.length < 8) {
     return NextResponse.json({ error: "Password must be at least 8 characters" }, { status: 400 });
@@ -33,7 +39,7 @@ export async function POST(req: Request) {
   // emails only fire on verification, so bogus signups never reach the inbox.
   if (!process.env.SMTP_HOST) {
     const customer = await prisma.customer.create({
-      data: { email: normalized, passwordHash, name: name?.trim() || null, emailVerified: new Date() },
+      data: { email: normalized, passwordHash, name: name.trim(), phone: phone.trim(), emailVerified: new Date() },
     });
     const { token } = await createCustomerSession(customer.id);
     const res = NextResponse.json({ ok: true, customer: { id: customer.id, email: customer.email, name: customer.name } });
@@ -45,7 +51,7 @@ export async function POST(req: Request) {
   }
 
   const customer = await prisma.customer.create({
-    data: { email: normalized, passwordHash, name: name?.trim() || null },
+    data: { email: normalized, passwordHash, name: name.trim(), phone: phone.trim() },
   });
   try {
     const token = await issueVerifyToken(customer.id);

@@ -74,7 +74,7 @@ export default function SignupPage() {
               { key: "phone", label: t("signup.mobileNumber"), type: "tel", placeholder: "+91 98765 43210", icon: Phone },
             ].map(({ key, label, type, placeholder, icon: Icon }) => (
               <div key={key}>
-                <label className="text-[11px] font-medium text-ink-faint uppercase tracking-[0.12em] block mb-2">{label}</label>
+                <label className="text-[11px] font-medium text-ink-faint uppercase tracking-[0.12em] block mb-2">{label} <span className="text-gold">*</span></label>
                 <div className="relative">
                   <Icon size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-faint" />
                   <input
@@ -87,7 +87,7 @@ export default function SignupPage() {
             ))}
 
             <div>
-              <label className="text-[11px] font-medium text-ink-faint uppercase tracking-[0.12em] block mb-2">{t("signup.passwordLabel")}</label>
+              <label className="text-[11px] font-medium text-ink-faint uppercase tracking-[0.12em] block mb-2">{t("signup.passwordLabel")} <span className="text-gold">*</span></label>
               <div className="relative">
                 <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-faint" />
                 <input
