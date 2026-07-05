@@ -19,8 +19,16 @@ const TABS = [
 export default function MobileTabBar() {
   const pathname = usePathname() || "/";
   return (
-    <nav className="sm:hidden print:hidden fixed bottom-0 inset-x-0 z-40 bg-page/95 backdrop-blur-md border-t border-line animate-slide-up" style={{ paddingBottom: "env(safe-area-inset-bottom)" }}>
-      <div className="flex items-stretch justify-around h-14">
+    <nav
+      className="sm:hidden print:hidden fixed bottom-0 left-0 right-0 z-40 bg-page/95 backdrop-blur-md border-t border-line animate-slide-up"
+      style={{
+        paddingBottom: "env(safe-area-inset-bottom)",
+        paddingLeft: "env(safe-area-inset-left)",
+        paddingRight: "env(safe-area-inset-right)",
+        maxWidth: "100vw",
+      }}
+    >
+      <div className="flex items-stretch justify-around h-14 px-1">
         {TABS.map(({ href, label, Icon }) => {
           const active = href === "/" ? pathname === "/" : pathname.startsWith(href);
           return (

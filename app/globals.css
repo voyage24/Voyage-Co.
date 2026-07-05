@@ -146,12 +146,11 @@ html {
   text-size-adjust: 100%;
   -webkit-tap-highlight-color: transparent;
 }
-/* Clip horizontal overflow at the root too, so a stray-wide element can't
+/* Contain horizontal overflow at the root too, so a stray-wide element can't
    expand the initial containing block and push fixed bars (nav, bottom tab bar)
-   off-screen on phones. `clip` avoids creating a scroll container (unlike
-   `hidden`), so it doesn't affect vertical scrolling or sticky elements. */
-html { overflow-x: clip; }
-body { overflow-x: hidden; }
+   off-screen on phones. `hidden` (not `clip`) for universal support incl.
+   older iOS Safari. */
+html, body { overflow-x: hidden; max-width: 100%; }
 /* Media never forces the layout wider than the screen. */
 img, video { max-width: 100%; }
 
