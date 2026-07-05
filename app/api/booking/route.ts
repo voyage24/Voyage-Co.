@@ -5,6 +5,7 @@ import { renderConciergeEmailHTML, renderConciergeEmailText } from "@/lib/email/
 import { getCurrentCustomer } from "@/lib/customer/session";
 import { getRemaining } from "@/lib/availability";
 import { notifyWhatsApp } from "@/lib/email/notify-admin";
+import { verifyTurnstile, clientIp } from "@/lib/security/turnstile";
 
 function inr(n: number) {
   return `₹${n.toLocaleString("en-IN")}`;
@@ -17,6 +18,9 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 // Bookings". Payment (later) will flip the status to "confirmed".
 export async function POST(req: Request) {
   const b = await req.json().catch(() => ({}));
+  if (!(await verifyTurnstile(b?.turnstileToken, clientIp(req)))) {
+    return NextResponse.json({ error: "Verification failed. Please try again." }, { status: 400 });
+  }
   const { name, email, phone, itemType, itemId, itemTitle, image, total, checkIn, checkOut, guests, seat, notes, ref } = b ?? {};
 
   if (!name || !String(name).trim() || !email || typeof email !== "string" || !EMAIL_RE.test(email)) {

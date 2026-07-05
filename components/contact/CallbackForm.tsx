@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Phone } from "lucide-react";
+import TurnstileWidget from "@/components/ui/TurnstileWidget";
 
 const SLOTS = ["Morning (9–12)", "Afternoon (12–4)", "Evening (4–8)"];
 
@@ -10,13 +11,14 @@ export default function CallbackForm() {
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState("");
+  const [token, setToken] = useState("");
   const set = (k: keyof typeof form, v: string) => setForm(f => ({ ...f, [k]: v }));
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (loading) return;
     setError(""); setLoading(true);
-    const res = await fetch("/api/callback", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
+    const res = await fetch("/api/callback", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...form, turnstileToken: token }) });
     const data = await res.json().catch(() => ({}));
     setLoading(false);
     if (res.ok) setDone(true);
@@ -71,8 +73,9 @@ export default function CallbackForm() {
         <label className="block text-xs tracking-[0.1em] uppercase text-ink-faint mb-1.5">Anything we should know? (optional)</label>
         <textarea rows={3} className={field} value={form.note} onChange={e => set("note", e.target.value)} placeholder="Destinations, dates, party size…" />
       </div>
+      <TurnstileWidget onToken={setToken} />
       {error && <p className="text-sm text-red-600">{error}</p>}
-      <button type="submit" disabled={loading} className="w-full sm:w-auto px-7 py-3 bg-ink text-page text-xs tracking-[0.16em] uppercase rounded-sm hover:bg-ink/90 disabled:opacity-50 transition-colors">
+      <button type="submit" disabled={loading || !token} className="w-full sm:w-auto px-7 py-3 bg-ink text-page text-xs tracking-[0.16em] uppercase rounded-sm hover:bg-ink/90 disabled:opacity-50 transition-colors">
         {loading ? "Sending…" : "Request callback"}
       </button>
     </form>

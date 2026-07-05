@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { User, Mail, Lock, Phone, Eye, EyeOff, ArrowRight } from "lucide-react";
 import Logo from "@/components/ui/Logo";
+import TurnstileWidget from "@/components/ui/TurnstileWidget";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useContent } from "@/components/providers/ContentProvider";
 
@@ -15,6 +16,7 @@ export default function SignupPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [token, setToken] = useState("");
   const [form, setForm] = useState({ name: "", email: "", phone: "", password: "" });
 
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -28,10 +30,14 @@ export default function SignupPage() {
       const res = await fetch("/api/account/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, turnstileToken: token }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) { setError(data.error ?? "Could not create account"); setLoading(false); return; }
+      if (data.pendingVerification) {
+        router.push(`/verify?pending=${encodeURIComponent(form.email)}`);
+        return;
+      }
       router.push("/account");
       router.refresh();
     } catch {
@@ -101,9 +107,11 @@ export default function SignupPage() {
               <Link href="/privacy" className="text-gold link-underline">{t("privacy.title")}</Link>.
             </p>
 
+            <TurnstileWidget onToken={setToken} className="mt-1" />
+
             {error && <p className="text-sm text-red-600 font-light">{error}</p>}
             <button
-              type="submit" disabled={loading}
+              type="submit" disabled={loading || !token}
               className="w-full py-3.5 bg-ink hover:bg-ink/90 text-page font-normal text-xs tracking-[0.16em] uppercase rounded-sm transition-colors flex items-center justify-center gap-2 disabled:opacity-60"
             >
               {loading ? t("signup.submitting") : <>{t("signup.requestInvitationBtn")} <ArrowRight size={15} /></>}

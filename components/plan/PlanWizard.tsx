@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import TurnstileWidget from "@/components/ui/TurnstileWidget";
 
 const BUDGETS = ["plan.budget1", "plan.budget2", "plan.budget3", "plan.budget4", "plan.budgetFlexible"];
 const INTERESTS = [
@@ -18,6 +19,7 @@ export default function PlanWizard() {
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState(false);
+  const [token, setToken] = useState("");
 
   const [form, setForm] = useState({
     destination: "", dates: "", nights: "", adults: 2, children: 0,
@@ -39,6 +41,7 @@ export default function PlanWizard() {
           ...form,
           interests: form.interests.map(k => t(k)),
           budget: form.budget ? t(form.budget) : "",
+          turnstileToken: token,
         }),
       });
       if (!res.ok) throw new Error();
@@ -183,12 +186,13 @@ export default function PlanWizard() {
             {t("plan.next")} <ArrowRight size={15} />
           </button>
         ) : (
-          <button type="button" onClick={submit} disabled={!canSubmit || sending}
+          <button type="button" onClick={submit} disabled={!canSubmit || sending || !token}
             className="inline-flex items-center gap-2 px-6 py-3 bg-ink hover:bg-ink/90 disabled:opacity-50 text-page text-xs tracking-[0.14em] uppercase rounded-sm transition-colors">
             {sending ? t("plan.submitting") : t("plan.submit")}
           </button>
         )}
       </div>
+      {step === TOTAL_STEPS && <div className="mt-5 flex justify-end"><TurnstileWidget onToken={setToken} /></div>}
     </div>
   );
 }

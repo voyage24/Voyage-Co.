@@ -5,11 +5,15 @@ import { createCustomerSession, CUSTOMER_COOKIE_NAME, CUSTOMER_SESSION_TTL_MS } 
 import { createTransport, FROM_CONCIERGE } from "@/lib/email/transport";
 import { renderConciergeEmailHTML, renderConciergeEmailText } from "@/lib/email/template";
 import { notifyWhatsApp } from "@/lib/email/notify-admin";
+import { verifyTurnstile, clientIp } from "@/lib/security/turnstile";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export async function POST(req: Request) {
-  const { name, email, password } = await req.json().catch(() => ({}));
+  const { name, email, password, turnstileToken } = await req.json().catch(() => ({}));
+  if (!(await verifyTurnstile(turnstileToken, clientIp(req)))) {
+    return NextResponse.json({ error: "Verification failed. Please try again." }, { status: 400 });
+  }
   if (!email || typeof email !== "string" || !EMAIL_RE.test(email)) {
     return NextResponse.json({ error: "Please enter a valid email address" }, { status: 400 });
   }

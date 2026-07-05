@@ -1,12 +1,14 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { notifyAdminEnquiry } from "@/lib/email/notify-admin";
+import { verifyTurnstile, clientIp } from "@/lib/security/turnstile";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 // "Send a gift" request — concierge issues the card once payment is arranged.
 export async function POST(req: Request) {
-  const { senderName, senderEmail, recipientName, recipientEmail, amount, message } = await req.json().catch(() => ({}));
+  const { senderName, senderEmail, recipientName, recipientEmail, amount, message, turnstileToken } = await req.json().catch(() => ({}));
+  if (!(await verifyTurnstile(turnstileToken, clientIp(req)))) return NextResponse.json({ error: "Verification failed. Please try again." }, { status: 400 });
   if (!senderName || !senderEmail || !EMAIL_RE.test(senderEmail)) {
     return NextResponse.json({ error: "Please enter your name and a valid email" }, { status: 400 });
   }

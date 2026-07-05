@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Check } from "lucide-react";
+import TurnstileWidget from "@/components/ui/TurnstileWidget";
 
 export type FieldDef = {
   key: string;
@@ -28,13 +29,14 @@ export default function RequestForm({
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState("");
+  const [token, setToken] = useState("");
   const set = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }));
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (busy) return;
     setError(""); setBusy(true);
-    const res = await fetch(endpoint, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
+    const res = await fetch(endpoint, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...form, turnstileToken: token }) });
     const data = await res.json().catch(() => ({}));
     setBusy(false);
     if (res.ok) setDone(true); else setError(data.error ?? "Something went wrong.");
@@ -77,8 +79,9 @@ export default function RequestForm({
           </div>
         ))}
       </div>
+      <TurnstileWidget onToken={setToken} />
       {error && <p className="text-sm text-red-600">{error}</p>}
-      <button type="submit" disabled={busy} className="w-full sm:w-auto px-7 py-3 bg-ink text-page text-xs tracking-[0.16em] uppercase rounded-sm hover:bg-ink/90 disabled:opacity-50">{busy ? "Sending…" : submitLabel}</button>
+      <button type="submit" disabled={busy || !token} className="w-full sm:w-auto px-7 py-3 bg-ink text-page text-xs tracking-[0.16em] uppercase rounded-sm hover:bg-ink/90 disabled:opacity-50">{busy ? "Sending…" : submitLabel}</button>
     </form>
   );
 }

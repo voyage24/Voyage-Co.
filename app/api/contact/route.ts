@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
+import { verifyTurnstile, clientIp } from "@/lib/security/turnstile";
 import { EN, DICTIONARIES } from "@/lib/i18n/dictionaries";
 import { renderConciergeEmailHTML, renderConciergeEmailText } from "@/lib/email/template";
 import { prisma } from "@/lib/prisma";
@@ -29,7 +30,10 @@ const EMAIL_FOOTER_TEXT =
   "If you have received this in error, please notify the sender and delete it.";
 
 export async function POST(req: Request) {
-  const { name, email, phone, subject, message, language } = await req.json();
+  const { name, email, phone, subject, message, language, turnstileToken } = await req.json();
+  if (!(await verifyTurnstile(turnstileToken, clientIp(req)))) {
+    return NextResponse.json({ error: "Verification failed. Please try again." }, { status: 400 });
+  }
   const dict = DICTIONARIES[language as string] ?? EN;
   const tr = (key: string) => dict[key] ?? EN[key] ?? key;
 

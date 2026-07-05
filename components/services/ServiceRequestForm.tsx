@@ -2,19 +2,21 @@
 
 import { useState } from "react";
 import { Check } from "lucide-react";
+import TurnstileWidget from "@/components/ui/TurnstileWidget";
 
 export default function ServiceRequestForm({ services }: { services: string[] }) {
   const [form, setForm] = useState({ name: "", email: "", phone: "", service: services[0], date: "", details: "" });
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState("");
+  const [token, setToken] = useState("");
   const set = (k: keyof typeof form, v: string) => setForm(f => ({ ...f, [k]: v }));
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (busy) return;
     setError(""); setBusy(true);
-    const res = await fetch("/api/services-request", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
+    const res = await fetch("/api/services-request", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...form, turnstileToken: token }) });
     const data = await res.json().catch(() => ({}));
     setBusy(false);
     if (res.ok) setDone(true); else setError(data.error ?? "Something went wrong.");
@@ -48,8 +50,9 @@ export default function ServiceRequestForm({ services }: { services: string[] })
         <div className="sm:col-span-2"><label className="block text-xs tracking-[0.1em] uppercase text-ink-faint mb-1.5">When (optional)</label><input className={field} placeholder="Dates or occasion" value={form.date} onChange={e => set("date", e.target.value)} /></div>
       </div>
       <div><label className="block text-xs tracking-[0.1em] uppercase text-ink-faint mb-1.5">Details</label><textarea rows={3} className={field} value={form.details} onChange={e => set("details", e.target.value)} placeholder="Party size, preferences, anything we should know…" /></div>
+      <TurnstileWidget onToken={setToken} />
       {error && <p className="text-sm text-red-600">{error}</p>}
-      <button type="submit" disabled={busy} className="w-full sm:w-auto px-7 py-3 bg-ink text-page text-xs tracking-[0.16em] uppercase rounded-sm hover:bg-ink/90 disabled:opacity-50">{busy ? "Sending…" : "Send request"}</button>
+      <button type="submit" disabled={busy || !token} className="w-full sm:w-auto px-7 py-3 bg-ink text-page text-xs tracking-[0.16em] uppercase rounded-sm hover:bg-ink/90 disabled:opacity-50">{busy ? "Sending…" : "Send request"}</button>
     </form>
   );
 }

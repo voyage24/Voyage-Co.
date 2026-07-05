@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Gift, Check } from "lucide-react";
 import { useContent } from "@/components/providers/ContentProvider";
+import TurnstileWidget from "@/components/ui/TurnstileWidget";
 
 const AMOUNTS = [25000, 50000, 100000, 250000];
 
@@ -14,6 +15,7 @@ export default function GiftPage() {
   const [error, setError] = useState("");
   const set = (k: keyof typeof form, v: string | number) => setForm(f => ({ ...f, [k]: v }));
 
+  const [token, setToken] = useState("");
   const [code, setCode] = useState("");
   const [balance, setBalance] = useState<{ found: boolean; balance?: number; status?: string } | null>(null);
 
@@ -21,7 +23,7 @@ export default function GiftPage() {
     e.preventDefault();
     if (busy) return;
     setError(""); setBusy(true);
-    const res = await fetch("/api/gift/request", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
+    const res = await fetch("/api/gift/request", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...form, turnstileToken: token }) });
     const data = await res.json().catch(() => ({}));
     setBusy(false);
     if (res.ok) setDone(true); else setError(data.error ?? "Something went wrong.");
@@ -69,8 +71,9 @@ export default function GiftPage() {
             <div><label className="block text-xs tracking-[0.1em] uppercase text-ink-faint mb-1.5">Recipient email</label><input type="email" className={field} value={form.recipientEmail} onChange={e => set("recipientEmail", e.target.value)} /></div>
           </div>
           <div><label className="block text-xs tracking-[0.1em] uppercase text-ink-faint mb-1.5">Personal message (optional)</label><textarea rows={3} className={field} value={form.message} onChange={e => set("message", e.target.value)} /></div>
+          <TurnstileWidget onToken={setToken} />
           {error && <p className="text-sm text-red-600">{error}</p>}
-          <button type="submit" disabled={busy} className="w-full sm:w-auto px-7 py-3 bg-ink text-page text-xs tracking-[0.16em] uppercase rounded-sm hover:bg-ink/90 disabled:opacity-50">{busy ? "Sending…" : "Request gift card"}</button>
+          <button type="submit" disabled={busy || !token} className="w-full sm:w-auto px-7 py-3 bg-ink text-page text-xs tracking-[0.16em] uppercase rounded-sm hover:bg-ink/90 disabled:opacity-50">{busy ? "Sending…" : "Request gift card"}</button>
         </form>
       )}
 

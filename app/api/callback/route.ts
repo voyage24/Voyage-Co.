@@ -1,13 +1,15 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { notifyAdminEnquiry } from "@/lib/email/notify-admin";
+import { verifyTurnstile, clientIp } from "@/lib/security/turnstile";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 // "Request a callback" — lands in the enquiries inbox (type "callback") with
 // the preferred day/time in the message so the concierge can call back.
 export async function POST(req: Request) {
-  const { name, email, phone, day, slot, note } = await req.json().catch(() => ({}));
+  const { name, email, phone, day, slot, note, turnstileToken } = await req.json().catch(() => ({}));
+  if (!(await verifyTurnstile(turnstileToken, clientIp(req)))) return NextResponse.json({ error: "Verification failed. Please try again." }, { status: 400 });
   if (!name || typeof name !== "string") return NextResponse.json({ error: "Please enter your name" }, { status: 400 });
   if (!phone || typeof phone !== "string") return NextResponse.json({ error: "Please enter a phone number" }, { status: 400 });
   if (!email || !EMAIL_RE.test(email)) return NextResponse.json({ error: "Please enter a valid email" }, { status: 400 });

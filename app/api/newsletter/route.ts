@@ -1,11 +1,15 @@
 import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 import { prisma } from "@/lib/prisma";
+import { verifyTurnstile, clientIp } from "@/lib/security/turnstile";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export async function POST(req: Request) {
-  const { email, language } = await req.json();
+  const { email, language, turnstileToken } = await req.json();
+  if (!(await verifyTurnstile(turnstileToken, clientIp(req)))) {
+    return NextResponse.json({ error: "Verification failed. Please try again." }, { status: 400 });
+  }
 
   if (!email || typeof email !== "string" || !EMAIL_RE.test(email)) {
     return NextResponse.json({ error: "Please enter a valid email address" }, { status: 400 });

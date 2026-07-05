@@ -5,6 +5,7 @@ import { X, Check } from "lucide-react";
 import type { Flight } from "@/lib/types";
 import { useCurrency } from "@/components/providers/CurrencyProvider";
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import TurnstileWidget from "@/components/ui/TurnstileWidget";
 
 // "Request to book" flow for live fares (which aren't in the DB). Submits a
 // flight enquiry the concierge confirms & ticket manually.
@@ -16,6 +17,7 @@ export default function FlightBookingRequest({ flight }: { flight: Flight }) {
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState("");
+  const [token, setToken] = useState("");
   const set = (k: keyof typeof form, v: string) => setForm(f => ({ ...f, [k]: v }));
 
   const route = `${flight.originCity} (${flight.origin}) → ${flight.destinationCity} (${flight.destination})`;
@@ -30,6 +32,7 @@ export default function FlightBookingRequest({ flight }: { flight: Flight }) {
         name: form.name, email: form.email, phone: form.phone,
         route, airline: `${flight.airline} ${flight.flightNumber}`, price: flight.price,
         date: form.date, passengers: form.passengers, details: form.details,
+        turnstileToken: token,
       }),
     });
     const data = await res.json().catch(() => ({}));
@@ -75,8 +78,9 @@ export default function FlightBookingRequest({ flight }: { flight: Flight }) {
                   <div className="sm:col-span-2"><label className="block text-xs tracking-[0.1em] uppercase text-ink-faint mb-1.5">Travel date</label><input type="date" className={field} value={form.date} onChange={e => set("date", e.target.value)} /></div>
                 </div>
                 <div><label className="block text-xs tracking-[0.1em] uppercase text-ink-faint mb-1.5">Notes</label><textarea rows={2} className={field} value={form.details} onChange={e => set("details", e.target.value)} placeholder="Seat preference, frequent flyer, flexibility…" /></div>
+                <TurnstileWidget onToken={setToken} />
                 {error && <p className="text-sm text-red-600">{error}</p>}
-                <button type="submit" disabled={busy} className="w-full px-7 py-3 bg-ink text-page text-xs tracking-[0.16em] uppercase rounded-sm hover:bg-ink/90 disabled:opacity-50">{busy ? "Sending…" : "Send booking request"}</button>
+                <button type="submit" disabled={busy || !token} className="w-full px-7 py-3 bg-ink text-page text-xs tracking-[0.16em] uppercase rounded-sm hover:bg-ink/90 disabled:opacity-50">{busy ? "Sending…" : "Send booking request"}</button>
                 <p className="text-[11px] text-ink-faint font-light text-center">No payment now — we&apos;ll confirm the fare before ticketing.</p>
               </form>
             )}

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { verifyTurnstile, clientIp } from "@/lib/security/turnstile";
 import { createTransport, FROM_CONCIERGE } from "@/lib/email/transport";
 import { notifyWhatsApp } from "@/lib/email/notify-admin";
 
@@ -10,6 +11,9 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 // same structured payload can later feed a real booking/itinerary flow.
 export async function POST(req: Request) {
   const b = await req.json().catch(() => ({}));
+  if (!(await verifyTurnstile(b?.turnstileToken, clientIp(req)))) {
+    return NextResponse.json({ error: "Verification failed. Please try again." }, { status: 400 });
+  }
   const { name, email, phone, destination, dates, nights, adults, children, budget, interests, occasion, notes } = b ?? {};
 
   if (!name || !email || typeof email !== "string" || !EMAIL_RE.test(email)) {

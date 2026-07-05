@@ -9,6 +9,7 @@ import { useCurrency } from "@/components/providers/CurrencyProvider";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import NotifyMe from "@/components/booking/NotifyMe";
 import SeatMap from "@/components/booking/SeatMap";
+import TurnstileWidget from "@/components/ui/TurnstileWidget";
 
 export interface BookingItem {
   type: "hotel" | "flight" | "package" | "experience" | "train" | "cruise";
@@ -31,6 +32,7 @@ export default function BookingForm({ item, soldOut = false }: { item: BookingIt
   const [reference, setReference] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [token, setToken] = useState("");
   const { addTrip } = useTrips();
   const { format } = useCurrency();
   const { t } = useLanguage();
@@ -75,7 +77,7 @@ export default function BookingForm({ item, soldOut = false }: { item: BookingIt
           itemType: item.type, itemId: item.id, itemTitle: item.title, image: item.image,
           checkIn: form.checkIn || null, checkOut: form.checkOut || null, guests: form.guests,
           seat: item.type === "flight" ? form.seat || null : null,
-          total, ref,
+          total, ref, turnstileToken: token,
         }),
       });
       const data = await res.json().catch(() => ({}));
@@ -186,10 +188,11 @@ export default function BookingForm({ item, soldOut = false }: { item: BookingIt
           </div>
         )}
 
+        {!soldOut && <div className="flex justify-center"><TurnstileWidget onToken={setToken} /></div>}
         {error && <p className="text-sm text-red-600 font-light text-center">{error}</p>}
         <button
           type="submit"
-          disabled={submitting || soldOut}
+          disabled={submitting || soldOut || !token}
           className="w-full py-4 bg-ink hover:bg-ink/90 disabled:opacity-50 disabled:cursor-not-allowed text-page font-medium text-xs tracking-[0.16em] uppercase rounded-sm transition-colors"
         >
           {soldOut ? t("booking.fullyBooked") : submitting ? t("booking.sending") : t("booking.confirmReservation")}

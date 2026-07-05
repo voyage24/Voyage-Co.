@@ -7,6 +7,7 @@ import Logo from "@/components/ui/Logo";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useSetting, useSettings } from "@/components/providers/SettingsProvider";
 import { useContent, useContentList } from "@/components/providers/ContentProvider";
+import TurnstileWidget from "@/components/ui/TurnstileWidget";
 
 type FooterLink = { href: string; key?: string; label?: string };
 
@@ -90,6 +91,7 @@ export default function Footer() {
   const whatsapp = useSetting("contact.whatsapp") || "919919910213";
   const settings = useSettings();
   const [email, setEmail] = useState("");
+  const [token, setToken] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
 
   const handleSubscribe = async (e: React.FormEvent) => {
@@ -100,7 +102,7 @@ export default function Footer() {
       const res = await fetch("/api/newsletter", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, language: language.code }),
+        body: JSON.stringify({ email, language: language.code, turnstileToken: token }),
       });
       if (!res.ok) throw new Error();
       setStatus("success");
@@ -132,12 +134,16 @@ export default function Footer() {
             />
             <button
               type="submit"
-              disabled={status === "loading"}
+              disabled={status === "loading" || (!!email && !token)}
               className="text-[11px] tracking-[0.22em] uppercase text-ink hover:text-gold transition-colors pl-4 disabled:opacity-50"
             >
               {status === "loading" ? t("footer.subscribing") : (c("footer.subscribe") || t("footer.subscribe"))}
             </button>
           </form>
+        )}
+        {/* Bot check appears only once the visitor starts entering an email. */}
+        {status !== "success" && email && (
+          <div className="mt-4 flex justify-center"><TurnstileWidget onToken={setToken} /></div>
         )}
         {status === "error" && (
           <p className="text-sm text-red-600 max-w-md mx-auto mt-3">{t("footer.subscribeError")}</p>

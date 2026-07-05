@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { Mail, Send } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useContent } from "@/components/providers/ContentProvider";
+import TurnstileWidget from "@/components/ui/TurnstileWidget";
 
 function ContactContent() {
   const { t, language } = useLanguage();
@@ -18,6 +19,7 @@ function ContactContent() {
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState(false);
+  const [token, setToken] = useState("");
 
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
     setForm(prev => ({ ...prev, [k]: e.target.value }));
@@ -30,7 +32,7 @@ function ContactContent() {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, language: language.code }),
+        body: JSON.stringify({ ...form, language: language.code, turnstileToken: token }),
       });
       if (!res.ok) throw new Error("Failed to send");
       setSent(true);
@@ -130,12 +132,13 @@ function ContactContent() {
                 />
               </div>
 
+              <TurnstileWidget onToken={setToken} />
               {error && (
                 <p className="text-xs text-red-600 font-light">{t("contact.sendError")}</p>
               )}
               <button
                 type="submit"
-                disabled={sending}
+                disabled={sending || !token}
                 className="w-full py-3.5 bg-ink hover:bg-ink/90 disabled:opacity-60 text-page font-normal text-xs tracking-[0.14em] uppercase rounded-sm transition-colors flex items-center justify-center gap-2"
               >
                 <Send size={14} /> {sending ? t("contact.sending") : t("contact.sendEnquiry")}
