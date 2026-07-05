@@ -62,6 +62,7 @@ export default function Navbar() {
   let delay = 0; // staggered entrance for menu items
 
   return (
+    <>
     <nav className="fixed top-0 left-0 right-0 z-50 bg-vc-950/95 backdrop-blur-md border-b border-white/10">
       <div className="max-w-[1500px] mx-auto px-6 lg:px-12">
         <div className="flex items-center justify-between gap-4 min-h-20">
@@ -89,9 +90,12 @@ export default function Navbar() {
           </div>
         </div>
       </div>
+    </nav>
 
-      {/* Full-screen menu, sitting just below the persistent bar */}
-      {menuOpen && (
+    {/* Menu rendered OUTSIDE <nav> — the bar's backdrop-filter would otherwise
+        make this fixed overlay be contained by the 80px bar (a CSS gotcha),
+        collapsing it to zero height. */}
+    {menuOpen && (
         <div className="fixed inset-x-0 top-20 bottom-0 z-40">
           <div className="absolute inset-0 bg-vc-950/98 backdrop-blur-xl animate-fade-in" onClick={close} />
           <div className="relative h-full overflow-y-auto overscroll-contain">
@@ -151,6 +155,6 @@ export default function Navbar() {
           </div>
         </div>
       )}
-    </nav>
+    </>
   );
 }
