@@ -81,7 +81,7 @@ export default function Navbar() {
               <LanguageSelector tone="light" />
               <CurrencySelector tone="light" />
             </div>
-            <ThemeToggle tone="light" size={19} />
+            <div className="hidden lg:block"><ThemeToggle tone="light" size={19} /></div>
             <div className="hidden lg:block"><NavConverter tone="light" /></div>
             <SearchOverlay tone="light" triggerSize={20} />
             <div className="hidden lg:block"><AccountMenu tone="light" /></div>
@@ -173,6 +173,10 @@ export default function Navbar() {
                   })}
                 </div>
 
+                {/* Theme toggle in the menu — phones only (it's on the bar for desktop). */}
+                <div className="lg:hidden flex items-center gap-6 pt-7 border-t border-white/10">
+                  <ThemeToggle tone="light" size={18} showLabel />
+                </div>
               </div>
             </div>
           </div>
