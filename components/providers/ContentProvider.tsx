@@ -16,3 +16,19 @@ export function useContent(): (key: string) => string {
   const ctx = useContext(ContentContext);
   return (key: string) => ctx[key] ?? "";
 }
+
+// Repeatable lists are stored as a JSON string under their key. Returns the
+// parsed override array, or `null` when nothing is saved so the caller can fall
+// back to its hard-coded default:
+//   const items = useContentList("list.faq") ?? DEFAULT_FAQ;
+export function useContentList(key: string): Record<string, string>[] | null {
+  const ctx = useContext(ContentContext);
+  const raw = ctx[key];
+  if (!raw) return null;
+  try {
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? (parsed as Record<string, string>[]) : null;
+  } catch {
+    return null;
+  }
+}
