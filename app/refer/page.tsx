@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Gift } from "lucide-react";
 import { getCurrentCustomer } from "@/lib/customer/session";
 import { ensureReferralCode, REFERRAL_POINTS } from "@/lib/customer/referral";
+import { getPageContent } from "@/lib/page-content";
 import ReferShare from "@/components/account/ReferShare";
 
 export const dynamic = "force-dynamic";
@@ -16,6 +17,7 @@ const SITE_URL = "https://voyagesco.com";
 
 export default async function ReferPage() {
   const customer = await getCurrentCustomer();
+  const c = await getPageContent();
   const code = customer ? await ensureReferralCode(customer) : null;
   const link = code ? `${SITE_URL}/signup?ref=${code}` : "";
 
@@ -23,8 +25,8 @@ export default async function ReferPage() {
     <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20">
       <div className="text-center mb-10">
         <Gift size={28} className="text-gold mx-auto mb-4" />
-        <p className="text-[11px] tracking-[0.3em] uppercase text-gold mb-3">Refer a Friend</p>
-        <h1 className="font-serif text-3xl sm:text-5xl font-light text-ink mb-4">Share the journey</h1>
+        <p className="text-[11px] tracking-[0.3em] uppercase text-gold mb-3">{c("refer.eyebrow")}</p>
+        <h1 className="font-serif text-3xl sm:text-5xl font-light text-ink mb-4">{c("refer.title")}</h1>
         <p className="text-ink-muted font-light max-w-xl mx-auto">
           Introduce a friend to Voyages &amp; Co. When they create an account, you&apos;ll earn <span className="text-ink font-medium">{REFERRAL_POINTS} loyalty points</span> — our thanks for spreading the word.
         </p>

@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { Phone, MessageCircle, PhoneCall, Mail } from "lucide-react";
 import { getSiteSettings } from "@/lib/site-settings";
+import { getPageContent } from "@/lib/page-content";
 
 export const metadata: Metadata = {
   title: "Support — Voyages & Co.",
@@ -10,6 +11,7 @@ export const metadata: Metadata = {
 
 export default async function SupportPage() {
   const settings = await getSiteSettings();
+  const c = await getPageContent();
   const phone = settings["contact.phone"] || "+91 99199 10213";
   const whatsapp = settings["contact.whatsapp"] || "919919910213";
   const email = settings["contact.email"] || "hello@voyagesco.com";
@@ -20,9 +22,9 @@ export default async function SupportPage() {
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20">
       <div className="text-center mb-10">
-        <p className="text-[11px] tracking-[0.3em] uppercase text-gold mb-3">Support</p>
-        <h1 className="font-serif text-3xl sm:text-5xl font-light text-ink mb-4">We&apos;re here to help</h1>
-        <p className="text-ink-muted font-light max-w-xl mx-auto">Speak to our concierge directly — call us, message on WhatsApp, request a callback, or send an email. A real advisor will respond.</p>
+        <p className="text-[11px] tracking-[0.3em] uppercase text-gold mb-3">{c("support.eyebrow")}</p>
+        <h1 className="font-serif text-3xl sm:text-5xl font-light text-ink mb-4">{c("support.title")}</h1>
+        <p className="text-ink-muted font-light max-w-xl mx-auto">{c("support.intro")}</p>
       </div>
 
       <div className="bg-panel border border-line rounded-2xl p-8 text-center">

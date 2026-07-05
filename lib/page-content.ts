@@ -235,6 +235,38 @@ export const PAGE_REGISTRY: ContentPage[] = [
     ],
   },
   {
+    page: "group", label: "Group Booking", path: "/group",
+    fields: [
+      { key: "group.eyebrow", label: "Eyebrow" },
+      { key: "group.title", label: "Title" },
+      { key: "group.intro", label: "Intro", type: "textarea" },
+    ],
+  },
+  {
+    page: "support", label: "Support", path: "/support",
+    fields: [
+      { key: "support.eyebrow", label: "Eyebrow" },
+      { key: "support.title", label: "Title" },
+      { key: "support.intro", label: "Intro", type: "textarea" },
+    ],
+  },
+  {
+    page: "refer", label: "Refer a Friend", path: "/refer",
+    fields: [
+      { key: "refer.eyebrow", label: "Eyebrow" },
+      { key: "refer.title", label: "Title" },
+    ],
+  },
+  {
+    page: "reserve", label: "Voyages Reserve", path: "/membership#voyages-reserve",
+    fields: [
+      { key: "reserve.eyebrow", label: "Eyebrow" },
+      { key: "reserve.title", label: "Wordmark" },
+      { key: "reserve.intro", label: "Description", type: "textarea" },
+      { key: "reserve.cta", label: "Button label" },
+    ],
+  },
+  {
     page: "nav", label: "Navigation menu", path: "/",
     fields: [
       { key: "nav.destinations", label: "Destinations link" },
@@ -375,6 +407,22 @@ export const PAGE_DEFAULTS: Record<string, string> = {
   "trips.eyebrow": "Reservations",
   "trips.title": "My Trips",
   "trips.intro": "Every journey you've reserved with us.",
+
+  "group.eyebrow": "Group Travel",
+  "group.title": "Group bookings",
+  "group.intro": "Travelling as a group? Tell us a little about the occasion and our concierge will craft a tailored proposal — flights, stays, experiences and every detail, coordinated for you.",
+
+  "support.eyebrow": "Support",
+  "support.title": "We're here to help",
+  "support.intro": "Speak to our concierge directly — call us, message on WhatsApp, request a callback, or send an email. A real advisor will respond.",
+
+  "refer.eyebrow": "Refer a Friend",
+  "refer.title": "Share the journey",
+
+  "reserve.eyebrow": "By Invitation",
+  "reserve.title": "Voyages Reserve",
+  "reserve.intro": "Our most personal tier of service — a dedicated travel designer, priority everything, and privileges reserved for a select few. Separate from the free loyalty program above.",
+  "reserve.cta": "Request an invitation",
 
   "nav.destinations": "Destinations",
   "nav.stays": "Stays",

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Users, Gem, CalendarHeart } from "lucide-react";
 import RequestForm from "@/components/tools/RequestForm";
 import Reveal from "@/components/ui/Reveal";
+import { getPageContent } from "@/lib/page-content";
 
 export const metadata: Metadata = {
   title: "Group Booking — Voyages & Co.",
@@ -14,13 +15,14 @@ const HIGHLIGHTS = [
   { icon: Users, title: "Family & friends", text: "Multi-generational journeys and private group escapes, effortlessly coordinated." },
 ];
 
-export default function GroupPage() {
+export default async function GroupPage() {
+  const c = await getPageContent();
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20">
       <div className="text-center mb-12">
-        <p className="text-[11px] tracking-[0.3em] uppercase text-gold mb-3">Group Travel</p>
-        <h1 className="font-serif text-3xl sm:text-5xl font-light text-ink mb-4">Group bookings</h1>
-        <p className="text-ink-muted font-light max-w-xl mx-auto">Travelling as a group? Tell us a little about the occasion and our concierge will craft a tailored proposal — flights, stays, experiences and every detail, coordinated for you.</p>
+        <p className="text-[11px] tracking-[0.3em] uppercase text-gold mb-3">{c("group.eyebrow")}</p>
+        <h1 className="font-serif text-3xl sm:text-5xl font-light text-ink mb-4">{c("group.title")}</h1>
+        <p className="text-ink-muted font-light max-w-xl mx-auto">{c("group.intro")}</p>
       </div>
 
       <Reveal soft className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-14">

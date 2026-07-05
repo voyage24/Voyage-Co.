@@ -132,6 +132,24 @@ export const LIST_REGISTRY: ContentList[] = [
     ],
   },
   {
+    key: "list.reserve",
+    page: "reserve-perks",
+    label: "Voyages Reserve perks",
+    path: "/membership#voyages-reserve",
+    itemLabel: "perk",
+    fields: [
+      { key: "perk", label: "Perk" },
+    ],
+    default: [
+      { perk: "A dedicated personal travel designer" },
+      { perk: "Priority concierge, around the clock" },
+      { perk: "Complimentary upgrades & welcome amenities" },
+      { perk: "Invitations to private events & experiences" },
+      { perk: "Preferred rates at signature properties" },
+      { perk: "First access to new journeys" },
+    ],
+  },
+  {
     key: "list.nav",
     page: "nav-links",
     label: "Navigation links",

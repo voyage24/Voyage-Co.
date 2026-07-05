@@ -11,20 +11,12 @@ export const metadata: Metadata = {
   description: "Earn points on every journey and unlock member rates, perks and priority concierge.",
 };
 
-const VIP_PERKS = [
-  "A dedicated personal travel designer",
-  "Priority concierge, around the clock",
-  "Complimentary upgrades & welcome amenities",
-  "Invitations to private events & experiences",
-  "Preferred rates at signature properties",
-  "First access to new journeys",
-];
-
 const VIP_ENQUIRY = "/contact?message=" + encodeURIComponent("I'd like to request an invitation to Voyages Reserve.");
 
 export default async function MembershipPage() {
   const c = await getPageContent();
   const tiers = (await getPageList("list.membership")).map(t => ({ name: t.name || "", at: t.at || "", perks: splitLines(t.perks) }));
+  const reservePerks = (await getPageList("list.reserve")).map(p => p.perk || "").filter(Boolean);
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20">
       <div className="text-center mb-10">
@@ -59,20 +51,20 @@ export default async function MembershipPage() {
 
       {/* Voyages Reserve — a distinct, premium, invitation-based tier. */}
       <section id="voyages-reserve" className="scroll-mt-28 mt-20 rounded-2xl border border-gold/25 bg-gradient-to-b from-[#141d27] to-[#0b131c] p-8 sm:p-14 text-center shadow-[0_0_70px_-20px_rgba(212,175,95,0.4)]">
-        <p className="text-[11px] tracking-[0.42em] uppercase text-gold/90 mb-4">By Invitation</p>
-        <h2 className="reserve-shimmer font-serif text-4xl sm:text-6xl font-light leading-[1.2] pb-2 tracking-[0.01em]">Voyages Reserve</h2>
+        <p className="text-[11px] tracking-[0.42em] uppercase text-gold/90 mb-4">{c("reserve.eyebrow")}</p>
+        <h2 className="reserve-shimmer font-serif text-4xl sm:text-6xl font-light leading-[1.2] pb-2 tracking-[0.01em]">{c("reserve.title")}</h2>
         <div className="flex items-center justify-center gap-3 mt-3 mb-7">
           <span className="h-px w-12 bg-gradient-to-r from-transparent to-gold/50" />
           <span className="text-gold text-[9px] leading-none">◆</span>
           <span className="h-px w-12 bg-gradient-to-l from-transparent to-gold/50" />
         </div>
-        <p className="text-[#9aa4ab] font-light max-w-xl mx-auto mb-9 leading-relaxed">Our most personal tier of service — a dedicated travel designer, priority everything, and privileges reserved for a select few. Separate from the free loyalty program above.</p>
+        <p className="text-[#9aa4ab] font-light max-w-xl mx-auto mb-9 leading-relaxed">{c("reserve.intro")}</p>
         <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3.5 max-w-xl mx-auto text-left mb-10">
-          {VIP_PERKS.map(p => (
+          {reservePerks.map(p => (
             <li key={p} className="flex items-start gap-2.5 text-sm text-[#d3d8dd] font-light"><Check size={15} className="text-gold shrink-0 mt-0.5" /> {p}</li>
           ))}
         </ul>
-        <Link href={VIP_ENQUIRY} className="inline-block px-9 py-3.5 bg-[#ece7dd] text-vc-900 text-xs tracking-[0.18em] uppercase rounded-sm hover:bg-white transition-colors">Request an invitation</Link>
+        <Link href={VIP_ENQUIRY} className="inline-block px-9 py-3.5 bg-[#ece7dd] text-vc-900 text-xs tracking-[0.18em] uppercase rounded-sm hover:bg-white transition-colors">{c("reserve.cta")}</Link>
       </section>
     </div>
   );
