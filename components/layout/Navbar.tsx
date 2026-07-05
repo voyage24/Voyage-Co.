@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Menu, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import Logo from "@/components/ui/Logo";
 import CurrencySelector from "@/components/ui/CurrencySelector";
 import LanguageSelector from "@/components/ui/LanguageSelector";
@@ -15,7 +15,7 @@ import { useContent, useContentList } from "@/components/providers/ContentProvid
 
 type NavLink = { key?: string; label?: string; href: string; cKey?: string };
 
-// Consolidated primary nav — the links that always sit in the bar.
+// The primary destinations, shown large inside the menu.
 const PRIMARY_LINKS: NavLink[] = [
   { key: "common.destinations", cKey: "nav.destinations", href: "/packages" },
   { key: "common.stays",        cKey: "nav.stays",        href: "/hotels" },
@@ -26,10 +26,8 @@ const PRIMARY_LINKS: NavLink[] = [
   { label: "Trip Tools", cKey: "nav.tripTools",           href: "/tools" },
 ];
 
-// Secondary links — reached via the Account icon / mobile menu, plus the
-// Plan Your Journey CTA. Kept out of the primary row so it never overflows.
+// Supporting links, shown smaller beneath the primary ones.
 const SECONDARY_LINKS: NavLink[] = [
-  { key: "plan.title",      href: "/plan" },
   { label: "Visa assistance", href: "/visa" },
   { label: "Travel insurance", href: "/insurance" },
   { key: "common.myTrips",  href: "/trips" },
@@ -40,144 +38,117 @@ export default function Navbar() {
   const { t } = useLanguage();
   const c = useContent();
   const navList = useContentList("list.nav");
-  // When an admin saves a full nav list it replaces the default menu; otherwise
-  // we keep the shipped links with their per-label content/translation overrides.
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  // A saved nav list replaces the defaults; otherwise use the shipped links with
+  // their content/translation overrides.
   const primaryLinks: { href: string; label: string }[] = navList
     ? navList.map(x => ({ href: x.href || "#", label: x.label || "" }))
     : PRIMARY_LINKS.map(l => ({ href: l.href, label: c(l.cKey ?? "") || l.label || t(l.key ?? "") }));
   const secondaryLinks = SECONDARY_LINKS.map(l => ({ href: l.href, label: l.label || t(l.key ?? "") }));
-  const mobileLinks = [...primaryLinks, ...secondaryLinks];
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const linksRef = useRef<HTMLDivElement>(null);
-  const [linksOverflow, setLinksOverflow] = useState(false);
-  const [canLeft, setCanLeft] = useState(false);
-  const [canRight, setCanRight] = useState(false);
+  const planLabel = c("nav.planCta") || t("plan.title");
 
-  const updateArrows = () => {
-    const el = linksRef.current;
-    if (!el) return;
-    setCanLeft(el.scrollLeft > 4);
-    setCanRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 4);
-  };
-  const scrollNav = (dir: 1 | -1) => linksRef.current?.scrollBy({ left: dir * 240, behavior: "smooth" });
-
-  // Fallback only: if a very long language still doesn't fit even after
-  // consolidation, the row stays scrollable with arrows rather than clipping.
+  // Lock background scroll + close on Escape while the menu is open.
   useEffect(() => {
-    const el = linksRef.current;
-    if (!el) return;
-    const check = () => { setLinksOverflow(el.scrollWidth > el.clientWidth + 1); updateArrows(); };
-    check();
-    window.addEventListener("resize", check);
-    return () => window.removeEventListener("resize", check);
-  }, [t]);
+    document.body.style.overflow = menuOpen ? "hidden" : "";
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setMenuOpen(false); };
+    window.addEventListener("keydown", onKey);
+    return () => { document.body.style.overflow = ""; window.removeEventListener("keydown", onKey); };
+  }, [menuOpen]);
 
-  // The navbar is a solid DARK band that sits ABOVE the hero map on every page.
-  // Its contents are light (white wordmark + links), so `overHero` — which
-  // drives the light-on-dark tone throughout — stays true; only the background
-  // is a fixed dark band rather than the transparent-over-map bar it once was.
-  const overHero = true;
-  // One uniform size and weight for every language — no per-language bumps.
-  const linkBase = "nav-underline text-[12px] font-normal tracking-[0.08em] uppercase transition-colors duration-200 py-2 whitespace-nowrap shrink-0 inline-block";
-  const linkColor = overHero ? "text-white/90 hover:text-white" : "text-ink-muted hover:text-ink";
+  const close = () => setMenuOpen(false);
+  const ctaClass = "text-[10px] font-medium tracking-[0.14em] uppercase px-4 py-2.5 rounded-sm border border-white/70 text-white hover:bg-white hover:text-ink transition-all duration-200 whitespace-nowrap hover:scale-105 active:scale-95";
+
+  let delay = 0; // staggered entrance for menu items
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-vc-950/95 backdrop-blur-md border-b border-white/10">
       <div className="max-w-[1500px] mx-auto px-6 lg:px-12">
-        <div className="flex items-center gap-x-4 lg:gap-x-6 min-h-20">
+        <div className="flex items-center justify-between gap-4 min-h-20">
+          {/* Wordmark */}
+          <Link href="/" onClick={close} className="flex shrink-0" aria-label="Voyages & Co. home">
+            <Logo size={26} tone="light" shimmer />
+          </Link>
 
-          <div className="flex shrink-0">
-            <Logo size={overHero ? 26 : 24} tone={overHero ? "light" : "dark"} shimmer />
-          </div>
-
-          {/* Primary links — contained, scrollable as a fallback only. */}
-          <div className="hidden lg:block relative min-w-0 flex-1">
-            {canLeft && (
-              <button type="button" aria-label="Scroll navigation left" onClick={() => scrollNav(-1)}
-                className={`absolute left-0 top-1/2 -translate-y-1/2 z-10 flex items-center justify-center w-7 h-7 rounded-full shadow-sm ${overHero ? "bg-vc-950/70 text-white" : "bg-page text-ink border border-line"}`}>
-                <ChevronLeft size={16} />
-              </button>
-            )}
-            <div
-              ref={linksRef}
-              onScroll={updateArrows}
-              className="overflow-x-auto scrollbar-none"
-              style={linksOverflow && canRight ? {
-                maskImage: "linear-gradient(to right, black 92%, transparent 100%)",
-                WebkitMaskImage: "linear-gradient(to right, black 92%, transparent 100%)",
-              } : undefined}
+          {/* Minimal controls — single CTA, search, account (desktop), menu */}
+          <div className="flex items-center gap-4 sm:gap-6">
+            <Link href="/plan" onClick={close} className={`hidden sm:inline-flex ${ctaClass}`}>{planLabel}</Link>
+            <SearchOverlay tone="light" triggerSize={20} />
+            <div className="hidden lg:block"><AccountMenu tone="light" /></div>
+            <button
+              type="button"
+              onClick={() => setMenuOpen(o => !o)}
+              aria-label={menuOpen ? "Close menu" : "Open menu"}
+              aria-expanded={menuOpen}
+              className="relative w-7 h-7 flex flex-col items-center justify-center gap-[6px] text-white"
             >
-              <div className="flex items-center gap-x-5 w-max pr-2">
-                {primaryLinks.map(l => (
-                  <Link key={l.href} href={l.href} className={`${linkBase} ${linkColor}`}>{l.label}</Link>
-                ))}
-              </div>
-            </div>
-            {canRight && (
-              <button type="button" aria-label="Scroll navigation right" onClick={() => scrollNav(1)}
-                className={`absolute right-0 top-1/2 -translate-y-1/2 z-10 flex items-center justify-center w-7 h-7 rounded-full shadow-sm ${overHero ? "bg-vc-950/70 text-white" : "bg-page text-ink border border-line"}`}>
-                <ChevronRight size={16} />
-              </button>
-            )}
-          </div>
-
-          {/* Controls — search, account menu, language, currency, primary CTA. */}
-          <div className="hidden lg:flex items-center gap-x-3 shrink-0">
-            <SearchOverlay tone={overHero ? "light" : "dark"} />
-            <AccountMenu tone={overHero ? "light" : "dark"} />
-            <ThemeToggle tone={overHero ? "light" : "dark"} size={17} />
-            <NavConverter tone={overHero ? "light" : "dark"} />
-            <LanguageSelector tone={overHero ? "light" : "dark"} />
-            <CurrencySelector tone={overHero ? "light" : "dark"} />
-            <Link
-              href="/plan"
-              className={`text-[10px] font-medium tracking-[0.1em] uppercase px-4 py-2.5 rounded-sm border transition-all duration-200 whitespace-nowrap shrink-0 hover:scale-110 active:scale-95 ${
-                overHero ? "border-white/70 text-white hover:bg-white hover:text-ink" : "bg-ink border-ink text-page hover:bg-ink/90"
-              }`}
-            >
-              {c("nav.planCta") || t("plan.title")}
-            </Link>
-          </div>
-
-          {/* Mobile/tablet — search + toggle + menu. Account is intentionally
-              omitted here: it already lives in the bottom tab bar, so showing
-              it at the top too would duplicate it. */}
-          <div className="flex lg:hidden items-center gap-4 ml-auto">
-            <ThemeToggle tone={overHero ? "light" : "dark"} size={20} />
-            <SearchOverlay tone={overHero ? "light" : "dark"} triggerSize={20} />
-            <button className={overHero ? "text-white" : "text-ink"} onClick={() => setMobileOpen(!mobileOpen)} aria-label="Menu">
-              {mobileOpen ? <X size={22} /> : <Menu size={22} />}
+              <span className={`block h-[1.5px] w-6 bg-current transition-all duration-300 ease-out ${menuOpen ? "translate-y-[7.5px] rotate-45" : ""}`} />
+              <span className={`block h-[1.5px] w-6 bg-current transition-all duration-300 ease-out ${menuOpen ? "opacity-0" : ""}`} />
+              <span className={`block h-[1.5px] w-6 bg-current transition-all duration-300 ease-out ${menuOpen ? "-translate-y-[7.5px] -rotate-45" : ""}`} />
             </button>
           </div>
         </div>
       </div>
 
-      {/* Mobile/tablet menu */}
-      {mobileOpen && (
-        <div className="lg:hidden bg-page border-t border-line px-6 py-8 space-y-5 animate-slide-down overflow-hidden">
-          {mobileLinks.map((l, i) => (
-            <Link
-              key={`${l.href}-${i}`}
-              href={l.href}
-              onClick={() => setMobileOpen(false)}
-              style={{ animationDelay: `${i * 50}ms`, animationFillMode: "both" }}
-              className="block text-base font-normal tracking-[0.1em] uppercase text-ink-muted hover:text-ink transition-colors duration-200 py-1.5 animate-slide-down"
-            >
-              <span className="nav-underline">{l.label}</span>
-            </Link>
-          ))}
-          <div className="py-1.5 flex items-center gap-5 animate-slide-down" style={{ animationDelay: `${mobileLinks.length * 50}ms`, animationFillMode: "both" }}>
-            <LanguageSelector tone="dark" />
-            <CurrencySelector tone="dark" />
+      {/* Full-screen menu, sitting just below the persistent bar */}
+      {menuOpen && (
+        <div className="fixed inset-x-0 top-20 bottom-0 z-40">
+          <div className="absolute inset-0 bg-vc-950/98 backdrop-blur-xl animate-fade-in" onClick={close} />
+          <div className="relative h-full overflow-y-auto overscroll-contain">
+            <div className="max-w-[1100px] mx-auto px-6 lg:px-12 py-10 sm:py-14">
+              <p className="text-[11px] tracking-[0.34em] uppercase text-gold mb-8 animate-fade-in">Explore</p>
+
+              {/* Primary destinations */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-14">
+                {primaryLinks.map(l => (
+                  <Link
+                    key={l.href}
+                    href={l.href}
+                    onClick={close}
+                    style={{ animationDelay: `${(delay++) * 45}ms`, animationFillMode: "both" }}
+                    className="group flex items-center justify-between py-3.5 border-b border-white/10 animate-fade-in"
+                  >
+                    <span className="font-serif text-2xl sm:text-[28px] font-light text-white/90 group-hover:text-white transition-colors">{l.label}</span>
+                    <ArrowUpRight size={18} className="text-gold opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200" />
+                  </Link>
+                ))}
+              </div>
+
+              {/* Plan CTA + supporting links */}
+              <div className="mt-10 flex flex-col gap-8">
+                <Link
+                  href="/plan"
+                  onClick={close}
+                  style={{ animationDelay: `${(delay++) * 45}ms`, animationFillMode: "both" }}
+                  className="inline-flex self-start items-center gap-2 bg-white text-ink px-7 py-3.5 rounded-sm text-xs tracking-[0.16em] uppercase font-medium hover:bg-white/90 transition-all hover:scale-105 active:scale-95 animate-fade-in"
+                >
+                  {planLabel} <ArrowUpRight size={15} />
+                </Link>
+
+                <div className="flex flex-wrap gap-x-8 gap-y-3">
+                  {secondaryLinks.map(l => (
+                    <Link
+                      key={l.href}
+                      href={l.href}
+                      onClick={close}
+                      style={{ animationDelay: `${(delay++) * 45}ms`, animationFillMode: "both" }}
+                      className="text-xs tracking-[0.14em] uppercase text-white/55 hover:text-white transition-colors animate-fade-in"
+                    >
+                      {l.label}
+                    </Link>
+                  ))}
+                </div>
+
+                {/* Preferences */}
+                <div className="flex flex-wrap items-center gap-6 pt-7 border-t border-white/10 animate-fade-in" style={{ animationDelay: `${(delay++) * 45}ms`, animationFillMode: "both" }}>
+                  <ThemeToggle tone="light" size={18} />
+                  <LanguageSelector tone="light" />
+                  <CurrencySelector tone="light" />
+                  <NavConverter tone="light" />
+                </div>
+              </div>
+            </div>
           </div>
-          <Link
-            href="/plan"
-            onClick={() => setMobileOpen(false)}
-            style={{ animationDelay: `${(mobileLinks.length + 1) * 50}ms`, animationFillMode: "both" }}
-            className="block mt-4 text-center text-sm font-medium tracking-[0.16em] uppercase bg-ink text-page py-3.5 rounded-sm transition-transform duration-200 hover:scale-105 active:scale-95 animate-slide-down"
-          >
-            {c("nav.planCta") || t("plan.title")}
-          </Link>
         </div>
       )}
     </nav>
