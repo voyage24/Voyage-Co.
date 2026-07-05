@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useContent, useContentList } from "@/components/providers/ContentProvider";
 import { resolveIcon } from "@/lib/icon-map";
+import TeamSection from "@/components/collections/TeamSection";
 
 export default function AboutPage() {
   const { t } = useLanguage();
@@ -53,6 +54,8 @@ export default function AboutPage() {
           })}
         </div>
       </div>
+
+      <TeamSection />
 
       {/* CTA */}
       <div className="text-center bg-vc-800 rounded-2xl p-12 border border-vc-700">

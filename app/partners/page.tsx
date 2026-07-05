@@ -3,6 +3,7 @@
 import { ArrowRight, CheckCircle } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useContent, useContentList } from "@/components/providers/ContentProvider";
+import PartnerLogos from "@/components/collections/PartnerLogos";
 
 export default function PartnersPage() {
   const { t } = useLanguage();
@@ -71,6 +72,8 @@ export default function PartnersPage() {
           </div>
         ))}
       </div>
+
+      <PartnerLogos />
 
       <div className="bg-vc-800 rounded-2xl p-10 text-center border border-vc-700">
         <h2 className="font-serif text-3xl font-light text-[#ece7dd] mb-2">{t("partners.ctaTitle")}</h2>

@@ -377,6 +377,7 @@ export const LIST_REGISTRY: ContentList[] = [
       { column: "Maison", label: "Careers", href: "/careers" },
       { column: "Maison", label: "Press", href: "/press" },
       { column: "Maison", label: "Partners", href: "/partners" },
+      { column: "Maison", label: "Events", href: "/events" },
       { column: "Care", label: "Concierge", href: "/contact" },
       { column: "Care", label: "Request a Callback", href: "/callback" },
       { column: "Care", label: "Gift a Journey", href: "/gift" },

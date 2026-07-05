@@ -8,8 +8,10 @@ import RecentlyViewed from "@/components/home/RecentlyViewed";
 import PressStrip from "@/components/home/PressStrip";
 import MomentsGallery from "@/components/home/MomentsGallery";
 import StatsBand from "@/components/home/StatsBand";
+import HomeFaq from "@/components/home/HomeFaq";
 import Reveal from "@/components/ui/Reveal";
 import { prisma } from "@/lib/prisma";
+import { getCollection } from "@/lib/collections";
 import JsonLd from "@/components/seo/JsonLd";
 import { organizationJsonLd, websiteJsonLd } from "@/lib/seo";
 
@@ -35,6 +37,7 @@ async function getHomeData() {
 
 export default async function Home() {
   const [hotels, cruises, trains, packages, experiences, testimonials] = await getHomeData();
+  const homeFaq = await getCollection("homeFaq");
 
   // Real figures for the stats band.
   const visitStat = await prisma.siteStat.findUnique({ where: { key: "visits" } }).catch(() => null);
@@ -61,6 +64,7 @@ export default async function Home() {
       <Reveal variant="zoom"><TestimonialsSection testimonials={testimonials} /></Reveal>
       <Reveal><MomentsGallery /></Reveal>
       <Reveal><TrustSection /></Reveal>
+      <Reveal><HomeFaq items={homeFaq} /></Reveal>
     </>
   );
 }

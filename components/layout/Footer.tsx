@@ -38,6 +38,7 @@ const FOOTER_LINKS: Record<string, FooterLink[]> = {
     { key: "common.careers",  href: "/careers" },
     { key: "common.press",    href: "/press" },
     { key: "common.partners", href: "/partners" },
+    { label: "Events",        href: "/events" },
   ],
   "footer.care": [
     { key: "common.concierge",     href: "/contact" },
