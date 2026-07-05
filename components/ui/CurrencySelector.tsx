@@ -79,7 +79,7 @@ export default function CurrencySelector({ tone = "dark" }: { tone?: "dark" | "l
         className={`inline-flex items-center gap-1 text-[13px] font-normal tracking-[0.08em] uppercase transition-all duration-200 py-2 shrink-0 hover:scale-110 active:scale-95 ${color}`}
         aria-label={t("currencySelector.selectCurrency")}
       >
-        <span className="text-[15px] leading-none">{currencyFlag(currency.code)}</span>
+        <span className="flag text-[15px] leading-none">{currencyFlag(currency.code)}</span>
         {currency.code}
         <ChevronDown size={12} className={`transition-transform ${open ? "rotate-180" : ""}`} />
       </button>
@@ -118,7 +118,7 @@ export default function CurrencySelector({ tone = "dark" }: { tone?: "dark" | "l
                   }`}
                 >
                   <span className="flex items-center gap-2.5 min-w-0">
-                    <span className="text-base leading-none shrink-0">{currencyFlag(c.code)}</span>
+                    <span className="flag text-base leading-none shrink-0">{currencyFlag(c.code)}</span>
                     <span className="text-sm font-medium text-ink w-11 shrink-0">{c.code}</span>
                     <span className="text-xs text-ink-faint font-light truncate">{c.name}</span>
                   </span>
