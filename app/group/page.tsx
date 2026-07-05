@@ -1,22 +1,18 @@
 import type { Metadata } from "next";
-import { Users, Gem, CalendarHeart } from "lucide-react";
 import RequestForm from "@/components/tools/RequestForm";
 import Reveal from "@/components/ui/Reveal";
 import { getPageContent } from "@/lib/page-content";
+import { getPageList } from "@/lib/page-lists";
+import { resolveIcon } from "@/lib/icon-map";
 
 export const metadata: Metadata = {
   title: "Group Booking — Voyages & Co.",
   description: "Bespoke group travel for weddings, celebrations, corporate incentives and multi-generational journeys — planned end to end by our concierge.",
 };
 
-const HIGHLIGHTS = [
-  { icon: CalendarHeart, title: "Celebrations & weddings", text: "Destination weddings, milestone birthdays and anniversaries, planned to the finest detail." },
-  { icon: Gem, title: "Corporate & incentive", text: "Off-sites, retreats and reward trips that reflect your brand and reward your people." },
-  { icon: Users, title: "Family & friends", text: "Multi-generational journeys and private group escapes, effortlessly coordinated." },
-];
-
 export default async function GroupPage() {
   const c = await getPageContent();
+  const highlights = await getPageList("list.groupHighlights");
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20">
       <div className="text-center mb-12">
@@ -26,13 +22,16 @@ export default async function GroupPage() {
       </div>
 
       <Reveal soft className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-14">
-        {HIGHLIGHTS.map(h => (
-          <div key={h.title} className="bg-panel border border-line rounded-2xl p-6">
-            <h.icon size={22} className="text-gold mb-4" />
-            <h3 className="font-serif text-lg font-light text-ink mb-1.5">{h.title}</h3>
-            <p className="text-sm text-ink-muted font-light leading-relaxed">{h.text}</p>
-          </div>
-        ))}
+        {highlights.map((h, i) => {
+          const Icon = resolveIcon(h.icon);
+          return (
+            <div key={`${h.title}-${i}`} className="bg-panel border border-line rounded-2xl p-6">
+              <Icon size={22} className="text-gold mb-4" />
+              <h3 className="font-serif text-lg font-light text-ink mb-1.5">{h.title}</h3>
+              <p className="text-sm text-ink-muted font-light leading-relaxed">{h.text}</p>
+            </div>
+          );
+        })}
       </Reveal>
 
       <RequestForm
