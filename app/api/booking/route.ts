@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { createTransport, FROM_CONCIERGE } from "@/lib/email/transport";
 import { renderConciergeEmailHTML, renderConciergeEmailText } from "@/lib/email/template";
+import { getEmailTemplate, bodyToHtml } from "@/lib/email/email-templates";
 import { getCurrentCustomer } from "@/lib/customer/session";
 import { getRemaining } from "@/lib/availability";
 import { notifyWhatsApp } from "@/lib/email/notify-admin";
@@ -100,19 +101,21 @@ export async function POST(req: Request) {
       <p style="margin:0 0 6px;"><strong>Guests:</strong> ${guests ?? 1}</p>
       ${typeof total === "number" && total > 0 ? `<p style="margin:0;"><strong>Estimated total:</strong> ${inr(Math.round(total))}</p>` : ""}
     `;
+    const firstName = String(name).split(" ")[0];
+    const tpl = await getEmailTemplate("booking", { firstName: firstName ? `, ${firstName}` : "", reference, itemTitle: String(itemTitle) });
     await transporter.sendMail({
       from: FROM_CONCIERGE(),
       to: email,
-      subject: `Your reservation — ${reference}`,
+      subject: tpl.subject,
       text: renderConciergeEmailText({
-        heading: "We've received your reservation",
-        bodyText: `Reference: ${reference}\n${itemTitle}\n${checkIn ? `Dates: ${checkIn}${checkOut ? ` to ${checkOut}` : ""}\n` : ""}Guests: ${guests ?? 1}\n\nA member of our concierge team will be in touch shortly to confirm.`,
+        heading: tpl.heading,
+        bodyText: `${tpl.body}\n\nReference: ${reference}\n${itemTitle}\n${checkIn ? `Dates: ${checkIn}${checkOut ? ` to ${checkOut}` : ""}\n` : ""}Guests: ${guests ?? 1}`,
         signoff: "With anticipation,",
       }),
       html: renderConciergeEmailHTML({
         eyebrow: "Reservation Received",
-        heading: `Thank you, ${String(name).split(" ")[0]}`,
-        bodyHtml: body,
+        heading: tpl.heading,
+        bodyHtml: `${bodyToHtml(tpl.body)}${body}`,
         signoff: "With anticipation,",
       }),
     });

@@ -4,6 +4,7 @@ import type { Customer } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { createTransport, FROM_CONCIERGE } from "@/lib/email/transport";
 import { renderConciergeEmailHTML, renderConciergeEmailText } from "@/lib/email/template";
+import { getEmailTemplate, bodyToHtml } from "@/lib/email/email-templates";
 
 const RESET_TTL_MS = 60 * 60 * 1000; // 1 hour
 const SITE_URL = "https://voyagesco.com";
@@ -49,18 +50,17 @@ export async function sendResetEmail(customer: Customer, token: string): Promise
   if (!process.env.SMTP_HOST) return;
   const link = `${SITE_URL}/reset?token=${encodeURIComponent(token)}`;
   const firstName = customer.name?.split(" ")[0];
-  const heading = `Reset your password${firstName ? `, ${firstName}` : ""}`;
-  const bodyText = "We received a request to reset your Voyages & Co. password. This link is valid for one hour. If you didn't ask for this, you can safely ignore this email — your password won't change.";
+  const tpl = await getEmailTemplate("reset", { firstName: firstName ? `, ${firstName}` : "" });
   const transporter = createTransport();
   await transporter.sendMail({
     from: FROM_CONCIERGE(),
     to: customer.email,
-    subject: "Reset your Voyages & Co. password",
-    text: `${renderConciergeEmailText({ heading, bodyText, signoff: "With warm regards," })}\n\nReset your password: ${link}`,
+    subject: tpl.subject,
+    text: `${renderConciergeEmailText({ heading: tpl.heading, bodyText: tpl.body, signoff: "With warm regards," })}\n\nReset your password: ${link}`,
     html: renderConciergeEmailHTML({
       eyebrow: "Account",
-      heading,
-      bodyHtml: `<p style="margin:0 0 12px;">${bodyText}</p><p style="margin:0;font-size:13px;color:#A39C8C;">Or paste this link into your browser:<br>${link}</p>`,
+      heading: tpl.heading,
+      bodyHtml: `${bodyToHtml(tpl.body)}<p style="margin:0;font-size:13px;color:#A39C8C;">Or paste this link into your browser:<br>${link}</p>`,
       signoff: "With warm regards,",
       ctaLabel: "Reset my password",
       ctaHref: link,

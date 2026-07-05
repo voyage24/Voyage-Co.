@@ -57,6 +57,7 @@ const SECTION_DEFS: { title: string | null; items: { href: string; label: string
     title: "Marketing",
     items: [
       { href: "/admin/newsletter", label: "Newsletter", icon: Mail },
+      { href: "/admin/emails", label: "Emails", icon: Mail },
       { href: "/admin/giftcards", label: "Gift Cards", icon: Gift },
       { href: "/admin/offers", label: "Offers", icon: Tag },
       { href: "/admin/notifications", label: "Push Notifications", icon: Bell },

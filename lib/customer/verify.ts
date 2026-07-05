@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { createTransport, FROM_CONCIERGE } from "@/lib/email/transport";
 import { renderConciergeEmailHTML, renderConciergeEmailText } from "@/lib/email/template";
 import { notifyWhatsApp } from "@/lib/email/notify-admin";
+import { getEmailTemplate, bodyToHtml } from "@/lib/email/email-templates";
 
 const VERIFY_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
 const SITE_URL = "https://voyagesco.com";
@@ -43,18 +44,17 @@ export async function sendVerificationEmail(customer: Customer, token: string): 
   if (!process.env.SMTP_HOST) return;
   const link = `${SITE_URL}/api/account/verify?token=${encodeURIComponent(token)}`;
   const firstName = customer.name?.split(" ")[0];
-  const heading = `Confirm your email${firstName ? `, ${firstName}` : ""}`;
-  const bodyText = "Please confirm your email address to activate your Voyages & Co. account. This link is valid for 24 hours. If you didn't create an account, you can safely ignore this message.";
+  const tpl = await getEmailTemplate("verify", { firstName: firstName ? `, ${firstName}` : "" });
   const transporter = createTransport();
   await transporter.sendMail({
     from: FROM_CONCIERGE(),
     to: customer.email,
-    subject: "Confirm your Voyages & Co. account",
-    text: `${renderConciergeEmailText({ heading, bodyText, signoff: "With warm regards," })}\n\nConfirm your email: ${link}`,
+    subject: tpl.subject,
+    text: `${renderConciergeEmailText({ heading: tpl.heading, bodyText: tpl.body, signoff: "With warm regards," })}\n\nConfirm your email: ${link}`,
     html: renderConciergeEmailHTML({
       eyebrow: "Membership",
-      heading,
-      bodyHtml: `<p style="margin:0 0 12px;">${bodyText}</p><p style="margin:0;font-size:13px;color:#A39C8C;">Or paste this link into your browser:<br>${link}</p>`,
+      heading: tpl.heading,
+      bodyHtml: `${bodyToHtml(tpl.body)}<p style="margin:0;font-size:13px;color:#A39C8C;">Or paste this link into your browser:<br>${link}</p>`,
       signoff: "With warm regards,",
       ctaLabel: "Confirm my email",
       ctaHref: link,
@@ -79,14 +79,13 @@ export async function sendWelcomeAndNotify(customer: Customer): Promise<void> {
             <p><a href="${SITE_URL}/admin/customers">View customers &rarr;</a></p>`,
         });
       }
-      const heading = `Welcome${firstName ? `, ${firstName}` : ""}`;
-      const bodyText = "Your Voyages & Co. account is ready. You can now save journeys to your wishlist, build itineraries, track your bookings, and receive tailored ideas from our concierge. We look forward to crafting something extraordinary for you.";
+      const tpl = await getEmailTemplate("welcome", { firstName: firstName ? `, ${firstName}` : "" });
       await transporter.sendMail({
         from: FROM_CONCIERGE(),
         to: customer.email,
-        subject: "Welcome to Voyages & Co.",
-        text: renderConciergeEmailText({ heading, bodyText, signoff: "With warm regards," }),
-        html: renderConciergeEmailHTML({ eyebrow: "Membership", heading, bodyHtml: `<p style="margin:0;">${bodyText}</p>`, signoff: "With warm regards," }),
+        subject: tpl.subject,
+        text: renderConciergeEmailText({ heading: tpl.heading, bodyText: tpl.body, signoff: "With warm regards," }),
+        html: renderConciergeEmailHTML({ eyebrow: "Membership", heading: tpl.heading, bodyHtml: bodyToHtml(tpl.body), signoff: "With warm regards," }),
       });
     }
   } catch (err) {
