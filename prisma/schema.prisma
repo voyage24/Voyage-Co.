@@ -475,6 +475,21 @@ model FeaturedDestination {
   published  Boolean @default(true)
 }
 
+// Generic admin-managed content collections (team members, events, partner
+// logos, homepage FAQ, …). Each entry's fields live in `data` (JSON), keyed by
+// `type`, so new collections need no schema change — just a registry entry.
+model Collection {
+  id        String   @id @default(cuid())
+  type      String   // e.g. "team" | "events" | "partners" | "homeFaq"
+  data      Json     // the entry's fields, per the collection registry
+  sortOrder Int      @default(0)
+  published Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([type])
+}
+
 // Fixed-window rate limiting for sensitive endpoints (login, password reset).
 // Keyed by e.g. "login:ip:1.2.3.4" — count resets when resetAt passes.
 model RateLimit {
