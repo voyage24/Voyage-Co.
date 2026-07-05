@@ -624,6 +624,7 @@ export const EN: Dictionary = {
   "detail.allVoyages": "All Voyages",
   "detail.allJourneys": "All Journeys",
   "detail.theExperience": "The Experience",
+  "detail.youMayAlsoLike": "You may also like",
   "detail.location": "Location",
   "detail.visitOfficialSite": "Visit Official Site",
   "detail.askTheConcierge": "Ask the Concierge",

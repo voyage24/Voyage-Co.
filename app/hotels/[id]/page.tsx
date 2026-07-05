@@ -14,6 +14,7 @@ import CompareButton from "@/components/compare/CompareButton";
 import RecordView from "@/components/products/RecordView";
 import AddToItineraryButton from "@/components/itinerary/AddToItineraryButton";
 import PhotoGallery from "@/components/ui/PhotoGallery";
+import HotelCard from "@/components/cards/HotelCard";
 import PropertyMap from "@/components/ui/PropertyMap";
 import DestinationWeather from "@/components/ui/DestinationWeather";
 import LocalActivities from "@/components/products/LocalActivities";
@@ -56,6 +57,18 @@ export default async function HotelDetailPage({ params }: { params: { id: string
   const nearby = nearbyRaw
     .sort((a, b) => Number(b.location.toLowerCase().includes(hotel.city.toLowerCase())) - Number(a.location.toLowerCase().includes(hotel.city.toLowerCase())))
     .slice(0, 3);
+
+  // "You may also like" — other stays, ranked by how much they share with this
+  // one (same city > region > category).
+  const similarRaw = await prisma.hotel.findMany({
+    where: { published: true, id: { not: hotel.id }, OR: [{ city: hotel.city }, { region: hotel.region }, { category: hotel.category }] },
+    take: 12,
+  });
+  const alsoLike = similarRaw
+    .map(h => ({ h, score: (h.city === hotel.city ? 3 : 0) + (h.region === hotel.region ? 2 : 0) + (h.category === hotel.category ? 1 : 0) }))
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 3)
+    .map(x => x.h);
 
   // Use the property's own coordinates, else fall back to its city centre so
   // the Location map + weather still show.
@@ -201,6 +214,15 @@ export default async function HotelDetailPage({ params }: { params: { id: string
       <FaqAndEntry faqs={faqs} entryRequirements={hotel.entryRequirements} />
 
       <ReviewsSection type="hotel" itemId={hotel.id} reviews={reviews} />
+
+      {alsoLike.length > 0 && (
+        <section className="mt-16 border-t border-line pt-10">
+          <h2 className="font-serif text-2xl font-light text-ink mb-6"><T k="detail.youMayAlsoLike" /></h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {alsoLike.map(h => <HotelCard key={h.id} hotel={h} />)}
+          </div>
+        </section>
+      )}
     </div>
   );
 }

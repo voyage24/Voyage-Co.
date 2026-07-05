@@ -7,6 +7,7 @@ import { prisma } from "@/lib/prisma";
 import Price from "@/components/ui/Price";
 import T from "@/components/ui/T";
 import ReviewsSection from "@/components/reviews/ReviewsSection";
+import CruiseCard from "@/components/cards/CruiseCard";
 import SaveButton from "@/components/ui/SaveButton";
 import JsonLd from "@/components/seo/JsonLd";
 import FaqAndEntry from "@/components/products/FaqAndEntry";
@@ -41,6 +42,17 @@ export default async function CruiseDetailPage({ params }: { params: { id: strin
   const nights = parseInt(cruise.duration, 10) || 7;
   const stops = [cruise.departurePort, ...cruise.ports];
   const faqs = (cruise.faqs as { q: string; a: string }[] | null) ?? [];
+
+  // "You may also like" — cruises ranked by shared region then category.
+  const similarRaw = await prisma.cruise.findMany({
+    where: { published: true, id: { not: cruise.id }, OR: [{ region: cruise.region }, { category: cruise.category }] },
+    take: 12,
+  });
+  const alsoLike = similarRaw
+    .map(c => ({ c, score: (c.region === cruise.region ? 2 : 0) + (c.category === cruise.category ? 1 : 0) }))
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 3)
+    .map(x => x.c);
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-16">
@@ -206,6 +218,15 @@ export default async function CruiseDetailPage({ params }: { params: { id: strin
       <FaqAndEntry faqs={faqs} entryRequirements={cruise.entryRequirements} />
 
       <ReviewsSection type="cruise" itemId={cruise.id} reviews={reviews} />
+
+      {alsoLike.length > 0 && (
+        <section className="mt-16 border-t border-line pt-10">
+          <h2 className="font-serif text-2xl font-light text-ink mb-6"><T k="detail.youMayAlsoLike" /></h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {alsoLike.map(c => <CruiseCard key={c.id} cruise={c} />)}
+          </div>
+        </section>
+      )}
     </div>
   );
 }
