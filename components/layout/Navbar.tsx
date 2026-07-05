@@ -116,8 +116,8 @@ export default function Navbar() {
         <div className="fixed inset-x-0 top-20 bottom-0 z-[45]">
           <div className="absolute inset-0 bg-vc-950/95 backdrop-blur-xl animate-fade-in" onClick={close} />
           <div className="relative h-full overflow-y-auto overscroll-contain">
-            <div className="max-w-[1100px] mx-auto px-6 lg:px-12 py-10 sm:py-14">
-              <p className="text-[11px] tracking-[0.34em] uppercase text-gold mb-8 animate-fade-in">Explore</p>
+            <div className="max-w-[1100px] mx-auto px-6 lg:px-12 py-6 sm:py-14">
+              <p className="text-[11px] tracking-[0.34em] uppercase text-gold mb-5 sm:mb-8 animate-fade-in">Explore</p>
 
               {/* Primary destinations */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-14">
@@ -127,16 +127,16 @@ export default function Navbar() {
                     href={l.href}
                     onClick={close}
                     style={{ animationDelay: `${(delay++) * 45}ms`, animationFillMode: "both" }}
-                    className="group flex items-center justify-between py-3.5 border-b border-white/10 animate-fade-in"
+                    className="group flex items-center justify-between py-2.5 sm:py-3.5 border-b border-white/10 animate-fade-in"
                   >
-                    <span className="font-serif text-2xl sm:text-[28px] font-light text-white/90 group-hover:text-white transition-colors">{l.label}</span>
+                    <span className="font-serif text-xl sm:text-[28px] font-light text-white/90 group-hover:text-white transition-colors">{l.label}</span>
                     <ArrowUpRight size={18} className="text-gold opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200" />
                   </Link>
                 ))}
               </div>
 
               {/* Plan CTA + supporting links */}
-              <div className="mt-10 flex flex-col gap-8">
+              <div className="mt-6 sm:mt-10 flex flex-col gap-5 sm:gap-8">
                 <div className="flex flex-wrap items-center gap-4">
                   <Link
                     href="/plan"
@@ -174,7 +174,7 @@ export default function Navbar() {
                 </div>
 
                 {/* Theme toggle in the menu — phones only (it's on the bar for desktop). */}
-                <div className="lg:hidden flex items-center gap-6 pt-7 border-t border-white/10">
+                <div className="lg:hidden flex items-center gap-6 pt-5 border-t border-white/10">
                   <ThemeToggle tone="light" size={18} showLabel />
                 </div>
               </div>
