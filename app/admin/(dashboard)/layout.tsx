@@ -13,9 +13,9 @@ export default async function AdminDashboardLayout({ children }: { children: Rea
   return (
     <div className="admin-root flex min-h-screen bg-[#f6f6f3] dark:bg-[#0b131d]">
       <AdminSidebar />
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col min-w-0">
         <AdminTopbar email={user?.email ?? ""} />
-        <main className="admin-main flex-1 p-6">{children}</main>
+        <main className="admin-main flex-1 min-w-0 p-4 sm:p-6">{children}</main>
       </div>
     </div>
   );
