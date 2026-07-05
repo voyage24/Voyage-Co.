@@ -2,8 +2,9 @@
 
 import { useState, useRef, useEffect, useMemo } from "react";
 import { createPortal } from "react-dom";
-import { Globe, ChevronDown } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { LANGUAGES } from "@/lib/languages";
+import { languageFlag } from "@/lib/flags";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 
 export default function LanguageSelector({ tone = "dark" }: { tone?: "dark" | "light" }) {
@@ -76,7 +77,7 @@ export default function LanguageSelector({ tone = "dark" }: { tone?: "dark" | "l
         className={`inline-flex items-center gap-1 text-[13px] font-normal tracking-[0.08em] uppercase transition-all duration-200 py-2 shrink-0 hover:scale-110 active:scale-95 ${color}`}
         aria-label={t("languageSelector.selectLanguage")}
       >
-        <Globe size={13} />
+        <span className="text-[15px] leading-none">{languageFlag(language.code)}</span>
         {language.code.toUpperCase()}
         <ChevronDown size={12} className={`transition-transform ${open ? "rotate-180" : ""}`} />
       </button>
@@ -114,7 +115,8 @@ export default function LanguageSelector({ tone = "dark" }: { tone?: "dark" | "l
                     l.code === language.code ? "bg-panel-soft" : ""
                   }`}
                 >
-                  <span className="flex items-center gap-3 min-w-0">
+                  <span className="flex items-center gap-2.5 min-w-0">
+                    <span className="text-base leading-none shrink-0">{languageFlag(l.code)}</span>
                     <span className="text-sm font-medium text-ink w-9 shrink-0 uppercase">{l.code}</span>
                     <span className="text-xs text-ink-faint font-light truncate">{l.name}</span>
                   </span>

@@ -72,8 +72,12 @@ export default function Navbar() {
           </Link>
 
           {/* Minimal controls — single CTA, search, account (desktop), menu */}
-          <div className="flex items-center gap-4 sm:gap-6">
+          <div className="flex items-center gap-4 sm:gap-5">
             <Link href="/plan" onClick={close} className={`hidden sm:inline-flex ${ctaClass}`}>{planLabel}</Link>
+            <div className="hidden lg:flex items-center gap-4">
+              <LanguageSelector tone="light" />
+              <CurrencySelector tone="light" />
+            </div>
             <SearchOverlay tone="light" triggerSize={20} />
             <div className="hidden lg:block"><AccountMenu tone="light" /></div>
             <button
