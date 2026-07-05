@@ -97,7 +97,7 @@ export default function Navbar() {
         collapsing it to zero height. */}
     {menuOpen && (
         <div className="fixed inset-x-0 top-20 bottom-0 z-40">
-          <div className="absolute inset-0 bg-vc-950/98 backdrop-blur-xl animate-fade-in" onClick={close} />
+          <div className="absolute inset-0 bg-vc-950/95 backdrop-blur-xl animate-fade-in" onClick={close} />
           <div className="relative h-full overflow-y-auto overscroll-contain">
             <div className="max-w-[1100px] mx-auto px-6 lg:px-12 py-10 sm:py-14">
               <p className="text-[11px] tracking-[0.34em] uppercase text-gold mb-8 animate-fade-in">Explore</p>
