@@ -3,20 +3,16 @@ import { Check } from "lucide-react";
 import RequestForm from "@/components/tools/RequestForm";
 import Reveal from "@/components/ui/Reveal";
 import { getPageContent } from "@/lib/page-content";
+import { getPageList, splitLines } from "@/lib/page-lists";
 
 export const metadata: Metadata = {
   title: "Travel Insurance — Voyages & Co.",
   description: "Travel with peace of mind — medical, cancellation, baggage and adventure cover tailored to your journey.",
 };
 
-const PLANS = [
-  { name: "Essential", tag: "Everyday cover", perks: ["Emergency medical & evacuation", "Trip cancellation & curtailment", "Lost or delayed baggage", "24/7 assistance helpline"] },
-  { name: "Signature", tag: "Most popular", perks: ["Everything in Essential", "Higher medical & cancellation limits", "Missed connection & travel delay", "Gadget & valuables cover", "Adventure activities"] },
-  { name: "Elite", tag: "Comprehensive", perks: ["Everything in Signature", "Top-tier medical worldwide", "Cancel-for-any-reason option", "Business equipment cover", "Concierge medical support"] },
-];
-
 export default async function InsurancePage() {
   const c = await getPageContent();
+  const plans = (await getPageList("list.insurance")).map(p => ({ name: p.name || "", tag: p.tag || "", perks: splitLines(p.perks) }));
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20">
       <div className="text-center mb-12">
@@ -26,7 +22,7 @@ export default async function InsurancePage() {
       </div>
 
       <Reveal soft className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
-        {PLANS.map((p, i) => (
+        {plans.map((p, i) => (
           <div key={p.name} className={`relative bg-panel border rounded-2xl p-6 ${i === 1 ? "border-gold shadow-card" : "border-line"}`}>
             {i === 1 && <span className="absolute top-4 right-4 text-[9px] tracking-[0.16em] uppercase bg-gold text-page px-2 py-0.5 rounded-sm">Popular</span>}
             <p className="text-[10px] tracking-[0.2em] uppercase text-gold mb-1">{p.tag}</p>
@@ -50,7 +46,7 @@ export default async function InsurancePage() {
         submitLabel="Get my quote"
         successText="We'll match you to the right cover and send a tailored quote shortly."
         fields={[
-          { key: "plan", label: "Plan", type: "select", options: ["Essential", "Signature", "Elite", "Not sure — advise me"] },
+          { key: "plan", label: "Plan", type: "select", options: [...plans.map(p => p.name), "Not sure — advise me"] },
           { key: "destination", label: "Destination(s)", placeholder: "e.g. Italy & Switzerland" },
           { key: "travellers", label: "Travellers", placeholder: "e.g. 2 adults, 1 child" },
           { key: "tripStart", label: "Trip start", type: "date" },

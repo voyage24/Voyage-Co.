@@ -72,7 +72,71 @@ export const LIST_REGISTRY: ContentList[] = [
     ],
     default: FAQ_DEFAULT,
   },
+  {
+    key: "list.services",
+    page: "services",
+    label: "Concierge service cards",
+    path: "/services",
+    itemLabel: "service",
+    description: "The service cards on the Concierge page. Icon is a Lucide icon name (e.g. Car, Plane, Ship, ChefHat, Camera) — an unknown name falls back to a sparkle.",
+    fields: [
+      { key: "icon", label: "Icon (Lucide name)" },
+      { key: "title", label: "Title" },
+      { key: "text", label: "Description", type: "textarea" },
+    ],
+    default: [
+      { icon: "Car", title: "Private Transfers", text: "Chauffeured arrivals, departures and door-to-door transport in every city." },
+      { icon: "Plane", title: "Private Jet & Helicopter", text: "Seamless private aviation, scenic transfers and last-mile lifts." },
+      { icon: "Ship", title: "Yacht & Boat Charter", text: "Crewed yachts and day boats for coastlines, islands and celebrations." },
+      { icon: "ChefHat", title: "Private Chef & Dining", text: "In-villa chefs, tasting menus and bespoke culinary experiences." },
+      { icon: "UtensilsCrossed", title: "Restaurant Reservations", text: "Tables at the most coveted restaurants, secured on your behalf." },
+      { icon: "Camera", title: "Photographer & Videographer", text: "Capture your journey with a private photographer at any destination." },
+      { icon: "ShieldCheck", title: "Security & Staff", text: "Discreet close protection, butlers, nannies and personal assistants." },
+      { icon: "Sparkles", title: "Bespoke Requests", text: "Proposals, surprises, access and the impossible — simply ask." },
+    ],
+  },
+  {
+    key: "list.insurance",
+    page: "insurance",
+    label: "Insurance plans",
+    path: "/insurance",
+    itemLabel: "plan",
+    description: "The cover tiers on the Travel Insurance page. Put one perk per line. The second plan in the list is highlighted as “Popular”.",
+    fields: [
+      { key: "name", label: "Plan name" },
+      { key: "tag", label: "Tagline" },
+      { key: "perks", label: "Perks (one per line)", type: "textarea" },
+    ],
+    default: [
+      { name: "Essential", tag: "Everyday cover", perks: "Emergency medical & evacuation\nTrip cancellation & curtailment\nLost or delayed baggage\n24/7 assistance helpline" },
+      { name: "Signature", tag: "Most popular", perks: "Everything in Essential\nHigher medical & cancellation limits\nMissed connection & travel delay\nGadget & valuables cover\nAdventure activities" },
+      { name: "Elite", tag: "Comprehensive", perks: "Everything in Signature\nTop-tier medical worldwide\nCancel-for-any-reason option\nBusiness equipment cover\nConcierge medical support" },
+    ],
+  },
+  {
+    key: "list.membership",
+    page: "membership",
+    label: "Membership tiers",
+    path: "/membership",
+    itemLabel: "tier",
+    description: "The reward tiers on the Membership page. Put one perk per line. The last tier in the list is highlighted.",
+    fields: [
+      { key: "name", label: "Tier name" },
+      { key: "at", label: "Threshold (e.g. 1,500 points)" },
+      { key: "perks", label: "Perks (one per line)", type: "textarea" },
+    ],
+    default: [
+      { name: "Member", at: "0 points", perks: "Save journeys & build itineraries\nMember-only offers\nTailored ideas from our concierge" },
+      { name: "Silver", at: "1,500 points", perks: "Everything in Member\nPriority concierge\nWelcome amenity on stays" },
+      { name: "Gold", at: "5,000 points", perks: "Everything in Silver\nComplimentary upgrades when available\nA dedicated travel advisor" },
+    ],
+  },
 ];
+
+// Splits a "one per line" textarea value into trimmed, non-empty lines.
+export function splitLines(value: string | undefined): string[] {
+  return (value ?? "").split("\n").map(s => s.trim()).filter(Boolean);
+}
 
 export const LIST_KEYS = new Set(LIST_REGISTRY.map(l => l.key));
 export const LIST_BY_PAGE = new Map(LIST_REGISTRY.map(l => [l.page, l]));
