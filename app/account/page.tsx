@@ -13,6 +13,7 @@ import TripCountdown from "@/components/account/TripCountdown";
 import AddToCalendar from "@/components/account/AddToCalendar";
 import PushSubscribe from "@/components/ui/PushSubscribe";
 import Price from "@/components/ui/Price";
+import { getPageContent } from "@/lib/page-content";
 
 export const dynamic = "force-dynamic";
 
@@ -35,12 +36,13 @@ export default async function AccountPage() {
     prisma.booking.findMany({ where: { customerId: customer.id }, orderBy: { createdAt: "desc" } }),
     prisma.savedItem.findMany({ where: { customerId: customer.id }, orderBy: { createdAt: "desc" } }),
   ]);
+  const c = await getPageContent();
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-20">
       <div className="flex flex-wrap items-end justify-between gap-3 mb-10">
         <div>
-          <p className="text-[10px] tracking-[0.3em] uppercase text-gold mb-2">My Account</p>
+          <p className="text-[10px] tracking-[0.3em] uppercase text-gold mb-2">{c("account.eyebrow")}</p>
           <div className="flex items-center gap-3">
             <h1 className="font-serif text-3xl sm:text-4xl font-light text-ink">{customer.name || customer.email}</h1>
             {customer.tier && customer.tier !== "member" && (

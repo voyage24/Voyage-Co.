@@ -221,6 +221,20 @@ export const PAGE_REGISTRY: ContentPage[] = [
     ],
   },
   {
+    page: "account", label: "My Account", path: "/account",
+    fields: [
+      { key: "account.eyebrow", label: "Eyebrow" },
+    ],
+  },
+  {
+    page: "trips", label: "My Trips", path: "/trips",
+    fields: [
+      { key: "trips.eyebrow", label: "Eyebrow" },
+      { key: "trips.title", label: "Title" },
+      { key: "trips.intro", label: "Intro", type: "textarea" },
+    ],
+  },
+  {
     page: "nav", label: "Navigation menu", path: "/",
     fields: [
       { key: "nav.destinations", label: "Destinations link" },
@@ -355,6 +369,12 @@ export const PAGE_DEFAULTS: Record<string, string> = {
   "signup.eyebrow": "Membership",
   "signup.title": "Create Your Account",
   "signup.subtitle": "Join Voyages & Co. to plan, book and manage your journeys.",
+
+  "account.eyebrow": "My Account",
+
+  "trips.eyebrow": "Reservations",
+  "trips.title": "My Trips",
+  "trips.intro": "Every journey you've reserved with us.",
 
   "nav.destinations": "Destinations",
   "nav.stays": "Stays",

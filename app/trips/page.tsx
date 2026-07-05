@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { getCurrentCustomer } from "@/lib/customer/session";
 import GuestTrips from "@/components/pages/GuestTrips";
 import Price from "@/components/ui/Price";
+import { getPageContent } from "@/lib/page-content";
 
 export const dynamic = "force-dynamic";
 
@@ -29,13 +30,14 @@ export default async function TripsPage() {
 
   const bookings = await prisma.booking.findMany({ where: { customerId: customer.id }, orderBy: { createdAt: "desc" } });
   if (bookings.length === 0) return <GuestTrips />;
+  const c = await getPageContent();
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-24">
       <div className="text-center mb-12">
-        <p className="text-[11px] tracking-[0.3em] uppercase text-gold mb-3">Reservations</p>
-        <h1 className="font-serif text-3xl sm:text-5xl font-light text-ink mb-3">My Trips</h1>
-        <p className="text-ink-muted font-light">Every journey you&apos;ve reserved with us.</p>
+        <p className="text-[11px] tracking-[0.3em] uppercase text-gold mb-3">{c("trips.eyebrow")}</p>
+        <h1 className="font-serif text-3xl sm:text-5xl font-light text-ink mb-3">{c("trips.title")}</h1>
+        <p className="text-ink-muted font-light">{c("trips.intro")}</p>
       </div>
 
       <div className="space-y-4">

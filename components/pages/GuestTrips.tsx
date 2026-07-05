@@ -6,9 +6,11 @@ import { Trash2, Briefcase } from "lucide-react";
 import { useTrips } from "@/components/providers/TripsProvider";
 import { useCurrency } from "@/components/providers/CurrencyProvider";
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { useContent } from "@/components/providers/ContentProvider";
 
 export default function GuestTrips() {
   const { t } = useLanguage();
+  const c = useContent();
   const { trips, removeTrip } = useTrips();
   const { format } = useCurrency();
 
@@ -21,9 +23,9 @@ export default function GuestTrips() {
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-24">
       <div className="text-center mb-12">
-        <p className="text-[11px] tracking-[0.3em] uppercase text-gold mb-3">{t("trips.eyebrow")}</p>
-        <h1 className="font-serif text-3xl sm:text-5xl font-light text-ink mb-3">{t("trips.title")}</h1>
-        <p className="text-ink-muted font-light">{t("trips.subtitle")}</p>
+        <p className="text-[11px] tracking-[0.3em] uppercase text-gold mb-3">{c("trips.eyebrow") || t("trips.eyebrow")}</p>
+        <h1 className="font-serif text-3xl sm:text-5xl font-light text-ink mb-3">{c("trips.title") || t("trips.title")}</h1>
+        <p className="text-ink-muted font-light">{c("trips.intro") || t("trips.subtitle")}</p>
       </div>
 
       {trips.length === 0 ? (
