@@ -466,6 +466,18 @@ html.dark .shimmer-gold {
 }
 
 
+/* Voyages Reserve — a slow, opulent champagne-gold shimmer for the private
+   club's wordmark. Deliberately richer, brighter and slower than the standard
+   gold accents so the tier reads as uniquely luxurious. */
+.reserve-shimmer {
+  background-image: linear-gradient(105deg, #9c7328 0%, #d9b968 26%, #f8ecc6 47%, #ffffff 52%, #f8ecc6 57%, #d9b968 74%, #9c7328 100%);
+  background-size: 220% auto;
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; color: transparent;
+  filter: drop-shadow(0 0 18px rgba(232, 205, 143, 0.4));
+  animation: goldShimmer 4.6s linear infinite;
+}
+
 /* Floating-control halos — a slow, breathing glow so the concierge & WhatsApp
    buttons feel like a lit atelier window rather than a loud notification. */
 .atelier-glow {
@@ -541,7 +553,7 @@ html.dark .shimmer-gold {
   .page-enter { animation: none; }
   .lift:hover { transform: none; }
   .word-rise { opacity: 1; animation: none; }
-  .shimmer-gold, .shimmer-gold-hero { animation: none; }
+  .shimmer-gold, .shimmer-gold-hero, .reserve-shimmer { animation: none; }
   .ken-burns { animation: none; }
   .atelier-glow, .wa-glow, .gold-glow { animation: none; }
   .text-shimmer { animation: none; -webkit-text-fill-color: #efe9df; color: #efe9df; }

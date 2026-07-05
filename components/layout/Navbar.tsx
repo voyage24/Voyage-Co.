@@ -150,7 +150,7 @@ export default function Navbar() {
                     href="/support"
                     onClick={close}
                     style={{ animationDelay: `${(delay++) * 45}ms`, animationFillMode: "both" }}
-                    className="inline-flex items-center gap-2 border border-gold/60 text-gold px-6 py-3.5 rounded-sm text-xs tracking-[0.16em] uppercase font-medium hover:bg-gold hover:text-vc-950 transition-all animate-fade-in"
+                    className="inline-flex items-center gap-2 border border-white/40 text-white/90 px-6 py-3.5 rounded-sm text-xs tracking-[0.16em] uppercase font-medium hover:bg-white hover:text-vc-950 transition-all animate-fade-in"
                   >
                     <Headset size={15} /> Support
                   </Link>
@@ -165,7 +165,7 @@ export default function Navbar() {
                         href={l.href}
                         onClick={close}
                         style={{ animationDelay: `${(delay++) * 45}ms`, animationFillMode: "both" }}
-                        className={`text-xs tracking-[0.14em] uppercase transition-colors animate-fade-in ${premium ? "text-gold hover:text-gold/80" : "text-white/55 hover:text-white"}`}
+                        className={`text-xs tracking-[0.14em] uppercase transition-colors animate-fade-in ${premium ? "reserve-shimmer font-medium" : "text-white/55 hover:text-white"}`}
                       >
                         {l.label}
                       </Link>
