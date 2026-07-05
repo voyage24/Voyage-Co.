@@ -305,6 +305,12 @@ textarea:focus-visible {
 @keyframes adminRise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
 .admin-lift { transition: transform 0.2s ease, box-shadow 0.2s ease; }
 .admin-lift:hover { transform: translateY(-2px); box-shadow: 0 10px 26px -10px rgba(0,0,0,0.18); }
+/* Instant press-bounce so a tap/click registers immediately — even while the
+   next admin page is still loading. Applies to every clickable in the admin.
+   No transition on the generic rule (so existing colour transitions are kept);
+   the scale snaps on press and back on release, which reads as responsive. */
+.admin-lift:active { transform: scale(0.96); box-shadow: 0 4px 12px -6px rgba(0,0,0,0.18); transition-duration: 0.08s; }
+.admin-root a:active, .admin-root button:active, .admin-root [role="button"]:active, .admin-root summary:active { transform: scale(0.96); }
 
 /* Analytics graph — animated line draw + area/dot fade-in. */
 .chart-line { stroke-dasharray: 1400; stroke-dashoffset: 1400; animation: chartDraw 1.5s ease-out forwards; }

@@ -17,7 +17,7 @@ export default function Haptics() {
     const onPointerDown = (e: PointerEvent) => {
       const target = e.target as HTMLElement | null;
       if (target && target.closest(INTERACTIVE)) {
-        try { navigator.vibrate(8); } catch { /* ignore */ }
+        try { navigator.vibrate(12); } catch { /* ignore */ }
       }
     };
 
