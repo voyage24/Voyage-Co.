@@ -2,13 +2,22 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Trash2, Briefcase } from "lucide-react";
+import { Trash2, Briefcase, LogIn } from "lucide-react";
 import { useTrips } from "@/components/providers/TripsProvider";
 import { useCurrency } from "@/components/providers/CurrencyProvider";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useContent } from "@/components/providers/ContentProvider";
 
-export default function GuestTrips() {
+const BROWSE: { href: string; key: string }[] = [
+  { href: "/hotels", key: "trips.browseStays" },
+  { href: "/flights", key: "trips.findFlight" },
+  { href: "/cruises", key: "trips.browseCruises" },
+  { href: "/packages", key: "trips.browseDestinations" },
+  { href: "/experiences", key: "trips.browseExperiences" },
+  { href: "/trains", key: "trips.browseRailJourneys" },
+];
+
+export default function GuestTrips({ loggedOut = false }: { loggedOut?: boolean }) {
   const { t } = useLanguage();
   const c = useContent();
   const { trips, removeTrip } = useTrips();
@@ -19,6 +28,48 @@ export default function GuestTrips() {
       return new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
     } catch { return ""; }
   };
+
+  const browseLinks = (
+    <div className="flex flex-wrap gap-3 justify-center">
+      {BROWSE.map((b, i) => (
+        <Link key={b.href} href={b.href} className={`px-7 py-3.5 text-xs tracking-[0.16em] uppercase rounded-sm transition-all duration-200 hover:scale-105 active:scale-95 ${i === 0 ? "bg-ink text-page hover:bg-ink/90" : "border border-line-strong text-ink hover:bg-ink hover:text-page"}`}>
+          {t(b.key)}
+        </Link>
+      ))}
+    </div>
+  );
+
+  // Signed-out visitors are never shown locally-saved reservations — they see a
+  // prompt to sign in (their real bookings live in their account).
+  if (loggedOut) {
+    return (
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-24">
+        <div className="text-center mb-12">
+          <p className="text-[11px] tracking-[0.3em] uppercase text-gold mb-3">{c("trips.eyebrow") || t("trips.eyebrow")}</p>
+          <h1 className="font-serif text-3xl sm:text-5xl font-light text-ink mb-3">{c("trips.title") || t("trips.title")}</h1>
+        </div>
+
+        <div className="bg-panel-soft border border-line rounded-2xl p-12 sm:p-16 text-center">
+          <div className="w-14 h-14 rounded-full border border-line flex items-center justify-center mx-auto mb-5">
+            <LogIn size={22} className="text-gold" />
+          </div>
+          <h2 className="font-serif text-2xl font-light text-ink mb-2">Log in to check your trips</h2>
+          <p className="text-ink-muted font-light mb-8 max-w-sm mx-auto">
+            Your reservations, vouchers and boarding passes live securely in your account. Sign in to view them.
+          </p>
+          <div className="flex gap-3 justify-center flex-wrap">
+            <Link href="/login" className="px-7 py-3.5 bg-ink text-page text-xs tracking-[0.16em] uppercase rounded-sm hover:bg-ink/90 transition-all duration-200 hover:scale-105 active:scale-95">Log in</Link>
+            <Link href="/signup" className="px-7 py-3.5 border border-line-strong text-ink text-xs tracking-[0.16em] uppercase rounded-sm hover:bg-ink hover:text-page transition-all duration-200 hover:scale-105 active:scale-95">Create account</Link>
+          </div>
+        </div>
+
+        <div className="mt-12 text-center">
+          <p className="text-[11px] tracking-[0.28em] uppercase text-ink-faint mb-5">Or start planning</p>
+          {browseLinks}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-24">

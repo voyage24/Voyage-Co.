@@ -24,9 +24,10 @@ function fmtDate(d?: string | null): string {
 
 export default async function TripsPage() {
   const customer = await getCurrentCustomer();
-  // Signed-in travellers see their real account bookings; guests (or anyone not
-  // signed in on this device) fall back to trips saved locally in the browser.
-  if (!customer) return <GuestTrips />;
+  // Logged out → prompt to sign in (never surface locally-saved reservations to
+  // a signed-out visitor). Signed-in travellers see their real account bookings,
+  // falling back to any locally-saved trips only when they have no DB bookings.
+  if (!customer) return <GuestTrips loggedOut />;
 
   const bookings = await prisma.booking.findMany({ where: { customerId: customer.id }, orderBy: { createdAt: "desc" } });
   if (bookings.length === 0) return <GuestTrips />;
