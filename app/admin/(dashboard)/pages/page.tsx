@@ -6,6 +6,8 @@ import { LIST_REGISTRY } from "@/lib/page-lists";
 export const dynamic = "force-dynamic";
 
 export default function AdminPagesList() {
+  const pages = [...PAGE_REGISTRY].sort((a, b) => a.label.localeCompare(b.label));
+  const lists = [...LIST_REGISTRY].sort((a, b) => a.label.localeCompare(b.label));
   return (
     <div className="space-y-10">
       <div>
@@ -13,7 +15,7 @@ export default function AdminPagesList() {
         <p className="text-sm text-gray-500">Edit the copy on your info &amp; marketing pages — changes go live on save.</p>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {PAGE_REGISTRY.map((p, i) => (
+        {pages.map((p, i) => (
           <Link key={p.page} href={`/admin/pages/${p.page}`} className={`admin-rise admin-lift rounded-xl p-5 block tile-grad-${(i % 6) + 1}`}>
             <span className="inline-flex items-center justify-center w-10 h-10 rounded-lg mb-3 bg-black/[0.06] dark:bg-white/10 text-gray-700"><FileText size={18} /></span>
             <p className="font-medium text-gray-900">{p.label}</p>
@@ -27,7 +29,7 @@ export default function AdminPagesList() {
         <p className="text-sm text-gray-500">Add, remove and reorder repeating content — FAQ questions, cards, links.</p>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {LIST_REGISTRY.map((l, i) => (
+        {lists.map((l, i) => (
           <Link key={l.key} href={`/admin/lists/${l.page}`} className={`admin-rise admin-lift rounded-xl p-5 block tile-grad-${(i % 6) + 1}`}>
             <span className="inline-flex items-center justify-center w-10 h-10 rounded-lg mb-3 bg-black/[0.06] dark:bg-white/10 text-gray-700"><ListChecks size={18} /></span>
             <p className="font-medium text-gray-900">{l.label}</p>

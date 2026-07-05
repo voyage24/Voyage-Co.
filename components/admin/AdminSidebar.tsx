@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 
 // Grouped ("indexed") navigation so the growing admin stays organised.
-export const NAV_SECTIONS: { title: string | null; items: { href: string; label: string; icon: LucideIcon }[] }[] = [
+const SECTION_DEFS: { title: string | null; items: { href: string; label: string; icon: LucideIcon }[] }[] = [
   {
     title: null,
     items: [
@@ -70,6 +70,12 @@ export const NAV_SECTIONS: { title: string | null; items: { href: string; label:
     ],
   },
 ];
+
+// Items are listed alphabetically within each titled section for easy scanning;
+// the top group (Dashboard, Analytics) keeps its natural order.
+export const NAV_SECTIONS = SECTION_DEFS.map(s =>
+  s.title ? { ...s, items: [...s.items].sort((a, b) => a.label.localeCompare(b.label)) } : s,
+);
 
 // Flat list kept for any consumer that just needs every link.
 export const NAV_ITEMS = NAV_SECTIONS.flatMap(s => s.items);
