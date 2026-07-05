@@ -67,6 +67,7 @@ model Customer {
   saved        SavedItem[]
   searches     SavedSearch[]
   itineraries  Itinerary[]
+  credentials  WebauthnCredential[]
 
   @@index([verifyTokenHash])
   @@index([resetTokenHash])
@@ -130,6 +131,21 @@ model SavedItem {
   createdAt  DateTime @default(now())
 
   @@unique([customerId, type, itemId])
+  @@index([customerId])
+}
+
+// A passkey (WebAuthn credential) registered by a member for passwordless login.
+model WebauthnCredential {
+  id           String   @id @default(cuid())
+  customerId   String
+  customer     Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  credentialId String   @unique // base64url
+  publicKey    String   // base64url of the COSE public key
+  counter      Int      @default(0)
+  transports   String?  // comma-joined transports
+  deviceName   String?
+  createdAt    DateTime @default(now())
+
   @@index([customerId])
 }
 

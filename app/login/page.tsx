@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Mail, Lock, Eye, EyeOff, ArrowRight } from "lucide-react";
 import Logo from "@/components/ui/Logo";
+import PasskeySignIn from "@/components/account/PasskeySignIn";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useContent } from "@/components/providers/ContentProvider";
 
@@ -115,6 +116,13 @@ export default function LoginPage() {
               {loading ? t("login.signingIn") : <>{t("login.signIn")} <ArrowRight size={15} /></>}
             </button>
           </form>
+
+          <div className="flex items-center gap-3 my-5">
+            <span className="h-px flex-1 bg-line" />
+            <span className="text-[10px] tracking-[0.16em] uppercase text-ink-faint">or</span>
+            <span className="h-px flex-1 bg-line" />
+          </div>
+          <PasskeySignIn />
 
           <p className="text-center text-sm text-ink-muted mt-6 font-light">
             {t("login.notMember")}{" "}

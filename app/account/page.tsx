@@ -13,6 +13,7 @@ import TripCountdown from "@/components/account/TripCountdown";
 import AddToCalendar from "@/components/account/AddToCalendar";
 import PushSubscribe from "@/components/ui/PushSubscribe";
 import DataControls from "@/components/account/DataControls";
+import PasskeyManager from "@/components/account/PasskeyManager";
 import Price from "@/components/ui/Price";
 import { getPageContent } from "@/lib/page-content";
 
@@ -33,10 +34,12 @@ export default async function AccountPage() {
   const customer = await getCurrentCustomer();
   if (!customer) redirect("/login");
 
-  const [bookings, saved] = await Promise.all([
+  const [bookings, saved, passkeyRows] = await Promise.all([
     prisma.booking.findMany({ where: { customerId: customer.id }, orderBy: { createdAt: "desc" } }),
     prisma.savedItem.findMany({ where: { customerId: customer.id }, orderBy: { createdAt: "desc" } }),
+    prisma.webauthnCredential.findMany({ where: { customerId: customer.id }, orderBy: { createdAt: "desc" }, select: { id: true, deviceName: true, createdAt: true } }).catch(() => []),
   ]);
+  const passkeys = passkeyRows.map(p => ({ id: p.id, deviceName: p.deviceName, createdAt: p.createdAt.toISOString() }));
   const c = await getPageContent();
 
   return (
@@ -119,7 +122,8 @@ export default async function AccountPage() {
 
       <OccasionsForm />
 
-      <div className="mt-12"><DataControls /></div>
+      <div className="mt-12"><PasskeyManager passkeys={passkeys} /></div>
+      <div className="mt-6"><DataControls /></div>
     </div>
   );
 }
