@@ -51,6 +51,12 @@ export default async function AdminDashboardPage() {
   ]);
   const mobileVisits = mobileStat?.count ?? 0;
   const desktopVisits = desktopStat?.count ?? 0;
+  // Device split started tracking later than the grand total, so Mobile+Desktop
+  // won't equal Total. Show them as a share of the device-tracked visits, which
+  // is self-consistent (Mobile% + Desktop% = 100%).
+  const deviceTotal = mobileVisits + desktopVisits;
+  const mobilePct = deviceTotal ? Math.round((mobileVisits / deviceTotal) * 100) : 0;
+  const desktopPct = deviceTotal ? 100 - mobilePct : 0;
   const visitMap = new Map(dailyVisits.map(d => [d.day, d.count]));
   const visitDays: { label: string; count: number }[] = [];
   for (let i = 13; i >= 0; i--) {
@@ -99,8 +105,8 @@ export default async function AdminDashboardPage() {
             <div><p className="text-xl font-bold text-gray-900">{totalVisits.toLocaleString("en-IN")}</p><p className="text-[10px] uppercase tracking-wide text-gray-500">Total</p></div>
             <div><p className="text-xl font-bold text-gray-900">{todayVisits.toLocaleString("en-IN")}</p><p className="text-[10px] uppercase tracking-wide text-gray-500">Today</p></div>
             <div><p className="text-xl font-bold text-gray-900">{weekVisits.toLocaleString("en-IN")}</p><p className="text-[10px] uppercase tracking-wide text-gray-500">Last 7 days</p></div>
-            <div><p className="text-xl font-bold text-gray-900">{mobileVisits.toLocaleString("en-IN")}</p><p className="text-[10px] uppercase tracking-wide text-gray-500">Mobile</p></div>
-            <div><p className="text-xl font-bold text-gray-900">{desktopVisits.toLocaleString("en-IN")}</p><p className="text-[10px] uppercase tracking-wide text-gray-500">Desktop</p></div>
+            <div><p className="text-xl font-bold text-gray-900">{mobilePct}%</p><p className="text-[10px] uppercase tracking-wide text-gray-500">Mobile · {mobileVisits.toLocaleString("en-IN")}</p></div>
+            <div><p className="text-xl font-bold text-gray-900">{desktopPct}%</p><p className="text-[10px] uppercase tracking-wide text-gray-500">Desktop · {desktopVisits.toLocaleString("en-IN")}</p></div>
           </div>
         </div>
         <MiniAreaChart data={visitDays} />
