@@ -23,6 +23,7 @@ export default function NavConverter({ tone = "dark" }: { tone?: "dark" | "light
       <button
         onClick={() => setOpen(o => !o)}
         aria-label="Currency converter"
+        title="Currency converter"
         className={`inline-flex items-center gap-1.5 text-[13px] font-normal tracking-[0.08em] uppercase leading-none transition-all duration-200 py-2 hover:scale-105 active:scale-95 ${
           tone === "light" ? "text-white/90 hover:text-white" : "text-ink-muted hover:text-ink"
         }`}

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { ArrowUpRight, Headset } from "lucide-react";
+import { ArrowUpRight, Headset, X } from "lucide-react";
 import Logo from "@/components/ui/Logo";
 import CurrencySelector from "@/components/ui/CurrencySelector";
 import LanguageSelector from "@/components/ui/LanguageSelector";
@@ -88,12 +88,20 @@ export default function Navbar() {
               type="button"
               onClick={() => setMenuOpen(o => !o)}
               aria-label={menuOpen ? "Close menu" : "Open menu"}
+              title={menuOpen ? "Close" : "Menu"}
               aria-expanded={menuOpen}
-              className="relative w-7 h-7 flex flex-col items-center justify-center gap-[6px] text-white"
+              className="w-7 h-7 flex items-center justify-center text-white transition-transform duration-200 hover:scale-110 active:scale-95"
             >
-              <span className={`block h-[1.5px] w-6 bg-current transition-all duration-300 ease-out ${menuOpen ? "translate-y-[7.5px] rotate-45" : ""}`} />
-              <span className={`block h-[1.5px] w-6 bg-current transition-all duration-300 ease-out ${menuOpen ? "opacity-0" : ""}`} />
-              <span className={`block h-[1.5px] w-6 bg-current transition-all duration-300 ease-out ${menuOpen ? "-translate-y-[7.5px] -rotate-45" : ""}`} />
+              {menuOpen ? (
+                <X size={22} />
+              ) : (
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" aria-hidden="true">
+                  <circle cx="7" cy="8.5" r="2.5" />
+                  <line x1="10.5" y1="8.5" x2="20" y2="8.5" />
+                  <line x1="4" y1="15.5" x2="13.5" y2="15.5" />
+                  <circle cx="17" cy="15.5" r="2.5" />
+                </svg>
+              )}
             </button>
           </div>
         </div>
@@ -104,7 +112,7 @@ export default function Navbar() {
         make this fixed overlay be contained by the 80px bar (a CSS gotcha),
         collapsing it to zero height. */}
     {menuOpen && (
-        <div className="fixed inset-x-0 top-20 bottom-0 z-40">
+        <div className="fixed inset-x-0 top-20 bottom-0 z-[45]">
           <div className="absolute inset-0 bg-vc-950/95 backdrop-blur-xl animate-fade-in" onClick={close} />
           <div className="relative h-full overflow-y-auto overscroll-contain">
             <div className="max-w-[1100px] mx-auto px-6 lg:px-12 py-10 sm:py-14">
