@@ -49,7 +49,7 @@ const FOOTER_LINKS: Record<string, FooterLink[]> = {
     { label: "Visa assistance",    href: "/visa" },
     { label: "Travel insurance",   href: "/insurance" },
     { key: "common.faq",           href: "/faq" },
-    { key: "common.help",          href: "/help" },
+    { label: "Support",            href: "/support" },
     { key: "common.cancellations", href: "/cancellations" },
     { key: "common.privacy",       href: "/privacy" },
     { key: "common.terms",         href: "/terms" },

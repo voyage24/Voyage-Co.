@@ -20,7 +20,7 @@ const VIP_PERKS = [
   "First access to new journeys",
 ];
 
-const VIP_ENQUIRY = "/contact?message=" + encodeURIComponent("I'd like to request an invitation to the VIP Travel Club.");
+const VIP_ENQUIRY = "/contact?message=" + encodeURIComponent("I'd like to request an invitation to Voyages Reserve.");
 
 export default async function MembershipPage() {
   const c = await getPageContent();
@@ -57,10 +57,10 @@ export default async function MembershipPage() {
         <Link href="/account" className="inline-block px-7 py-3 border border-line-strong text-ink text-xs tracking-[0.16em] uppercase rounded-sm hover:bg-ink hover:text-page transition-all">View my account</Link>
       </div>
 
-      {/* VIP Travel Club — a distinct, premium, invitation-based tier. */}
-      <section className="mt-20 rounded-2xl bg-vc-950 border border-vc-700 p-8 sm:p-12 text-center">
+      {/* Voyages Reserve — a distinct, premium, invitation-based tier. */}
+      <section id="voyages-reserve" className="scroll-mt-28 mt-20 rounded-2xl bg-vc-950 border border-vc-700 p-8 sm:p-12 text-center">
         <p className="text-[11px] tracking-[0.3em] uppercase text-gold mb-3">By Invitation</p>
-        <h2 className="font-serif text-3xl font-light text-[#ece7dd] mb-4">VIP Travel Club</h2>
+        <h2 className="font-serif text-3xl font-light text-[#ece7dd] mb-4">Voyages Reserve</h2>
         <p className="text-[#9aa4ab] font-light max-w-xl mx-auto mb-8">Our most personal tier of service — a dedicated travel designer, priority everything, and privileges reserved for a select few. Separate from the free loyalty program above.</p>
         <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-xl mx-auto text-left mb-9">
           {VIP_PERKS.map(p => (

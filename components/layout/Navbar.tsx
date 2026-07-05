@@ -28,13 +28,14 @@ const PRIMARY_LINKS: NavLink[] = [
 
 // Supporting links, shown smaller beneath the primary ones.
 const SECONDARY_LINKS: NavLink[] = [
+  { label: "Voyages Reserve", href: "/membership#voyages-reserve" },
   { label: "Group booking", href: "/group" },
   { label: "Refer a friend", href: "/refer" },
   { label: "Visa assistance", href: "/visa" },
   { label: "Travel insurance", href: "/insurance" },
   { key: "common.myTrips",  href: "/trips" },
   { key: "account.account", href: "/account" },
-  { label: "Support", href: "/help" },
+  { label: "Support", href: "/support" },
 ];
 
 export default function Navbar() {
@@ -77,7 +78,7 @@ export default function Navbar() {
           {/* Minimal controls — single CTA, search, account (desktop), menu */}
           <div className="flex items-center gap-4 sm:gap-5">
             <Link href="/plan" onClick={close} className={`hidden sm:inline-flex ${ctaClass}`}>{planLabel}</Link>
-            <div className="hidden lg:flex items-center gap-4">
+            <div className="flex items-center gap-3 sm:gap-4">
               <LanguageSelector tone="light" />
               <CurrencySelector tone="light" />
             </div>
