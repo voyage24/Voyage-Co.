@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/admin/requireAdmin";
 import { logAudit } from "@/lib/admin/audit";
+import { sendPushToCustomer } from "@/lib/push";
 
 const STATUSES = ["pending", "confirmed", "cancelled"];
 
@@ -22,7 +23,15 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
       .slice(0, 20);
   }
   await prisma.booking.update({ where: { id: params.id }, data });
-  if (status !== undefined) await logAudit(admin.email, "update", "booking", params.id, `status → ${status}`);
+  if (status !== undefined) {
+    await logAudit(admin.email, "update", "booking", params.id, `status → ${status}`);
+    // Notify the member (if they've enabled push) that their booking changed.
+    const bk = await prisma.booking.findUnique({ where: { id: params.id }, select: { customerId: true, itemTitle: true, reference: true } }).catch(() => null);
+    if (bk?.customerId) {
+      const title = status === "confirmed" ? "Booking confirmed" : status === "cancelled" ? "Booking cancelled" : "Booking updated";
+      await sendPushToCustomer(bk.customerId, { title, body: `${bk.itemTitle} · ${bk.reference}`, url: "/account" });
+    }
+  }
 
   // Award loyalty points once, when a booking is first confirmed (1 point per
   // ₹1,000 of value), and bump tier at thresholds.

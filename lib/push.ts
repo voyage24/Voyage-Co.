@@ -13,10 +13,10 @@ function configure() {
   return true;
 }
 
-// Sends a push to every stored subscription; prunes expired/invalid ones.
-export async function sendPushToAll(payload: { title: string; body: string; url?: string }) {
-  if (!configure()) return { sent: 0, configured: false };
-  const subs = await prisma.pushSubscription.findMany();
+type Sub = { id: string; endpoint: string; p256dh: string; auth: string };
+type Payload = { title: string; body: string; url?: string };
+
+async function deliver(subs: Sub[], payload: Payload) {
   const data = JSON.stringify(payload);
   let sent = 0;
   await Promise.all(subs.map(async s => {
@@ -28,5 +28,22 @@ export async function sendPushToAll(payload: { title: string; body: string; url?
       if (code === 404 || code === 410) await prisma.pushSubscription.delete({ where: { id: s.id } }).catch(() => {});
     }
   }));
+  return sent;
+}
+
+// Sends a push to every stored subscription; prunes expired/invalid ones.
+export async function sendPushToAll(payload: Payload) {
+  if (!configure()) return { sent: 0, configured: false };
+  const subs = await prisma.pushSubscription.findMany();
+  const sent = await deliver(subs, payload);
   return { sent, configured: true, total: subs.length };
+}
+
+// Sends a push to one member's devices (e.g. a booking status change). Fails
+// silently — a missing subscription or missing VAPID config is never an error.
+export async function sendPushToCustomer(customerId: string, payload: Payload) {
+  if (!customerId || !configure()) return { sent: 0, configured: false };
+  const subs = await prisma.pushSubscription.findMany({ where: { customerId } });
+  const sent = await deliver(subs, payload);
+  return { sent, configured: true };
 }

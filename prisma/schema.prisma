@@ -372,11 +372,14 @@ model Cruise {
 }
 
 model PushSubscription {
-  id        String   @id @default(cuid())
-  endpoint  String   @unique
-  p256dh    String
-  auth      String
-  createdAt DateTime @default(now())
+  id         String   @id @default(cuid())
+  endpoint   String   @unique
+  p256dh     String
+  auth       String
+  customerId String?  // set when the subscriber is a signed-in member
+  createdAt  DateTime @default(now())
+
+  @@index([customerId])
 }
 
 model Offer {
