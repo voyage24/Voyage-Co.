@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { ChevronDown, ChevronUp, Search, Phone, Mail, MessageCircle } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
-import { useContent } from "@/components/providers/ContentProvider";
+import { useContent, useContentList } from "@/components/providers/ContentProvider";
 
 const FAQS = [
   {
@@ -49,19 +49,31 @@ function FaqItem({ q, a }: { q: string; a: string }) {
 export default function HelpPage() {
   const { t } = useLanguage();
   const c = useContent();
+  const overrideFaq = useContentList("list.helpFaq");
   const [query, setQuery] = useState("");
+
+  // Normalise to { category, items:[{q,a}] } from either the admin override
+  // (grouped by its Section field) or the translated defaults.
+  const groups: { category: string; items: { q: string; a: string }[] }[] = overrideFaq
+    ? (() => {
+        const g: { category: string; items: { q: string; a: string }[] }[] = [];
+        const idx = new Map<string, number>();
+        for (const it of overrideFaq) {
+          const cat = it.section || "More";
+          let i = idx.get(cat);
+          if (i === undefined) { i = g.length; idx.set(cat, i); g.push({ category: cat, items: [] }); }
+          g[i].items.push({ q: it.q || "", a: it.a || "" });
+        }
+        return g;
+      })()
+    : FAQS.map(s => ({ category: t(s.categoryKey), items: s.items.map(it => ({ q: t(it.qKey), a: t(it.aKey) })) }));
 
   const q = query.trim().toLowerCase();
   const filteredFaqs = q
-    ? FAQS
-        .map(section => ({
-          ...section,
-          items: section.items.filter(item =>
-            t(item.qKey).toLowerCase().includes(q) || t(item.aKey).toLowerCase().includes(q)
-          ),
-        }))
+    ? groups
+        .map(section => ({ ...section, items: section.items.filter(item => item.q.toLowerCase().includes(q) || item.a.toLowerCase().includes(q)) }))
         .filter(section => section.items.length > 0)
-    : FAQS;
+    : groups;
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-16">
@@ -85,11 +97,11 @@ export default function HelpPage() {
       {/* FAQs */}
       <div className="space-y-5 mb-12">
         {filteredFaqs.length > 0 ? (
-          filteredFaqs.map(section => (
-            <div key={section.categoryKey} className="bg-panel rounded-2xl border border-line shadow-card p-6">
-              <h2 className="font-serif text-xl font-light text-ink mb-2">{t(section.categoryKey)}</h2>
-              {section.items.map(item => (
-                <FaqItem key={item.qKey} q={t(item.qKey)} a={t(item.aKey)} />
+          filteredFaqs.map((section, si) => (
+            <div key={`${section.category}-${si}`} className="bg-panel rounded-2xl border border-line shadow-card p-6">
+              <h2 className="font-serif text-xl font-light text-ink mb-2">{section.category}</h2>
+              {section.items.map((item, ii) => (
+                <FaqItem key={ii} q={item.q} a={item.a} />
               ))}
             </div>
           ))
