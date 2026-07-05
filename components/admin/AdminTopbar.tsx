@@ -3,9 +3,11 @@
 import { useRouter } from "next/navigation";
 import AdminMobileNav from "@/components/admin/AdminMobileNav";
 import AdminSearch from "@/components/admin/AdminSearch";
+import AdminNotifications from "@/components/admin/AdminNotifications";
 import ThemeToggle from "@/components/ui/ThemeToggle";
+import type { AdminNotifications as AdminNotifs } from "@/lib/admin/notifications";
 
-export default function AdminTopbar({ email }: { email: string }) {
+export default function AdminTopbar({ email, notifications }: { email: string; notifications: AdminNotifs }) {
   const router = useRouter();
 
   const handleLogout = async () => {
@@ -21,6 +23,7 @@ export default function AdminTopbar({ email }: { email: string }) {
         <AdminSearch />
       </div>
       <div className="flex items-center gap-3 shrink-0">
+        <AdminNotifications data={notifications} />
         <ThemeToggle size={17} />
         <span className="hidden md:inline text-xs text-gray-400 truncate max-w-[160px]">{email}</span>
         <a

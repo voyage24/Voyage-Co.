@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/admin/requireAdmin";
 import { COLLECTION_BY_TYPE } from "@/lib/collections";
+import { logAudit } from "@/lib/admin/audit";
 
 export async function GET(req: NextRequest, { params }: { params: { type: string } }) {
   const admin = await requireAdmin(req);
@@ -32,5 +33,6 @@ export async function POST(req: NextRequest, { params }: { params: { type: strin
       published: body?.published ?? true,
     },
   });
+  await logAudit(admin.email, "create", `collection:${params.type}`, item.id, String(data[def.titleField] || ""));
   return NextResponse.json({ item }, { status: 201 });
 }

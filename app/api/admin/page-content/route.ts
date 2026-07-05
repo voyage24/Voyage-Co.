@@ -3,6 +3,7 @@ import { revalidatePath, revalidateTag } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/admin/requireAdmin";
 import { PAGE_CONTENT_KEYS } from "@/lib/page-content";
+import { logAudit } from "@/lib/admin/audit";
 
 export async function POST(req: NextRequest) {
   const admin = await requireAdmin(req);
@@ -27,5 +28,6 @@ export async function POST(req: NextRequest) {
   revalidateTag("page-content");
   revalidatePath("/", "layout");
 
+  await logAudit(admin.email, "save", "page-content", null, `${entries.length} field(s)`);
   return NextResponse.json({ ok: true });
 }

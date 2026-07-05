@@ -475,6 +475,19 @@ model FeaturedDestination {
   published  Boolean @default(true)
 }
 
+// A record of admin actions — who changed what, for accountability.
+model AuditLog {
+  id        String   @id @default(cuid())
+  userEmail String
+  action    String   // create | update | delete | save
+  entity    String   // e.g. "hotel", "booking", "settings", "page-content"
+  entityId  String?
+  detail    String?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}
+
 // Generic admin-managed content collections (team members, events, partner
 // logos, homepage FAQ, …). Each entry's fields live in `data` (JSON), keyed by
 // `type`, so new collections need no schema change — just a registry entry.

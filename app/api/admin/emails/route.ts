@@ -3,6 +3,7 @@ import { revalidateTag } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/admin/requireAdmin";
 import { EMAIL_KEYS } from "@/lib/email/email-templates";
+import { logAudit } from "@/lib/admin/audit";
 
 export async function POST(req: NextRequest) {
   const admin = await requireAdmin(req);
@@ -24,5 +25,6 @@ export async function POST(req: NextRequest) {
   );
 
   revalidateTag("page-content");
+  await logAudit(admin.email, "save", "emails");
   return NextResponse.json({ ok: true });
 }

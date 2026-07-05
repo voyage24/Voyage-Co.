@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/admin/requireAdmin";
 import { COLLECTION_BY_TYPE } from "@/lib/collections";
+import { logAudit } from "@/lib/admin/audit";
 
 export async function PUT(req: NextRequest, { params }: { params: { type: string; id: string } }) {
   const admin = await requireAdmin(req);
@@ -20,12 +21,14 @@ export async function PUT(req: NextRequest, { params }: { params: { type: string
   if (body?.sortOrder != null) patch.sortOrder = Number(body.sortOrder) || 0;
 
   const item = await prisma.collection.update({ where: { id: params.id }, data: patch });
+  await logAudit(admin.email, "update", `collection:${params.type}`, params.id);
   return NextResponse.json({ item });
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, { params }: { params: { type: string; id: string } }) {
   const admin = await requireAdmin(req);
   if (admin instanceof NextResponse) return admin;
   await prisma.collection.delete({ where: { id: params.id } }).catch(() => {});
+  await logAudit(admin.email, "delete", `collection:${params.type}`, params.id);
   return NextResponse.json({ ok: true });
 }
