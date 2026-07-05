@@ -12,6 +12,7 @@ import OccasionsForm from "@/components/account/OccasionsForm";
 import TripCountdown from "@/components/account/TripCountdown";
 import AddToCalendar from "@/components/account/AddToCalendar";
 import PushSubscribe from "@/components/ui/PushSubscribe";
+import DataControls from "@/components/account/DataControls";
 import Price from "@/components/ui/Price";
 import { getPageContent } from "@/lib/page-content";
 
@@ -117,6 +118,8 @@ export default async function AccountPage() {
       <SavedSearchesList />
 
       <OccasionsForm />
+
+      <div className="mt-12"><DataControls /></div>
     </div>
   );
 }

@@ -13,6 +13,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import CookieConsent from "@/components/layout/CookieConsent";
 import Haptics from "@/components/ui/Haptics";
 import ServiceWorkerRegister from "@/components/layout/ServiceWorkerRegister";
+import InstallPrompt from "@/components/ui/InstallPrompt";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://voyagesco.com"),
@@ -89,6 +90,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         </SettingsProvider>
         <Haptics />
         <ServiceWorkerRegister />
+        <InstallPrompt />
         <Analytics />
         <SpeedInsights />
       </body>
