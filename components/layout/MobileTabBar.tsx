@@ -13,7 +13,7 @@ const TABS = [
   { href: "/flights", label: "Flights", Icon: Plane },
   { href: "/explore", label: "Explore", Icon: Compass },
   { href: "/trips", label: "Trips", Icon: Luggage },
-  { href: "/account", label: "Account", Icon: User },
+  { href: "/account", label: "You", Icon: User },
 ];
 
 export default function MobileTabBar() {
