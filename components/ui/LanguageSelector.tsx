@@ -78,7 +78,7 @@ export default function LanguageSelector({ tone = "dark" }: { tone?: "dark" | "l
         aria-label={t("languageSelector.selectLanguage")}
       >
         <span className="flag text-[15px] leading-none">{languageFlag(language.code)}</span>
-        {language.code.toUpperCase()}
+        <span className="hidden sm:inline">{language.code.toUpperCase()}</span>
         <ChevronDown size={12} className={`transition-transform ${open ? "rotate-180" : ""}`} />
       </button>
       {!open && (

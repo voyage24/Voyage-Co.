@@ -80,7 +80,7 @@ export default function CurrencySelector({ tone = "dark" }: { tone?: "dark" | "l
         aria-label={t("currencySelector.selectCurrency")}
       >
         <span className="flag text-[15px] leading-none">{currencyFlag(currency.code)}</span>
-        {currency.code}
+        <span className="hidden sm:inline">{currency.code}</span>
         <ChevronDown size={12} className={`transition-transform ${open ? "rotate-180" : ""}`} />
       </button>
       {!open && (

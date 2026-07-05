@@ -67,17 +67,17 @@ export default function Navbar() {
   return (
     <>
     <nav className="fixed top-0 left-0 right-0 z-50 bg-vc-950/95 backdrop-blur-md border-b border-white/10">
-      <div className="max-w-[1500px] mx-auto px-6 lg:px-12">
-        <div className="flex items-center justify-between gap-4 min-h-20">
+      <div className="max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-12">
+        <div className="flex items-center justify-between gap-2 min-h-20">
           {/* Wordmark */}
           <Link href="/" onClick={close} className="flex shrink-0" aria-label="Voyages & Co. home">
             <Logo size={26} tone="light" shimmer />
           </Link>
 
           {/* Minimal controls — single CTA, search, account (desktop), menu */}
-          <div className="flex items-center gap-4 sm:gap-5">
+          <div className="flex items-center gap-2.5 sm:gap-5 shrink-0">
             <Link href="/plan" onClick={close} className={`hidden sm:inline-flex ${ctaClass}`}>{planLabel}</Link>
-            <div className="flex items-center gap-3 sm:gap-4">
+            <div className="flex items-center gap-2 sm:gap-4">
               <LanguageSelector tone="light" />
               <CurrencySelector tone="light" />
             </div>
