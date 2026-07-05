@@ -28,6 +28,9 @@ export const SETTING_DEFAULTS = {
   // Homepage hero text (blank = use the built-in translated copy)
   "hero.headline": "",
   "hero.subtext": "",
+  // Refer-a-friend reward, in loyalty points, credited when a referred friend
+  // confirms their account.
+  "referral.points": "500",
 } as const;
 
 export type SettingKey = keyof typeof SETTING_DEFAULTS;

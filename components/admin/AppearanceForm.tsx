@@ -115,6 +115,14 @@ export default function AppearanceForm({ initial }: { initial: SiteSettings }) {
         </div>
       </section>
 
+      <section className="border border-gray-200 rounded-lg p-5 bg-white">
+        <h2 className={sectionTitle}>Refer a friend</h2>
+        <div className="max-w-xs">
+          <label className="block text-xs text-gray-500 mb-1">Reward (loyalty points per successful referral)</label>
+          <input type="number" min={0} value={s["referral.points"]} onChange={e => set("referral.points", e.target.value)} className={input} />
+        </div>
+      </section>
+
       <div className="flex items-center gap-3">
         <button onClick={save} disabled={saving} className="px-5 py-2.5 bg-gray-900 hover:bg-gray-800 disabled:opacity-50 text-white text-sm font-medium rounded-md">
           {saving ? "Saving…" : "Save appearance"}
