@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { Sparkles, X, Send } from "lucide-react";
 import { useShowOnScroll } from "@/lib/useShowOnScroll";
+import TurnstileWidget from "@/components/ui/TurnstileWidget";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
@@ -34,7 +35,11 @@ export default function ConciergeChat() {
   const [messages, setMessages] = useState<Msg[]>([{ role: "assistant", content: GREETING }]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [token, setToken] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
+  // The bot check is only needed to start a conversation; once the guest has
+  // sent a message it stays out of the way.
+  const firstTurn = !messages.some(m => m.role === "user");
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
@@ -51,7 +56,7 @@ export default function ConciergeChat() {
     try {
       const res = await fetch("/api/concierge", {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: text, history: next.filter(m => m.content !== GREETING) }),
+        body: JSON.stringify({ message: text, history: next.filter(m => m.content !== GREETING), turnstileToken: token }),
       });
       const data = await res.json().catch(() => ({}));
       setMessages(m => [...m, { role: "assistant", content: data.reply ?? "Sorry, please try again." }]);
@@ -96,16 +101,21 @@ export default function ConciergeChat() {
               {loading && <p className="text-xs text-ink-faint px-1">The concierge is thinking…</p>}
             </div>
 
-            <form onSubmit={send} className="border-t border-line p-3 flex items-center gap-2">
-              <input
-                value={input}
-                onChange={e => setInput(e.target.value)}
-                placeholder="e.g. quiet islands, great food, ~₹4L pp…"
-                className="flex-1 bg-panel-soft border border-line px-3 py-2.5 text-sm text-ink outline-none focus:border-gold"
-              />
-              <button type="submit" disabled={loading || !input.trim()} aria-label="Send" className="bg-ink text-page p-2.5 disabled:opacity-50">
-                <Send size={16} />
-              </button>
+            <form onSubmit={send} className="border-t border-line p-3 space-y-2">
+              {firstTurn && (
+                <div className="flex justify-center"><TurnstileWidget onToken={setToken} /></div>
+              )}
+              <div className="flex items-center gap-2">
+                <input
+                  value={input}
+                  onChange={e => setInput(e.target.value)}
+                  placeholder="e.g. quiet islands, great food, ~₹4L pp…"
+                  className="flex-1 bg-panel-soft border border-line px-3 py-2.5 text-sm text-ink outline-none focus:border-gold"
+                />
+                <button type="submit" disabled={loading || !input.trim() || (firstTurn && !token)} aria-label="Send" className="bg-ink text-page p-2.5 disabled:opacity-50">
+                  <Send size={16} />
+                </button>
+              </div>
             </form>
           </div>
         </div>

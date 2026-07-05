@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { verifyTurnstile, clientIp } from "@/lib/security/turnstile";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 30;
@@ -39,7 +40,7 @@ export async function POST(req: Request) {
     });
   }
 
-  const { message, history } = await req.json().catch(() => ({}));
+  const { message, history, turnstileToken } = await req.json().catch(() => ({}));
   if (!message || typeof message !== "string") {
     return NextResponse.json({ error: "Message required" }, { status: 400 });
   }
@@ -47,6 +48,13 @@ export async function POST(req: Request) {
   const prior = Array.isArray(history)
     ? history.filter((m: { role?: string; content?: string }) => (m.role === "user" || m.role === "assistant") && typeof m.content === "string").slice(-8)
     : [];
+
+  // Bot-check the opening message only (≤1 prior user turn), so scripted clients
+  // can't hammer the LLM endpoint, without challenging every reply mid-chat.
+  const userTurns = prior.filter((m: { role?: string }) => m.role === "user").length;
+  if (userTurns <= 1 && !(await verifyTurnstile(turnstileToken, clientIp(req)))) {
+    return NextResponse.json({ reply: "Please complete the quick verification below, then send your message again." }, { status: 400 });
+  }
 
   try {
     const catalogue = await getCatalogue();

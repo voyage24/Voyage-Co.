@@ -56,6 +56,8 @@ model Customer {
   emailVerified   DateTime?      // set when the account's email is confirmed; null = pending
   verifyTokenHash String?        // HMAC of the current email-verification token
   verifyExpiresAt DateTime?      // expiry for the verification token
+  resetTokenHash  String?        // HMAC of the current password-reset token
+  resetExpiresAt  DateTime?      // expiry for the password-reset token
   sessions     CustomerSession[]
   bookings     Booking[]
   reviews      Review[]
@@ -64,6 +66,7 @@ model Customer {
   itineraries  Itinerary[]
 
   @@index([verifyTokenHash])
+  @@index([resetTokenHash])
 }
 
 model Itinerary {

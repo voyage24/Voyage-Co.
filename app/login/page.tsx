@@ -85,7 +85,7 @@ export default function LoginPage() {
             <div>
               <div className="flex items-center justify-between mb-2">
                 <label className="text-[11px] font-medium text-ink-faint uppercase tracking-[0.12em]">{t("login.passwordLabel")}</label>
-                <Link href="#" className="text-xs text-gold link-underline">{t("login.forgot")}</Link>
+                <Link href="/forgot" className="text-xs text-gold link-underline">{t("login.forgot")}</Link>
               </div>
               <div className="relative">
                 <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-faint" />
