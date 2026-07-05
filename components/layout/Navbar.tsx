@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, Headset } from "lucide-react";
 import Logo from "@/components/ui/Logo";
 import CurrencySelector from "@/components/ui/CurrencySelector";
 import LanguageSelector from "@/components/ui/LanguageSelector";
@@ -35,7 +35,6 @@ const SECONDARY_LINKS: NavLink[] = [
   { label: "Travel insurance", href: "/insurance" },
   { key: "common.myTrips",  href: "/trips" },
   { key: "account.account", href: "/account" },
-  { label: "Support", href: "/support" },
 ];
 
 export default function Navbar() {
@@ -82,6 +81,7 @@ export default function Navbar() {
               <LanguageSelector tone="light" />
               <CurrencySelector tone="light" />
             </div>
+            <div className="hidden lg:block"><NavConverter tone="light" /></div>
             <SearchOverlay tone="light" triggerSize={20} />
             <div className="hidden lg:block"><AccountMenu tone="light" /></div>
             <button
@@ -128,27 +128,40 @@ export default function Navbar() {
 
               {/* Plan CTA + supporting links */}
               <div className="mt-10 flex flex-col gap-8">
-                <Link
-                  href="/plan"
-                  onClick={close}
-                  style={{ animationDelay: `${(delay++) * 45}ms`, animationFillMode: "both" }}
-                  className="inline-flex self-start items-center gap-2 bg-white text-ink px-7 py-3.5 rounded-sm text-xs tracking-[0.16em] uppercase font-medium hover:bg-white/90 transition-all hover:scale-105 active:scale-95 animate-fade-in"
-                >
-                  {planLabel} <ArrowUpRight size={15} />
-                </Link>
+                <div className="flex flex-wrap items-center gap-4">
+                  <Link
+                    href="/plan"
+                    onClick={close}
+                    style={{ animationDelay: `${(delay++) * 45}ms`, animationFillMode: "both" }}
+                    className="inline-flex items-center gap-2 bg-white text-ink px-7 py-3.5 rounded-sm text-xs tracking-[0.16em] uppercase font-medium hover:bg-white/90 transition-all hover:scale-105 active:scale-95 animate-fade-in"
+                  >
+                    {planLabel} <ArrowUpRight size={15} />
+                  </Link>
+                  <Link
+                    href="/support"
+                    onClick={close}
+                    style={{ animationDelay: `${(delay++) * 45}ms`, animationFillMode: "both" }}
+                    className="inline-flex items-center gap-2 border border-gold/60 text-gold px-6 py-3.5 rounded-sm text-xs tracking-[0.16em] uppercase font-medium hover:bg-gold hover:text-vc-950 transition-all animate-fade-in"
+                  >
+                    <Headset size={15} /> Support
+                  </Link>
+                </div>
 
                 <div className="flex flex-wrap gap-x-8 gap-y-3">
-                  {secondaryLinks.map(l => (
-                    <Link
-                      key={l.href}
-                      href={l.href}
-                      onClick={close}
-                      style={{ animationDelay: `${(delay++) * 45}ms`, animationFillMode: "both" }}
-                      className="text-xs tracking-[0.14em] uppercase text-white/55 hover:text-white transition-colors animate-fade-in"
-                    >
-                      {l.label}
-                    </Link>
-                  ))}
+                  {secondaryLinks.map(l => {
+                    const premium = l.href.includes("voyages-reserve");
+                    return (
+                      <Link
+                        key={l.href}
+                        href={l.href}
+                        onClick={close}
+                        style={{ animationDelay: `${(delay++) * 45}ms`, animationFillMode: "both" }}
+                        className={`text-xs tracking-[0.14em] uppercase transition-colors animate-fade-in ${premium ? "text-gold hover:text-gold/80" : "text-white/55 hover:text-white"}`}
+                      >
+                        {l.label}
+                      </Link>
+                    );
+                  })}
                 </div>
 
                 {/* Preferences */}
