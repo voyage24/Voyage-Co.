@@ -7,12 +7,14 @@ export default function PressPage() {
   const { t } = useLanguage();
   const c = useContent();
 
+  // Fictional publications — this is a demonstration site, so real magazine
+  // names (and any implied endorsement) are deliberately avoided.
   const MENTIONS = [
-    { outlet: "Condé Nast Traveller", quote: t("press.quote1"), date: "2026" },
-    { outlet: "Travel + Leisure", quote: t("press.quote2"), date: "2025" },
-    { outlet: "Robb Report", quote: t("press.quote3"), date: "2025" },
-    { outlet: "AFAR", quote: t("press.quote4"), date: "2025" },
-    { outlet: "Forbes Travel Guide", quote: t("press.quote5"), date: "2024" },
+    { outlet: "The Grand Tourer", quote: t("press.quote1"), date: "2026" },
+    { outlet: "Escape Quarterly", quote: t("press.quote2"), date: "2025" },
+    { outlet: "Maison & Meridian", quote: t("press.quote3"), date: "2025" },
+    { outlet: "The Wanderer's Almanac", quote: t("press.quote4"), date: "2025" },
+    { outlet: "Atlas Review", quote: t("press.quote5"), date: "2024" },
   ];
 
   const FACTS = [

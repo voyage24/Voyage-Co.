@@ -202,6 +202,11 @@ export default function Footer() {
             })}
           </div>
         </div>
+
+        {/* Development / non-commercial disclaimer — shown site-wide. */}
+        <p className="mt-6 text-[10px] leading-relaxed text-ink-faint/80 font-light max-w-4xl">
+          {c("footer.disclaimer") || "This website is a demonstration / portfolio project under development and is not a live commercial travel service. All properties, journeys, prices, availability and imagery are illustrative only — no bookings are fulfilled and no payments are taken. Any trademarks, brand names or images remain the property of their respective owners and are used here for non-commercial demonstration purposes only."}
+        </p>
       </div>
     </footer>
   );
