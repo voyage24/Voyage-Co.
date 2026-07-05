@@ -472,6 +472,14 @@ model FeaturedDestination {
   published  Boolean @default(true)
 }
 
+// Fixed-window rate limiting for sensitive endpoints (login, password reset).
+// Keyed by e.g. "login:ip:1.2.3.4" — count resets when resetAt passes.
+model RateLimit {
+  key     String   @id
+  count   Int      @default(0)
+  resetAt DateTime
+}
+
 // Simple key/count store for live site metrics (e.g. total visits).
 model SiteStat {
   key   String @id

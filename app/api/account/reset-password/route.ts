@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { resetPassword } from "@/lib/customer/reset";
 import { createCustomerSession, CUSTOMER_COOKIE_NAME, CUSTOMER_SESSION_TTL_MS } from "@/lib/customer/session";
 import { verifyTurnstile, clientIp } from "@/lib/security/turnstile";
+import { rateLimit } from "@/lib/security/rate-limit";
 
 // Completes a password reset: validates the token, sets the new password, and
 // signs the member in (they've just proven identity via the emailed link).
@@ -9,6 +10,10 @@ export async function POST(req: Request) {
   const { token, password, turnstileToken } = await req.json().catch(() => ({}));
   if (!(await verifyTurnstile(turnstileToken, clientIp(req)))) {
     return NextResponse.json({ error: "Verification failed. Please try again." }, { status: 400 });
+  }
+  const limit = await rateLimit(`reset:ip:${clientIp(req) ?? "unknown"}`, 15, 15 * 60 * 1000);
+  if (!limit.ok) {
+    return NextResponse.json({ error: "Too many attempts. Please wait a little and try again." }, { status: 429, headers: { "Retry-After": String(limit.retryAfter) } });
   }
   if (!password || typeof password !== "string" || password.length < 8) {
     return NextResponse.json({ error: "Password must be at least 8 characters" }, { status: 400 });
