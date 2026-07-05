@@ -29,7 +29,7 @@ function applyMode(mode: Mode): void {
   document.documentElement.classList.toggle("dark", dark);
 }
 
-export default function ThemeToggle({ tone = "dark", size = 18 }: { tone?: "dark" | "light"; size?: number }) {
+export default function ThemeToggle({ tone = "dark", size = 18, showLabel = false }: { tone?: "dark" | "light"; size?: number; showLabel?: boolean }) {
   const [mode, setMode] = useState<Mode>("system");
   const [mounted, setMounted] = useState(false);
 
@@ -58,7 +58,8 @@ export default function ThemeToggle({ tone = "dark", size = 18 }: { tone?: "dark
     window.dispatchEvent(new CustomEvent("vc-theme", { detail: next }));
   };
 
-  const label = mode === "system" ? "Theme: System" : mode === "dark" ? "Theme: Dark" : "Theme: Light";
+  const name = mode === "system" ? "System" : mode === "dark" ? "Dark" : "Light";
+  const label = `Theme: ${name}`;
   const Icon = mode === "system" ? Monitor : mode === "dark" ? Moon : Sun;
 
   return (
@@ -66,11 +67,12 @@ export default function ThemeToggle({ tone = "dark", size = 18 }: { tone?: "dark
       onClick={cycle}
       aria-label={`${label} — tap to change`}
       title={label}
-      className={`inline-flex items-center justify-center leading-none transition-all duration-200 hover:scale-110 active:scale-95 ${
-        tone === "light" ? "text-white/90 hover:text-white" : "text-ink-muted hover:text-ink"
-      }`}
+      className={`inline-flex items-center leading-none transition-all duration-200 hover:scale-105 active:scale-95 ${
+        showLabel ? "gap-2" : "justify-center"
+      } ${tone === "light" ? "text-white/90 hover:text-white" : "text-ink-muted hover:text-ink"}`}
     >
       {mounted ? <Icon size={size} /> : <Monitor size={size} />}
+      {showLabel && <span className="text-xs tracking-[0.14em] uppercase">{mounted ? name : "System"}</span>}
     </button>
   );
 }

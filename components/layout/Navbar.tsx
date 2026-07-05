@@ -145,7 +145,7 @@ export default function Navbar() {
 
                 {/* Preferences */}
                 <div className="flex flex-wrap items-center gap-6 pt-7 border-t border-white/10 animate-fade-in" style={{ animationDelay: `${(delay++) * 45}ms`, animationFillMode: "both" }}>
-                  <ThemeToggle tone="light" size={18} />
+                  <ThemeToggle tone="light" size={18} showLabel />
                   <LanguageSelector tone="light" />
                   <CurrencySelector tone="light" />
                   <NavConverter tone="light" />
