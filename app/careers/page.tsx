@@ -1,11 +1,13 @@
 "use client";
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
-import { useContent } from "@/components/providers/ContentProvider";
+import { useContent, useContentList } from "@/components/providers/ContentProvider";
 
 export default function CareersPage() {
   const { t } = useLanguage();
   const c = useContent();
+  const rolesOverride = useContentList("list.careersRoles");
+  const valuesOverride = useContentList("list.careersValues");
 
   const OPEN_ROLES = [
     { title: t("careers.role1"), department: t("careers.deptJourneyDesign"), location: "Mumbai, India", type: t("careers.typeFullTime") },
@@ -24,6 +26,10 @@ export default function CareersPage() {
     { title: t("careers.value3Title"), body: t("careers.value3Body") },
   ];
 
+  // Admin overrides win; otherwise the translated defaults above are used.
+  const roles = rolesOverride ?? OPEN_ROLES;
+  const values = valuesOverride ?? VALUES;
+
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-24">
       {/* Hero */}
@@ -37,8 +43,8 @@ export default function CareersPage() {
 
       {/* Values */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-16">
-        {VALUES.map(v => (
-          <div key={v.title} className="bg-panel-soft border border-line rounded-xl p-6">
+        {values.map((v, i) => (
+          <div key={`${v.title}-${i}`} className="bg-panel-soft border border-line rounded-xl p-6">
             <h3 className="font-serif text-lg font-light text-ink mb-2">{v.title}</h3>
             <p className="text-sm text-ink-muted font-light leading-relaxed">{v.body}</p>
           </div>
@@ -49,9 +55,9 @@ export default function CareersPage() {
       <div className="mb-12">
         <h2 className="font-serif text-2xl font-light text-ink mb-6">{t("careers.openPositions")}</h2>
         <div className="space-y-3">
-          {OPEN_ROLES.map(role => (
+          {roles.map((role, i) => (
             <a
-              key={role.title}
+              key={`${role.title}-${i}`}
               href={`mailto:hello@voyagesco.com?subject=${encodeURIComponent(`Application: ${role.title}`)}`}
               className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-5 bg-panel border border-line rounded-xl hover:border-gold/40 hover:shadow-card transition-all"
             >
