@@ -6,7 +6,7 @@ import { MessageCircle } from "lucide-react";
 import Logo from "@/components/ui/Logo";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useSetting, useSettings } from "@/components/providers/SettingsProvider";
-import { useContent } from "@/components/providers/ContentProvider";
+import { useContent, useContentList } from "@/components/providers/ContentProvider";
 
 type FooterLink = { href: string; key?: string; label?: string };
 
@@ -61,9 +61,31 @@ const SOCIAL = [
   { label: "footer.linkedin", key: "social.linkedin" as const },
 ];
 
+// Footer column heading keys, in display order, with the admin "column" label
+// that a footer-list item uses to file itself under that heading.
+const FOOTER_COLUMNS: { headingKey: string; match: string }[] = [
+  { headingKey: "footer.discover", match: "discover" },
+  { headingKey: "footer.maison", match: "maison" },
+  { headingKey: "footer.care", match: "care" },
+];
+
 export default function Footer() {
   const { t, language } = useLanguage();
   const c = useContent();
+  const footerList = useContentList("list.footer");
+  // A saved footer list replaces the default links; otherwise use the shipped
+  // links with their translated labels.
+  const columns: { headingKey: string; links: { href: string; label: string }[] }[] = footerList
+    ? FOOTER_COLUMNS.map(col => ({
+        headingKey: col.headingKey,
+        links: footerList
+          .filter(x => (x.column || "").trim().toLowerCase() === col.match)
+          .map(x => ({ href: x.href || "#", label: x.label || "" })),
+      }))
+    : Object.entries(FOOTER_LINKS).map(([headingKey, links]) => ({
+        headingKey,
+        links: links.map(l => ({ href: l.href, label: l.label ?? t(l.key ?? "") })),
+      }));
   const phone = useSetting("contact.phone") || "+91 99199 10213";
   const whatsapp = useSetting("contact.whatsapp") || "919919910213";
   const settings = useSettings();
@@ -142,14 +164,14 @@ export default function Footer() {
             </a>
           </div>
 
-          {Object.entries(FOOTER_LINKS).map(([headingKey, links]) => (
-            <div key={headingKey}>
-              <h3 className="text-[10px] font-normal tracking-[0.24em] uppercase text-ink-faint mb-5">{c(COL_CONTENT[headingKey]) || t(headingKey)}</h3>
+          {columns.map(col => (
+            <div key={col.headingKey}>
+              <h3 className="text-[10px] font-normal tracking-[0.24em] uppercase text-ink-faint mb-5">{c(COL_CONTENT[col.headingKey]) || t(col.headingKey)}</h3>
               <ul className="space-y-3">
-                {links.map(link => (
-                  <li key={link.href}>
+                {col.links.map((link, i) => (
+                  <li key={`${link.href}-${i}`}>
                     <Link href={link.href} className="inline-block text-sm text-ink-muted hover:text-ink transition-all duration-200 font-light hover:scale-110 active:scale-95 origin-left">
-                      {link.label ?? t(link.key ?? "")}
+                      {link.label}
                     </Link>
                   </li>
                 ))}

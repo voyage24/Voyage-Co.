@@ -11,7 +11,7 @@ import AccountMenu from "@/components/layout/AccountMenu";
 import ThemeToggle from "@/components/ui/ThemeToggle";
 import NavConverter from "@/components/layout/NavConverter";
 import { useLanguage } from "@/components/providers/LanguageProvider";
-import { useContent } from "@/components/providers/ContentProvider";
+import { useContent, useContentList } from "@/components/providers/ContentProvider";
 
 type NavLink = { key?: string; label?: string; href: string; cKey?: string };
 
@@ -36,11 +36,17 @@ const SECONDARY_LINKS: NavLink[] = [
   { key: "account.account", href: "/account" },
 ];
 
-const MOBILE_LINKS = [...PRIMARY_LINKS, ...SECONDARY_LINKS];
-
 export default function Navbar() {
   const { t } = useLanguage();
   const c = useContent();
+  const navList = useContentList("list.nav");
+  // When an admin saves a full nav list it replaces the default menu; otherwise
+  // we keep the shipped links with their per-label content/translation overrides.
+  const primaryLinks: { href: string; label: string }[] = navList
+    ? navList.map(x => ({ href: x.href || "#", label: x.label || "" }))
+    : PRIMARY_LINKS.map(l => ({ href: l.href, label: c(l.cKey ?? "") || l.label || t(l.key ?? "") }));
+  const secondaryLinks = SECONDARY_LINKS.map(l => ({ href: l.href, label: l.label || t(l.key ?? "") }));
+  const mobileLinks = [...primaryLinks, ...secondaryLinks];
   const [mobileOpen, setMobileOpen] = useState(false);
   const linksRef = useRef<HTMLDivElement>(null);
   const [linksOverflow, setLinksOverflow] = useState(false);
@@ -102,8 +108,8 @@ export default function Navbar() {
               } : undefined}
             >
               <div className="flex items-center gap-x-5 w-max pr-2">
-                {PRIMARY_LINKS.map(l => (
-                  <Link key={l.href} href={l.href} className={`${linkBase} ${linkColor}`}>{c(l.cKey ?? "") || l.label || t(l.key ?? "")}</Link>
+                {primaryLinks.map(l => (
+                  <Link key={l.href} href={l.href} className={`${linkBase} ${linkColor}`}>{l.label}</Link>
                 ))}
               </div>
             </div>
@@ -149,25 +155,25 @@ export default function Navbar() {
       {/* Mobile/tablet menu */}
       {mobileOpen && (
         <div className="lg:hidden bg-page border-t border-line px-6 py-8 space-y-5 animate-slide-down overflow-hidden">
-          {MOBILE_LINKS.map((l, i) => (
+          {mobileLinks.map((l, i) => (
             <Link
-              key={l.href}
+              key={`${l.href}-${i}`}
               href={l.href}
               onClick={() => setMobileOpen(false)}
               style={{ animationDelay: `${i * 50}ms`, animationFillMode: "both" }}
               className="block text-base font-normal tracking-[0.1em] uppercase text-ink-muted hover:text-ink transition-colors duration-200 py-1.5 animate-slide-down"
             >
-              <span className="nav-underline">{c(l.cKey ?? "") || l.label || t(l.key ?? "")}</span>
+              <span className="nav-underline">{l.label}</span>
             </Link>
           ))}
-          <div className="py-1.5 flex items-center gap-5 animate-slide-down" style={{ animationDelay: `${MOBILE_LINKS.length * 50}ms`, animationFillMode: "both" }}>
+          <div className="py-1.5 flex items-center gap-5 animate-slide-down" style={{ animationDelay: `${mobileLinks.length * 50}ms`, animationFillMode: "both" }}>
             <LanguageSelector tone="dark" />
             <CurrencySelector tone="dark" />
           </div>
           <Link
             href="/plan"
             onClick={() => setMobileOpen(false)}
-            style={{ animationDelay: `${(MOBILE_LINKS.length + 1) * 50}ms`, animationFillMode: "both" }}
+            style={{ animationDelay: `${(mobileLinks.length + 1) * 50}ms`, animationFillMode: "both" }}
             className="block mt-4 text-center text-sm font-medium tracking-[0.16em] uppercase bg-ink text-page py-3.5 rounded-sm transition-transform duration-200 hover:scale-105 active:scale-95 animate-slide-down"
           >
             {c("nav.planCta") || t("plan.title")}
