@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { consumeVerifyToken, sendWelcomeAndNotify } from "@/lib/customer/verify";
+import { rewardReferralIfAny } from "@/lib/customer/referral";
 
 // Target of the "Confirm my email" link. Verifies the token, then sends the
 // welcome + team-alert emails and bounces the visitor to the sign-in page.
@@ -11,6 +12,7 @@ export async function GET(req: NextRequest) {
   if (!customer) {
     return NextResponse.redirect(new URL("/verify?status=invalid", req.url));
   }
+  await rewardReferralIfAny(customer);
   await sendWelcomeAndNotify(customer);
   return NextResponse.redirect(new URL("/login?verified=1", req.url));
 }

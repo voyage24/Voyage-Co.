@@ -58,6 +58,9 @@ model Customer {
   verifyExpiresAt DateTime?      // expiry for the verification token
   resetTokenHash  String?        // HMAC of the current password-reset token
   resetExpiresAt  DateTime?      // expiry for the password-reset token
+  referralCode     String?  @unique // this member's own share code
+  referredById     String?           // the member who referred this account
+  referralRewarded Boolean  @default(false) // whether the referrer has been credited
   sessions     CustomerSession[]
   bookings     Booking[]
   reviews      Review[]

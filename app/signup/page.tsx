@@ -17,6 +17,7 @@ export default function SignupPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [token, setToken] = useState("");
+  const [ref] = useState(() => (typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("ref") ?? "" : ""));
   const [form, setForm] = useState({ name: "", email: "", phone: "", password: "" });
 
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -30,7 +31,7 @@ export default function SignupPage() {
       const res = await fetch("/api/account/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, turnstileToken: token }),
+        body: JSON.stringify({ ...form, turnstileToken: token, ref }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) { setError(data.error ?? "Could not create account"); setLoading(false); return; }

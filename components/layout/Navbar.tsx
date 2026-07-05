@@ -28,10 +28,13 @@ const PRIMARY_LINKS: NavLink[] = [
 
 // Supporting links, shown smaller beneath the primary ones.
 const SECONDARY_LINKS: NavLink[] = [
+  { label: "Group booking", href: "/group" },
+  { label: "Refer a friend", href: "/refer" },
   { label: "Visa assistance", href: "/visa" },
   { label: "Travel insurance", href: "/insurance" },
   { key: "common.myTrips",  href: "/trips" },
   { key: "account.account", href: "/account" },
+  { label: "Support", href: "/help" },
 ];
 
 export default function Navbar() {
