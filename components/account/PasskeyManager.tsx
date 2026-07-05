@@ -2,21 +2,10 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { startRegistration } from "@simplewebauthn/browser";
 import { KeyRound, Trash2, Plus, Fingerprint } from "lucide-react";
+import { registerPasskey } from "@/lib/passkey-client";
 
 type Passkey = { id: string; deviceName: string | null; createdAt: string };
-
-function deviceGuess(): string {
-  if (typeof navigator === "undefined") return "This device";
-  const ua = navigator.userAgent;
-  if (/iPhone/.test(ua)) return "iPhone";
-  if (/iPad/.test(ua)) return "iPad";
-  if (/Android/.test(ua)) return "Android device";
-  if (/Mac/.test(ua)) return "Mac";
-  if (/Windows/.test(ua)) return "Windows device";
-  return "This device";
-}
 
 export default function PasskeyManager({ passkeys }: { passkeys: Passkey[] }) {
   const router = useRouter();
@@ -25,23 +14,10 @@ export default function PasskeyManager({ passkeys }: { passkeys: Passkey[] }) {
 
   const add = async () => {
     setBusy(true); setError("");
-    try {
-      const optRes = await fetch("/api/account/passkey/register/options", { method: "POST" });
-      if (!optRes.ok) { setError("Could not start passkey setup."); return; }
-      const options = await optRes.json();
-      const regResp = await startRegistration({ optionsJSON: options });
-      const verifyRes = await fetch("/api/account/passkey/register/verify", {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ response: regResp, deviceName: deviceGuess() }),
-      });
-      const d = await verifyRes.json().catch(() => ({}));
-      if (!verifyRes.ok) { setError(d.error || "Could not add passkey."); return; }
-      router.refresh();
-    } catch {
-      setError("Passkey setup was cancelled, or this device doesn't support passkeys.");
-    } finally {
-      setBusy(false);
-    }
+    const r = await registerPasskey();
+    setBusy(false);
+    if (r.ok) router.refresh();
+    else setError(r.error || "Could not add passkey.");
   };
 
   const remove = async (id: string) => {

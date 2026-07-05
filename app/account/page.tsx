@@ -14,6 +14,7 @@ import AddToCalendar from "@/components/account/AddToCalendar";
 import PushSubscribe from "@/components/ui/PushSubscribe";
 import DataControls from "@/components/account/DataControls";
 import PasskeyManager from "@/components/account/PasskeyManager";
+import PasskeyNudge from "@/components/account/PasskeyNudge";
 import Price from "@/components/ui/Price";
 import { getPageContent } from "@/lib/page-content";
 
@@ -59,6 +60,8 @@ export default async function AccountPage() {
         </div>
         <LogoutButton />
       </div>
+
+      {passkeys.length === 0 && <PasskeyNudge />}
 
       <h2 className="font-serif text-2xl font-light text-ink mb-5">My Bookings</h2>
 
