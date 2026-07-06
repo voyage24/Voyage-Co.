@@ -20,6 +20,7 @@ import PropertyMap from "@/components/ui/PropertyMap";
 import DestinationWeather from "@/components/ui/DestinationWeather";
 import DestinationEssentials from "@/components/ui/DestinationEssentials";
 import DirectionsButton from "@/components/ui/DirectionsButton";
+import PackingList from "@/components/ui/PackingList";
 import LocalActivities from "@/components/products/LocalActivities";
 import { getHotelCityCoords } from "@/lib/hotel-coords";
 import { hotelJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
@@ -215,7 +216,10 @@ export default async function HotelDetailPage({ params }: { params: { id: string
             </div>
           </div>
           <PropertyMap lat={coords[0]} lng={coords[1]} name={hotel.name} />
-          <div className="mt-4 max-w-sm"><DestinationEssentials country={hotel.country} city={hotel.city} /></div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+            <DestinationEssentials country={hotel.country} city={hotel.city} />
+            <PackingList lat={coords[0]} lng={coords[1]} destinationKey={hotel.id} />
+          </div>
         </section>
       )}
 
