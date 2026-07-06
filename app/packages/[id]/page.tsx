@@ -9,6 +9,7 @@ import T from "@/components/ui/T";
 import ReviewsSection from "@/components/reviews/ReviewsSection";
 import PackageCard from "@/components/cards/PackageCard";
 import SaveButton from "@/components/ui/SaveButton";
+import ShareButton from "@/components/ui/ShareButton";
 import JsonLd from "@/components/seo/JsonLd";
 import FaqAndEntry from "@/components/products/FaqAndEntry";
 import CompareButton from "@/components/compare/CompareButton";
@@ -62,6 +63,7 @@ export default async function PackageDetailPage({ params }: { params: { id: stri
           <CompareButton type="package" id={pkg.id} title={pkg.title} image={pkg.image} href={`/packages/${pkg.id}`} label
             attrs={{ Price: pkg.priceOnRequest ? "On request" : `₹${pkg.pricePerPerson.toLocaleString("en-IN")} pp`, Duration: pkg.duration, Destinations: String(pkg.destinations.length), Category: pkg.category }} />
           <SaveButton type="package" itemId={pkg.id} itemTitle={pkg.title} image={pkg.image} href={`/packages/${pkg.id}`} label />
+          <ShareButton title={pkg.title} text={pkg.subtitle || pkg.title} path={`/packages/${pkg.id}`} label />
         </div>
       </div>
 

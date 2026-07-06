@@ -13,5 +13,12 @@ export default function manifest(): MetadataRoute.Manifest {
       { src: "/logo-navy.png", sizes: "any", type: "image/png" },
       { src: "/logo-white.png", sizes: "any", type: "image/png", purpose: "maskable" },
     ],
+    // Long-press the home-screen icon (Android / desktop PWA) for these jumps.
+    shortcuts: [
+      { name: "Search stays", short_name: "Search", url: "/hotels", icons: [{ src: "/logo-navy.png", sizes: "any" }] },
+      { name: "My Trips", short_name: "Trips", url: "/account", icons: [{ src: "/logo-navy.png", sizes: "any" }] },
+      { name: "Explore", short_name: "Explore", url: "/explore", icons: [{ src: "/logo-navy.png", sizes: "any" }] },
+      { name: "Concierge", short_name: "Concierge", url: "/contact", icons: [{ src: "/logo-navy.png", sizes: "any" }] },
+    ],
   };
 }

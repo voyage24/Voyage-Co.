@@ -9,6 +9,7 @@ import T from "@/components/ui/T";
 import ReviewsSection from "@/components/reviews/ReviewsSection";
 import CruiseCard from "@/components/cards/CruiseCard";
 import SaveButton from "@/components/ui/SaveButton";
+import ShareButton from "@/components/ui/ShareButton";
 import JsonLd from "@/components/seo/JsonLd";
 import FaqAndEntry from "@/components/products/FaqAndEntry";
 import CompareButton from "@/components/compare/CompareButton";
@@ -67,6 +68,7 @@ export default async function CruiseDetailPage({ params }: { params: { id: strin
           <CompareButton type="cruise" id={cruise.id} title={cruise.name} image={cruise.image} href={`/cruises/${cruise.id}`} label
             attrs={{ Price: cruise.priceOnRequest ? "On request" : `₹${cruise.pricePerPerson.toLocaleString("en-IN")} pp`, Duration: cruise.duration, "Cruise line": cruise.cruiseLine, Region: cruise.region, Rating: `${cruise.rating} (${cruise.reviewCount})` }} />
           <SaveButton type="cruise" itemId={cruise.id} itemTitle={cruise.name} image={cruise.image} href={`/cruises/${cruise.id}`} label />
+          <ShareButton title={cruise.name} text={`${cruise.name} — ${cruise.region}`} path={`/cruises/${cruise.id}`} label />
         </div>
       </div>
 

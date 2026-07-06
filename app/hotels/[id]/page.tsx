@@ -8,6 +8,7 @@ import Price from "@/components/ui/Price";
 import T from "@/components/ui/T";
 import ReviewsSection from "@/components/reviews/ReviewsSection";
 import SaveButton from "@/components/ui/SaveButton";
+import ShareButton from "@/components/ui/ShareButton";
 import JsonLd from "@/components/seo/JsonLd";
 import FaqAndEntry from "@/components/products/FaqAndEntry";
 import CompareButton from "@/components/compare/CompareButton";
@@ -88,6 +89,7 @@ export default async function HotelDetailPage({ params }: { params: { id: string
           <CompareButton type="hotel" id={hotel.id} title={hotel.name} image={hotel.image} href={`/hotels/${hotel.id}`} label
             attrs={{ Price: hotel.priceOnRequest ? "On request" : `₹${hotel.pricePerNight.toLocaleString("en-IN")}/night`, Rating: `${hotel.rating} (${hotel.reviewCount})`, Stars: `${hotel.stars}★`, Location: hotel.location, Category: hotel.category }} />
           <SaveButton type="hotel" itemId={hotel.id} itemTitle={hotel.name} image={hotel.image} href={`/hotels/${hotel.id}`} label />
+          <ShareButton title={hotel.name} text={`${hotel.name} — ${hotel.location}`} path={`/hotels/${hotel.id}`} label />
         </div>
       </div>
 
