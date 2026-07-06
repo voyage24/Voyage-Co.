@@ -6,6 +6,7 @@ import { Mail, Send } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useContent } from "@/components/providers/ContentProvider";
 import TurnstileWidget from "@/components/ui/TurnstileWidget";
+import VoiceInput from "@/components/ui/VoiceInput";
 
 function ContactContent() {
   const { t, language } = useLanguage();
@@ -122,9 +123,12 @@ function ContactContent() {
               </div>
 
               <div>
-                <label className="text-[11px] font-medium text-ink-faint uppercase tracking-[0.12em] block mb-1.5">
-                  {t("contact.message")} <span className="text-gold">*</span>
-                </label>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="text-[11px] font-medium text-ink-faint uppercase tracking-[0.12em]">
+                    {t("contact.message")} <span className="text-gold">*</span>
+                  </label>
+                  <VoiceInput onResult={text => setForm(prev => ({ ...prev, message: prev.message ? `${prev.message} ${text}` : text }))} />
+                </div>
                 <textarea
                   required rows={5} value={form.message} onChange={set("message")}
                   placeholder={t("contact.messagePlaceholder")}
