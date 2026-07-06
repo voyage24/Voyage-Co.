@@ -45,6 +45,17 @@ export function isSupportedAirline(carrier: string) {
   return !!IATA_TO_ICAO[carrier.toUpperCase()];
 }
 
+// Build the ADS-B callsign (ICAO airline + number, digits only) for a flight,
+// e.g. carrier "EK", number "EK 502" → "UAE502". Null if the airline isn't
+// in our IATA→ICAO map.
+export function callsignFor(carrier: string, flightNumber: string): string | null {
+  const icao = IATA_TO_ICAO[carrier.toUpperCase()];
+  if (!icao) return null;
+  const digits = (flightNumber || "").replace(/\D/g, "");
+  if (!digits) return null;
+  return `${icao}${digits}`;
+}
+
 export interface NearbyFlight {
   callsign: string;
   lat: number;
