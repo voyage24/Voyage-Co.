@@ -10,6 +10,7 @@ import ReviewsSection from "@/components/reviews/ReviewsSection";
 import ExperienceCard from "@/components/cards/ExperienceCard";
 import SaveButton from "@/components/ui/SaveButton";
 import ShareButton from "@/components/ui/ShareButton";
+import DirectionsButton from "@/components/ui/DirectionsButton";
 import JsonLd from "@/components/seo/JsonLd";
 import FaqAndEntry from "@/components/products/FaqAndEntry";
 import CompareButton from "@/components/compare/CompareButton";
@@ -68,6 +69,7 @@ export default async function ExperienceDetailPage({ params }: { params: { id: s
             attrs={{ Price: exp.priceOnRequest ? "On request" : `₹${exp.price.toLocaleString("en-IN")} pp`, Duration: exp.duration, Location: exp.location, Category: exp.category }} />
           <SaveButton type="experience" itemId={exp.id} itemTitle={exp.title} image={exp.image} href={`/experiences/${exp.id}`} label />
           <ShareButton title={exp.title} text={`${exp.title} — ${exp.location}`} path={`/experiences/${exp.id}`} label />
+          {exp.lat != null && exp.lng != null && <DirectionsButton lat={exp.lat} lng={exp.lng} name={exp.title} />}
         </div>
       </div>
 

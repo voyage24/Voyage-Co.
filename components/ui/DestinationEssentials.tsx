@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Clock, Phone, ShieldAlert, MessageCircle } from "lucide-react";
+import { Clock, Phone, ShieldAlert, MessageCircle, Siren } from "lucide-react";
 import { getEmergency } from "@/lib/emergency";
 import { useSetting } from "@/components/providers/SettingsProvider";
+import { haptic } from "@/lib/haptics";
 
 // Compact "when you arrive" card: live local time at the destination + the
 // emergency numbers that apply there + one-tap concierge. All client-side and
@@ -25,6 +26,26 @@ export default function DestinationEssentials({ country, city }: { country: stri
   }, [info.tz]);
 
   const waText = encodeURIComponent(`Hello, I need assistance with my trip${city ? ` in ${city}` : ""}.`);
+  const [sos, setSos] = useState(false);
+
+  const triggerSos = () => {
+    haptic("error");
+    setSos(true);
+    if (typeof navigator !== "undefined" && navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const map = `https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`;
+          const text = encodeURIComponent(`🚨 EMERGENCY — I need urgent help${city ? ` in ${city}` : ""}. My location: ${map}`);
+          window.open(`https://wa.me/${wa}?text=${text}`, "_blank");
+        },
+        () => {
+          const text = encodeURIComponent(`🚨 EMERGENCY — I need urgent help${city ? ` in ${city}` : ""}. (Location unavailable.)`);
+          window.open(`https://wa.me/${wa}?text=${text}`, "_blank");
+        },
+        { enableHighAccuracy: true, timeout: 8000 },
+      );
+    }
+  };
 
   return (
     <div className="border border-line rounded-2xl p-5 bg-panel-soft">
@@ -55,6 +76,22 @@ export default function DestinationEssentials({ country, city }: { country: stri
       >
         <MessageCircle size={14} /> Message concierge
       </a>
+
+      {!sos ? (
+        <button
+          onClick={triggerSos}
+          className="mt-2 w-full inline-flex items-center justify-center gap-2 py-2.5 border border-red-300 text-red-600 text-xs tracking-[0.14em] uppercase rounded-sm hover:bg-red-50 transition-colors"
+        >
+          <Siren size={14} /> Emergency SOS
+        </button>
+      ) : (
+        <div className="mt-2 rounded-sm border border-red-300 bg-red-50 p-3">
+          <p className="text-[11px] text-red-700 mb-2">Your location was sent to the concierge. Call emergency services if you need immediate help:</p>
+          <a href={`tel:${info.general}`} className="w-full inline-flex items-center justify-center gap-2 py-2.5 bg-red-600 text-white text-xs tracking-[0.14em] uppercase rounded-sm hover:bg-red-700 transition-colors">
+            <Phone size={14} /> Call {info.general}
+          </a>
+        </div>
+      )}
     </div>
   );
 }

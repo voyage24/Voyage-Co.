@@ -19,6 +19,7 @@ import HotelCard from "@/components/cards/HotelCard";
 import PropertyMap from "@/components/ui/PropertyMap";
 import DestinationWeather from "@/components/ui/DestinationWeather";
 import DestinationEssentials from "@/components/ui/DestinationEssentials";
+import DirectionsButton from "@/components/ui/DirectionsButton";
 import LocalActivities from "@/components/products/LocalActivities";
 import { getHotelCityCoords } from "@/lib/hotel-coords";
 import { hotelJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
@@ -208,7 +209,10 @@ export default async function HotelDetailPage({ params }: { params: { id: string
         <section className="mt-12">
           <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
             <h2 className="font-serif text-2xl font-light text-ink">Location</h2>
-            <DestinationWeather lat={coords[0]} lng={coords[1]} />
+            <div className="flex items-center gap-4">
+              <DirectionsButton lat={coords[0]} lng={coords[1]} name={hotel.name} />
+              <DestinationWeather lat={coords[0]} lng={coords[1]} />
+            </div>
           </div>
           <PropertyMap lat={coords[0]} lng={coords[1]} name={hotel.name} />
           <div className="mt-4 max-w-sm"><DestinationEssentials country={hotel.country} city={hotel.city} /></div>
