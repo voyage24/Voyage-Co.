@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Users, Trash2, Plus, ShieldCheck, X } from "lucide-react";
+import { Users, Trash2, Plus, ShieldCheck, X, Eye, EyeOff, Copy, Check } from "lucide-react";
 import PassportScan from "@/components/booking/PassportScan";
 import { haptic } from "@/lib/haptics";
 
@@ -14,9 +14,21 @@ export default function TravellersManager() {
   const [form, setForm] = useState({ ...EMPTY });
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [revealed, setRevealed] = useState<Record<string, string>>({});
+  const [copied, setCopied] = useState("");
 
   const load = () => fetch("/api/account/travellers").then(r => r.json()).then(d => setList(d.travellers || [])).catch(() => {});
   useEffect(() => { load(); }, []);
+
+  const toggleReveal = async (id: string) => {
+    if (revealed[id]) { setRevealed(r => { const n = { ...r }; delete n[id]; return n; }); return; }
+    const res = await fetch(`/api/account/travellers/${id}?reveal=1`);
+    const d = await res.json().catch(() => ({}));
+    if (d.passportNumber) setRevealed(r => ({ ...r, [id]: d.passportNumber }));
+  };
+  const copy = async (id: string, value: string) => {
+    try { await navigator.clipboard.writeText(value); haptic("select"); setCopied(id); setTimeout(() => setCopied(""), 1500); } catch { /* ignore */ }
+  };
 
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) => setForm(p => ({ ...p, [k]: e.target.value }));
 
@@ -55,10 +67,24 @@ export default function TravellersManager() {
             <li key={t.id} className="flex items-center justify-between gap-3 py-3">
               <div className="min-w-0">
                 <p className="text-sm text-ink truncate">{t.fullName}</p>
-                <p className="text-xs text-ink-faint">
-                  {t.nationality && `${t.nationality} · `}
-                  {t.passportLast4 ? `Passport ••••${t.passportLast4}` : "No passport saved"}
-                  {t.passportExpiry && ` · exp ${t.passportExpiry}`}
+                <p className="text-xs text-ink-faint flex items-center gap-1.5 flex-wrap">
+                  {t.nationality && <span>{t.nationality} ·</span>}
+                  {t.passportLast4 ? (
+                    <>
+                      <span className={revealed[t.id] ? "font-mono tracking-wide text-ink" : ""}>
+                        Passport {revealed[t.id] || `••••${t.passportLast4}`}
+                      </span>
+                      <button onClick={() => toggleReveal(t.id)} aria-label={revealed[t.id] ? "Hide passport number" : "Show passport number"} className="text-ink-faint hover:text-ink">
+                        {revealed[t.id] ? <EyeOff size={12} /> : <Eye size={12} />}
+                      </button>
+                      {revealed[t.id] && (
+                        <button onClick={() => copy(t.id, revealed[t.id])} aria-label="Copy passport number" className="text-ink-faint hover:text-ink">
+                          {copied === t.id ? <Check size={12} className="text-gold" /> : <Copy size={12} />}
+                        </button>
+                      )}
+                    </>
+                  ) : <span>No passport saved</span>}
+                  {t.passportExpiry && <span>· exp {t.passportExpiry}</span>}
                 </p>
               </div>
               <button onClick={() => remove(t.id)} aria-label="Remove traveller" className="text-ink-faint hover:text-red-600 transition-colors shrink-0"><Trash2 size={15} /></button>
