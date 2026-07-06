@@ -42,7 +42,12 @@ export async function sendPushToAll(payload: Payload) {
 // Sends a push to one member's devices (e.g. a booking status change). Fails
 // silently — a missing subscription or missing VAPID config is never an error.
 export async function sendPushToCustomer(customerId: string, payload: Payload) {
-  if (!customerId || !configure()) return { sent: 0, configured: false };
+  if (!customerId) return { sent: 0, configured: false };
+  // Always record it in the member's in-app inbox, even if push isn't configured.
+  await prisma.memberNotification.create({
+    data: { customerId, title: payload.title, body: payload.body, url: payload.url ?? null },
+  }).catch(() => {});
+  if (!configure()) return { sent: 0, configured: false };
   const subs = await prisma.pushSubscription.findMany({ where: { customerId } });
   const sent = await deliver(subs, payload);
   return { sent, configured: true };

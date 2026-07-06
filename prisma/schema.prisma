@@ -69,9 +69,23 @@ model Customer {
   itineraries  Itinerary[]
   credentials  WebauthnCredential[]
   travellers   Traveller[]
+  notifications MemberNotification[]
 
   @@index([verifyTokenHash])
   @@index([resetTokenHash])
+}
+
+model MemberNotification {
+  id         String   @id @default(cuid())
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  title      String
+  body       String   @db.Text
+  url        String?
+  read       Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  @@index([customerId])
 }
 
 model Traveller {
