@@ -221,9 +221,10 @@ export default async function HotelDetailPage({ params }: { params: { id: string
             <DestinationEssentials country={hotel.country} city={hotel.city} />
             <PackingList lat={coords[0]} lng={coords[1]} destinationKey={hotel.id} />
           </div>
-          <div className="mt-4"><Phrasebook country={hotel.country} /></div>
         </section>
       )}
+
+      <div className="mt-4"><Phrasebook country={hotel.country} /></div>
 
       <FaqAndEntry faqs={faqs} entryRequirements={hotel.entryRequirements} />
 
