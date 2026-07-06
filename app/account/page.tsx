@@ -21,6 +21,8 @@ import AppLockToggle from "@/components/account/AppLockToggle";
 import TravellersManager from "@/components/account/TravellersManager";
 import Price from "@/components/ui/Price";
 import { getPageContent } from "@/lib/page-content";
+import { getSiteSettings } from "@/lib/site-settings";
+import TripToday from "@/components/account/TripToday";
 
 export const dynamic = "force-dynamic";
 
@@ -46,6 +48,14 @@ export default async function AccountPage() {
   ]);
   const passkeys = passkeyRows.map(p => ({ id: p.id, deviceName: p.deviceName, createdAt: p.createdAt.toISOString() }));
   const c = await getPageContent();
+  const settings = await getSiteSettings();
+
+  // The trip in progress (today within its dates), else the soonest upcoming one.
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const dated = bookings.filter(b => b.status === "confirmed" && b.checkIn);
+  const active = dated.find(b => b.checkIn && b.checkOut && new Date(b.checkIn) <= today && new Date(b.checkOut) >= today);
+  const upcoming = dated.filter(b => b.checkIn && new Date(b.checkIn) >= today).sort((a, b) => new Date(a.checkIn!).getTime() - new Date(b.checkIn!).getTime())[0];
+  const todayTrip = active || upcoming || null;
 
   return (
     <AppLock>
@@ -70,6 +80,7 @@ export default async function AccountPage() {
       </div>
 
       <OfflineTripSync />
+      {todayTrip && <TripToday trip={{ reference: todayTrip.reference, itemTitle: todayTrip.itemTitle, type: todayTrip.type, image: todayTrip.image, checkIn: todayTrip.checkIn, checkOut: todayTrip.checkOut, status: todayTrip.status }} whatsapp={settings["contact.whatsapp"] || "919919910213"} />}
       {passkeys.length === 0 && <PasskeyNudge />}
 
       <h2 className="font-serif text-2xl font-light text-ink mb-5">My Bookings</h2>
