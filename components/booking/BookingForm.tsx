@@ -9,6 +9,7 @@ import { useCurrency } from "@/components/providers/CurrencyProvider";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import NotifyMe from "@/components/booking/NotifyMe";
 import PassportScan from "@/components/booking/PassportScan";
+import { haptic } from "@/lib/haptics";
 import SeatMap from "@/components/booking/SeatMap";
 import TurnstileWidget from "@/components/ui/TurnstileWidget";
 
@@ -87,6 +88,7 @@ export default function BookingForm({ item, soldOut = false }: { item: BookingIt
       addTrip({ ref: data.reference ?? ref, type: item.type, title: item.title, subtitle: item.subtitle, image: item.image, total, guestName: form.name, bookedAt: new Date().toISOString() });
       setReference(data.reference ?? ref);
       setConfirmed(true);
+      haptic("success");
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch {
       setError("Something went wrong. Please try again.");

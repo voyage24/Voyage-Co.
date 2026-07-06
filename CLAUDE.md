@@ -77,6 +77,25 @@ Never run `migrate dev` against production. Models are listed in schema.prisma.
 `lib/admin/notifications.ts` (admin bell), `lib/currency.ts`, `lib/amadeus.ts`
 (live flight search).
 
+### Mobile / PWA features
+Installable PWA: `app/manifest.ts` (name, icons, home-screen `shortcuts`),
+`public/sw.js` (offline fallback + web-push handler), `InstallPrompt`,
+`MobileTabBar` (bottom nav), `Haptics` + `lib/haptics.ts` (named vibration
+patterns), `PullToRefresh` (standalone-mode reload).
+- **Offline trip wallet**: `OfflineTripSync` (account page) caches trips via
+  `/api/account/trips`; `OfflineTrips` renders them on `app/offline`.
+- **Destination essentials**: `DestinationEssentials` + `lib/emergency.ts`
+  (local time, emergency numbers, concierge) on stay pages.
+- **Biometric app-lock**: `AppLock` + `AppLockToggle` (privacy gate over the
+  account, reuses passkeys). Session cookie is still the real auth.
+- **Near me**: `app/near-me` + `/api/content/near` (haversine over lat/lng).
+- **Live flight status push**: `/api/cron/flight-status` + `lib/flight-status.ts`
+  (ADS-B derived airborne/landed) → `Booking.flightStatus`; runs via daily fan-out.
+- **Wallet pass**: `app/account/pass/[ref]` renders a QR pass (`qrcode`);
+  `AddToWallet` → `/api/account/pass/[ref]/apple` (501 until Apple cert env set).
+- **Passport scan**: `PassportScan` + `lib/mrz.ts` (tesseract.js, lazy) autofills
+  the traveller name on the booking form. No passport data is stored.
+
 ---
 
 ## How to make common changes
