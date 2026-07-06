@@ -16,6 +16,8 @@ import DataControls from "@/components/account/DataControls";
 import PasskeyManager from "@/components/account/PasskeyManager";
 import PasskeyNudge from "@/components/account/PasskeyNudge";
 import OfflineTripSync from "@/components/account/OfflineTripSync";
+import AppLock from "@/components/account/AppLock";
+import AppLockToggle from "@/components/account/AppLockToggle";
 import Price from "@/components/ui/Price";
 import { getPageContent } from "@/lib/page-content";
 
@@ -45,6 +47,7 @@ export default async function AccountPage() {
   const c = await getPageContent();
 
   return (
+    <AppLock>
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-20">
       <div className="flex flex-wrap items-end justify-between gap-3 mb-10">
         <div>
@@ -128,7 +131,9 @@ export default async function AccountPage() {
       <OccasionsForm />
 
       <div className="mt-12"><PasskeyManager passkeys={passkeys} /></div>
+      <AppLockToggle hasPasskey={passkeys.length > 0} />
       <div className="mt-6"><DataControls /></div>
     </div>
+    </AppLock>
   );
 }
