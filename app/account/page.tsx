@@ -18,6 +18,7 @@ import PasskeyNudge from "@/components/account/PasskeyNudge";
 import OfflineTripSync from "@/components/account/OfflineTripSync";
 import AppLock from "@/components/account/AppLock";
 import AppLockToggle from "@/components/account/AppLockToggle";
+import TravellersManager from "@/components/account/TravellersManager";
 import Price from "@/components/ui/Price";
 import { getPageContent } from "@/lib/page-content";
 
@@ -131,7 +132,8 @@ export default async function AccountPage() {
 
       <OccasionsForm />
 
-      <div className="mt-12"><PasskeyManager passkeys={passkeys} /></div>
+      <div className="mt-12"><TravellersManager /></div>
+      <div className="mt-6"><PasskeyManager passkeys={passkeys} /></div>
       <AppLockToggle hasPasskey={passkeys.length > 0} />
       <div className="mt-6"><DataControls /></div>
     </div>

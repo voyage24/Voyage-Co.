@@ -68,9 +68,27 @@ model Customer {
   searches     SavedSearch[]
   itineraries  Itinerary[]
   credentials  WebauthnCredential[]
+  travellers   Traveller[]
 
   @@index([verifyTokenHash])
   @@index([resetTokenHash])
+}
+
+model Traveller {
+  id             String   @id @default(cuid())
+  customerId     String
+  customer       Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  fullName       String
+  dob            String?  // YYYY-MM-DD as entered
+  nationality    String?  // ISO-ish country code / name from the passport
+  sex            String?  // M | F | X
+  passportEnc    String?  // AES-256-GCM encrypted passport number (iv:tag:ciphertext)
+  passportLast4  String?  // last 4 digits, stored plain for display only
+  passportExpiry String?  // YYMMDD/date as entered
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([customerId])
 }
 
 model Itinerary {

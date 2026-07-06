@@ -9,6 +9,7 @@ import { useCurrency } from "@/components/providers/CurrencyProvider";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import NotifyMe from "@/components/booking/NotifyMe";
 import PassportScan from "@/components/booking/PassportScan";
+import SavedTravellerPicker from "@/components/booking/SavedTravellerPicker";
 import { haptic } from "@/lib/haptics";
 import SeatMap from "@/components/booking/SeatMap";
 import TurnstileWidget from "@/components/ui/TurnstileWidget";
@@ -150,9 +151,12 @@ export default function BookingForm({ item, soldOut = false }: { item: BookingIt
         <h2 className="font-serif text-2xl font-light text-ink mb-2">{t("booking.guestDetails")}</h2>
 
         <div>
-          <div className="flex items-center justify-between mb-2">
+          <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 mb-2">
             <label className={`${labelClass} mb-0`}>{t("booking.fullName")} <span className="text-gold">*</span></label>
-            <PassportScan onScan={r => setForm(p => ({ ...p, name: r.fullName }))} />
+            <div className="flex items-center gap-4">
+              <SavedTravellerPicker onPick={name => setForm(p => ({ ...p, name }))} />
+              <PassportScan onScan={r => setForm(p => ({ ...p, name: r.fullName }))} />
+            </div>
           </div>
           <input required value={form.name} onChange={set("name")} placeholder={t("booking.fullNamePlaceholder")} className={inputClass} />
         </div>
