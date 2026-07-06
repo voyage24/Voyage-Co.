@@ -105,6 +105,7 @@ export default async function AccountPage() {
                  {b.status === "confirmed" && (
                    <>
                      <Link href={`/account/voucher/${b.reference}`} className={ACTION_CLS}>Voucher</Link>
+                     <Link href={`/account/pass/${b.reference}`} className={ACTION_CLS}>Wallet pass</Link>
                      <Link href={`/account/journey/${b.reference}`} className={`${ACTION_CLS} text-gold`}>Journal →</Link>
                      <AddToCalendar title={b.itemTitle} reference={b.reference} checkIn={b.checkIn} checkOut={b.checkOut} />
                    </>
