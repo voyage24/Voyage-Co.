@@ -8,6 +8,7 @@ import { useTrips } from "@/components/providers/TripsProvider";
 import { useCurrency } from "@/components/providers/CurrencyProvider";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import NotifyMe from "@/components/booking/NotifyMe";
+import PassportScan from "@/components/booking/PassportScan";
 import SeatMap from "@/components/booking/SeatMap";
 import TurnstileWidget from "@/components/ui/TurnstileWidget";
 
@@ -147,7 +148,10 @@ export default function BookingForm({ item, soldOut = false }: { item: BookingIt
         <h2 className="font-serif text-2xl font-light text-ink mb-2">{t("booking.guestDetails")}</h2>
 
         <div>
-          <label className={labelClass}>{t("booking.fullName")} <span className="text-gold">*</span></label>
+          <div className="flex items-center justify-between mb-2">
+            <label className={`${labelClass} mb-0`}>{t("booking.fullName")} <span className="text-gold">*</span></label>
+            <PassportScan onScan={r => setForm(p => ({ ...p, name: r.fullName }))} />
+          </div>
           <input required value={form.name} onChange={set("name")} placeholder={t("booking.fullNamePlaceholder")} className={inputClass} />
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
