@@ -34,8 +34,30 @@ export default function EnquiriesList({ enquiries }: { enquiries: EnquiryRow[] }
   const [openId, setOpenId] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [noteDrafts, setNoteDrafts] = useState<Record<string, string>>({});
+  const [replyId, setReplyId] = useState<string | null>(null);
+  const [replyText, setReplyText] = useState("");
+  const [replySubject, setReplySubject] = useState("");
+  const [replyMsg, setReplyMsg] = useState("");
 
   const shown = enquiries.filter(e => filter === "all" || e.status === filter);
+
+  const openReply = (e: EnquiryRow) => {
+    setReplyId(e.id);
+    setReplySubject(`Re: ${e.subject || e.itemTitle || "Your enquiry"}`);
+    setReplyText("");
+    setReplyMsg("");
+  };
+  const sendReply = async (id: string) => {
+    if (!replyText.trim()) return;
+    setBusyId(id); setReplyMsg("");
+    const res = await fetch(`/api/admin/enquiries/${id}/reply`, {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ subject: replySubject, message: replyText }),
+    });
+    setBusyId(null);
+    if (res.ok) { setReplyId(null); router.refresh(); }
+    else { const d = await res.json().catch(() => ({})); setReplyMsg(d.error || "Could not send."); }
+  };
 
   const patch = async (id: string, body: object) => {
     setBusyId(id);
@@ -177,12 +199,33 @@ export default function EnquiriesList({ enquiries }: { enquiries: EnquiryRow[] }
                       ) : (
                         <button disabled={busyId === e.id} onClick={() => setStatus(e.id, "new")} className="text-xs px-3 py-1.5 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50">Mark new</button>
                       )}
+                      <button onClick={() => replyId === e.id ? setReplyId(null) : openReply(e)} className="text-xs px-3 py-1.5 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50">{replyId === e.id ? "Close reply" : "Reply"}</button>
                       <a
-                        href={`mailto:${e.email}?subject=${encodeURIComponent(`Re: ${e.subject || e.itemTitle || "Your enquiry"}`)}&body=${encodeURIComponent(`Dear ${e.name?.split(" ")[0] || "Guest"},\n\nThank you for reaching out to Voyages & Co.\n\n\n\nWith warm regards,\nVoyages & Co. Concierge`)}`}
-                        className="text-xs px-3 py-1.5 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50"
-                      >Reply</a>
+                        href={`mailto:${e.email}?subject=${encodeURIComponent(`Re: ${e.subject || e.itemTitle || "Your enquiry"}`)}`}
+                        className="text-xs px-3 py-1.5 rounded-md border border-gray-300 text-gray-500 hover:bg-gray-50"
+                      >Open in mail app</a>
                       <button disabled={busyId === e.id} onClick={() => remove(e.id)} className="text-xs px-3 py-1.5 rounded-md text-red-600 hover:bg-red-50 disabled:opacity-50 ml-auto">Delete</button>
                     </div>
+
+                    {replyId === e.id && (
+                      <div className="mt-3 rounded-lg border border-gray-200 bg-gray-50 p-3 space-y-2">
+                        <p className="text-xs text-gray-500">Sends a branded Voyages &amp; Co. email to <span className="text-gray-700">{e.email}</span> from your concierge address.</p>
+                        <input
+                          value={replySubject} onChange={ev => setReplySubject(ev.target.value)}
+                          placeholder="Subject"
+                          className="w-full text-sm px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-gray-500"
+                        />
+                        <textarea
+                          value={replyText} onChange={ev => setReplyText(ev.target.value)} rows={5}
+                          placeholder={`Dear ${e.name?.split(" ")[0] || "Guest"},\n\nType your reply here…`}
+                          className="w-full text-sm px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-gray-500 resize-none"
+                        />
+                        <div className="flex items-center gap-3">
+                          <button disabled={busyId === e.id || !replyText.trim()} onClick={() => sendReply(e.id)} className="text-xs px-4 py-2 rounded-md bg-gray-900 hover:bg-gray-800 text-white disabled:opacity-50">{busyId === e.id ? "Sending…" : "Send reply"}</button>
+                          {replyMsg && <span className="text-xs text-red-600">{replyMsg}</span>}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
