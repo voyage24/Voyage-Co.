@@ -19,6 +19,20 @@ function urlB64ToUint8Array(base64: string) {
 export default function PushSubscribe() {
   const [state, setState] = useState<"loading" | "off" | "on" | "denied" | "unsupported">("loading");
   const [busy, setBusy] = useState(false);
+  const [test, setTest] = useState("");
+
+  const sendTest = async () => {
+    setTest("Sending…");
+    try {
+      const res = await fetch("/api/push/test", { method: "POST" });
+      const d = await res.json().catch(() => ({}));
+      if (!res.ok) { setTest("Sign in first."); return; }
+      if (!d.configured) setTest("Server VAPID keys not configured.");
+      else if (d.subscriptions === 0) setTest("No device registered — turn off and on again.");
+      else if (d.sent === 0) setTest("Send failed (key mismatch?). Turn off and on again.");
+      else setTest("Sent ✓ — check for the notification.");
+    } catch { setTest("Could not reach the server."); }
+  };
 
   useEffect(() => {
     if (typeof window === "undefined" || !("serviceWorker" in navigator) || !("PushManager" in window) || !VAPID) { setState("unsupported"); return; }
@@ -55,9 +69,15 @@ export default function PushSubscribe() {
   }
 
   return state === "on" ? (
-    <button onClick={disable} disabled={busy} className="inline-flex items-center gap-2 text-xs tracking-[0.12em] uppercase text-gold hover:text-ink transition-colors disabled:opacity-50">
-      <BellRing size={15} /> Notifications on — turn off
-    </button>
+    <div className="flex flex-col gap-1">
+      <div className="flex items-center gap-4">
+        <button onClick={disable} disabled={busy} className="inline-flex items-center gap-2 text-xs tracking-[0.12em] uppercase text-gold hover:text-ink transition-colors disabled:opacity-50">
+          <BellRing size={15} /> Notifications on — turn off
+        </button>
+        <button onClick={sendTest} className="text-xs tracking-[0.12em] uppercase text-ink-faint hover:text-ink transition-colors">Send test</button>
+      </div>
+      {test && <p className="text-[11px] text-ink-faint">{test}</p>}
+    </div>
   ) : (
     <button onClick={enable} disabled={busy} className="inline-flex items-center gap-2 text-xs tracking-[0.12em] uppercase text-ink-muted hover:text-ink transition-colors disabled:opacity-50">
       <Bell size={15} /> {busy ? "Enabling…" : "Enable notifications"}
