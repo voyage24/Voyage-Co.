@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Copy, Check } from "lucide-react";
+import { Copy, Check, Send } from "lucide-react";
 
 type Quote = { id: string; token: string; title: string; customerName: string; total: number; status: string; createdAt: string | Date };
 
@@ -15,11 +15,21 @@ const STYLE: Record<string, string> = {
 export default function QuotesList({ quotes }: { quotes: Quote[] }) {
   const router = useRouter();
   const [copied, setCopied] = useState<string | null>(null);
+  const [sendingId, setSendingId] = useState<string | null>(null);
+  const [sentId, setSentId] = useState<string | null>(null);
 
   const copy = (token: string) => {
     navigator.clipboard.writeText(`https://voyagesco.com/quote/${token}`).then(() => {
       setCopied(token); setTimeout(() => setCopied(null), 1500);
     });
+  };
+  const send = async (id: string) => {
+    if (!confirm("Email this quote to the customer?")) return;
+    setSendingId(id);
+    const res = await fetch(`/api/admin/quotes/${id}/send`, { method: "POST" });
+    setSendingId(null);
+    if (res.ok) { setSentId(id); setTimeout(() => setSentId(null), 2000); router.refresh(); }
+    else { const d = await res.json().catch(() => ({})); alert(d.error || "Could not send."); }
   };
   const remove = async (id: string) => {
     if (!confirm("Delete this quote?")) return;
@@ -37,6 +47,9 @@ export default function QuotesList({ quotes }: { quotes: Quote[] }) {
           <span className="text-sm font-medium text-gray-900">{q.title}</span>
           <span className="text-xs text-gray-400">{q.customerName} · ₹{q.total.toLocaleString("en-IN")}</span>
           <div className="ml-auto flex items-center gap-3">
+            <button onClick={() => send(q.id)} disabled={sendingId === q.id} className="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 disabled:opacity-50">
+              {sentId === q.id ? <Check size={13} /> : <Send size={13} />} {sendingId === q.id ? "Sending…" : sentId === q.id ? "Sent" : "Send"}
+            </button>
             <button onClick={() => copy(q.token)} className="inline-flex items-center gap-1 text-xs text-gray-600 hover:text-gray-900">
               {copied === q.token ? <Check size={13} /> : <Copy size={13} />} {copied === q.token ? "Copied" : "Copy link"}
             </button>
