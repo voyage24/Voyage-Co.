@@ -24,8 +24,21 @@ export function renderConciergeEmailHTML(opts: {
   signoff: string;
   ctaLabel?: string;
   ctaHref?: string;
+  reserveCta?: boolean; // show the "Join Voyages Reserve" band (default true)
 }) {
-  const { eyebrow, heading, bodyHtml, signoff, ctaLabel, ctaHref } = opts;
+  const { eyebrow, heading, bodyHtml, signoff, ctaLabel, ctaHref, reserveCta = true } = opts;
+  const reserveBand = reserveCta ? `
+      <tr><td style="padding:0 40px 40px;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid ${GOLD};">
+          <tr><td style="padding:26px 28px;text-align:center;">
+            <p style="margin:0 0 8px;font-family:Arial,Helvetica,sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:${GOLD};font-weight:bold;">Voyages Reserve</p>
+            <p style="margin:0 0 16px;font-family:Georgia,'Times New Roman',serif;font-size:17px;color:${INK};line-height:1.4;">An invitation to our members' circle — member rates, priority concierge and rare access.</p>
+            <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto;"><tr><td style="background:${GOLD};">
+              <a href="${SITE_URL}/membership" style="display:inline-block;padding:12px 26px;font-family:Arial,Helvetica,sans-serif;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:${NAVY};text-decoration:none;font-weight:bold;">Join Voyages Reserve</a>
+            </td></tr></table>
+          </td></tr>
+        </table>
+      </td></tr>` : "";
   return `
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${PAGE};padding:32px 16px;">
   <tr><td align="center">
@@ -52,6 +65,7 @@ export function renderConciergeEmailHTML(opts: {
           <span style="color:${GOLD};">Voyages &amp; Co.</span>
         </p>
       </td></tr>
+      ${reserveBand}
       <tr><td style="background:${PAGE};padding:30px 40px;text-align:center;border-top:1px solid ${LINE};">
         <img src="${LOGO_DARK_URL}" alt="Voyages & Co." style="height:42px;margin-bottom:14px;display:inline-block;" />
         <p style="margin:0 0 6px;font-family:Arial,Helvetica,sans-serif;font-size:12px;color:${INK_MUTED};">

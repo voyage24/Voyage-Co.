@@ -62,6 +62,7 @@ export async function sendResetEmail(customer: Customer, token: string): Promise
       heading: tpl.heading,
       bodyHtml: `${bodyToHtml(tpl.body)}<p style="margin:0;font-size:13px;color:#A39C8C;">Or paste this link into your browser:<br>${link}</p>`,
       signoff: "With warm regards,",
+      reserveCta: false,
       ctaLabel: "Reset my password",
       ctaHref: link,
     }),

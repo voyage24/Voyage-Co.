@@ -57,6 +57,7 @@ export async function sendVerificationEmail(customer: Customer, token: string): 
       bodyHtml: `${bodyToHtml(tpl.body)}<p style="margin:0;font-size:13px;color:#A39C8C;">Or paste this link into your browser:<br>${link}</p>`,
       signoff: "With warm regards,",
       ctaLabel: "Confirm my email",
+      reserveCta: false,
       ctaHref: link,
     }),
   });
