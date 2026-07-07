@@ -1,6 +1,6 @@
 // Minimal service worker: precache the offline fallback and serve a cached
 // shell when the network is unavailable. Static assets are cached on the fly.
-const CACHE = "vc-cache-v2";
+const CACHE = "vc-cache-v3";
 const OFFLINE_URL = "/offline";
 
 self.addEventListener("install", (event) => {
@@ -15,19 +15,24 @@ self.addEventListener("activate", (event) => {
   self.clients.claim();
 });
 
-// Web push: show the notification, and focus/open the app on click.
+// Web push: show the notification, set the app-icon badge count, and focus/open
+// the app on click.
 self.addEventListener("push", (event) => {
   let data = {};
   try { data = event.data ? event.data.json() : {}; } catch { data = {}; }
   const title = data.title || "Voyages & Co.";
-  event.waitUntil(
-    self.registration.showNotification(title, {
+  event.waitUntil((async () => {
+    await self.registration.showNotification(title, {
       body: data.body || "",
       icon: "/logo-navy.png",
       badge: "/logo-navy.png",
       data: { url: data.url || "/" },
-    })
-  );
+    });
+    // Unread count for the app-icon badge (Badging API).
+    if (typeof data.count === "number" && self.navigator && self.navigator.setAppBadge) {
+      try { await self.navigator.setAppBadge(data.count); } catch (e) { /* unsupported */ }
+    }
+  })());
 });
 
 self.addEventListener("notificationclick", (event) => {

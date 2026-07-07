@@ -14,7 +14,7 @@ function configure() {
 }
 
 type Sub = { id: string; endpoint: string; p256dh: string; auth: string };
-type Payload = { title: string; body: string; url?: string };
+type Payload = { title: string; body: string; url?: string; count?: number };
 
 async function deliver(subs: Sub[], payload: Payload) {
   const data = JSON.stringify(payload);
@@ -48,7 +48,9 @@ export async function sendPushToCustomer(customerId: string, payload: Payload) {
     data: { customerId, title: payload.title, body: payload.body, url: payload.url ?? null },
   }).catch(() => {});
   if (!configure()) return { sent: 0, configured: false };
+  // Include the unread count so the device can show an app-icon badge.
+  const count = await prisma.memberNotification.count({ where: { customerId, read: false } }).catch(() => undefined);
   const subs = await prisma.pushSubscription.findMany({ where: { customerId } });
-  const sent = await deliver(subs, payload);
+  const sent = await deliver(subs, { ...payload, count });
   return { sent, configured: true };
 }

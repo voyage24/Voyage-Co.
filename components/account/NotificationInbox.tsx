@@ -18,6 +18,7 @@ export default function NotificationInbox() {
 
   const markAll = async () => {
     setUnread(0); setNotes(ns => ns.map(n => ({ ...n, read: true })));
+    try { (navigator as Navigator & { clearAppBadge?: () => Promise<void> }).clearAppBadge?.(); } catch { /* unsupported */ }
     await fetch("/api/account/notifications", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({}) });
   };
 
