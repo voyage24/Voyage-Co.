@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, BedDouble, Plane, Compass, Luggage, User } from "lucide-react";
@@ -18,6 +19,21 @@ const TABS = [
 
 export default function MobileTabBar() {
   const pathname = usePathname() || "/";
+  const [unread, setUnread] = useState(0);
+
+  // Unread notification count on the "You" tab, so it's clear where a
+  // notification landed. Refetches when the app refocuses or the route changes,
+  // and clears instantly when the inbox is marked read.
+  useEffect(() => {
+    const load = () => fetch("/api/account/notifications").then(r => r.json()).then(d => setUnread(d.loggedIn ? d.unread : 0)).catch(() => {});
+    load();
+    const onVisible = () => { if (document.visibilityState === "visible") load(); };
+    const onRead = () => setUnread(0);
+    document.addEventListener("visibilitychange", onVisible);
+    window.addEventListener("vc-notifications-read", onRead);
+    return () => { document.removeEventListener("visibilitychange", onVisible); window.removeEventListener("vc-notifications-read", onRead); };
+  }, [pathname]);
+
   return (
     <nav
       className="sm:hidden print:hidden fixed bottom-0 left-0 right-0 z-40 bg-page/95 backdrop-blur-md border-t border-line animate-slide-up"
@@ -39,7 +55,14 @@ export default function MobileTabBar() {
             >
               {/* Gold indicator bar that slides in for the active tab */}
               <span className="tab-indicator pointer-events-none absolute top-0 h-[2px] w-7 rounded-full bg-gold" />
-              <Icon size={18} className="tab-pop" />
+              <span className="relative">
+                <Icon size={18} className="tab-pop" />
+                {href === "/account" && unread > 0 && (
+                  <span className="absolute -top-1.5 -right-2 min-w-[15px] h-[15px] px-1 rounded-full bg-gold text-vc-950 text-[9px] font-semibold leading-[15px] text-center">
+                    {unread > 9 ? "9+" : unread}
+                  </span>
+                )}
+              </span>
               <span className="text-[8.5px] tracking-[0.02em] uppercase leading-none">{label}</span>
             </Link>
           );
