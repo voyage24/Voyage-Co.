@@ -6,7 +6,7 @@ import {
   LayoutDashboard, BarChart3, CalendarCheck, Inbox, FileText, Star, Users,
   BedDouble, Plane, TrainFront, Sparkles, Package, Ship, Newspaper, MapPin,
   Quote, Award, Image as ImageIcon, Store, FolderOpen, Mail, Gift, Tag, Bell,
-  Palette, UserCog, Settings, LayoutTemplate, LayoutGrid, History, type LucideIcon,
+  Palette, UserCog, Settings, LayoutTemplate, LayoutGrid, History, Send, type LucideIcon,
 } from "lucide-react";
 
 // Grouped ("indexed") navigation so the growing admin stays organised.
@@ -56,6 +56,7 @@ const SECTION_DEFS: { title: string | null; items: { href: string; label: string
   {
     title: "Marketing",
     items: [
+      { href: "/admin/compose", label: "Compose Email", icon: Send },
       { href: "/admin/newsletter", label: "Newsletter", icon: Mail },
       { href: "/admin/emails", label: "Emails", icon: Mail },
       { href: "/admin/giftcards", label: "Gift Cards", icon: Gift },
