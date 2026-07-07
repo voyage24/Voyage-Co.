@@ -25,11 +25,18 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   await prisma.booking.update({ where: { id: params.id }, data });
   if (status !== undefined) {
     await logAudit(admin.email, "update", "booking", params.id, `status → ${status}`);
-    // Notify the member (if they've enabled push) that their booking changed.
-    const bk = await prisma.booking.findUnique({ where: { id: params.id }, select: { customerId: true, itemTitle: true, reference: true } }).catch(() => null);
-    if (bk?.customerId) {
+    // Notify the member that their booking changed. Prefer the linked account;
+    // fall back to matching a registered member by the booking's email, so
+    // guest bookings still reach the member when the email is theirs.
+    const bk = await prisma.booking.findUnique({ where: { id: params.id }, select: { customerId: true, guestEmail: true, itemTitle: true, reference: true } }).catch(() => null);
+    let targetId = bk?.customerId ?? null;
+    if (!targetId && bk?.guestEmail) {
+      const c = await prisma.customer.findUnique({ where: { email: bk.guestEmail.toLowerCase() }, select: { id: true } }).catch(() => null);
+      targetId = c?.id ?? null;
+    }
+    if (targetId) {
       const title = status === "confirmed" ? "Booking confirmed" : status === "cancelled" ? "Booking cancelled" : "Booking updated";
-      await sendPushToCustomer(bk.customerId, { title, body: `${bk.itemTitle} · ${bk.reference}`, url: "/account" });
+      await sendPushToCustomer(targetId, { title, body: `${bk?.itemTitle} · ${bk?.reference}`, url: "/account" });
     }
   }
 
