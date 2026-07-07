@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { draftReply } from "@/lib/enquiry-replies";
 
 export type EnquiryRow = {
   id: string;
@@ -44,7 +45,7 @@ export default function EnquiriesList({ enquiries }: { enquiries: EnquiryRow[] }
   const openReply = (e: EnquiryRow) => {
     setReplyId(e.id);
     setReplySubject(`Re: ${e.subject || e.itemTitle || "Your enquiry"}`);
-    setReplyText("");
+    setReplyText(draftReply(e));
     setReplyMsg("");
   };
   const sendReply = async (id: string) => {
@@ -209,7 +210,7 @@ export default function EnquiriesList({ enquiries }: { enquiries: EnquiryRow[] }
 
                     {replyId === e.id && (
                       <div className="mt-3 rounded-lg border border-gray-200 bg-gray-50 p-3 space-y-2">
-                        <p className="text-xs text-gray-500">Sends a branded Voyages &amp; Co. email to <span className="text-gray-700">{e.email}</span> from your concierge address.</p>
+                        <p className="text-xs text-gray-500">Pre-filled draft — edit as needed. Sends a branded email to <span className="text-gray-700">{e.email}</span>; the &ldquo;Dear {e.name?.split(" ")[0] || "Guest"}&rdquo; greeting and concierge sign-off are added automatically.</p>
                         <input
                           value={replySubject} onChange={ev => setReplySubject(ev.target.value)}
                           placeholder="Subject"
