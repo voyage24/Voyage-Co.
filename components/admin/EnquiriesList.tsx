@@ -177,7 +177,10 @@ export default function EnquiriesList({ enquiries }: { enquiries: EnquiryRow[] }
                       ) : (
                         <button disabled={busyId === e.id} onClick={() => setStatus(e.id, "new")} className="text-xs px-3 py-1.5 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50">Mark new</button>
                       )}
-                      <a href={`mailto:${e.email}`} className="text-xs px-3 py-1.5 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50">Reply</a>
+                      <a
+                        href={`mailto:${e.email}?subject=${encodeURIComponent(`Re: ${e.subject || e.itemTitle || "Your enquiry"}`)}&body=${encodeURIComponent(`Dear ${e.name?.split(" ")[0] || "Guest"},\n\nThank you for reaching out to Voyages & Co.\n\n\n\nWith warm regards,\nVoyages & Co. Concierge`)}`}
+                        className="text-xs px-3 py-1.5 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50"
+                      >Reply</a>
                       <button disabled={busyId === e.id} onClick={() => remove(e.id)} className="text-xs px-3 py-1.5 rounded-md text-red-600 hover:bg-red-50 disabled:opacity-50 ml-auto">Delete</button>
                     </div>
                   </div>
