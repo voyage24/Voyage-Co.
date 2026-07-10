@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { Home, BedDouble, Plane, Compass, Luggage, User } from "lucide-react";
 import { haptic } from "@/lib/haptics";
 
@@ -20,22 +20,13 @@ const TABS = [
 
 export default function MobileTabBar() {
   const pathname = usePathname() || "/";
-  const router = useRouter();
   const [unread, setUnread] = useState(0);
-  const [isPending, startTransition] = useTransition();
   const [pending, setPending] = useState<string | null>(null);
 
-  // The tapped tab keeps its highlight + breathing pulse until React finishes
-  // navigating (isPending stays true through the whole load).
-  useEffect(() => { if (!isPending) setPending(null); }, [isPending]);
-
-  const go = (e: React.MouseEvent, href: string, active: boolean) => {
-    if (active) return;
-    e.preventDefault();
-    setPending(href);
-    haptic("select");
-    startTransition(() => router.push(href));
-  };
+  // Highlight the tapped tab immediately; clear it once the new route commits
+  // (the branded spinner then covers the actual load, and the now-active tab
+  // keeps breathing as the "you are here" cue).
+  useEffect(() => { setPending(null); }, [pathname]);
 
   // Unread notification count on the "You" tab, so it's clear where a
   // notification landed. Refetches when the app refocuses or the route changes,
@@ -66,12 +57,12 @@ export default function MobileTabBar() {
           // Highlight instantly on tap (before the page loads), then a "breathing"
           // pulse while the destination is still loading.
           const isActive = active || pending === href;
-          const loading = pending === href && isPending;
+          const loading = pending === href && !active;
           return (
             <Link
               key={href}
               href={href}
-              onClick={(e) => go(e, href, active)}
+              onClick={() => { if (!active) { setPending(href); haptic("select"); } }}
               className={`group relative flex flex-col items-center justify-center gap-0.5 flex-1 transition-transform duration-150 active:scale-90 ${isActive ? "tab-active text-gold" : "text-ink-muted"}`}
             >
               {/* Gold indicator bar that slides in for the active tab */}
