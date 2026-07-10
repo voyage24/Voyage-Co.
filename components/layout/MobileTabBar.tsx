@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, BedDouble, Plane, Compass, Luggage, User } from "lucide-react";
+import { haptic } from "@/lib/haptics";
 
 // Phone bottom navigation — the quick-reach travel actions: browse & book
 // (stays, flights), get inspired (explore), manage bookings (trips) and the
@@ -20,6 +21,10 @@ const TABS = [
 export default function MobileTabBar() {
   const pathname = usePathname() || "/";
   const [unread, setUnread] = useState(0);
+  const [pending, setPending] = useState<string | null>(null);
+
+  // Clear the "tapped" highlight once navigation to the new route completes.
+  useEffect(() => { setPending(null); }, [pathname]);
 
   // Unread notification count on the "You" tab, so it's clear where a
   // notification landed. Refetches when the app refocuses or the route changes,
@@ -47,16 +52,21 @@ export default function MobileTabBar() {
       <div className="flex items-stretch justify-around h-14 px-1">
         {TABS.map(({ href, label, Icon }) => {
           const active = href === "/" ? pathname === "/" : pathname.startsWith(href);
+          // Highlight instantly on tap (before the page loads), then a "breathing"
+          // pulse while the destination is still loading.
+          const isActive = active || pending === href;
+          const loading = pending === href && !active;
           return (
             <Link
               key={href}
               href={href}
-              className={`group relative flex flex-col items-center justify-center gap-0.5 flex-1 transition-transform duration-150 active:scale-90 ${active ? "tab-active text-gold" : "text-ink-muted"}`}
+              onClick={() => { if (!active) { setPending(href); haptic("select"); } }}
+              className={`group relative flex flex-col items-center justify-center gap-0.5 flex-1 transition-transform duration-150 active:scale-90 ${isActive ? "tab-active text-gold" : "text-ink-muted"}`}
             >
               {/* Gold indicator bar that slides in for the active tab */}
               <span className="tab-indicator pointer-events-none absolute top-0 h-[2px] w-7 rounded-full bg-gold" />
               <span className="relative">
-                <Icon size={18} className="tab-pop" />
+                <Icon size={18} className={`tab-pop ${loading ? "animate-pulse" : ""}`} />
                 {href === "/account" && unread > 0 && (
                   <span className="absolute -top-1.5 -right-2 min-w-[15px] h-[15px] px-1 rounded-full bg-gold text-vc-950 text-[9px] font-semibold leading-[15px] text-center">
                     {unread > 9 ? "9+" : unread}
