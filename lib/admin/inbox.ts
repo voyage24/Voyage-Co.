@@ -31,10 +31,23 @@ export async function getInboxList(): Promise<{ emails: InboxEmail[]; unread: nu
       // header when set (the email standard for "answer me here"), else the
       // sender — and never our own mailbox.
       const mine = !!ourDomain && from.endsWith(`@${ourDomain}`);
-      const replyTo = mine ? (to || from) : (replyToHeader || from);
+      let replyTo = mine ? (to || from) : (replyToHeader || from);
       // Greeting name: display name, else extracted from the message sign-off
       // or the address itself.
-      const replyName = mine ? null : (e.fromName || guessNameFromEmail(e.bodyText, replyTo) || null);
+      let replyName = mine ? null : (e.fromName || guessNameFromEmail(e.bodyText, replyTo) || null);
+      // Self-notifications (booking/enquiry alerts the site sent to itself)
+      // carry the customer's details in the BODY — reply to the customer, not
+      // to our own mailbox.
+      if (mine) {
+        const text = e.bodyText || (e.bodyHtml || "").replace(/<[^>]+>/g, " ");
+        const bodyAddrs = text.match(/[\w.+-]+@[\w.-]+\.\w+/g) || [];
+        const customer = bodyAddrs.map(a => a.toLowerCase()).find(a => !a.endsWith(`@${ourDomain}`));
+        if (customer) {
+          replyTo = customer;
+          const nameLine = /(?:^|\n)\s*Name:\s*([^\n<]+)/i.exec(text)?.[1]?.trim();
+          replyName = nameLine || guessNameFromEmail(text, customer) || null;
+        }
+      }
       return {
         id: e.id, fromName: e.fromName, fromEmail: e.fromEmail, toEmail: e.toEmail, subject: e.subject,
         bodyText: e.bodyText, bodyHtml: e.bodyHtml, receivedAt: e.receivedAt.toISOString(), read: e.read,
