@@ -43,7 +43,9 @@ async function callGemini(prompt: string): Promise<CallResult> {
       return { text };
     }
     lastError = `gemini ${res.status} (${model}): ${(await res.text().catch(() => "")).slice(0, 140)}`;
-    if (res.status !== 404) break; // only fall through on "model not found"
+    // Fall through on "model not found" (404) or per-model quota (429) — other
+    // models have separate free quotas. Stop on anything else (e.g. bad key).
+    if (res.status !== 404 && res.status !== 429) break;
   }
   return { text: null, error: lastError };
 }
