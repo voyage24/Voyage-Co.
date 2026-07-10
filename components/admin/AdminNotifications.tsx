@@ -13,10 +13,31 @@ function ago(iso: string): string {
   return `${Math.floor(s / 86400)}d ago`;
 }
 
+const SEEN_KEY = "admin-notifs-seen";
+
 export default function AdminNotifications({ data }: { data: AdminNotifications }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const total = data.count + data.reviews;
+
+  // Badge = only what's NEW since the bell was last opened (per this browser),
+  // so opening it clears the count and new items make it reappear.
+  const [seen, setSeen] = useState<{ at: string; reviews: number } | null>(null);
+  useEffect(() => {
+    try { const raw = localStorage.getItem(SEEN_KEY); if (raw) setSeen(JSON.parse(raw)); } catch { /* ignore */ }
+  }, []);
+
+  const newItems = data.items.filter(n => !seen || new Date(n.at) > new Date(seen.at)).length;
+  const newReviews = seen ? Math.max(0, data.reviews - seen.reviews) : data.reviews;
+  const badge = newItems + newReviews;
+
+  const markSeen = () => {
+    const s = { at: new Date().toISOString(), reviews: data.reviews };
+    setSeen(s);
+    try { localStorage.setItem(SEEN_KEY, JSON.stringify(s)); } catch { /* ignore */ }
+  };
+
+  const toggle = () => setOpen(o => { const next = !o; if (next) markSeen(); return next; });
 
   useEffect(() => {
     const onClick = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); };
@@ -26,10 +47,10 @@ export default function AdminNotifications({ data }: { data: AdminNotifications 
 
   return (
     <div ref={ref} className="relative">
-      <button onClick={() => setOpen(o => !o)} aria-label="Notifications" className="relative text-gray-500 hover:text-gray-900 p-1">
+      <button onClick={toggle} aria-label="Notifications" className="relative text-gray-500 hover:text-gray-900 p-1">
         <Bell size={18} />
-        {total > 0 && (
-          <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 rounded-full bg-red-500 text-white text-[9px] font-bold flex items-center justify-center">{total > 99 ? "99+" : total}</span>
+        {badge > 0 && (
+          <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 rounded-full bg-red-500 text-white text-[9px] font-bold flex items-center justify-center">{badge > 99 ? "99+" : badge}</span>
         )}
       </button>
 

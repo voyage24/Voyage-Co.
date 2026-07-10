@@ -33,8 +33,8 @@ export function renderConciergeEmailHTML(opts: {
           <tr><td style="padding:26px 28px;text-align:center;">
             <p style="margin:0 0 8px;font-family:Arial,Helvetica,sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:${GOLD};font-weight:bold;">Voyages Reserve</p>
             <p style="margin:0 0 16px;font-family:Georgia,'Times New Roman',serif;font-size:17px;color:${INK};line-height:1.4;">An invitation to our members' circle — member rates, priority concierge and rare access.</p>
-            <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto;"><tr><td style="background:${GOLD};">
-              <a href="${SITE_URL}/membership" style="display:inline-block;padding:12px 26px;font-family:Arial,Helvetica,sans-serif;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:${NAVY};text-decoration:none;font-weight:bold;">Join Voyages Reserve</a>
+            <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto;"><tr><td style="background:${GOLD};text-align:center;">
+              <a href="${SITE_URL}/membership" style="display:inline-block;padding:12px 26px;font-family:Arial,Helvetica,sans-serif;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:${NAVY};text-decoration:none;font-weight:bold;text-align:center;line-height:1.4;">Join Voyages Reserve</a>
             </td></tr></table>
           </td></tr>
         </table>
@@ -55,8 +55,8 @@ export function renderConciergeEmailHTML(opts: {
         </div>
         ${ctaLabel ? `
         <table role="presentation" cellpadding="0" cellspacing="0" style="margin-top:28px;">
-          <tr><td style="background:${NAVY};">
-            <a href="${ctaHref ?? WHATSAPP_URL}" style="display:inline-block;padding:14px 28px;font-family:Arial,Helvetica,sans-serif;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:#FFFFFF;text-decoration:none;">${ctaLabel}</a>
+          <tr><td style="background:${NAVY};text-align:center;">
+            <a href="${ctaHref ?? WHATSAPP_URL}" style="display:inline-block;padding:14px 28px;font-family:Arial,Helvetica,sans-serif;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:#FFFFFF;text-decoration:none;text-align:center;line-height:1.4;">${ctaLabel}</a>
           </td></tr>
         </table>` : ""}
         <p style="margin:32px 0 0;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:${INK};">

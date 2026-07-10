@@ -217,7 +217,7 @@ export default async function HotelDetailPage({ params }: { params: { id: string
             </div>
           </div>
           <PropertyMap lat={coords[0]} lng={coords[1]} name={hotel.name} />
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4 items-start">
             <DestinationEssentials country={hotel.country} city={hotel.city} />
             <PackingList lat={coords[0]} lng={coords[1]} destinationKey={hotel.id} />
           </div>
