@@ -234,7 +234,7 @@ export default async function HotelDetailPage({ params }: { params: { id: string
         <section className="mt-16 border-t border-line pt-10">
           <h2 className="font-serif text-2xl font-light text-ink mb-6"><T k="detail.youMayAlsoLike" /></h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {alsoLike.map(h => <HotelCard key={h.id} hotel={h} />)}
+            {alsoLike.map(h => <HotelCard key={h.id} hotel={h} vertical />)}
           </div>
         </section>
       )}

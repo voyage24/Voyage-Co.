@@ -7,19 +7,21 @@ import type { Hotel } from "@/lib/types";
 import { useCurrency } from "@/components/providers/CurrencyProvider";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 
-export default function HotelCard({ hotel, priority }: { hotel: Hotel; priority?: boolean }) {
+// `vertical` renders a stacked card (image on top) for multi-column grids;
+// the default horizontal layout suits a full-width single-column list.
+export default function HotelCard({ hotel, priority, vertical }: { hotel: Hotel; priority?: boolean; vertical?: boolean }) {
   const { format } = useCurrency();
   const { t } = useLanguage();
   return (
-    <div className="bg-panel rounded-2xl border border-line hover:border-gold/40 shadow-card hover:shadow-card-hover hover:-translate-y-1.5 transition-all duration-500 overflow-hidden flex flex-col sm:flex-row group">
+    <div className={`bg-panel rounded-2xl border border-line hover:border-gold/40 shadow-card hover:shadow-card-hover hover:-translate-y-1.5 transition-all duration-500 overflow-hidden flex flex-col group ${vertical ? "" : "sm:flex-row"}`}>
       {/* Image */}
-      <div className="relative sm:w-60 shrink-0 aspect-[4/3] sm:aspect-auto overflow-hidden">
+      <div className={`relative overflow-hidden aspect-[4/3] ${vertical ? "" : "sm:w-60 shrink-0 sm:aspect-auto"}`}>
         <Image
           src={hotel.image}
           alt={hotel.name}
           fill
           priority={priority}
-          sizes="(max-width: 640px) 100vw, 240px"
+          sizes={vertical ? "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" : "(max-width: 640px) 100vw, 240px"}
           className="object-cover transition-transform duration-700 group-hover:scale-105"
         />
         {hotel.badge && (

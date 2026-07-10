@@ -54,7 +54,7 @@ export default async function DestinationPage({ params }: { params: { slug: stri
         <section className="mb-12">
           <h2 className="font-serif text-2xl font-light text-ink mb-5">Stays in {country}</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {hotels.map(h => <HotelCard key={h.id} hotel={h} />)}
+            {hotels.map(h => <HotelCard key={h.id} hotel={h} vertical />)}
           </div>
         </section>
       )}
