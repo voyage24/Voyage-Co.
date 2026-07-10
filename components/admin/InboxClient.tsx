@@ -75,22 +75,22 @@ export default function InboxClient() {
       )}
 
       <details className="mb-4 rounded-md border border-gray-200 bg-gray-50 text-sm">
-        <summary className="cursor-pointer px-4 py-2.5 text-gray-700 select-none">IMAP setup help (GoDaddy Professional Email)</summary>
+        <summary className="cursor-pointer px-4 py-2.5 text-gray-700 select-none">IMAP setup help (GoDaddy email)</summary>
         <div className="px-4 pb-4 pt-1 text-gray-600 space-y-3 leading-relaxed">
-          <p>The site reads replies over IMAP. GoDaddy controls whether IMAP is allowed, so most setup happens in your GoDaddy account, not here.</p>
+          <p>The site reads replies over IMAP using your mailbox&apos;s server settings.</p>
           <div>
             <p className="font-medium text-gray-800">1. Vercel → Settings → Environment Variables</p>
             <ul className="list-disc ml-5 mt-1 space-y-0.5">
-              <li><code>IMAP_HOST</code> = <code>imap.titan.email</code> (GoDaddy Professional Email is Titan-powered)</li>
+              <li><code>IMAP_HOST</code> = <code>imap.secureserver.net</code> (GoDaddy Workspace/Professional Email). If your mailbox is Titan-powered instead, use <code>imap.titan.email</code>.</li>
               <li><code>IMAP_PORT</code> = <code>993</code></li>
               <li><code>IMAP_USER</code> = your full email address</li>
-              <li><code>IMAP_PASS</code> = the password you use at app.titan.email (not an SMTP/relay key)</li>
+              <li><code>IMAP_PASS</code> = your mailbox password (the one that logs into webmail, not an SMTP/relay key)</li>
             </ul>
             <p className="mt-1 text-gray-500">Then redeploy. No leading/trailing spaces.</p>
           </div>
           <div>
-            <p className="font-medium text-gray-800">2. Enable IMAP on the mailbox</p>
-            <p className="mt-1">GoDaddy → <span className="text-gray-800">Email &amp; Office</span> → Manage your mailbox → <span className="text-gray-800">IMAP / POP access</span> → turn it <span className="text-gray-800">On</span>. GoDaddy often ships this <em>off</em> — which is why webmail works but IMAP is rejected. That screen also shows the exact incoming server/port to use above.</p>
+            <p className="font-medium text-gray-800">2. Confirm the exact server</p>
+            <p className="mt-1">The host must match your provider. Check GoDaddy&apos;s &ldquo;server and port settings&rdquo; help page, or your desktop mail app&apos;s incoming-server field, and use that value. Legacy GoDaddy = <code>imap.secureserver.net</code>.</p>
           </div>
           <div>
             <p className="font-medium text-gray-800">3. If it&apos;s still rejected</p>

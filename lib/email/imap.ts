@@ -23,7 +23,7 @@ export async function fetchInbox(limit = 40): Promise<{ ok: boolean; fetched: nu
   const who = ` [tried ${maskedUser} via ${source}, pass len ${pass.length}]`;
 
   const client = new ImapFlow({
-    host: process.env.IMAP_HOST || "imap.titan.email",
+    host: process.env.IMAP_HOST || "imap.secureserver.net",
     port: Number(process.env.IMAP_PORT || 993),
     secure: true,
     auth: { user, pass },
