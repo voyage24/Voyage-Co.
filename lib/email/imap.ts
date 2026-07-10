@@ -64,7 +64,17 @@ export async function fetchInbox(limit = 40): Promise<{ ok: boolean; fetched: nu
     return { ok: true, fetched, new: added };
   } catch (err) {
     console.error("IMAP fetch failed:", err);
-    return { ok: false, fetched, new: added, error: "IMAP fetch failed" };
+    // Surface the underlying reason so setup issues are diagnosable.
+    const raw = (err as { responseText?: string; message?: string; code?: string }) || {};
+    const detail = raw.responseText || raw.message || raw.code || "unknown error";
+    const hint = /ENOTFOUND|EAI_AGAIN/i.test(detail)
+      ? "host not found — check IMAP_HOST"
+      : /AUTHENTICATION|invalid credentials|LOGIN failed/i.test(detail)
+      ? "login rejected — check the mailbox username/password or enable IMAP"
+      : /timeout|ETIMEDOUT|ECONNREFUSED/i.test(detail)
+      ? "could not connect — check IMAP_HOST / IMAP_PORT"
+      : "";
+    return { ok: false, fetched, new: added, error: `IMAP: ${detail}${hint ? ` (${hint})` : ""}`.slice(0, 300) };
   } finally {
     try { await client.logout(); } catch { /* ignore */ }
   }
