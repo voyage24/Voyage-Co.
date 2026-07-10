@@ -82,6 +82,7 @@ model InboundEmail {
   fromName   String?
   fromEmail  String
   toEmail    String?
+  replyToEmail String?        // the message's Reply-To header, when present
   subject    String?
   bodyText   String?  @db.Text
   bodyHtml   String?  @db.Text

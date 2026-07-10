@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { imapConfigured } from "@/lib/email/imap";
+import { guessNameFromEmail } from "@/lib/email/guess-name";
 
 // Current inbox snapshot (recent, non-archived) — used by the inbox API and
 // server-rendered into the mail app so it opens instantly instead of loading
@@ -24,14 +25,21 @@ export async function getInboxList(): Promise<{ emails: InboxEmail[]; unread: nu
     emails: emails.map(e => {
       const from = addr(e.fromEmail);
       const to = addr(e.toEmail);
+      const replyToHeader = addr(e.replyToEmail);
       // A message FROM our own domain is a self-copy (cc'd reply, bounce test…),
-      // so "reply" targets its recipient — otherwise the sender, as usual.
+      // so "reply" targets its recipient. Otherwise: the message's Reply-To
+      // header when set (the email standard for "answer me here"), else the
+      // sender — and never our own mailbox.
       const mine = !!ourDomain && from.endsWith(`@${ourDomain}`);
+      const replyTo = mine ? (to || from) : (replyToHeader || from);
+      // Greeting name: display name, else extracted from the message sign-off
+      // or the address itself.
+      const replyName = mine ? null : (e.fromName || guessNameFromEmail(e.bodyText, replyTo) || null);
       return {
         id: e.id, fromName: e.fromName, fromEmail: e.fromEmail, toEmail: e.toEmail, subject: e.subject,
         bodyText: e.bodyText, bodyHtml: e.bodyHtml, receivedAt: e.receivedAt.toISOString(), read: e.read,
-        replyTo: mine ? (to || from) : from,
-        replyName: mine ? null : e.fromName,
+        replyTo,
+        replyName,
         replyFrom: mine ? from : (to.endsWith(`@${ourDomain}`) ? to : ""),
       };
     }),

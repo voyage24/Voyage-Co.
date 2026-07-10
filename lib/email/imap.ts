@@ -56,6 +56,7 @@ export async function fetchInbox(limit = 40): Promise<{ ok: boolean; fetched: nu
             fromName: from?.name || null,
             fromEmail: from?.address || "unknown",
             toEmail: Array.isArray(parsed.to) ? parsed.to[0]?.text : parsed.to?.text || null,
+            replyToEmail: parsed.replyTo?.value?.[0]?.address || null,
             subject: parsed.subject || null,
             bodyText: parsed.text?.slice(0, 20000) || null,
             bodyHtml: (typeof parsed.html === "string" ? parsed.html : null)?.slice(0, 80000) || null,
