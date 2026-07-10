@@ -17,6 +17,10 @@ export async function fetchInbox(limit = 40): Promise<{ ok: boolean; fetched: nu
   const user = process.env.IMAP_USER || process.env.SMTP_USER;
   const pass = process.env.IMAP_PASS || process.env.SMTP_PASS;
   if (!user || !pass) return { ok: false, fetched: 0, new: 0, error: "IMAP not configured" };
+  // Diagnostic: which credential source + masked user was attempted.
+  const source = process.env.IMAP_USER ? "IMAP_USER" : "SMTP_USER (fallback)";
+  const maskedUser = user.replace(/^(.{2}).*(@.*)$/, "$1***$2");
+  const who = ` [tried ${maskedUser} via ${source}, pass len ${pass.length}]`;
 
   const client = new ImapFlow({
     host: process.env.IMAP_HOST || "imap.titan.email",
@@ -74,7 +78,7 @@ export async function fetchInbox(limit = 40): Promise<{ ok: boolean; fetched: nu
       : /timeout|ETIMEDOUT|ECONNREFUSED/i.test(detail)
       ? "could not connect — check IMAP_HOST / IMAP_PORT"
       : "";
-    return { ok: false, fetched, new: added, error: `IMAP: ${detail}${hint ? ` (${hint})` : ""}`.slice(0, 300) };
+    return { ok: false, fetched, new: added, error: `IMAP: ${detail}${hint ? ` (${hint})` : ""}${who}`.slice(0, 320) };
   } finally {
     try { await client.logout(); } catch { /* ignore */ }
   }
