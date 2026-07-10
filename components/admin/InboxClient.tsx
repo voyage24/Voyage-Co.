@@ -177,6 +177,12 @@ export default function InboxClient({ initial }: { initial?: InboxData }) {
                     ) : <p className="text-sm text-gray-400">(empty message)</p>}
 
                     <div className="mt-3 space-y-2">
+                      {/* Who this reply goes to (and which of our addresses sends it). */}
+                      <p className="text-xs text-gray-600 bg-gray-50 border border-gray-200 rounded-md px-3 py-2">
+                        <span className="text-gray-400">To:</span>{" "}
+                        <span className="font-medium text-gray-800">{e.fromName ? `${e.fromName} ` : ""}&lt;{e.fromEmail}&gt;</span>
+                        {addrOf(e.toEmail) && <span className="text-gray-400"> · from {addrOf(e.toEmail)}</span>}
+                      </p>
                       <input
                         value={replyContext} onChange={ev => setReplyContext(ev.target.value)}
                         placeholder="Steer the AI (optional) — e.g. confirm the upgrade, offer the 12 Aug slot"
