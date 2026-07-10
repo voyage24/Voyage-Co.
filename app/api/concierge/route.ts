@@ -1,11 +1,10 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { verifyTurnstile, clientIp } from "@/lib/security/turnstile";
+import { generateText, aiConfigured, type AiMessage } from "@/lib/ai";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 30;
-
-const MODEL = process.env.CONCIERGE_MODEL || "claude-3-5-haiku-latest";
 
 // Builds a compact catalogue the model can recommend from (real items only).
 async function getCatalogue() {
@@ -33,8 +32,7 @@ CATALOGUE (type | name | details | price | path):
 ${catalogue}`;
 
 export async function POST(req: Request) {
-  const key = process.env.ANTHROPIC_API_KEY;
-  if (!key) {
+  if (!aiConfigured()) {
     return NextResponse.json({
       reply: "Our digital concierge is being prepared. In the meantime, tell us what you have in mind on the [Plan Your Journey](/plan) page, or reach our team via [Contact](/contact).",
     });
@@ -58,23 +56,13 @@ export async function POST(req: Request) {
 
   try {
     const catalogue = await getCatalogue();
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: { "x-api-key": key, "anthropic-version": "2023-06-01", "content-type": "application/json" },
-      body: JSON.stringify({
-        model: MODEL,
-        max_tokens: 700,
-        system: SYSTEM(catalogue),
-        messages: [...prior, { role: "user", content: message.slice(0, 1000) }],
-      }),
-    });
-    if (!res.ok) {
-      console.error("Anthropic error", res.status, await res.text().catch(() => ""));
+    const messages: AiMessage[] = [...(prior as AiMessage[]), { role: "user", content: message.slice(0, 1000) }];
+    const { text, error } = await generateText(SYSTEM(catalogue), messages, 700);
+    if (!text) {
+      console.error("Concierge AI error", error);
       return NextResponse.json({ reply: "I'm having trouble just now — please try again, or use [Plan Your Journey](/plan)." });
     }
-    const data = await res.json();
-    const reply = (data.content ?? []).filter((b: { type: string }) => b.type === "text").map((b: { text: string }) => b.text).join("\n").trim();
-    return NextResponse.json({ reply: reply || "Could you tell me a little more about the trip you have in mind?" });
+    return NextResponse.json({ reply: text });
   } catch (err) {
     console.error("Concierge failed:", err);
     return NextResponse.json({ reply: "I'm having trouble just now — please try again shortly." });
