@@ -33,3 +33,13 @@ export function draftFromSubject(subject: string): string {
   for (const rule of RULES) if (rule.test.test(topic)) return rule.body;
   return DEFAULT_BODY;
 }
+
+// Content-aware fallback (no AI): match keywords across the whole message —
+// subject + body — so replies at least vary by topic. Not tailored like AI, but
+// better than one fixed template.
+export function draftFromContent(text: string): string {
+  const t = (text || "").trim();
+  if (!t) return DEFAULT_BODY;
+  for (const rule of RULES) if (rule.test.test(t)) return rule.body;
+  return DEFAULT_BODY;
+}
