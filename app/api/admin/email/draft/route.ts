@@ -28,14 +28,24 @@ async function callAnthropic(prompt: string): Promise<CallResult> {
 
 async function callGemini(prompt: string): Promise<CallResult> {
   const key = process.env.GEMINI_API_KEY; if (!key) return { text: null };
-  const model = process.env.GEMINI_MODEL || "gemini-1.5-flash-latest";
-  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`, {
-    method: "POST", headers: { "content-type": "application/json" },
-    body: JSON.stringify({ systemInstruction: { parts: [{ text: SYSTEM }] }, contents: [{ role: "user", parts: [{ text: prompt }] }], generationConfig: { maxOutputTokens: 600 } }),
-  });
-  if (!res.ok) return { text: null, error: `gemini ${res.status}: ${(await res.text().catch(() => "")).slice(0, 160)}` };
-  const d = await res.json();
-  return { text: (d.candidates?.[0]?.content?.parts ?? []).map((p: { text?: string }) => p.text || "").join("").trim() || null };
+  // Try current models in order; Google retires older aliases over time, so a
+  // 404 on one just moves to the next.
+  const models = [process.env.GEMINI_MODEL, "gemini-2.0-flash", "gemini-2.5-flash", "gemini-flash-latest", "gemini-1.5-flash"].filter(Boolean) as string[];
+  let lastError = "";
+  for (const model of models) {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`, {
+      method: "POST", headers: { "content-type": "application/json" },
+      body: JSON.stringify({ systemInstruction: { parts: [{ text: SYSTEM }] }, contents: [{ role: "user", parts: [{ text: prompt }] }], generationConfig: { maxOutputTokens: 600 } }),
+    });
+    if (res.ok) {
+      const d = await res.json();
+      const text = (d.candidates?.[0]?.content?.parts ?? []).map((p: { text?: string }) => p.text || "").join("").trim() || null;
+      return { text };
+    }
+    lastError = `gemini ${res.status} (${model}): ${(await res.text().catch(() => "")).slice(0, 140)}`;
+    if (res.status !== 404) break; // only fall through on "model not found"
+  }
+  return { text: null, error: lastError };
 }
 
 async function callGroq(prompt: string): Promise<CallResult> {
