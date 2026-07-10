@@ -21,6 +21,8 @@ export default function InboxClient({ initial }: { initial?: InboxData }) {
   const [loading, setLoading] = useState(!initial);
   const [sentInfo, setSentInfo] = useState<{ id: string; to: string } | null>(null);
   const [replyTo, setReplyTo] = useState("");
+  const [sel, setSel] = useState<Set<string>>(new Set());
+  const [bulkBusy, setBulkBusy] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [openId, setOpenId] = useState<string | null>(null);
   const [replyText, setReplyText] = useState("");
@@ -88,6 +90,23 @@ export default function InboxClient({ initial }: { initial?: InboxData }) {
   const act = async (id: string, body: object) => { await fetch(`/api/admin/inbox/${id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }); load(); };
   const del = async (id: string) => { if (!confirm("Delete this message from the site inbox?")) return; await fetch(`/api/admin/inbox/${id}`, { method: "DELETE" }); load(); };
 
+  // Multi-select: tick emails, then archive or delete them in one go.
+  const toggleSel = (id: string) => setSel(prev => { const n = new Set(prev); if (n.has(id)) n.delete(id); else n.add(id); return n; });
+  const bulk = async (action: "archive" | "delete") => {
+    if (action === "delete" && !confirm(`Delete ${sel.size} message${sel.size === 1 ? "" : "s"} from the site inbox?`)) return;
+    setBulkBusy(true);
+    await Promise.all(Array.from(sel).map(id =>
+      action === "delete"
+        ? fetch(`/api/admin/inbox/${id}`, { method: "DELETE" })
+        : fetch(`/api/admin/inbox/${id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ archived: true }) }),
+    ));
+    setBulkBusy(false);
+    setSel(new Set());
+    setOpenId(null);
+    haptic("success");
+    load();
+  };
+
   const sendReply = async (e: Email) => {
     if (!replyText.trim() || !replyTo.trim()) return;
     setSending(true);
@@ -117,6 +136,16 @@ export default function InboxClient({ initial }: { initial?: InboxData }) {
         {unread > 0 && <span className="text-xs bg-gold/20 text-gray-800 rounded-full px-2.5 py-1">{unread} unread</span>}
         {note && <span className="text-xs text-gray-500">{note}</span>}
       </div>
+
+      {sel.size > 0 && (
+        <div className="flex flex-wrap items-center gap-3 mb-3 rounded-md border border-gray-200 bg-gray-50 px-3 py-2">
+          <span className="text-xs text-gray-700 font-medium">{sel.size} selected</span>
+          <button onClick={() => setSel(new Set(emails.map(e => e.id)))} className="text-xs text-gray-600 hover:text-gray-900">Select all</button>
+          <button onClick={() => bulk("archive")} disabled={bulkBusy} className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-md bg-gray-900 hover:bg-gray-800 text-white disabled:opacity-50"><Archive size={12} /> Archive</button>
+          <button onClick={() => bulk("delete")} disabled={bulkBusy} className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-md bg-red-600 hover:bg-red-700 text-white disabled:opacity-50"><Trash2 size={12} /> Delete</button>
+          <button onClick={() => setSel(new Set())} className="text-xs text-gray-500 hover:text-gray-800 ml-auto">Clear</button>
+        </div>
+      )}
 
       {!configured && (
         <div className="mb-4 rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
@@ -158,14 +187,20 @@ export default function InboxClient({ initial }: { initial?: InboxData }) {
             const isOpen = openId === e.id;
             return (
               <div key={e.id} className={`border rounded-lg bg-white ${e.read ? "border-gray-200" : "border-gray-900/30"}`}>
-                <button onClick={() => open(e)} className="w-full flex items-center gap-3 px-4 py-3 text-left">
+                <div className="flex items-center">
+                <input
+                  type="checkbox" checked={sel.has(e.id)} onChange={() => toggleSel(e.id)}
+                  aria-label="Select email" className="ml-3 shrink-0 accent-gray-900"
+                />
+                <button onClick={() => open(e)} className="flex-1 min-w-0 flex items-center gap-3 px-3 py-3 text-left">
                   {e.read ? <MailOpen size={16} className="text-gray-400 shrink-0" /> : <Mail size={16} className="text-gray-900 shrink-0" />}
                   <span className="min-w-0 flex-1">
                     <span className={`block text-sm truncate ${e.read ? "text-gray-700" : "text-gray-900 font-medium"}`}>{e.fromName || e.fromEmail}</span>
                     <span className="block text-xs text-gray-500 truncate">{e.subject || "(no subject)"}</span>
                   </span>
-                  <span className="text-xs text-gray-400 shrink-0">{new Date(e.receivedAt).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}</span>
+                  <span className="text-xs text-gray-400 shrink-0 pr-1">{new Date(e.receivedAt).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}</span>
                 </button>
+                </div>
 
                 {isOpen && (
                   <div className="border-t border-gray-100 px-4 py-3">
