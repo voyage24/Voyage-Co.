@@ -23,10 +23,18 @@ const SECTION_DEFS: { title: string | null; items: { href: string; label: string
     items: [
       { href: "/admin/bookings", label: "Bookings", icon: CalendarCheck },
       { href: "/admin/enquiries", label: "Enquiries", icon: Inbox },
-      { href: "/admin/inbox", label: "Inbox", icon: Mail },
       { href: "/admin/quotes", label: "Quotes", icon: FileText },
       { href: "/admin/reviews", label: "Reviews", icon: Star },
       { href: "/admin/customers", label: "Customers", icon: Users },
+    ],
+  },
+  {
+    title: "Email",
+    items: [
+      { href: "/admin/compose", label: "Compose Email", icon: Send },
+      { href: "/admin/emails", label: "Email Templates", icon: LayoutTemplate },
+      { href: "/admin/inbox", label: "Inbox", icon: Mail },
+      { href: "/admin/newsletter", label: "Newsletter", icon: Newspaper },
     ],
   },
   {
@@ -57,9 +65,6 @@ const SECTION_DEFS: { title: string | null; items: { href: string; label: string
   {
     title: "Marketing",
     items: [
-      { href: "/admin/compose", label: "Compose Email", icon: Send },
-      { href: "/admin/newsletter", label: "Newsletter", icon: Mail },
-      { href: "/admin/emails", label: "Emails", icon: Mail },
       { href: "/admin/giftcards", label: "Gift Cards", icon: Gift },
       { href: "/admin/offers", label: "Offers", icon: Tag },
       { href: "/admin/notifications", label: "Push Notifications", icon: Bell },
