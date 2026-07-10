@@ -26,7 +26,10 @@ export default function LoginForm() {
         setLoading(false);
         return;
       }
-      router.push("/admin");
+      // Return to where the login was requested from (e.g. the Voyages Mail
+      // app), accepting only in-admin paths so this can't be an open redirect.
+      const next = new URLSearchParams(window.location.search).get("next");
+      router.push(next && next.startsWith("/admin") ? next : "/admin");
       router.refresh();
     } catch {
       setError("Something went wrong. Please try again.");

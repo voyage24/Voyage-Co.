@@ -15,6 +15,7 @@ export default function DestinationEssentials({ country, city }: { country: stri
   const [now, setNow] = useState<string>("");
 
   useEffect(() => {
+    if (!info.tz) { setNow(""); return; } // unknown timezone — hide rather than mislabel
     const tick = () => {
       try {
         setNow(new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: info.tz }).format(new Date()));
@@ -51,13 +52,15 @@ export default function DestinationEssentials({ country, city }: { country: stri
     <div className="border border-line rounded-2xl p-5 bg-panel-soft">
       <p className="text-[11px] tracking-[0.2em] uppercase text-ink-faint mb-4">When you arrive{city ? ` · ${city}` : ""}</p>
       <div className="grid grid-cols-2 gap-4">
-        <div className="flex items-start gap-2.5">
-          <Clock size={16} className="text-gold mt-0.5 shrink-0" />
-          <div>
-            <p className="text-lg font-serif font-light text-ink leading-none">{now || "—"}</p>
-            <p className="text-[11px] text-ink-faint mt-1">Local time</p>
+        {info.tz && (
+          <div className="flex items-start gap-2.5">
+            <Clock size={16} className="text-gold mt-0.5 shrink-0" />
+            <div>
+              <p className="text-lg font-serif font-light text-ink leading-none">{now || "—"}</p>
+              <p className="text-[11px] text-ink-faint mt-1">Local time</p>
+            </div>
           </div>
-        </div>
+        )}
         <div className="flex items-start gap-2.5">
           <ShieldAlert size={16} className="text-gold mt-0.5 shrink-0" />
           <div>

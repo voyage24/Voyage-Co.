@@ -34,7 +34,9 @@ const FIXES: [RegExp, string][] = [
 ];
 
 export function hasMojibake(s: string): boolean {
-  return /â€|Ã[-¿]|Â /.test(s);
+  // Test against the exact repair patterns (resetting lastIndex since the
+  // regexes are global), so detection and repair can never disagree.
+  return FIXES.some(([re]) => { re.lastIndex = 0; return re.test(s); });
 }
 
 function fixString(s: string): string {

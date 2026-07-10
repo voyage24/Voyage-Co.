@@ -2,6 +2,12 @@
 // compose box drafts itself. Keyword-matched (fast, offline). Returns the body
 // only — the greeting and sign-off are added by the email template.
 
+// Builds a reply subject without stacking prefixes ("Re: Re: …").
+export function reSubject(subject: string | null | undefined, fallback = "Your enquiry"): string {
+  const s = (subject || "").trim() || fallback;
+  return /^re:/i.test(s) ? s : `Re: ${s}`;
+}
+
 type Rule = { test: RegExp; body: string };
 
 const RULES: Rule[] = [

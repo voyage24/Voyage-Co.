@@ -4,6 +4,7 @@ import { requireAdmin } from "@/lib/admin/requireAdmin";
 import { logAudit } from "@/lib/admin/audit";
 import { createTransport, FROM_CONCIERGE } from "@/lib/email/transport";
 import { renderConciergeEmailHTML, renderConciergeEmailText } from "@/lib/email/template";
+import { reSubject } from "@/lib/email/compose-drafts";
 
 // Sends a branded concierge reply to an enquiry from our own SMTP — same
 // template as booking emails, no third-party mail app needed. Marks the
@@ -20,7 +21,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
 
   const first = (enquiry.name || "").split(" ")[0];
   const heading = first ? `Dear ${first}` : "Hello";
-  const subj = String(subject || "").trim() || `Re: ${enquiry.subject || enquiry.itemTitle || "Your enquiry"}`;
+  const subj = String(subject || "").trim() || reSubject(enquiry.subject || enquiry.itemTitle);
   const bodyHtml = String(message).trim().split(/\n{2,}/).map(p => `<p style="margin:0 0 16px;">${p.replace(/\n/g, "<br/>")}</p>`).join("");
 
   try {

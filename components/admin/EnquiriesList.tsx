@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { draftReply } from "@/lib/enquiry-replies";
+import { reSubject } from "@/lib/email/compose-drafts";
 
 export type EnquiryRow = {
   id: string;
@@ -44,7 +45,7 @@ export default function EnquiriesList({ enquiries }: { enquiries: EnquiryRow[] }
 
   const openReply = (e: EnquiryRow) => {
     setReplyId(e.id);
-    setReplySubject(`Re: ${e.subject || e.itemTitle || "Your enquiry"}`);
+    setReplySubject(reSubject(e.subject || e.itemTitle));
     setReplyText(draftReply(e));
     setReplyMsg("");
   };
@@ -202,7 +203,7 @@ export default function EnquiriesList({ enquiries }: { enquiries: EnquiryRow[] }
                       )}
                       <button onClick={() => replyId === e.id ? setReplyId(null) : openReply(e)} className="text-xs px-3 py-1.5 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50">{replyId === e.id ? "Close reply" : "Reply"}</button>
                       <a
-                        href={`mailto:${e.email}?subject=${encodeURIComponent(`Re: ${e.subject || e.itemTitle || "Your enquiry"}`)}`}
+                        href={`mailto:${e.email}?subject=${encodeURIComponent(reSubject(e.subject || e.itemTitle))}`}
                         className="text-xs px-3 py-1.5 rounded-md border border-gray-300 text-gray-500 hover:bg-gray-50"
                       >Open in mail app</a>
                       <button disabled={busyId === e.id} onClick={() => remove(e.id)} className="text-xs px-3 py-1.5 rounded-md text-red-600 hover:bg-red-50 disabled:opacity-50 ml-auto">Delete</button>

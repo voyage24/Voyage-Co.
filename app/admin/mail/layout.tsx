@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 
 export default async function MailLayout({ children }: { children: React.ReactNode }) {
   const user = await getSessionUser(cookies().get(SESSION_COOKIE_NAME)?.value);
-  if (!user) redirect("/admin/login");
+  if (!user) redirect("/admin/login?next=/admin/mail");
 
   return (
     <div className="admin-root min-h-screen bg-[#f6f6f3]">

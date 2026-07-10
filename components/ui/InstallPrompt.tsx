@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
 import { X, Download } from "lucide-react";
 import Logo from "@/components/ui/Logo";
 
@@ -24,6 +25,7 @@ function markDismissed() {
 // path against re-showing. iOS Safari doesn't fire the event, so nothing shows
 // there by design.
 export default function InstallPrompt() {
+  const pathname = usePathname();
   const [evt, setEvt] = useState<BeforeInstallPromptEvent | null>(null);
   const [show, setShow] = useState(false);
   const doneRef = useRef(false);       // shown once / dismissed this session
@@ -71,7 +73,9 @@ export default function InstallPrompt() {
     setEvt(null);
   };
 
-  if (!show) return null;
+  // The admin (incl. the Voyages Mail app) has its own install flow — never
+  // offer the customer app there.
+  if (!show || pathname?.startsWith("/admin")) return null;
 
   return (
     <div className="fixed inset-x-4 bottom-[5.5rem] sm:inset-x-auto sm:right-6 sm:bottom-6 z-40 sm:max-w-sm animate-slide-up">

@@ -38,7 +38,9 @@ const DATA: Record<string, Emergency> = {
   Nepal: { police: "100", ambulance: "102", general: "112", tz: "Asia/Kathmandu" },
 };
 
-const FALLBACK: Emergency = { police: "112", ambulance: "112", general: "112", tz: "UTC" };
+// Empty tz means "unknown" — the UI hides the local-time cell rather than
+// showing UTC mislabelled as local time. 112 works on most GSM networks.
+const FALLBACK: Emergency = { police: "112", ambulance: "112", general: "112", tz: "" };
 
 export function getEmergency(country: string | null | undefined): Emergency {
   if (!country) return FALLBACK;

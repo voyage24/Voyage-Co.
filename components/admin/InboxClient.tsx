@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { RefreshCw, Mail, MailOpen, Reply, Archive, Trash2, Loader2, Send, Wand2 } from "lucide-react";
+import { reSubject } from "@/lib/email/compose-drafts";
 
 type Email = {
   id: string; fromName: string | null; fromEmail: string; subject: string | null;
@@ -72,7 +73,7 @@ export default function InboxClient() {
     setSending(true);
     const res = await fetch("/api/admin/email/send", {
       method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ to: e.fromEmail, name: e.fromName || "", subject: `Re: ${e.subject || "Your message"}`, message: replyText }),
+      body: JSON.stringify({ to: e.fromEmail, name: e.fromName || "", subject: reSubject(e.subject, "Your message"), message: replyText }),
     });
     setSending(false);
     if (res.ok) { setReplyText(""); setOpenId(null); act(e.id, { read: true }); }

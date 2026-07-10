@@ -17,7 +17,7 @@ export default async function AdminEmailsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold text-gray-900">Emails</h1>
+        <h1 className="text-2xl font-semibold text-gray-900">Email Templates</h1>
         <p className="text-sm text-gray-500">Edit the wording of the automated emails your members receive. Changes go live on save; the branded shell (logo, footer) is added automatically.</p>
       </div>
       <EmailTemplatesForm templates={templates} values={values} />

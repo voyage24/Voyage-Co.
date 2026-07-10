@@ -24,6 +24,8 @@ export function middleware(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
     const loginUrl = new URL("/admin/login", req.url);
+    // Carry the requested page so login can return there (e.g. the Mail app).
+    if (pathname !== "/admin") loginUrl.searchParams.set("next", pathname);
     return NextResponse.redirect(loginUrl);
   }
 
