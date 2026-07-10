@@ -18,6 +18,9 @@ export default function InboxClient() {
   const [openId, setOpenId] = useState<string | null>(null);
   const [replyText, setReplyText] = useState("");
   const [replyContext, setReplyContext] = useState("");
+  const [replyCc, setReplyCc] = useState("");
+  const [replyBcc, setReplyBcc] = useState("");
+  const [showCc, setShowCc] = useState(false);
   const [sending, setSending] = useState(false);
   const [drafting, setDrafting] = useState(false);
   const [note, setNote] = useState("");
@@ -59,7 +62,7 @@ export default function InboxClient() {
 
   const open = (e: Email) => {
     if (openId === e.id) { setOpenId(null); return; }
-    setOpenId(e.id); setReplyText(""); setReplyContext("");
+    setOpenId(e.id); setReplyText(""); setReplyContext(""); setReplyCc(""); setReplyBcc(""); setShowCc(false);
     // Auto-draft a contextual AI reply the first time this message is opened.
     if (!draftedRef.current.has(e.id)) { draftedRef.current.add(e.id); draftReply(e); }
     if (!e.read) { setEmails(list => list.map(x => x.id === e.id ? { ...x, read: true } : x)); setUnread(u => Math.max(0, u - 1)); fetch(`/api/admin/inbox/${e.id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ read: true }) }); }
@@ -73,7 +76,7 @@ export default function InboxClient() {
     setSending(true);
     const res = await fetch("/api/admin/email/send", {
       method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ to: e.fromEmail, name: e.fromName || "", subject: reSubject(e.subject, "Your message"), message: replyText }),
+      body: JSON.stringify({ to: e.fromEmail, name: e.fromName || "", subject: reSubject(e.subject, "Your message"), message: replyText, cc: replyCc, bcc: replyBcc }),
     });
     setSending(false);
     if (res.ok) { setReplyText(""); setOpenId(null); act(e.id, { read: true }); }
@@ -156,6 +159,14 @@ export default function InboxClient() {
                         placeholder="Steer the AI (optional) — e.g. confirm the upgrade, offer the 12 Aug slot"
                         className="w-full text-xs px-3 py-2 rounded-md border border-gray-200 bg-gray-50 focus:outline-none focus:border-gray-400"
                       />
+                      {!showCc ? (
+                        <button onClick={() => setShowCc(true)} className="text-xs text-gray-500 hover:text-gray-800">+ Add Cc / Bcc</button>
+                      ) : (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                          <input value={replyCc} onChange={ev => setReplyCc(ev.target.value)} placeholder="Cc — comma-separated" className="w-full text-xs px-3 py-2 rounded-md border border-gray-200 bg-gray-50 focus:outline-none focus:border-gray-400" />
+                          <input value={replyBcc} onChange={ev => setReplyBcc(ev.target.value)} placeholder="Bcc — comma-separated" className="w-full text-xs px-3 py-2 rounded-md border border-gray-200 bg-gray-50 focus:outline-none focus:border-gray-400" />
+                        </div>
+                      )}
                       <div className="flex items-center justify-between">
                         <span className="text-xs text-gray-500">{drafting ? "Drafting an AI reply…" : (draftInfo || "AI-drafted reply — edit before sending")}</span>
                         <button onClick={() => draftReply(e)} disabled={drafting} className="inline-flex items-center gap-1 text-xs text-gray-600 hover:text-gray-900 disabled:opacity-40">

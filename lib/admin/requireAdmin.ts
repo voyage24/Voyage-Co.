@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSessionUser, SESSION_COOKIE_NAME } from "@/lib/admin/session";
+import { canAccessApi } from "@/lib/admin/permissions";
 import { prisma } from "@/lib/prisma";
 
 export async function requireAdmin(req: NextRequest) {
@@ -7,6 +8,12 @@ export async function requireAdmin(req: NextRequest) {
   const user = await getSessionUser(token);
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  // Role-based access, enforced centrally for every admin API — the UI hiding
+  // a section means nothing if its API still accepts any signed-in admin.
+  const path = req.nextUrl.pathname;
+  if (path.startsWith("/api/admin") && !canAccessApi(user.role, path)) {
+    return NextResponse.json({ error: "Your role doesn't have access to this" }, { status: 403 });
   }
   return user;
 }
