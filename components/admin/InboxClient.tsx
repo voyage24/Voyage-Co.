@@ -20,6 +20,7 @@ export default function InboxClient() {
   const [sending, setSending] = useState(false);
   const [drafting, setDrafting] = useState(false);
   const [note, setNote] = useState("");
+  const [draftInfo, setDraftInfo] = useState("");
   const draftedRef = useRef<Set<string>>(new Set());
 
   const plain = (e: Email) => e.bodyText || (e.bodyHtml || "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
@@ -35,6 +36,7 @@ export default function InboxClient() {
       });
       const d = await res.json().catch(() => ({}));
       if (d.draft) setReplyText(d.draft);
+      setDraftInfo(d.source === "ai" ? "AI reply ✓" : (d.note || "template reply"));
     } catch { /* leave blank */ } finally { setDrafting(false); }
   };
 
@@ -154,7 +156,7 @@ export default function InboxClient() {
                         className="w-full text-xs px-3 py-2 rounded-md border border-gray-200 bg-gray-50 focus:outline-none focus:border-gray-400"
                       />
                       <div className="flex items-center justify-between">
-                        <span className="text-xs text-gray-500">{drafting ? "Drafting an AI reply…" : "AI-drafted reply — edit before sending"}</span>
+                        <span className="text-xs text-gray-500">{drafting ? "Drafting an AI reply…" : (draftInfo || "AI-drafted reply — edit before sending")}</span>
                         <button onClick={() => draftReply(e)} disabled={drafting} className="inline-flex items-center gap-1 text-xs text-gray-600 hover:text-gray-900 disabled:opacity-40">
                           {drafting ? <Loader2 size={13} className="animate-spin" /> : <Wand2 size={13} />} Regenerate
                         </button>
