@@ -12,11 +12,16 @@ export async function POST(req: NextRequest) {
   const admin = await requireAdmin(req);
   if (admin instanceof NextResponse) return admin;
 
-  const { to, subject, message, name } = await req.json().catch(() => ({}));
+  const { to, subject, message, name, cc, bcc } = await req.json().catch(() => ({}));
   const recipient = String(to || "").trim();
   if (!EMAIL_RE.test(recipient)) return NextResponse.json({ error: "A valid recipient email is required" }, { status: 400 });
   if (!subject || !String(subject).trim()) return NextResponse.json({ error: "Subject is required" }, { status: 400 });
   if (!message || !String(message).trim()) return NextResponse.json({ error: "Message is required" }, { status: 400 });
+
+  // CC / BCC: comma or semicolon separated, keep only valid addresses.
+  const parseList = (v: unknown) => String(v || "").split(/[,;]/).map(s => s.trim()).filter(s => EMAIL_RE.test(s));
+  const ccList = parseList(cc);
+  const bccList = parseList(bcc);
 
   const first = String(name || "").trim().split(" ")[0];
   const heading = first ? `Dear ${first}` : "Hello";
@@ -27,6 +32,8 @@ export async function POST(req: NextRequest) {
     await transporter.sendMail({
       from: FROM_CONCIERGE(),
       to: recipient,
+      ...(ccList.length ? { cc: ccList } : {}),
+      ...(bccList.length ? { bcc: bccList } : {}),
       subject: String(subject).trim(),
       text: renderConciergeEmailText({ heading, bodyText: String(message).trim(), signoff: "With warm regards," }),
       html: renderConciergeEmailHTML({ eyebrow: "Voyages & Co. Concierge", heading, bodyHtml, signoff: "With warm regards," }),
