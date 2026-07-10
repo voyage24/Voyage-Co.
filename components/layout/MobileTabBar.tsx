@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Home, BedDouble, Plane, Compass, Luggage, User } from "lucide-react";
 import { haptic } from "@/lib/haptics";
 
@@ -20,11 +20,22 @@ const TABS = [
 
 export default function MobileTabBar() {
   const pathname = usePathname() || "/";
+  const router = useRouter();
   const [unread, setUnread] = useState(0);
+  const [isPending, startTransition] = useTransition();
   const [pending, setPending] = useState<string | null>(null);
 
-  // Clear the "tapped" highlight once navigation to the new route completes.
-  useEffect(() => { setPending(null); }, [pathname]);
+  // The tapped tab keeps its highlight + breathing pulse until React finishes
+  // navigating (isPending stays true through the whole load).
+  useEffect(() => { if (!isPending) setPending(null); }, [isPending]);
+
+  const go = (e: React.MouseEvent, href: string, active: boolean) => {
+    if (active) return;
+    e.preventDefault();
+    setPending(href);
+    haptic("select");
+    startTransition(() => router.push(href));
+  };
 
   // Unread notification count on the "You" tab, so it's clear where a
   // notification landed. Refetches when the app refocuses or the route changes,
@@ -55,12 +66,12 @@ export default function MobileTabBar() {
           // Highlight instantly on tap (before the page loads), then a "breathing"
           // pulse while the destination is still loading.
           const isActive = active || pending === href;
-          const loading = pending === href && !active;
+          const loading = pending === href && isPending;
           return (
             <Link
               key={href}
               href={href}
-              onClick={() => { if (!active) { setPending(href); haptic("select"); } }}
+              onClick={(e) => go(e, href, active)}
               className={`group relative flex flex-col items-center justify-center gap-0.5 flex-1 transition-transform duration-150 active:scale-90 ${isActive ? "tab-active text-gold" : "text-ink-muted"}`}
             >
               {/* Gold indicator bar that slides in for the active tab */}
