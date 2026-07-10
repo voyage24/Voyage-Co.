@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { RefreshCw, Mail, MailOpen, Reply, Archive, Trash2, Loader2, Send } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { RefreshCw, Mail, MailOpen, Reply, Archive, Trash2, Loader2, Send, Wand2 } from "lucide-react";
 
 type Email = {
   id: string; fromName: string | null; fromEmail: string; subject: string | null;
@@ -17,7 +17,25 @@ export default function InboxClient() {
   const [openId, setOpenId] = useState<string | null>(null);
   const [replyText, setReplyText] = useState("");
   const [sending, setSending] = useState(false);
+  const [drafting, setDrafting] = useState(false);
   const [note, setNote] = useState("");
+  const draftedRef = useRef<Set<string>>(new Set());
+
+  const plain = (e: Email) => e.bodyText || (e.bodyHtml || "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+
+  // Draft a contextual AI reply to the received message (editable). Falls back
+  // to the template server-side when the AI key isn't configured.
+  const draftReply = async (e: Email) => {
+    setDrafting(true);
+    try {
+      const res = await fetch("/api/admin/email/draft", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ subject: e.subject || "", name: e.fromName || "", incoming: plain(e).slice(0, 4000) }),
+      });
+      const d = await res.json().catch(() => ({}));
+      if (d.draft) setReplyText(d.draft);
+    } catch { /* leave blank */ } finally { setDrafting(false); }
+  };
 
   const apply = (d: { emails: Email[]; unread: number; configured: boolean }) => { setEmails(d.emails || []); setUnread(d.unread || 0); setConfigured(d.configured); };
 
@@ -38,6 +56,8 @@ export default function InboxClient() {
   const open = (e: Email) => {
     if (openId === e.id) { setOpenId(null); return; }
     setOpenId(e.id); setReplyText("");
+    // Auto-draft a contextual AI reply the first time this message is opened.
+    if (!draftedRef.current.has(e.id)) { draftedRef.current.add(e.id); draftReply(e); }
     if (!e.read) { setEmails(list => list.map(x => x.id === e.id ? { ...x, read: true } : x)); setUnread(u => Math.max(0, u - 1)); fetch(`/api/admin/inbox/${e.id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ read: true }) }); }
   };
 
@@ -127,9 +147,15 @@ export default function InboxClient() {
                     ) : <p className="text-sm text-gray-400">(empty message)</p>}
 
                     <div className="mt-3 space-y-2">
-                      <textarea value={replyText} onChange={ev => setReplyText(ev.target.value)} rows={4} placeholder={`Reply to ${e.fromName || e.fromEmail}…`} className="w-full text-sm px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-gray-500 resize-none" />
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-gray-500">{drafting ? "Drafting an AI reply…" : "AI-drafted reply — edit before sending"}</span>
+                        <button onClick={() => draftReply(e)} disabled={drafting} className="inline-flex items-center gap-1 text-xs text-gray-600 hover:text-gray-900 disabled:opacity-40">
+                          {drafting ? <Loader2 size={13} className="animate-spin" /> : <Wand2 size={13} />} Regenerate
+                        </button>
+                      </div>
+                      <textarea value={replyText} onChange={ev => setReplyText(ev.target.value)} rows={6} placeholder={drafting ? "Drafting…" : `Reply to ${e.fromName || e.fromEmail}…`} className="w-full text-sm px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-gray-500 resize-none" />
                       <div className="flex items-center gap-3">
-                        <button onClick={() => sendReply(e)} disabled={sending || !replyText.trim()} className="inline-flex items-center gap-1.5 text-xs px-4 py-2 rounded-md bg-gray-900 hover:bg-gray-800 text-white disabled:opacity-50">
+                        <button onClick={() => sendReply(e)} disabled={sending || drafting || !replyText.trim()} className="inline-flex items-center gap-1.5 text-xs px-4 py-2 rounded-md bg-gray-900 hover:bg-gray-800 text-white disabled:opacity-50">
                           {sending ? <Loader2 size={13} className="animate-spin" /> : <Send size={13} />} {sending ? "Sending…" : "Send reply"}
                         </button>
                         <button onClick={() => act(e.id, { read: !e.read })} className="inline-flex items-center gap-1 text-xs text-gray-500 hover:text-gray-800"><Reply size={13} className="rotate-180" /> Mark {e.read ? "unread" : "read"}</button>
