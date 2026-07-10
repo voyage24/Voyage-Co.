@@ -7,7 +7,7 @@ import AdminNotifications from "@/components/admin/AdminNotifications";
 import ThemeToggle from "@/components/ui/ThemeToggle";
 import type { AdminNotifications as AdminNotifs } from "@/lib/admin/notifications";
 
-export default function AdminTopbar({ email, notifications }: { email: string; notifications: AdminNotifs }) {
+export default function AdminTopbar({ email, notifications, role = "owner" }: { email: string; notifications: AdminNotifs; role?: string }) {
   const router = useRouter();
 
   const handleLogout = async () => {
@@ -19,7 +19,7 @@ export default function AdminTopbar({ email, notifications }: { email: string; n
   return (
     <header className="flex items-center justify-between gap-3 border-b border-black/[0.06] dark:border-white/[0.06] px-4 sm:px-6 py-3 bg-white">
       <div className="flex items-center gap-3 min-w-0 flex-1">
-        <AdminMobileNav />
+        <AdminMobileNav role={role} />
         <AdminSearch />
       </div>
       <div className="flex items-center gap-3 shrink-0">

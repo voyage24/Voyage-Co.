@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
-import { requireAdmin } from "@/lib/admin/requireAdmin";
+import { requireOwner } from "@/lib/admin/requireAdmin";
 import { logAudit } from "@/lib/admin/audit";
 import { isAdminRole } from "@/lib/admin/roles";
 
 // Edit a team member: name, role, and optionally a new password.
 export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
-  const admin = await requireAdmin(req);
+  const admin = await requireOwner(req);
   if (admin instanceof NextResponse) return admin;
 
   const target = await prisma.adminUser.findUnique({ where: { id: params.id }, select: { id: true, email: true, role: true } });
@@ -20,8 +20,14 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 
   if (role !== undefined && role !== target.role) {
     if (!isAdminRole(role)) return NextResponse.json({ error: "Invalid role" }, { status: 400 });
-    // You can't change your own role — another owner has to.
-    if (target.id === admin.id) return NextResponse.json({ error: "You can't change your own role" }, { status: 400 });
+    // You can't change your own role — another owner has to. The one exception:
+    // if no owner exists yet (bootstrap), you may promote yourself to owner.
+    if (target.id === admin.id) {
+      const owners = await prisma.adminUser.count({ where: { role: "owner" } });
+      if (!(owners === 0 && role === "owner")) {
+        return NextResponse.json({ error: "You can't change your own role" }, { status: 400 });
+      }
+    }
     // Never demote the last owner, or nobody can manage the team.
     if (target.role === "owner" && role !== "owner") {
       const owners = await prisma.adminUser.count({ where: { role: "owner" } });
@@ -44,7 +50,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 }
 
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
-  const admin = await requireAdmin(req);
+  const admin = await requireOwner(req);
   if (admin instanceof NextResponse) return admin;
   if (params.id === admin.id) return NextResponse.json({ error: "You can't remove your own account" }, { status: 400 });
   const count = await prisma.adminUser.count();

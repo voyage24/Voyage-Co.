@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Mail, Send, LayoutTemplate, Newspaper, LogOut } from "lucide-react";
+import { canAccess } from "@/lib/admin/permissions";
 
 const TABS = [
   { href: "/admin/mail", label: "Inbox", Icon: Mail },
@@ -12,10 +13,11 @@ const TABS = [
 ];
 
 // Top chrome for the dedicated "Voyages Mail" app — only mail features, no link
-// back into the rest of the admin console.
-export default function MailNav({ email }: { email: string }) {
+// back into the rest of the admin console. Tabs are trimmed to the user's role.
+export default function MailNav({ email, role = "owner" }: { email: string; role?: string }) {
   const pathname = usePathname() || "";
   const router = useRouter();
+  const tabs = TABS.filter(t => canAccess(role, t.href));
 
   const logout = async () => {
     await fetch("/api/admin/auth/logout", { method: "POST" }).catch(() => {});
@@ -31,7 +33,7 @@ export default function MailNav({ email }: { email: string }) {
         </button>
       </div>
       <nav className="flex border-t border-white/10">
-        {TABS.map(({ href, label, Icon }) => {
+        {tabs.map(({ href, label, Icon }) => {
           const active = href === "/admin/mail" ? pathname === href : pathname.startsWith(href);
           return (
             <Link key={href} href={href} className={`flex-1 flex flex-col items-center gap-0.5 py-2 text-[11px] transition-colors ${active ? "text-gold" : "text-gray-400 hover:text-gray-200"}`}>

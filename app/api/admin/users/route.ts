@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
-import { requireAdmin } from "@/lib/admin/requireAdmin";
+import { requireOwner } from "@/lib/admin/requireAdmin";
 import { isAdminRole } from "@/lib/admin/roles";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export async function GET(req: NextRequest) {
-  const admin = await requireAdmin(req);
+  const admin = await requireOwner(req);
   if (admin instanceof NextResponse) return admin;
   const users = await prisma.adminUser.findMany({
     orderBy: { createdAt: "asc" },
@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const admin = await requireAdmin(req);
+  const admin = await requireOwner(req);
   if (admin instanceof NextResponse) return admin;
   const { email, password, name, role } = await req.json().catch(() => ({}));
   if (!email || !EMAIL_RE.test(email)) return NextResponse.json({ error: "Valid email required" }, { status: 400 });

@@ -29,5 +29,9 @@ export function middleware(req: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  return NextResponse.next();
+  // Forward the requested path so server layouts can apply role-based access
+  // (layouts don't otherwise know which page is rendering).
+  const headers = new Headers(req.headers);
+  headers.set("x-admin-path", pathname);
+  return NextResponse.next({ request: { headers } });
 }

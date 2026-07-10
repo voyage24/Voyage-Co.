@@ -4,11 +4,12 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
-import { NAV_SECTIONS } from "@/components/admin/AdminSidebar";
+import { sectionsForRole } from "@/components/admin/AdminSidebar";
 
-export default function AdminMobileNav() {
+export default function AdminMobileNav({ role = "owner" }: { role?: string }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const sections = sectionsForRole(role);
   let navIndex = 0; // flat counter for staggering the link entrance
 
   return (
@@ -33,7 +34,7 @@ export default function AdminMobileNav() {
               </button>
             </div>
             <div className="space-y-5">
-              {NAV_SECTIONS.map((section, i) => (
+              {sections.map((section, i) => (
                 <div key={section.title ?? i}>
                   {section.title && (
                     <p className="px-3 mb-1.5 text-[10px] font-semibold tracking-[0.16em] uppercase text-gray-600">{section.title}</p>

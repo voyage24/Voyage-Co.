@@ -8,6 +8,7 @@ import {
   Quote, Award, Image as ImageIcon, Store, FolderOpen, Mail, Gift, Tag, Bell,
   Palette, UserCog, Settings, LayoutTemplate, LayoutGrid, History, Send, type LucideIcon,
 } from "lucide-react";
+import { canAccess } from "@/lib/admin/permissions";
 
 // Grouped ("indexed") navigation so the growing admin stays organised.
 const SECTION_DEFS: { title: string | null; items: { href: string; label: string; icon: LucideIcon }[] }[] = [
@@ -90,12 +91,20 @@ export const NAV_SECTIONS = SECTION_DEFS.map(s =>
 // Flat list kept for any consumer that just needs every link.
 export const NAV_ITEMS = NAV_SECTIONS.flatMap(s => s.items);
 
+// Sections trimmed to what a role may open (empty sections drop out entirely).
+export function sectionsForRole(role: string) {
+  return NAV_SECTIONS
+    .map(s => ({ ...s, items: s.items.filter(i => canAccess(role, i.href)) }))
+    .filter(s => s.items.length > 0);
+}
+
 function isActive(pathname: string, href: string) {
   return href === "/admin" ? pathname === "/admin" : pathname.startsWith(href);
 }
 
-export default function AdminSidebar() {
+export default function AdminSidebar({ role = "owner" }: { role?: string }) {
   const pathname = usePathname();
+  const sections = sectionsForRole(role);
   let navIndex = 0; // flat counter for staggering the link entrance animation
 
   return (
@@ -105,7 +114,7 @@ export default function AdminSidebar() {
         <p className="text-[10px] tracking-[0.3em] uppercase text-gray-400 mt-1 font-semibold">Admin</p>
       </div>
       <div className="flex-1 overflow-y-auto p-3 space-y-5">
-        {NAV_SECTIONS.map((section, i) => (
+        {sections.map((section, i) => (
           <div key={section.title ?? i}>
             {section.title && (
               <p className="px-3 mb-1.5 text-[10px] font-semibold tracking-[0.16em] uppercase text-gray-600">{section.title}</p>

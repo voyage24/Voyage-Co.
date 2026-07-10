@@ -1,7 +1,8 @@
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { getSessionUser, SESSION_COOKIE_NAME } from "@/lib/admin/session";
+import { canAccess } from "@/lib/admin/permissions";
 import MailNav from "@/components/admin/MailNav";
 
 // Dedicated "Voyages Mail" app — mail features only, its own installable PWA,
@@ -16,9 +17,13 @@ export default async function MailLayout({ children }: { children: React.ReactNo
   const user = await getSessionUser(cookies().get(SESSION_COOKIE_NAME)?.value);
   if (!user) redirect("/admin/login?next=/admin/mail");
 
+  // Role-based access within the mail app (e.g. newsletter is manager+).
+  const path = headers().get("x-admin-path");
+  if (path && path !== "/admin/mail" && !canAccess(user.role, path)) redirect("/admin/mail");
+
   return (
     <div className="admin-root min-h-screen bg-[#f6f6f3]">
-      <MailNav email={user.email} />
+      <MailNav email={user.email} role={user.role} />
       <main className="max-w-3xl mx-auto p-4 sm:p-6">{children}</main>
     </div>
   );
