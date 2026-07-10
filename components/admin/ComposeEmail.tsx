@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Send, Check } from "lucide-react";
+import { Send, Check, Wand2 } from "lucide-react";
+import { draftFromSubject } from "@/lib/email/compose-drafts";
 
 // Compose and send a branded concierge email to any recipient — in-house via
 // SMTP, no third-party mail app.
@@ -12,6 +13,11 @@ export default function ComposeEmail() {
   const [sent, setSent] = useState(false);
 
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setForm(p => ({ ...p, [k]: e.target.value }));
+
+  // Draft a professional body from the subject. Auto-fills when the subject is
+  // entered and the message is still empty; the button regenerates on demand.
+  const draft = () => setForm(p => ({ ...p, message: draftFromSubject(p.subject) }));
+  const autoDraftOnBlur = () => { if (form.subject.trim() && !form.message.trim()) draft(); };
 
   const send = async () => {
     setBusy(true); setMsg(""); setSent(false);
@@ -39,11 +45,16 @@ export default function ComposeEmail() {
       </div>
       <div>
         <label className="text-xs text-gray-500 block mb-1">Subject *</label>
-        <input value={form.subject} onChange={set("subject")} placeholder="Subject" className={input} />
+        <input value={form.subject} onChange={set("subject")} onBlur={autoDraftOnBlur} placeholder="Subject" className={input} />
       </div>
       <div>
-        <label className="text-xs text-gray-500 block mb-1">Message *</label>
-        <textarea value={form.message} onChange={set("message")} rows={9} placeholder="Write your message…" className={`${input} resize-none`} />
+        <div className="flex items-center justify-between mb-1">
+          <label className="text-xs text-gray-500">Message *</label>
+          <button type="button" onClick={draft} disabled={!form.subject.trim()} className="inline-flex items-center gap-1 text-xs text-gray-600 hover:text-gray-900 disabled:opacity-40">
+            <Wand2 size={13} /> Draft from subject
+          </button>
+        </div>
+        <textarea value={form.message} onChange={set("message")} rows={9} placeholder="Enter a subject and the draft appears here — edit as needed…" className={`${input} resize-none`} />
       </div>
       <div className="flex items-center gap-3">
         <button
