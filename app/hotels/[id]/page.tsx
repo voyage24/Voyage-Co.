@@ -219,12 +219,15 @@ export default async function HotelDetailPage({ params }: { params: { id: string
           <PropertyMap lat={coords[0]} lng={coords[1]} name={hotel.name} />
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4 items-start">
             <DestinationEssentials country={hotel.country} city={hotel.city} />
-            <PackingList lat={coords[0]} lng={coords[1]} destinationKey={hotel.id} />
+            <div className="space-y-4">
+              <PackingList lat={coords[0]} lng={coords[1]} destinationKey={hotel.id} />
+              <Phrasebook country={hotel.country} />
+            </div>
           </div>
         </section>
       )}
 
-      <div className="mt-4"><Phrasebook country={hotel.country} /></div>
+      {!coords && <div className="mt-4"><Phrasebook country={hotel.country} /></div>}
 
       <FaqAndEntry faqs={faqs} entryRequirements={hotel.entryRequirements} />
 
