@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Mail, Send, MailCheck, LayoutTemplate, Newspaper, LogOut } from "lucide-react";
+import { Mail, Send, MailCheck, Archive, LayoutTemplate, Newspaper, LogOut } from "lucide-react";
 import { canAccess } from "@/lib/admin/permissions";
 
 const TABS = [
   { href: "/admin/mail", label: "Inbox", Icon: Mail },
   { href: "/admin/mail/compose", label: "Compose", Icon: Send },
   { href: "/admin/mail/sent", label: "Sent", Icon: MailCheck },
+  { href: "/admin/mail/archive", label: "Archive", Icon: Archive },
   { href: "/admin/mail/templates", label: "Templates", Icon: LayoutTemplate },
   { href: "/admin/mail/newsletter", label: "Newsletter", Icon: Newspaper },
 ];
