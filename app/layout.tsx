@@ -14,6 +14,7 @@ import CookieConsent from "@/components/layout/CookieConsent";
 import Haptics from "@/components/ui/Haptics";
 import PullToRefresh from "@/components/ui/PullToRefresh";
 import BadgeSync from "@/components/ui/BadgeSync";
+import FaviconShimmer from "@/components/ui/FaviconShimmer";
 import ServiceWorkerRegister from "@/components/layout/ServiceWorkerRegister";
 import InstallPrompt from "@/components/ui/InstallPrompt";
 import DevBanner from "@/components/layout/DevBanner";
@@ -92,6 +93,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           </ContentProvider>
         </SettingsProvider>
         <Haptics />
+        <FaviconShimmer />
         <BadgeSync />
         <PullToRefresh />
         <ServiceWorkerRegister />
