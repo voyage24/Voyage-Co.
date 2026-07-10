@@ -70,9 +70,35 @@ export default function InboxClient() {
 
       {!configured && (
         <div className="mb-4 rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-          Inbox reading isn&apos;t configured yet. Set the IMAP credentials in Vercel (see below) to pull replies into the site.
+          Inbox reading isn&apos;t configured yet. Add the IMAP credentials in Vercel (see setup help below) to pull replies into the site.
         </div>
       )}
+
+      <details className="mb-4 rounded-md border border-gray-200 bg-gray-50 text-sm">
+        <summary className="cursor-pointer px-4 py-2.5 text-gray-700 select-none">IMAP setup help (GoDaddy Professional Email)</summary>
+        <div className="px-4 pb-4 pt-1 text-gray-600 space-y-3 leading-relaxed">
+          <p>The site reads replies over IMAP. GoDaddy controls whether IMAP is allowed, so most setup happens in your GoDaddy account, not here.</p>
+          <div>
+            <p className="font-medium text-gray-800">1. Vercel → Settings → Environment Variables</p>
+            <ul className="list-disc ml-5 mt-1 space-y-0.5">
+              <li><code>IMAP_HOST</code> = <code>imap.titan.email</code> (GoDaddy Professional Email is Titan-powered)</li>
+              <li><code>IMAP_PORT</code> = <code>993</code></li>
+              <li><code>IMAP_USER</code> = your full email address</li>
+              <li><code>IMAP_PASS</code> = the password you use at app.titan.email (not an SMTP/relay key)</li>
+            </ul>
+            <p className="mt-1 text-gray-500">Then redeploy. No leading/trailing spaces.</p>
+          </div>
+          <div>
+            <p className="font-medium text-gray-800">2. Enable IMAP on the mailbox</p>
+            <p className="mt-1">GoDaddy → <span className="text-gray-800">Email &amp; Office</span> → Manage your mailbox → <span className="text-gray-800">IMAP / POP access</span> → turn it <span className="text-gray-800">On</span>. GoDaddy often ships this <em>off</em> — which is why webmail works but IMAP is rejected. That screen also shows the exact incoming server/port to use above.</p>
+          </div>
+          <div>
+            <p className="font-medium text-gray-800">3. If it&apos;s still rejected</p>
+            <p className="mt-1">Message GoDaddy support: &ldquo;Please enable IMAP access for this mailbox and confirm the IMAP host/port. Also confirm IMAP logins from cloud/datacenter IPs are allowed — my app connects from a server.&rdquo;</p>
+          </div>
+          <p className="text-gray-500">Use &ldquo;Check for new mail&rdquo; above — the error line tells you the exact reason (host / login / connection).</p>
+        </div>
+      </details>
 
       {emails.length === 0 ? (
         <p className="text-sm text-gray-400 border border-dashed border-gray-200 rounded-md p-8 text-center">No messages yet. Tap &ldquo;Check for new mail&rdquo; to pull replies from your mailbox.</p>
