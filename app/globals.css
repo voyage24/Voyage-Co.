@@ -399,12 +399,12 @@ html.dark .vc-live-map .leaflet-control-attribution { background: rgba(10,10,12,
 .tab-indicator { transition: opacity 0.25s ease, transform 0.25s ease; opacity: 0; transform: scaleX(0.4); }
 .tab-active .tab-indicator { opacity: 1; transform: scaleX(1); }
 
-/* Bold "breathing" while a tapped tab's page is loading. */
+/* Continuous "breathing" on the current tab — a persistent "you are here" cue. */
 @keyframes tabBreathe {
-  0%, 100% { transform: translateY(-3px) scale(1.1); opacity: 0.55; }
-  50%      { transform: translateY(-3px) scale(1.85); opacity: 1; filter: drop-shadow(0 0 6px rgba(193,161,74,0.9)); }
+  0%, 100% { transform: translateY(-2px) scale(1.12); opacity: 0.8; }
+  50%      { transform: translateY(-2px) scale(1.45); opacity: 1; filter: drop-shadow(0 0 5px rgba(193,161,74,0.85)); }
 }
-.tab-breathe { animation: tabBreathe 0.6s ease-in-out infinite; }
+.tab-breathe { animation: tabBreathe 1.5s ease-in-out infinite; }
 @keyframes tabRing {
   0%   { transform: scale(0.5); opacity: 0.85; }
   100% { transform: scale(3.2); opacity: 0; }
