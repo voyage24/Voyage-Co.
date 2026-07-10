@@ -13,6 +13,7 @@ import ShareButton from "@/components/ui/ShareButton";
 import DirectionsButton from "@/components/ui/DirectionsButton";
 import JsonLd from "@/components/seo/JsonLd";
 import FaqAndEntry from "@/components/products/FaqAndEntry";
+import DestinationCompanion from "@/components/products/DestinationCompanion";
 import CompareButton from "@/components/compare/CompareButton";
 import RecordView from "@/components/products/RecordView";
 import AddToItineraryButton from "@/components/itinerary/AddToItineraryButton";
@@ -140,6 +141,11 @@ export default async function ExperienceDetailPage({ params }: { params: { id: s
           </div>
         </div>
       </div>
+
+      <DestinationCompanion
+        coords={exp.lat != null && exp.lng != null ? [exp.lat, exp.lng] as [number, number] : null}
+        country={exp.country} city={exp.location} name={exp.title} destKey={exp.id}
+      />
 
       <FaqAndEntry faqs={faqs} entryRequirements={exp.entryRequirements} />
 

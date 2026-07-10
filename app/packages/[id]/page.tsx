@@ -12,6 +12,9 @@ import SaveButton from "@/components/ui/SaveButton";
 import ShareButton from "@/components/ui/ShareButton";
 import JsonLd from "@/components/seo/JsonLd";
 import FaqAndEntry from "@/components/products/FaqAndEntry";
+import DestinationCompanion from "@/components/products/DestinationCompanion";
+import { getPackageDestinationCoords } from "@/lib/package-destinations";
+import { countryForPlace } from "@/lib/place-country";
 import CompareButton from "@/components/compare/CompareButton";
 import RecordView from "@/components/products/RecordView";
 import AddToItineraryButton from "@/components/itinerary/AddToItineraryButton";
@@ -193,6 +196,15 @@ export default async function PackageDetailPage({ params }: { params: { id: stri
           </div>
         </div>
       </div>
+
+      {pkg.destinations[0] && (
+        <DestinationCompanion
+          coords={getPackageDestinationCoords(pkg.destinations[0])}
+          country={countryForPlace(pkg.destinations[0])}
+          city={pkg.destinations[0]} name={pkg.destinations[0]} destKey={pkg.id}
+          heading={`Your first stop · ${pkg.destinations[0]}`}
+        />
+      )}
 
       <FaqAndEntry faqs={faqs} entryRequirements={pkg.entryRequirements} />
 

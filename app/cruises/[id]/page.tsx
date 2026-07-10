@@ -12,6 +12,9 @@ import SaveButton from "@/components/ui/SaveButton";
 import ShareButton from "@/components/ui/ShareButton";
 import JsonLd from "@/components/seo/JsonLd";
 import FaqAndEntry from "@/components/products/FaqAndEntry";
+import DestinationCompanion from "@/components/products/DestinationCompanion";
+import { PORT_COORDS } from "@/lib/cruise-ports";
+import { countryForPlace } from "@/lib/place-country";
 import CompareButton from "@/components/compare/CompareButton";
 import RecordView from "@/components/products/RecordView";
 import AddToItineraryButton from "@/components/itinerary/AddToItineraryButton";
@@ -216,6 +219,13 @@ export default async function CruiseDetailPage({ params }: { params: { id: strin
           </div>
         </div>
       </div>
+
+      <DestinationCompanion
+        coords={PORT_COORDS[cruise.departurePort] ?? null}
+        country={countryForPlace(cruise.departurePort)}
+        city={cruise.departurePort} name={cruise.departurePort} destKey={cruise.id}
+        heading="Departure port"
+      />
 
       <FaqAndEntry faqs={faqs} entryRequirements={cruise.entryRequirements} />
 
