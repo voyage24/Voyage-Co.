@@ -4,14 +4,6 @@ import { getSessionUser, SESSION_COOKIE_NAME } from "@/lib/admin/session";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import AdminTopbar from "@/components/admin/AdminTopbar";
 import { getAdminNotifications } from "@/lib/admin/notifications";
-import type { Metadata } from "next";
-
-// Makes the admin installable as its own "Voyages Mail" home-screen app
-// (separate from the customer site app), opening straight to the inbox.
-export const metadata: Metadata = {
-  manifest: "/mail.webmanifest",
-  appleWebApp: { capable: true, title: "Voyages Mail", statusBarStyle: "black-translucent" },
-};
 
 export default async function AdminDashboardLayout({ children }: { children: React.ReactNode }) {
   const token = cookies().get(SESSION_COOKIE_NAME)?.value;

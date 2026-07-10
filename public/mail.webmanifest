@@ -2,8 +2,8 @@
   "name": "Voyages Mail",
   "short_name": "Voyages Mail",
   "description": "Voyages & Co. — inbox, compose and replies.",
-  "start_url": "/admin/inbox",
-  "scope": "/admin",
+  "start_url": "/admin/mail",
+  "scope": "/admin/mail",
   "display": "standalone",
   "background_color": "#0b131d",
   "theme_color": "#1c0a0d",
@@ -12,7 +12,7 @@
     { "src": "/logo-white.png", "sizes": "any", "type": "image/png", "purpose": "maskable" }
   ],
   "shortcuts": [
-    { "name": "Inbox", "short_name": "Inbox", "url": "/admin/inbox" },
-    { "name": "Compose", "short_name": "Compose", "url": "/admin/compose" }
+    { "name": "Inbox", "short_name": "Inbox", "url": "/admin/mail" },
+    { "name": "Compose", "short_name": "Compose", "url": "/admin/mail/compose" }
   ]
 }
