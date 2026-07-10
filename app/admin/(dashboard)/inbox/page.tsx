@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { Smartphone } from "lucide-react";
 import InboxClient from "@/components/admin/InboxClient";
+import { getInboxList } from "@/lib/admin/inbox";
 
 export const dynamic = "force-dynamic";
 
-export default function AdminInboxPage() {
+export default async function AdminInboxPage() {
+  const initial = await getInboxList();
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
@@ -16,7 +18,7 @@ export default function AdminInboxPage() {
           <Smartphone size={14} /> Open Mail app
         </Link>
       </div>
-      <InboxClient />
+      <InboxClient initial={initial} />
     </div>
   );
 }

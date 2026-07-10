@@ -3,17 +3,22 @@
 import { useEffect, useRef, useState } from "react";
 import { RefreshCw, Mail, MailOpen, Reply, Archive, Trash2, Loader2, Send, Wand2 } from "lucide-react";
 import { reSubject } from "@/lib/email/compose-drafts";
+import { haptic } from "@/lib/haptics";
 
 type Email = {
   id: string; fromName: string | null; fromEmail: string; subject: string | null;
   bodyText: string | null; bodyHtml: string | null; receivedAt: string; read: boolean;
 };
+type InboxData = { emails: Email[]; unread: number; configured: boolean };
 
-export default function InboxClient() {
-  const [emails, setEmails] = useState<Email[]>([]);
-  const [unread, setUnread] = useState(0);
-  const [configured, setConfigured] = useState(true);
-  const [loading, setLoading] = useState(true);
+// `initial` is the server-rendered snapshot — when provided the inbox paints
+// immediately instead of fetching in a second round-trip after page load.
+export default function InboxClient({ initial }: { initial?: InboxData }) {
+  const [emails, setEmails] = useState<Email[]>(initial?.emails ?? []);
+  const [unread, setUnread] = useState(initial?.unread ?? 0);
+  const [configured, setConfigured] = useState(initial?.configured ?? true);
+  const [loading, setLoading] = useState(!initial);
+  const [sent, setSent] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [openId, setOpenId] = useState<string | null>(null);
   const [replyText, setReplyText] = useState("");
@@ -47,8 +52,17 @@ export default function InboxClient() {
   const apply = (d: { emails: Email[]; unread: number; configured: boolean }) => { setEmails(d.emails || []); setUnread(d.unread || 0); setConfigured(d.configured); };
 
   const load = () => fetch("/api/admin/inbox").then(r => r.json()).then(apply).catch(() => {}).finally(() => setLoading(false));
+  // With a server snapshot the initial fetch is skipped — the list is already painted.
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => { load(); }, []);
+  useEffect(() => { if (!initial) load(); }, []);
+
+  // App-icon badge (Badging API) for the installed Voyages Mail app — mirrors
+  // the unread count, cleared when everything is read.
+  useEffect(() => {
+    const nav = navigator as Navigator & { setAppBadge?: (n?: number) => Promise<void>; clearAppBadge?: () => Promise<void> };
+    if (!nav.setAppBadge) return;
+    try { if (unread > 0) nav.setAppBadge(unread); else nav.clearAppBadge?.(); } catch { /* unsupported */ }
+  }, [unread]);
 
   const refresh = async () => {
     setRefreshing(true); setNote("");
@@ -79,7 +93,11 @@ export default function InboxClient() {
       body: JSON.stringify({ to: e.fromEmail, name: e.fromName || "", subject: reSubject(e.subject, "Your message"), message: replyText, cc: replyCc, bcc: replyBcc }),
     });
     setSending(false);
-    if (res.ok) { setReplyText(""); setOpenId(null); act(e.id, { read: true }); }
+    if (res.ok) {
+      setReplyText(""); setOpenId(null); act(e.id, { read: true });
+      haptic("success");
+      setSent(true); setTimeout(() => setSent(false), 3000);
+    }
     else { const d = await res.json().catch(() => ({})); alert(d.error || "Could not send."); }
   };
 
@@ -92,6 +110,7 @@ export default function InboxClient() {
           {refreshing ? <Loader2 size={15} className="animate-spin" /> : <RefreshCw size={15} />} {refreshing ? "Checking…" : "Check for new mail"}
         </button>
         {unread > 0 && <span className="text-xs bg-gold/20 text-gray-800 rounded-full px-2.5 py-1">{unread} unread</span>}
+        {sent && <span className="inline-flex items-center gap-1 text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-full px-2.5 py-1">✓ Mail sent</span>}
         {note && <span className="text-xs text-gray-500">{note}</span>}
       </div>
 
