@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { fetchInbox, imapConfigured } from "@/lib/email/imap";
 
 export const maxDuration = 60;
 export const dynamic = "force-dynamic";
@@ -20,5 +21,9 @@ export async function GET(req: NextRequest) {
     jobs.map(j => fetch(`${base}/api/cron/${j}`, { headers, cache: "no-store" }).then(r => r.json()).catch(() => ({ error: j }))),
   );
 
-  return NextResponse.json({ ok: true, jobs: results.map((r, i) => ({ job: jobs[i], ...(r.status === "fulfilled" ? r.value : { error: "failed" }) })) });
+  // Pull new mailbox replies into the site inbox (safety-net; the admin can also
+  // refresh on demand). No-op when IMAP isn't configured.
+  const inbox = imapConfigured() ? await fetchInbox().catch(() => ({ ok: false, new: 0 })) : { ok: false, new: 0 };
+
+  return NextResponse.json({ ok: true, inbox, jobs: results.map((r, i) => ({ job: jobs[i], ...(r.status === "fulfilled" ? r.value : { error: "failed" }) })) });
 }

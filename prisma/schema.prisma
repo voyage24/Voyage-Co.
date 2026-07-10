@@ -75,6 +75,25 @@ model Customer {
   @@index([resetTokenHash])
 }
 
+model InboundEmail {
+  id         String   @id @default(cuid())
+  messageId  String   @unique          // RFC Message-ID, for de-duplication
+  uid        Int?                       // IMAP UID within the mailbox
+  fromName   String?
+  fromEmail  String
+  toEmail    String?
+  subject    String?
+  bodyText   String?  @db.Text
+  bodyHtml   String?  @db.Text
+  receivedAt DateTime
+  read       Boolean  @default(false)
+  archived   Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  @@index([receivedAt])
+  @@index([read])
+}
+
 model MemberNotification {
   id         String   @id @default(cuid())
   customerId String
