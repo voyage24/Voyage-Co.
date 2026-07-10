@@ -1,6 +1,7 @@
 import { ImapFlow } from "imapflow";
 import { simpleParser } from "mailparser";
 import { prisma } from "@/lib/prisma";
+import { sendPushToAdmins } from "@/lib/push";
 
 // Fetches recent messages from the mailbox over IMAP and stores any new ones in
 // InboundEmail (deduped by Message-ID). Credentials default to the SMTP login
@@ -64,6 +65,17 @@ export async function fetchInbox(limit = 40): Promise<{ ok: boolean; fetched: nu
       }
     } finally {
       lock.release();
+    }
+    // Alert admin devices (notification + icon badge) when new mail arrived —
+    // this is how the closed app finds out. Best-effort; never fails the fetch.
+    if (added > 0) {
+      const unread = await prisma.inboundEmail.count({ where: { archived: false, read: false } }).catch(() => added);
+      await sendPushToAdmins({
+        title: added === 1 ? "New mail" : `${added} new messages`,
+        body: added === 1 ? "A new message arrived in Voyages Mail." : "New messages arrived in Voyages Mail.",
+        url: "/admin/mail",
+        count: unread,
+      }).catch(() => {});
     }
     return { ok: true, fetched, new: added };
   } catch (err) {

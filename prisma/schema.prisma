@@ -446,9 +446,11 @@ model PushSubscription {
   p256dh     String
   auth       String
   customerId String?  // set when the subscriber is a signed-in member
+  adminEmail String?  // set when the subscriber is an admin (new-mail alerts)
   createdAt  DateTime @default(now())
 
   @@index([customerId])
+  @@index([adminEmail])
 }
 
 model Offer {

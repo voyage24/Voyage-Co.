@@ -63,6 +63,7 @@ const API_OVERRIDES: { prefix: string; min: AdminRole }[] = [
   { prefix: "/api/admin/media", min: "staff" },
   { prefix: "/api/admin/page-content", min: "staff" },
   { prefix: "/api/admin/page-list", min: "staff" },
+  { prefix: "/api/admin/push/subscribe", min: "trainee" }, // own new-mail alerts
   { prefix: "/api/admin/push", min: "manager" },           // broadcast to all
   { prefix: "/api/admin/export", min: "manager" },         // CSV data export
   { prefix: "/api/admin/fix-mojibake", min: "owner" },     // maintenance

@@ -12,8 +12,17 @@ export async function POST(req: NextRequest) {
   const admin = await requireAdmin(req);
   if (admin instanceof NextResponse) return admin;
 
-  const { to, subject, message, name, cc, bcc } = await req.json().catch(() => ({}));
+  const { to, subject, message, name, cc, bcc, from } = await req.json().catch(() => ({}));
   const recipient = String(to || "").trim();
+
+  // Optional reply-from alias: replies go out from the address the customer
+  // wrote to (e.g. concierge@) — but only ever an address on our own domain,
+  // so this can't be used to spoof arbitrary senders.
+  const ownDomain = (process.env.SMTP_USER || "").split("@")[1]?.toLowerCase();
+  const fromAddr = String(from || "").trim().toLowerCase();
+  const sender = ownDomain && EMAIL_RE.test(fromAddr) && fromAddr.endsWith(`@${ownDomain}`)
+    ? `"Voyages & Co. Concierge" <${fromAddr}>`
+    : FROM_CONCIERGE();
   if (!EMAIL_RE.test(recipient)) return NextResponse.json({ error: "A valid recipient email is required" }, { status: 400 });
   if (!subject || !String(subject).trim()) return NextResponse.json({ error: "Subject is required" }, { status: 400 });
   if (!message || !String(message).trim()) return NextResponse.json({ error: "Message is required" }, { status: 400 });
@@ -30,7 +39,7 @@ export async function POST(req: NextRequest) {
   try {
     const transporter = createTransport();
     await transporter.sendMail({
-      from: FROM_CONCIERGE(),
+      from: sender,
       to: recipient,
       ...(ccList.length ? { cc: ccList } : {}),
       ...(bccList.length ? { bcc: bccList } : {}),

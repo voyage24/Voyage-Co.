@@ -39,6 +39,14 @@ export async function sendPushToAll(payload: Payload) {
   return { sent, configured: true, total: subs.length };
 }
 
+// Sends a push to every admin device that enabled new-mail alerts.
+export async function sendPushToAdmins(payload: Payload) {
+  if (!configure()) return { sent: 0, configured: false };
+  const subs = await prisma.pushSubscription.findMany({ where: { adminEmail: { not: null } } });
+  const sent = await deliver(subs, payload);
+  return { sent, configured: true };
+}
+
 // Sends a push to one member's devices (e.g. a booking status change). Fails
 // silently — a missing subscription or missing VAPID config is never an error.
 export async function sendPushToCustomer(customerId: string, payload: Payload) {

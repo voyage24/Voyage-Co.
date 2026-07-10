@@ -6,9 +6,13 @@ import { reSubject } from "@/lib/email/compose-drafts";
 import { haptic } from "@/lib/haptics";
 
 type Email = {
-  id: string; fromName: string | null; fromEmail: string; subject: string | null;
+  id: string; fromName: string | null; fromEmail: string; toEmail?: string | null; subject: string | null;
   bodyText: string | null; bodyHtml: string | null; receivedAt: string; read: boolean;
 };
+
+// The stored To can be "Name <addr>" — pull out just the address, so the reply
+// can go out from the same mailbox/alias the customer wrote to.
+const addrOf = (s: string | null | undefined) => (s || "").match(/[\w.+-]+@[\w.-]+\.\w+/)?.[0] || "";
 type InboxData = { emails: Email[]; unread: number; configured: boolean };
 
 // `initial` is the server-rendered snapshot — when provided the inbox paints
@@ -90,7 +94,7 @@ export default function InboxClient({ initial }: { initial?: InboxData }) {
     setSending(true);
     const res = await fetch("/api/admin/email/send", {
       method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ to: e.fromEmail, name: e.fromName || "", subject: reSubject(e.subject, "Your message"), message: replyText, cc: replyCc, bcc: replyBcc }),
+      body: JSON.stringify({ to: e.fromEmail, name: e.fromName || "", subject: reSubject(e.subject, "Your message"), message: replyText, cc: replyCc, bcc: replyBcc, from: addrOf(e.toEmail) }),
     });
     setSending(false);
     if (res.ok) {
