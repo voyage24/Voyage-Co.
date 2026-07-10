@@ -94,6 +94,19 @@ model InboundEmail {
   @@index([read])
 }
 
+model SentEmail {
+  id        String   @id @default(cuid())
+  toEmail   String
+  cc        String?
+  bcc       String?
+  fromEmail String
+  subject   String
+  bodyText  String   @db.Text
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}
+
 model MemberNotification {
   id         String   @id @default(cuid())
   customerId String

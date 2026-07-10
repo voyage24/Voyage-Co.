@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/admin/requireAdmin";
 import { logAudit } from "@/lib/admin/audit";
 import { createTransport, FROM_CONCIERGE } from "@/lib/email/transport";
@@ -51,6 +52,19 @@ export async function POST(req: NextRequest) {
     console.error("Compose email failed:", err);
     return NextResponse.json({ error: "Could not send — check email settings." }, { status: 500 });
   }
+
+  // Record in the mail app's Sent folder (SMTP sends don't reach the mailbox's
+  // own Sent folder, so the site keeps its own).
+  await prisma.sentEmail.create({
+    data: {
+      toEmail: recipient,
+      cc: ccList.length ? ccList.join(", ") : null,
+      bcc: bccList.length ? bccList.join(", ") : null,
+      fromEmail: sender.match(/<([^>]+)>/)?.[1] || sender,
+      subject: String(subject).trim(),
+      bodyText: String(message).trim(),
+    },
+  }).catch(() => {});
 
   await logAudit(admin.email, "send", "email", recipient, String(subject).trim());
   return NextResponse.json({ ok: true });

@@ -8,11 +8,8 @@ import { haptic } from "@/lib/haptics";
 type Email = {
   id: string; fromName: string | null; fromEmail: string; toEmail?: string | null; subject: string | null;
   bodyText: string | null; bodyHtml: string | null; receivedAt: string; read: boolean;
+  replyTo?: string; replyName?: string | null; replyFrom?: string;
 };
-
-// The stored To can be "Name <addr>" — pull out just the address, so the reply
-// can go out from the same mailbox/alias the customer wrote to.
-const addrOf = (s: string | null | undefined) => (s || "").match(/[\w.+-]+@[\w.-]+\.\w+/)?.[0] || "";
 type InboxData = { emails: Email[]; unread: number; configured: boolean };
 
 // `initial` is the server-rendered snapshot — when provided the inbox paints
@@ -22,7 +19,8 @@ export default function InboxClient({ initial }: { initial?: InboxData }) {
   const [unread, setUnread] = useState(initial?.unread ?? 0);
   const [configured, setConfigured] = useState(initial?.configured ?? true);
   const [loading, setLoading] = useState(!initial);
-  const [sent, setSent] = useState(false);
+  const [sentInfo, setSentInfo] = useState<{ id: string; to: string } | null>(null);
+  const [replyTo, setReplyTo] = useState("");
   const [refreshing, setRefreshing] = useState(false);
   const [openId, setOpenId] = useState<string | null>(null);
   const [replyText, setReplyText] = useState("");
@@ -45,7 +43,7 @@ export default function InboxClient({ initial }: { initial?: InboxData }) {
     try {
       const res = await fetch("/api/admin/email/draft", {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ subject: e.subject || "", name: e.fromName || "", context: replyContext, incoming: plain(e).slice(0, 4000) }),
+        body: JSON.stringify({ subject: e.subject || "", name: e.replyName || "", context: replyContext, incoming: plain(e).slice(0, 4000) }),
       });
       const d = await res.json().catch(() => ({}));
       if (d.draft) setReplyText(d.draft);
@@ -81,6 +79,7 @@ export default function InboxClient({ initial }: { initial?: InboxData }) {
   const open = (e: Email) => {
     if (openId === e.id) { setOpenId(null); return; }
     setOpenId(e.id); setReplyText(""); setReplyContext(""); setReplyCc(""); setReplyBcc(""); setShowCc(false);
+    setReplyTo(e.replyTo || e.fromEmail); setSentInfo(null);
     // Auto-draft a contextual AI reply the first time this message is opened.
     if (!draftedRef.current.has(e.id)) { draftedRef.current.add(e.id); draftReply(e); }
     if (!e.read) { setEmails(list => list.map(x => x.id === e.id ? { ...x, read: true } : x)); setUnread(u => Math.max(0, u - 1)); fetch(`/api/admin/inbox/${e.id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ read: true }) }); }
@@ -90,17 +89,19 @@ export default function InboxClient({ initial }: { initial?: InboxData }) {
   const del = async (id: string) => { if (!confirm("Delete this message from the site inbox?")) return; await fetch(`/api/admin/inbox/${id}`, { method: "DELETE" }); load(); };
 
   const sendReply = async (e: Email) => {
-    if (!replyText.trim()) return;
+    if (!replyText.trim() || !replyTo.trim()) return;
     setSending(true);
     const res = await fetch("/api/admin/email/send", {
       method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ to: e.fromEmail, name: e.fromName || "", subject: reSubject(e.subject, "Your message"), message: replyText, cc: replyCc, bcc: replyBcc, from: addrOf(e.toEmail) }),
+      body: JSON.stringify({ to: replyTo.trim(), name: e.replyName || "", subject: reSubject(e.subject, "Your message"), message: replyText, cc: replyCc, bcc: replyBcc, from: e.replyFrom || "" }),
     });
     setSending(false);
     if (res.ok) {
-      setReplyText(""); setOpenId(null); act(e.id, { read: true });
+      // Confirm inline, right where the reply was written — the row stays put.
+      setSentInfo({ id: e.id, to: replyTo.trim() });
+      setReplyText("");
+      act(e.id, { read: true });
       haptic("success");
-      setSent(true); setTimeout(() => setSent(false), 3000);
     }
     else { const d = await res.json().catch(() => ({})); alert(d.error || "Could not send."); }
   };
@@ -114,7 +115,6 @@ export default function InboxClient({ initial }: { initial?: InboxData }) {
           {refreshing ? <Loader2 size={15} className="animate-spin" /> : <RefreshCw size={15} />} {refreshing ? "Checking…" : "Check for new mail"}
         </button>
         {unread > 0 && <span className="text-xs bg-gold/20 text-gray-800 rounded-full px-2.5 py-1">{unread} unread</span>}
-        {sent && <span className="inline-flex items-center gap-1 text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-full px-2.5 py-1">✓ Mail sent</span>}
         {note && <span className="text-xs text-gray-500">{note}</span>}
       </div>
 
@@ -177,12 +177,23 @@ export default function InboxClient({ initial }: { initial?: InboxData }) {
                     ) : <p className="text-sm text-gray-400">(empty message)</p>}
 
                     <div className="mt-3 space-y-2">
-                      {/* Who this reply goes to (and which of our addresses sends it). */}
-                      <p className="text-xs text-gray-600 bg-gray-50 border border-gray-200 rounded-md px-3 py-2">
-                        <span className="text-gray-400">To:</span>{" "}
-                        <span className="font-medium text-gray-800">{e.fromName ? `${e.fromName} ` : ""}&lt;{e.fromEmail}&gt;</span>
-                        {addrOf(e.toEmail) && <span className="text-gray-400"> · from {addrOf(e.toEmail)}</span>}
-                      </p>
+                      {sentInfo?.id === e.id ? (
+                        <div className="rounded-md border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+                          ✓ Mail sent to <span className="font-medium">{sentInfo.to}</span>
+                          <button onClick={() => setSentInfo(null)} className="ml-3 text-xs text-emerald-700 underline">Write another</button>
+                        </div>
+                      ) : (
+                      <>
+                      {/* Editable recipient — defaults to the other party, never our own mailbox. */}
+                      <div className="flex items-center gap-2 text-xs bg-gray-50 border border-gray-200 rounded-md px-3 py-2">
+                        <span className="text-gray-400 shrink-0">To:</span>
+                        <input
+                          value={replyTo} onChange={ev => setReplyTo(ev.target.value)}
+                          className="flex-1 min-w-0 bg-transparent text-gray-800 font-medium focus:outline-none"
+                        />
+                        {e.replyName && <span className="text-gray-400 truncate shrink-0">({e.replyName})</span>}
+                        {e.replyFrom && <span className="text-gray-400 shrink-0">· from {e.replyFrom}</span>}
+                      </div>
                       <input
                         value={replyContext} onChange={ev => setReplyContext(ev.target.value)}
                         placeholder="Steer the AI (optional) — e.g. confirm the upgrade, offer the 12 Aug slot"
@@ -202,15 +213,17 @@ export default function InboxClient({ initial }: { initial?: InboxData }) {
                           {drafting ? <Loader2 size={13} className="animate-spin" /> : <Wand2 size={13} />} Regenerate
                         </button>
                       </div>
-                      <textarea value={replyText} onChange={ev => setReplyText(ev.target.value)} rows={6} placeholder={drafting ? "Drafting…" : `Reply to ${e.fromName || e.fromEmail}…`} className="w-full text-sm px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-gray-500 resize-none" />
+                      <textarea value={replyText} onChange={ev => setReplyText(ev.target.value)} rows={6} placeholder={drafting ? "Drafting…" : `Reply to ${replyTo || e.fromEmail}…`} className="w-full text-sm px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:border-gray-500 resize-none" />
                       <div className="flex items-center gap-3">
-                        <button onClick={() => sendReply(e)} disabled={sending || drafting || !replyText.trim()} className="inline-flex items-center gap-1.5 text-xs px-4 py-2 rounded-md bg-gray-900 hover:bg-gray-800 text-white disabled:opacity-50">
+                        <button onClick={() => sendReply(e)} disabled={sending || drafting || !replyText.trim() || !replyTo.trim()} className="inline-flex items-center gap-1.5 text-xs px-4 py-2 rounded-md bg-gray-900 hover:bg-gray-800 text-white disabled:opacity-50">
                           {sending ? <Loader2 size={13} className="animate-spin" /> : <Send size={13} />} {sending ? "Sending…" : "Send reply"}
                         </button>
                         <button onClick={() => act(e.id, { read: !e.read })} className="inline-flex items-center gap-1 text-xs text-gray-500 hover:text-gray-800"><Reply size={13} className="rotate-180" /> Mark {e.read ? "unread" : "read"}</button>
                         <button onClick={() => act(e.id, { archived: true })} className="inline-flex items-center gap-1 text-xs text-gray-500 hover:text-gray-800"><Archive size={13} /> Archive</button>
                         <button onClick={() => del(e.id)} className="inline-flex items-center gap-1 text-xs text-red-600 hover:text-red-700 ml-auto"><Trash2 size={13} /> Delete</button>
                       </div>
+                      </>
+                      )}
                     </div>
                   </div>
                 )}
