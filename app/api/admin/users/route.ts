@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/admin/requireAdmin";
+import { isAdminRole } from "@/lib/admin/roles";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -28,7 +29,7 @@ export async function POST(req: NextRequest) {
   }
   const passwordHash = await bcrypt.hash(password, 12);
   const user = await prisma.adminUser.create({
-    data: { email: normalized, passwordHash, name: name?.trim() || null, role: role === "owner" ? "owner" : "staff" },
+    data: { email: normalized, passwordHash, name: name?.trim() || null, role: isAdminRole(role) ? role : "staff" },
     select: { id: true, email: true, name: true, role: true },
   });
   return NextResponse.json({ user }, { status: 201 });

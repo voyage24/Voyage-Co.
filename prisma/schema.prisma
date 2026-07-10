@@ -281,7 +281,7 @@ model AdminUser {
   email        String         @unique
   passwordHash String
   name         String?
-  role         String         @default("staff") // owner | staff
+  role         String         @default("staff") // owner | manager | staff | trainee (lib/admin/roles.ts)
   createdAt    DateTime       @default(now())
   lastLoginAt  DateTime?
   sessions     AdminSession[]
