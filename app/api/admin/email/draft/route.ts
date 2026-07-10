@@ -12,6 +12,7 @@ Do NOT include a greeting line (no "Dear ...") and NO sign-off — those are add
 When replying to a message, directly address the sender's points and answer their questions helpfully.
 CRITICAL: never invent facts. Do not promise arrangements, upgrades, transfers, amenities or reservations unless they appear in the message or the notes. Do not invent prices, dates or references. Acknowledge the request, confirm only what is actually known, and say the concierge team will confirm specifics.
 If the message is a booking request or notification, write an acknowledgement to the customer: we have received their reservation request and will confirm details shortly.
+Always refer to the property or journey by its full name (e.g. "The Peninsula Shanghai"). Never use internal codes or IDs such as "h180", "hotel/h25" or reference-style categories.
 Return only the email body text, with a blank line between paragraphs.`;
 
 // AI-written email body for Compose and Inbox replies. When `incoming` (a
@@ -22,12 +23,15 @@ export async function POST(req: NextRequest) {
   if (admin instanceof NextResponse) return admin;
 
   const { subject, name, context, incoming } = await req.json().catch(() => ({}));
+  // Strip internal item codes ("The Peninsula Shanghai (hotel/h180)") from what
+  // the AI sees, so drafts use the property name, never the code.
+  const cleanedIncoming = String(incoming || "").replace(/\s*\((?:hotel|flight|train|experience|package|cruise)\/[\w-]+\)/gi, "");
   const prompt = incoming
     ? `Write a reply to the following message from ${String(name || "a guest").slice(0, 100)} (subject: "${String(subject || "").slice(0, 200)}").
 ${context ? `Notes to incorporate: ${String(context).slice(0, 500)}\n` : ""}
 Their message:
 """
-${String(incoming).slice(0, 4000)}
+${cleanedIncoming.slice(0, 4000)}
 """`
     : `Subject: ${String(subject || "").slice(0, 200)}
 Recipient: ${String(name || "guest").slice(0, 100)}
