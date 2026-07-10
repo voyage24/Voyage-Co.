@@ -16,6 +16,7 @@ export default function InboxClient() {
   const [refreshing, setRefreshing] = useState(false);
   const [openId, setOpenId] = useState<string | null>(null);
   const [replyText, setReplyText] = useState("");
+  const [replyContext, setReplyContext] = useState("");
   const [sending, setSending] = useState(false);
   const [drafting, setDrafting] = useState(false);
   const [note, setNote] = useState("");
@@ -30,7 +31,7 @@ export default function InboxClient() {
     try {
       const res = await fetch("/api/admin/email/draft", {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ subject: e.subject || "", name: e.fromName || "", incoming: plain(e).slice(0, 4000) }),
+        body: JSON.stringify({ subject: e.subject || "", name: e.fromName || "", context: replyContext, incoming: plain(e).slice(0, 4000) }),
       });
       const d = await res.json().catch(() => ({}));
       if (d.draft) setReplyText(d.draft);
@@ -55,7 +56,7 @@ export default function InboxClient() {
 
   const open = (e: Email) => {
     if (openId === e.id) { setOpenId(null); return; }
-    setOpenId(e.id); setReplyText("");
+    setOpenId(e.id); setReplyText(""); setReplyContext("");
     // Auto-draft a contextual AI reply the first time this message is opened.
     if (!draftedRef.current.has(e.id)) { draftedRef.current.add(e.id); draftReply(e); }
     if (!e.read) { setEmails(list => list.map(x => x.id === e.id ? { ...x, read: true } : x)); setUnread(u => Math.max(0, u - 1)); fetch(`/api/admin/inbox/${e.id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ read: true }) }); }
@@ -147,6 +148,11 @@ export default function InboxClient() {
                     ) : <p className="text-sm text-gray-400">(empty message)</p>}
 
                     <div className="mt-3 space-y-2">
+                      <input
+                        value={replyContext} onChange={ev => setReplyContext(ev.target.value)}
+                        placeholder="Steer the AI (optional) — e.g. confirm the upgrade, offer the 12 Aug slot"
+                        className="w-full text-xs px-3 py-2 rounded-md border border-gray-200 bg-gray-50 focus:outline-none focus:border-gray-400"
+                      />
                       <div className="flex items-center justify-between">
                         <span className="text-xs text-gray-500">{drafting ? "Drafting an AI reply…" : "AI-drafted reply — edit before sending"}</span>
                         <button onClick={() => draftReply(e)} disabled={drafting} className="inline-flex items-center gap-1 text-xs text-gray-600 hover:text-gray-900 disabled:opacity-40">
