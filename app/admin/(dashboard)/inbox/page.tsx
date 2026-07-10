@@ -1,4 +1,5 @@
 import InboxClient from "@/components/admin/InboxClient";
+import InstallMailApp from "@/components/admin/InstallMailApp";
 
 export const dynamic = "force-dynamic";
 
@@ -9,6 +10,7 @@ export default function AdminInboxPage() {
         <h1 className="text-2xl font-semibold text-gray-900">Inbox</h1>
         <p className="text-sm text-gray-500">Replies from your mailbox, pulled into the site so you can read and respond here. Messages also remain in your Titan mailbox.</p>
       </div>
+      <InstallMailApp />
       <InboxClient />
     </div>
   );
