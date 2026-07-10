@@ -399,17 +399,18 @@ html.dark .vc-live-map .leaflet-control-attribution { background: rgba(10,10,12,
 .tab-indicator { transition: opacity 0.25s ease, transform 0.25s ease; opacity: 0; transform: scaleX(0.4); }
 .tab-active .tab-indicator { opacity: 1; transform: scaleX(1); }
 
-/* Prominent "breathing" while a tapped tab's page is loading. */
+/* Bold "breathing" while a tapped tab's page is loading. */
 @keyframes tabBreathe {
-  0%, 100% { transform: translateY(-2px) scale(1.05); opacity: 0.5; }
-  50%      { transform: translateY(-2px) scale(1.5); opacity: 1; }
+  0%, 100% { transform: translateY(-3px) scale(1.1); opacity: 0.55; }
+  50%      { transform: translateY(-3px) scale(1.85); opacity: 1; filter: drop-shadow(0 0 6px rgba(193,161,74,0.9)); }
 }
-.tab-breathe { animation: tabBreathe 0.75s ease-in-out infinite; }
+.tab-breathe { animation: tabBreathe 0.6s ease-in-out infinite; }
 @keyframes tabRing {
-  0%   { transform: scale(0.6); opacity: 0.6; }
-  100% { transform: scale(2.2); opacity: 0; }
+  0%   { transform: scale(0.5); opacity: 0.85; }
+  100% { transform: scale(3.2); opacity: 0; }
 }
-.tab-ring { animation: tabRing 0.9s ease-out infinite; }
+.tab-ring { animation: tabRing 0.8s ease-out infinite; }
+.tab-ring-2 { animation: tabRing 0.8s ease-out infinite; animation-delay: 0.4s; }
 
 /* Generic staggered slide-in for menu/drawer lists (admin mobile nav). */
 .drawer-item { opacity: 0; animation: drawerIn 0.4s cubic-bezier(0.22, 0.61, 0.36, 1) forwards; }

@@ -66,7 +66,10 @@ export default function MobileTabBar() {
               {/* Gold indicator bar that slides in for the active tab */}
               <span className="tab-indicator pointer-events-none absolute top-0 h-[2px] w-7 rounded-full bg-gold" />
               <span className="relative">
-                {loading && <span className="tab-ring pointer-events-none absolute inset-0 -m-1 rounded-full bg-gold/40" />}
+                {loading && <>
+                  <span className="tab-ring pointer-events-none absolute inset-0 -m-1.5 rounded-full bg-gold/55" />
+                  <span className="tab-ring-2 pointer-events-none absolute inset-0 -m-1.5 rounded-full bg-gold/45" />
+                </>}
                 <Icon size={18} className={`relative ${loading ? "tab-breathe" : "tab-pop"}`} />
                 {href === "/account" && unread > 0 && (
                   <span className="absolute -top-1.5 -right-2 min-w-[15px] h-[15px] px-1 rounded-full bg-gold text-vc-950 text-[9px] font-semibold leading-[15px] text-center">
