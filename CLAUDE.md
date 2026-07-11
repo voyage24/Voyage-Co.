@@ -48,6 +48,39 @@ reviews. Ops: bookings, enquiries, quotes, customers, newsletter, team.
 Site: storefront, appearance, pages, lists, nav, media, settings, emails,
 analytics, activity (audit log), notifications.
 
+### Role-based access (RBAC)
+AdminUser.role: owner > manager > staff > trainee (lib/admin/roles.ts). The
+access map lives in lib/admin/permissions.ts — pages enforced in the dashboard
++ mail layouts (middleware forwards the path as x-admin-path), nav filtered per
+role, and EVERY /api/admin route enforced centrally inside requireAdmin
+(canAccessApi). Team-management APIs use requireOwner (with an owner-bootstrap
+waiver). The last owner can never be demoted/removed.
+
+### Voyages Mail (`app/admin/mail/`)
+A self-contained mail app (own layout/nav, installable PWA via
+public/mail.webmanifest, scope /admin/mail) — deliberately no access to the
+rest of the admin. Tabs: Inbox · Compose · Sent · Archive · Templates ·
+Newsletter (tabs + pages trimmed by role).
+- **Inbox**: IMAP pull (lib/email/imap.ts, GoDaddy imap.secureserver.net,
+  IMAP_* env) into InboundEmail, deduped by Message-ID. Server-rendered
+  snapshot (lib/admin/inbox.ts getInboxList) for instant open. Bulk select-all
+  → mark read / archive / delete. Unread count = admin bell + app-icon badge.
+- **Reply routing** (computed in getInboxList): self-copies (from our domain,
+  e.g. site booking alerts) reply to the customer found in the BODY
+  ("Email:" line) with their name ("Name:" line); external mail replies to
+  Reply-To header, else sender — never our own mailbox. To is editable.
+  Replies send FROM the alias that received the mail (own-domain guard).
+- **AI drafts**: /api/admin/email/draft via lib/ai.ts (Anthropic→Gemini→Groq,
+  first configured key wins; the same lib powers the concierge chat). Rules:
+  never invent promises/prices, use full property names (item codes stripped),
+  booking alerts draft as acknowledgements. Steer-notes + Regenerate in UI.
+- **Sent**: every site-sent email recorded in SentEmail (SMTP doesn't populate
+  the mailbox's Sent folder).
+- **New-mail alerts**: fetchInbox pushes to admin devices
+  (PushSubscription.adminEmail, sendPushToAdmins) with unread badge — enabled
+  per device from the inbox. Polling: daily Vercel cron + /api/cron/mail
+  pinged every 5 min by cron-job.org (auth CRON_SECRET as Bearer or ?key=).
+
 ---
 
 ## Key concepts (read before editing)
