@@ -8,6 +8,7 @@ import NearestAirport from "@/components/products/NearestAirport";
 import BestTimeToVisit from "@/components/products/BestTimeToVisit";
 import TippingGuide from "@/components/products/TippingGuide";
 import CarbonEstimate from "@/components/products/CarbonEstimate";
+import ConnectivityGuide from "@/components/products/ConnectivityGuide";
 
 // The shared "destination companion" block used across stays, experiences,
 // cruises and packages: map + directions + live weather (when coordinates are
@@ -51,6 +52,7 @@ export default function DestinationCompanion({
           <div className="space-y-4">
             <DestinationEssentials country={country!} city={city} />
             <TippingGuide country={country} />
+            <ConnectivityGuide country={country} />
           </div>
           <div className="space-y-4">
             {hasCoords && <PackingList lat={coords![0]} lng={coords![1]} destinationKey={destKey} />}

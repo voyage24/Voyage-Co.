@@ -28,6 +28,7 @@ import { resolveCoords } from "@/lib/place-coords";
 import BestTimeToVisit from "@/components/products/BestTimeToVisit";
 import TippingGuide from "@/components/products/TippingGuide";
 import CarbonEstimate from "@/components/products/CarbonEstimate";
+import ConnectivityGuide from "@/components/products/ConnectivityGuide";
 import { hotelJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 export const revalidate = 60;
@@ -234,6 +235,7 @@ export default async function HotelDetailPage({ params }: { params: { id: string
           <div className="space-y-4">
             <DestinationEssentials country={hotel.country} city={hotel.city} />
             <TippingGuide country={hotel.country} />
+            <ConnectivityGuide country={hotel.country} />
           </div>
           <div className="space-y-4">
             {coords && <PackingList lat={coords[0]} lng={coords[1]} destinationKey={hotel.id} />}
