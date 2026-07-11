@@ -34,6 +34,8 @@ export default function InboxClient({ initial }: { initial?: InboxData }) {
   const [drafting, setDrafting] = useState(false);
   const [note, setNote] = useState("");
   const [draftInfo, setDraftInfo] = useState("");
+  const [ctx, setCtx] = useState<null | { id: string | null; name: string | null; tier: string | null; points: number; lifetimeValue: number; enquiryCount: number; openFollowups: number; bookings: { itemTitle: string; reference: string; status: string; checkIn: string | null }[] }>(null);
+  const [query, setQuery] = useState("");
   const draftedRef = useRef<Set<string>>(new Set());
 
   const plain = (e: Email) => e.bodyText || (e.bodyHtml || "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
@@ -82,6 +84,10 @@ export default function InboxClient({ initial }: { initial?: InboxData }) {
     if (openId === e.id) { setOpenId(null); return; }
     setOpenId(e.id); setReplyText(""); setReplyContext(""); setReplyCc(""); setReplyBcc(""); setShowCc(false);
     setReplyTo(e.replyTo || e.fromEmail); setSentInfo(null);
+    // Pull the sender's client record + recent trips for reply context.
+    const who = e.replyTo || e.fromEmail;
+    setCtx(null);
+    if (who) fetch(`/api/admin/inbox/context?email=${encodeURIComponent(who)}`).then(r => r.json()).then(d => { if (d?.found) setCtx(d); }).catch(() => {});
     // Auto-draft a contextual AI reply the first time this message is opened.
     if (!draftedRef.current.has(e.id)) { draftedRef.current.add(e.id); draftReply(e); }
     if (!e.read) { setEmails(list => list.map(x => x.id === e.id ? { ...x, read: true } : x)); setUnread(u => Math.max(0, u - 1)); fetch(`/api/admin/inbox/${e.id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ read: true }) }); }
@@ -137,6 +143,11 @@ export default function InboxClient({ initial }: { initial?: InboxData }) {
         </button>
         {unread > 0 && <span className="text-xs bg-gold/20 text-gray-800 rounded-full px-2.5 py-1">{unread} unread</span>}
         {note && <span className="text-xs text-gray-500">{note}</span>}
+        <input
+          value={query} onChange={e => setQuery(e.target.value)}
+          placeholder="Search sender, subject…"
+          className="ml-auto w-48 max-w-full text-xs px-3 py-2 rounded-md border border-gray-200 bg-white focus:outline-none focus:border-gray-400"
+        />
       </div>
 
       {emails.length > 0 && (
@@ -193,7 +204,11 @@ export default function InboxClient({ initial }: { initial?: InboxData }) {
         <p className="text-sm text-gray-400 border border-dashed border-gray-200 rounded-md p-8 text-center">No messages yet. Tap &ldquo;Check for new mail&rdquo; to pull replies from your mailbox.</p>
       ) : (
         <div className="space-y-2">
-          {emails.map(e => {
+          {emails.filter(e => {
+            if (!query.trim()) return true;
+            const q = query.toLowerCase();
+            return (e.fromName || "").toLowerCase().includes(q) || e.fromEmail.toLowerCase().includes(q) || (e.subject || "").toLowerCase().includes(q) || (e.bodyText || "").toLowerCase().includes(q);
+          }).map(e => {
             const isOpen = openId === e.id;
             return (
               <div key={e.id} className={`border rounded-lg bg-white ${e.read ? "border-gray-200" : "border-gray-900/30"}`}>
@@ -220,6 +235,26 @@ export default function InboxClient({ initial }: { initial?: InboxData }) {
                     ) : e.bodyHtml ? (
                       <iframe title="email" sandbox="" srcDoc={e.bodyHtml} className="w-full h-80 border border-gray-100 rounded" />
                     ) : <p className="text-sm text-gray-400">(empty message)</p>}
+
+                    {ctx && (
+                      <div className="mt-3 rounded-md border border-indigo-100 bg-indigo-50/50 px-3 py-2.5">
+                        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
+                          <span className="font-medium text-gray-900">{ctx.name || "Known client"}</span>
+                          {ctx.tier && <span className="capitalize text-indigo-700">{ctx.tier}</span>}
+                          <span className="text-gray-500">{ctx.bookings.length} booking{ctx.bookings.length === 1 ? "" : "s"}</span>
+                          {ctx.enquiryCount > 0 && <span className="text-gray-500">· {ctx.enquiryCount} enquir{ctx.enquiryCount === 1 ? "y" : "ies"}</span>}
+                          {ctx.openFollowups > 0 && <span className="text-amber-700">· {ctx.openFollowups} follow-up{ctx.openFollowups === 1 ? "" : "s"} due</span>}
+                          {ctx.id && <a href={`/admin/customers/${ctx.id}`} className="ml-auto text-indigo-600 hover:underline">Open profile →</a>}
+                        </div>
+                        {ctx.bookings.length > 0 && (
+                          <ul className="mt-1.5 space-y-0.5">
+                            {ctx.bookings.map((b, i) => (
+                              <li key={i} className="text-[11px] text-gray-600 truncate">• {b.itemTitle} <span className="text-gray-400">({b.reference}{b.checkIn ? ` · ${b.checkIn}` : ""} · {b.status})</span></li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                    )}
 
                     <div className="mt-3 space-y-2">
                       {sentInfo?.id === e.id ? (
