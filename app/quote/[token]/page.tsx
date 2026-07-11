@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import QuoteActions from "@/components/quote/QuoteActions";
+import PrintButton from "@/components/quote/PrintButton";
 
 export const dynamic = "force-dynamic";
 
@@ -23,7 +24,7 @@ export default async function QuotePage({ params }: { params: { token: string } 
         <p className="text-ink-muted font-light mt-2">Prepared for {quote.customerName}</p>
       </div>
 
-      <div className="bg-panel border border-line rounded-2xl shadow-card overflow-hidden">
+      <div className="bg-panel border border-line rounded-2xl shadow-card overflow-hidden print-shadow-none">
         <div className="p-6 sm:p-8">
           <table className="w-full">
             <tbody>
@@ -50,8 +51,9 @@ export default async function QuotePage({ params }: { params: { token: string } 
           )}
         </div>
 
-        <div className="bg-panel-soft border-t border-line p-6 sm:p-8">
+        <div className="bg-panel-soft border-t border-line p-6 sm:p-8 no-print">
           <QuoteActions token={quote.token} initialStatus={quote.status} />
+          <div className="mt-3"><PrintButton /></div>
           <p className="text-[11px] text-ink-faint text-center mt-4">No payment is taken online — accepting confirms your intent and our team will arrange payment securely.</p>
         </div>
       </div>
