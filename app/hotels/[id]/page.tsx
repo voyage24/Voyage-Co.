@@ -33,6 +33,7 @@ import CurrencyCheatSheet from "@/components/products/CurrencyCheatSheet";
 import LocalHolidays from "@/components/products/LocalHolidays";
 import TypicalCosts from "@/components/products/TypicalCosts";
 import JetLag from "@/components/products/JetLag";
+import KnowBeforeYouGo from "@/components/products/KnowBeforeYouGo";
 import { hotelJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 export const revalidate = 60;
@@ -233,25 +234,28 @@ export default async function HotelDetailPage({ params }: { params: { id: string
             <div className="mt-4"><NearestAirport lat={coords[0]} lng={coords[1]} /></div>
           </>
         )}
-        {/* Concierge, local time, emergency SOS + phrasebook need only the
-            country, so they show for every property even without coordinates. */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4 items-start">
-          <div className="space-y-4">
-            <DestinationEssentials country={hotel.country} city={hotel.city} />
-            <TippingGuide country={hotel.country} />
-            <ConnectivityGuide country={hotel.country} />
-            <CurrencyCheatSheet country={hotel.country} />
-            <TypicalCosts country={hotel.country} />
+        {/* Arrival essentials — concierge, local time, emergency SOS — need only
+            the country, so they show for every property, always visible. */}
+        <div className="mt-4"><DestinationEssentials country={hotel.country} city={hotel.city} /></div>
+        {/* Everything else tucks into a collapsible so the page stays elegant. */}
+        <KnowBeforeYouGo>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-start">
+            <div className="space-y-4">
+              <BestTimeToVisit country={hotel.country} />
+              <TippingGuide country={hotel.country} />
+              <ConnectivityGuide country={hotel.country} />
+              <CurrencyCheatSheet country={hotel.country} />
+              <TypicalCosts country={hotel.country} />
+            </div>
+            <div className="space-y-4">
+              {coords && <PackingList lat={coords[0]} lng={coords[1]} destinationKey={hotel.id} />}
+              {coords && <CarbonEstimate lat={coords[0]} lng={coords[1]} destination={hotel.city} />}
+              <JetLag country={hotel.country} city={hotel.city} />
+              <LocalHolidays country={hotel.country} />
+              <Phrasebook country={hotel.country} />
+            </div>
           </div>
-          <div className="space-y-4">
-            {coords && <PackingList lat={coords[0]} lng={coords[1]} destinationKey={hotel.id} />}
-            {coords && <CarbonEstimate lat={coords[0]} lng={coords[1]} destination={hotel.city} />}
-            <BestTimeToVisit country={hotel.country} />
-            <JetLag country={hotel.country} city={hotel.city} />
-            <LocalHolidays country={hotel.country} />
-            <Phrasebook country={hotel.country} />
-          </div>
-        </div>
+        </KnowBeforeYouGo>
       </section>
 
       <FaqAndEntry faqs={faqs} entryRequirements={hotel.entryRequirements} />
