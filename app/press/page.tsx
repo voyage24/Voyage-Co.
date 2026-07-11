@@ -1,80 +1,49 @@
-"use client";
+import type { Metadata } from "next";
+import { prisma } from "@/lib/prisma";
+import { getDestinations } from "@/lib/destinations";
+import PressPageClient from "@/components/pages/PressPageClient";
 
-import { useLanguage } from "@/components/providers/LanguageProvider";
-import { useContent, useContentList } from "@/components/providers/ContentProvider";
+// Facts are derived from live data so the press page never overstates a newly
+// founded (2026) brand: "destinations curated" tracks the countries we actually
+// have published stays in, and "average itinerary lead time" is computed from
+// real bookings. Both update on their own as the business grows.
+export const revalidate = 3600;
 
-export default function PressPage() {
-  const { t } = useLanguage();
-  const c = useContent();
-  const mentionsOverride = useContentList("list.pressMentions");
-  const factsOverride = useContentList("list.pressFacts");
+const FOUNDED = "2026";
 
-  // Fictional publications — this is a demonstration site, so real magazine
-  // names (and any implied endorsement) are deliberately avoided.
-  const MENTIONS = [
-    { outlet: "The Grand Tourer", quote: t("press.quote1"), date: "2026" },
-    { outlet: "Escape Quarterly", quote: t("press.quote2"), date: "2025" },
-    { outlet: "Maison & Meridian", quote: t("press.quote3"), date: "2025" },
-    { outlet: "The Wanderer's Almanac", quote: t("press.quote4"), date: "2025" },
-    { outlet: "Atlas Review", quote: t("press.quote5"), date: "2024" },
-  ];
+function median(nums: number[]): number {
+  const s = [...nums].sort((a, b) => a - b);
+  const m = Math.floor(s.length / 2);
+  return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
+}
 
-  const FACTS = [
-    { label: t("press.factLabel1"), value: "2019" },
-    { label: t("press.factLabel2"), value: "Pune, India" },
-    { label: t("press.factLabel3"), value: t("press.factValue3") },
-    { label: t("press.factLabel4"), value: t("press.factValue4") },
-  ];
+export const metadata: Metadata = {
+  title: "Press & Media — Voyages & Co.",
+  description: "Media resources and quick facts about Voyages & Co., a bespoke luxury travel maison founded in 2026.",
+};
 
-  const mentions = mentionsOverride ?? MENTIONS;
-  const facts = factsOverride ?? FACTS;
+export default async function PressPage() {
+  const [destCount, bookings] = await Promise.all([
+    getDestinations().then(d => d.length).catch(() => 0),
+    prisma.booking
+      .findMany({ where: { checkIn: { not: null }, status: { not: "cancelled" } }, select: { checkIn: true, createdAt: true } })
+      .catch(() => [] as { checkIn: string | null; createdAt: Date }[]),
+  ]);
 
-  return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-24">
-      <div className="text-center mb-16">
-        <p className="text-[11px] tracking-[0.3em] uppercase text-gold mb-3">{c("press.eyebrow") || t("press.eyebrow")}</p>
-        <h1 className="font-serif text-3xl sm:text-5xl font-light text-ink mb-4">{c("press.title") || t("press.title")}</h1>
-        <p className="text-ink-muted font-light max-w-xl mx-auto leading-relaxed">
-          {c("press.intro") || t("press.intro")}
-        </p>
-      </div>
+  // Average booking-to-check-in lead time, in days, from real bookings.
+  const leadDays = bookings
+    .map(b => {
+      const ci = b.checkIn ? new Date(b.checkIn) : null;
+      if (!ci || isNaN(ci.getTime())) return null;
+      const days = (ci.getTime() - b.createdAt.getTime()) / 86_400_000;
+      return days >= 0 && days <= 730 ? days : null; // ignore odd/past dates
+    })
+    .filter((n): n is number => n != null);
 
-      {/* As featured in */}
-      <div className="mb-16">
-        <h2 className="font-serif text-2xl font-light text-ink mb-6 text-center">{t("press.asFeaturedIn")}</h2>
-        <div className="space-y-4">
-          {mentions.map((m, i) => (
-            <div key={`${m.outlet}-${i}`} className="bg-panel border border-line rounded-xl p-6">
-              <p className="text-base text-ink-muted font-light italic leading-relaxed mb-3">&ldquo;{m.quote}&rdquo;</p>
-              <div className="flex items-center gap-2 text-xs text-ink-faint font-light">
-                <span className="text-gold font-medium tracking-[0.08em] uppercase">{m.outlet}</span>
-                <span>·</span>
-                <span>{m.date}</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+  // Enough real data → show the actual median; otherwise a realistic bespoke
+  // planning window for a young brand. Either way it's honest and self-updating.
+  const leadTime = leadDays.length >= 3 ? `~${Math.max(1, Math.round(median(leadDays) / 7))} weeks` : "3–6 weeks";
+  const destinations = destCount > 0 ? `${destCount} ${destCount === 1 ? "country" : "countries"}` : "Curating now";
 
-      {/* Quick facts */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-5 mb-16">
-        {facts.map((f, i) => (
-          <div key={`${f.label}-${i}`} className="text-center bg-panel-soft border border-line rounded-xl p-5">
-            <p className="font-serif text-xl font-light text-ink mb-1">{f.value}</p>
-            <p className="text-[10px] tracking-[0.14em] uppercase text-ink-faint font-light">{f.label}</p>
-          </div>
-        ))}
-      </div>
-
-      <div className="bg-panel-soft border border-line rounded-2xl p-10 text-center">
-        <h2 className="font-serif text-2xl font-light text-ink mb-2">{t("press.mediaEnquiries")}</h2>
-        <p className="text-sm text-ink-muted mb-5 font-light">
-          {t("press.mediaEnquiriesDesc")}
-        </p>
-        <a href="mailto:hello@voyagesco.com" className="inline-block text-base font-medium text-gold link-underline">
-          hello@voyagesco.com
-        </a>
-      </div>
-    </div>
-  );
+  return <PressPageClient founded={FOUNDED} destinations={destinations} leadTime={leadTime} />;
 }
