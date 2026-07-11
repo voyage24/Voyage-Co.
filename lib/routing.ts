@@ -52,21 +52,25 @@ export async function getTransfer(lat: number, lng: number): Promise<Transfer | 
   if (!a) return null;
 
   const key = `${lat.toFixed(4)},${lng.toFixed(4)}->${a.code}`;
+  // Only trust cached PRECISE times — a cached "estimate" is treated as a miss
+  // and retried, so a transient failure (or views before the key was set) never
+  // locks a property to the estimate permanently.
   const cached = await prisma.routeCache.findUnique({ where: { key } }).catch(() => null);
-  if (cached) return { ...a, km: cached.km, minutes: cached.minutes, source: cached.source === "estimate" ? "estimate" : "precise" };
+  if (cached && cached.source === "precise") return { ...a, km: cached.km, minutes: cached.minutes, source: "precise" };
 
   const dest = CITY_COORDS[a.code];
   const road = dest ? await fetchRoad(lat, lng, dest[0], dest[1]) : null;
 
-  const result: Transfer = road
-    ? { ...a, km: road.km, minutes: road.minutes, source: "precise" }
-    : { ...a, source: "estimate" };
+  if (road) {
+    await prisma.routeCache.upsert({
+      where: { key },
+      create: { key, km: road.km, minutes: road.minutes, source: "precise" },
+      update: { km: road.km, minutes: road.minutes, source: "precise" },
+    }).catch(() => {});
+    return { ...a, km: road.km, minutes: road.minutes, source: "precise" };
+  }
 
-  // Cache both outcomes (a failed road lookup caches the estimate so we don't
-  // re-hit ORS on every view of an island resort).
-  await prisma.routeCache.create({
-    data: { key, km: result.km ?? a.distanceKm, minutes: result.minutes, source: result.source },
-  }).catch(() => {});
-
-  return result;
+  // No road route (islands) or no key — show the estimate, not cached, so it
+  // upgrades automatically once routing succeeds.
+  return { ...a, source: "estimate" };
 }
