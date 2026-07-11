@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { prisma } from "@/lib/prisma";
+import { getDestinations } from "@/lib/destinations";
 
 const SITE = "https://voyagesco.com";
 
@@ -8,7 +9,7 @@ export const revalidate = 3600;
 const STATIC_PATHS = [
   "", "/hotels", "/flights", "/trains", "/experiences", "/packages", "/cruises",
   "/blog", "/plan", "/about", "/contact", "/careers", "/press", "/partners",
-  "/help", "/privacy", "/terms",
+  "/help", "/privacy", "/terms", "/destinations",
 ];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -21,14 +22,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }));
 
   try {
-    const [hotels, packages, experiences, cruises, posts] = await Promise.all([
+    const [hotels, packages, experiences, cruises, posts, destinations] = await Promise.all([
       prisma.hotel.findMany({ where: { published: true }, select: { id: true } }),
       prisma.package.findMany({ where: { published: true }, select: { id: true } }),
       prisma.experience.findMany({ where: { published: true }, select: { id: true } }),
       prisma.cruise.findMany({ where: { published: true }, select: { id: true } }),
       prisma.blogPost.findMany({ where: { published: true }, select: { slug: true } }),
+      getDestinations().catch(() => []),
     ]);
     const dyn: MetadataRoute.Sitemap = [
+      ...destinations.map(d => ({ url: `${SITE}/destinations/${d.slug}`, lastModified: now, changeFrequency: "weekly" as const, priority: 0.8 })),
       ...hotels.map(h => ({ url: `${SITE}/hotels/${h.id}`, lastModified: now, priority: 0.6 })),
       ...packages.map(p => ({ url: `${SITE}/packages/${p.id}`, lastModified: now, priority: 0.8 })),
       ...experiences.map(e => ({ url: `${SITE}/experiences/${e.id}`, lastModified: now, priority: 0.6 })),
