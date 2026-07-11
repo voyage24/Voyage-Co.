@@ -123,6 +123,13 @@ country/coords and hide gracefully when there's no data. Arrival essentials
 (map, directions, weather, nearest airport, local time / concierge / SOS) stay
 visible; the reference cards tuck into a collapsible `KnowBeforeYouGo` panel.
 
+### Destination travel guides (SEO)
+`app/destinations/[slug]/page.tsx` is one page per country with published
+hotels (`lib/destinations.ts` `getDestinations()`). Beyond listing stays/
+experiences/cruises it renders a server-side "Know before you go" travel guide
+reusing the country companion cards — substantial indexable content per country,
+cross-linked to `/plan`. All country pages are in `app/sitemap.ts`.
+
 ### Recommendations
 Two homepage rails: `RecentlyViewed` ("Continue exploring", from localStorage)
 and `Recommendations` ("Recommended for you") — the latter POSTs recently-viewed
