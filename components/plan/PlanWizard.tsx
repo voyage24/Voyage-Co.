@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import TurnstileWidget from "@/components/ui/TurnstileWidget";
+import { useContactDefaults } from "@/components/providers/useContactDefaults";
 
 const BUDGETS = ["plan.budget1", "plan.budget2", "plan.budget3", "plan.budget4", "plan.budgetFlexible"];
 const INTERESTS = [
@@ -26,6 +27,8 @@ export default function PlanWizard() {
     budget: "", interests: [] as string[], name: "", email: "", phone: "", occasion: "", notes: "",
   });
   const set = (k: keyof typeof form, v: any) => setForm(p => ({ ...p, [k]: v }));
+  const { defaults, remember } = useContactDefaults();
+  useEffect(() => { if (defaults) setForm(p => ({ ...p, name: p.name || defaults.name, email: p.email || defaults.email, phone: p.phone || defaults.phone })); }, [defaults]);
   const toggleInterest = (label: string) =>
     setForm(p => ({ ...p, interests: p.interests.includes(label) ? p.interests.filter(i => i !== label) : [...p.interests, label] }));
 
@@ -45,7 +48,7 @@ export default function PlanWizard() {
         }),
       });
       if (!res.ok) throw new Error();
-      setSent(true);
+      remember({ name: form.name, email: form.email, phone: form.phone }); setSent(true);
     } catch { setError(true); } finally { setSending(false); }
   };
 
@@ -150,16 +153,16 @@ export default function PlanWizard() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className={label}>{t("contact.fullName")} <span className="text-gold">*</span></label>
-                <input value={form.name} onChange={e => set("name", e.target.value)} placeholder="Rahul Sharma" className={input} />
+                <input autoComplete="name" value={form.name} onChange={e => set("name", e.target.value)} placeholder="Rahul Sharma" className={input} />
               </div>
               <div>
                 <label className={label}>{t("contact.emailLabel")} <span className="text-gold">*</span></label>
-                <input type="email" value={form.email} onChange={e => set("email", e.target.value)} placeholder="you@example.com" className={input} />
+                <input type="email" autoComplete="email" value={form.email} onChange={e => set("email", e.target.value)} placeholder="you@example.com" className={input} />
               </div>
             </div>
             <div>
               <label className={label}>{t("booking.phone")} <span className="text-ink-faint font-normal">({t("common.optional")})</span></label>
-              <input type="tel" value={form.phone} onChange={e => set("phone", e.target.value)} placeholder="+91 99199 10213" className={input} />
+              <input type="tel" autoComplete="tel" value={form.phone} onChange={e => set("phone", e.target.value)} placeholder="+91 99199 10213" className={input} />
             </div>
             <div>
               <label className={label}>{t("plan.occasion")} <span className="text-ink-faint font-normal">({t("common.optional")})</span></label>

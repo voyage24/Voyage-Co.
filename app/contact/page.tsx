@@ -1,8 +1,9 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Mail, Send } from "lucide-react";
+import { useContactDefaults } from "@/components/providers/useContactDefaults";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useContent } from "@/components/providers/ContentProvider";
 import TurnstileWidget from "@/components/ui/TurnstileWidget";
@@ -21,6 +22,12 @@ function ContactContent() {
   const [sending, setSending] = useState(false);
   const [error, setError] = useState(false);
   const [token, setToken] = useState("");
+  const { defaults, remember } = useContactDefaults();
+
+  useEffect(() => {
+    if (!defaults) return;
+    setForm(prev => ({ ...prev, name: prev.name || defaults.name, email: prev.email || defaults.email, phone: prev.phone || defaults.phone }));
+  }, [defaults]);
 
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
     setForm(prev => ({ ...prev, [k]: e.target.value }));
@@ -36,6 +43,7 @@ function ContactContent() {
         body: JSON.stringify({ ...form, language: language.code, turnstileToken: token }),
       });
       if (!res.ok) throw new Error("Failed to send");
+      remember({ name: form.name, email: form.email, phone: form.phone });
       setSent(true);
     } catch {
       setError(true);
@@ -92,13 +100,13 @@ function ContactContent() {
                   <label className="text-[11px] font-medium text-ink-faint uppercase tracking-[0.12em] block mb-1.5">
                     {t("contact.fullName")} <span className="text-gold">*</span>
                   </label>
-                  <input type="text" required value={form.name} onChange={set("name")} placeholder="Rahul Sharma" className={inputClass} />
+                  <input type="text" required autoComplete="name" value={form.name} onChange={set("name")} placeholder="Rahul Sharma" className={inputClass} />
                 </div>
                 <div>
                   <label className="text-[11px] font-medium text-ink-faint uppercase tracking-[0.12em] block mb-1.5">
                     {t("contact.emailLabel")} <span className="text-gold">*</span>
                   </label>
-                  <input type="email" required value={form.email} onChange={set("email")} placeholder="you@example.com" className={inputClass} />
+                  <input type="email" required autoComplete="email" value={form.email} onChange={set("email")} placeholder="you@example.com" className={inputClass} />
                 </div>
               </div>
 
@@ -106,7 +114,7 @@ function ContactContent() {
                 <label className="text-[11px] font-medium text-ink-faint uppercase tracking-[0.12em] block mb-1.5">
                   {t("booking.phone")} <span className="text-ink-faint normal-case tracking-normal">({t("common.optional")})</span>
                 </label>
-                <input type="tel" value={form.phone} onChange={set("phone")} placeholder="+91 99199 10213" className={inputClass} />
+                <input type="tel" autoComplete="tel" value={form.phone} onChange={set("phone")} placeholder="+91 99199 10213" className={inputClass} />
               </div>
 
               <div>

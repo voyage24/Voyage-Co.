@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Phone } from "lucide-react";
 import TurnstileWidget from "@/components/ui/TurnstileWidget";
+import { useContactDefaults } from "@/components/providers/useContactDefaults";
 
 const SLOTS = ["Morning (9–12)", "Afternoon (12–4)", "Evening (4–8)"];
 
@@ -13,6 +14,8 @@ export default function CallbackForm() {
   const [error, setError] = useState("");
   const [token, setToken] = useState("");
   const set = (k: keyof typeof form, v: string) => setForm(f => ({ ...f, [k]: v }));
+  const { defaults, remember } = useContactDefaults();
+  useEffect(() => { if (defaults) setForm(p => ({ ...p, name: p.name || defaults.name, email: p.email || defaults.email, phone: p.phone || defaults.phone })); }, [defaults]);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,7 +24,7 @@ export default function CallbackForm() {
     const res = await fetch("/api/callback", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...form, turnstileToken: token }) });
     const data = await res.json().catch(() => ({}));
     setLoading(false);
-    if (res.ok) setDone(true);
+    if (res.ok) { remember({ name: form.name, email: form.email, phone: form.phone }); setDone(true); }
     else setError(data.error ?? "Something went wrong.");
   };
 
@@ -43,15 +46,15 @@ export default function CallbackForm() {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label className="block text-xs tracking-[0.1em] uppercase text-ink-faint mb-1.5">Name <span className="text-gold">*</span></label>
-          <input required className={field} value={form.name} onChange={e => set("name", e.target.value)} />
+          <input required className={field} autoComplete="name" value={form.name} onChange={e => set("name", e.target.value)} />
         </div>
         <div>
           <label className="block text-xs tracking-[0.1em] uppercase text-ink-faint mb-1.5">Phone <span className="text-gold">*</span></label>
-          <input required className={field} value={form.phone} onChange={e => set("phone", e.target.value)} />
+          <input required className={field} autoComplete="tel" value={form.phone} onChange={e => set("phone", e.target.value)} />
         </div>
         <div>
           <label className="block text-xs tracking-[0.1em] uppercase text-ink-faint mb-1.5">Email <span className="text-gold">*</span></label>
-          <input required type="email" className={field} value={form.email} onChange={e => set("email", e.target.value)} />
+          <input required type="email" className={field} autoComplete="email" value={form.email} onChange={e => set("email", e.target.value)} />
         </div>
         <div>
           <label className="block text-xs tracking-[0.1em] uppercase text-ink-faint mb-1.5">Preferred day</label>

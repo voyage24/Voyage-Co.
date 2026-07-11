@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Check, Calendar, Users } from "lucide-react";
+import { useContactDefaults } from "@/components/providers/useContactDefaults";
 import { useTrips } from "@/components/providers/TripsProvider";
 import { useCurrency } from "@/components/providers/CurrencyProvider";
 import { useLanguage } from "@/components/providers/LanguageProvider";
@@ -39,6 +40,14 @@ export default function BookingForm({ item, soldOut = false }: { item: BookingIt
   const { addTrip } = useTrips();
   const { format } = useCurrency();
   const { t } = useLanguage();
+  const { defaults, remember } = useContactDefaults();
+
+  // Prefill guest details from the member's account or remembered guest info,
+  // without overwriting anything the visitor has already typed.
+  useEffect(() => {
+    if (!defaults) return;
+    setForm(p => ({ ...p, name: p.name || defaults.name, email: p.email || defaults.email, phone: p.phone || defaults.phone }));
+  }, [defaults]);
 
   const set = (k: keyof typeof form) =>
     (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -85,6 +94,7 @@ export default function BookingForm({ item, soldOut = false }: { item: BookingIt
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) { setError(data.error ?? "Could not complete the reservation."); setSubmitting(false); return; }
+      remember({ name: form.name, email: form.email, phone: form.phone });
       // Mirror into the local "trips" list for quick reference.
       addTrip({ ref: data.reference ?? ref, type: item.type, title: item.title, subtitle: item.subtitle, image: item.image, total, guestName: form.name, bookedAt: new Date().toISOString() });
       setReference(data.reference ?? ref);
@@ -158,16 +168,16 @@ export default function BookingForm({ item, soldOut = false }: { item: BookingIt
               <PassportScan onScan={r => setForm(p => ({ ...p, name: r.fullName }))} />
             </div>
           </div>
-          <input required value={form.name} onChange={set("name")} placeholder={t("booking.fullNamePlaceholder")} className={inputClass} />
+          <input required autoComplete="name" value={form.name} onChange={set("name")} placeholder={t("booking.fullNamePlaceholder")} className={inputClass} />
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className={labelClass}>{t("booking.email")} <span className="text-gold">*</span></label>
-            <input required type="email" value={form.email} onChange={set("email")} placeholder="you@example.com" className={inputClass} />
+            <input required type="email" autoComplete="email" value={form.email} onChange={set("email")} placeholder="you@example.com" className={inputClass} />
           </div>
           <div>
             <label className={labelClass}>{t("booking.phone")} <span className="text-gold">*</span></label>
-            <input required type="tel" value={form.phone} onChange={set("phone")} placeholder="+91 98765 43210" className={inputClass} />
+            <input required type="tel" autoComplete="tel" value={form.phone} onChange={set("phone")} placeholder="+91 98765 43210" className={inputClass} />
           </div>
         </div>
 

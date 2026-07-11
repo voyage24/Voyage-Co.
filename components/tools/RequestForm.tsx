@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Check } from "lucide-react";
 import TurnstileWidget from "@/components/ui/TurnstileWidget";
+import { useContactDefaults } from "@/components/providers/useContactDefaults";
 
 export type FieldDef = {
   key: string;
@@ -31,6 +32,8 @@ export default function RequestForm({
   const [error, setError] = useState("");
   const [token, setToken] = useState("");
   const set = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }));
+  const { defaults, remember } = useContactDefaults();
+  useEffect(() => { if (defaults) setForm(p => ({ ...p, name: p.name || defaults.name, email: p.email || defaults.email, phone: p.phone || defaults.phone })); }, [defaults]);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,7 +42,7 @@ export default function RequestForm({
     const res = await fetch(endpoint, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...form, turnstileToken: token }) });
     const data = await res.json().catch(() => ({}));
     setBusy(false);
-    if (res.ok) setDone(true); else setError(data.error ?? "Something went wrong.");
+    if (res.ok) { remember({ name: form.name, email: form.email, phone: form.phone }); setDone(true); } else setError(data.error ?? "Something went wrong.");
   };
 
   if (done) {
@@ -61,9 +64,9 @@ export default function RequestForm({
     <form id={id} onSubmit={submit} className="bg-panel border border-line rounded-2xl p-6 sm:p-8 space-y-4 scroll-mt-28">
       <h2 className="font-serif text-2xl font-light text-ink">{title}</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div><Label>Name <span className="text-gold">*</span></Label><input required className={cls} value={form.name} onChange={e => set("name", e.target.value)} /></div>
-        <div><Label>Email <span className="text-gold">*</span></Label><input required type="email" className={cls} value={form.email} onChange={e => set("email", e.target.value)} /></div>
-        <div><Label>Phone</Label><input className={cls} value={form.phone} onChange={e => set("phone", e.target.value)} /></div>
+        <div><Label>Name <span className="text-gold">*</span></Label><input required className={cls} autoComplete="name" value={form.name} onChange={e => set("name", e.target.value)} /></div>
+        <div><Label>Email <span className="text-gold">*</span></Label><input required type="email" className={cls} autoComplete="email" value={form.email} onChange={e => set("email", e.target.value)} /></div>
+        <div><Label>Phone</Label><input className={cls} autoComplete="tel" value={form.phone} onChange={e => set("phone", e.target.value)} /></div>
         {fields.map(f => (
           <div key={f.key} className={f.full || f.type === "textarea" ? "sm:col-span-2" : ""}>
             <Label>{f.label}{f.required ? <span className="text-gold"> *</span> : ""}</Label>
