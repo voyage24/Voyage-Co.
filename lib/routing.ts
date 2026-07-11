@@ -22,7 +22,7 @@ async function fetchRoad(originLat: number, originLng: number, dstLat: number, d
     try {
       const res = await fetch("https://api.openrouteservice.org/v2/directions/driving-car", {
         method: "POST",
-        headers: { Authorization: ors, "Content-Type": "application/json" },
+        headers: { Authorization: ors, "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify({ coordinates: [[dstLng, dstLat], [originLng, originLat]] }), // ORS wants [lng, lat]
         cache: "no-store",
       });
