@@ -8,6 +8,36 @@ datasource db {
   directUrl = env("DATABASE_URL_UNPOOLED")
 }
 
+// A staff note on a client, keyed by email so it ties together members and
+// guests (enquiries/quotes are email-based, not account-linked).
+model CustomerNote {
+  id        String   @id @default(cuid())
+  email     String
+  body      String   @db.Text
+  author    String?  // admin who wrote it
+  createdAt DateTime @default(now())
+
+  @@index([email])
+}
+
+// A follow-up task ("chase in 3 days"), attachable to a client email and/or an
+// enquiry. Surfaces on a due-list with reminders.
+model FollowUp {
+  id        String    @id @default(cuid())
+  email     String?
+  enquiryId String?
+  title     String
+  dueAt     DateTime
+  done      Boolean   @default(false)
+  doneAt    DateTime?
+  author    String?
+  remindedAt DateTime?  // last time a reminder push was sent
+  createdAt DateTime  @default(now())
+
+  @@index([email])
+  @@index([done, dueAt])
+}
+
 model NewsletterSubscriber {
   id        String   @id @default(cuid())
   email     String   @unique

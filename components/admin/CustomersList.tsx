@@ -71,7 +71,7 @@ export default function CustomersList({ customers }: { customers: CustomerRow[] 
             )}
             {shown.map(c => (
               <tr key={c.id} className="border-b border-gray-100 last:border-0">
-                <td className="px-4 py-3 text-gray-800">{c.name || "—"}</td>
+                <td className="px-4 py-3"><a href={`/admin/customers/${c.id}`} className="text-gray-900 font-medium hover:text-blue-600 hover:underline">{c.name || "View profile"}</a></td>
                 <td className="px-4 py-3 text-gray-800"><a href={`mailto:${c.email}`} className="text-blue-600 hover:underline">{c.email}</a></td>
                 <td className="px-4 py-3 text-gray-500">{c.phone || "—"}</td>
                 <td className="px-4 py-3">
