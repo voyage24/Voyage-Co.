@@ -36,6 +36,8 @@ import JetLag from "@/components/products/JetLag";
 import KnowBeforeYouGo from "@/components/products/KnowBeforeYouGo";
 import GettingAround from "@/components/products/GettingAround";
 import HealthSafety from "@/components/products/HealthSafety";
+import PriceContext from "@/components/products/PriceContext";
+import { computePriceContext, type PriceContext as PriceCtx } from "@/lib/price-context";
 import { hotelJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 export const revalidate = 60;
@@ -86,6 +88,23 @@ export default async function HotelDetailPage({ params }: { params: { id: string
     .sort((a, b) => b.score - a.score)
     .slice(0, 3)
     .map(x => x.h);
+
+  // Price context — how this rate compares to similar stays (same country +
+  // category, widening to country-only if there aren't enough peers).
+  let priceCtx: PriceCtx | null = null;
+  if (!hotel.priceOnRequest && hotel.pricePerNight > 0) {
+    let peers = await prisma.hotel.findMany({
+      where: { published: true, priceOnRequest: false, country: hotel.country, category: hotel.category },
+      select: { pricePerNight: true },
+    });
+    if (peers.length < 4) {
+      peers = await prisma.hotel.findMany({
+        where: { published: true, priceOnRequest: false, country: hotel.country },
+        select: { pricePerNight: true },
+      });
+    }
+    priceCtx = computePriceContext(hotel.pricePerNight, peers.map(p => p.pricePerNight));
+  }
 
   // Use the property's own coordinates, else resolve from its city/location so
   // the Location map + weather + nearest airport still show — covers every
@@ -201,6 +220,7 @@ export default async function HotelDetailPage({ params }: { params: { id: string
                 </>
               )}
             </div>
+            {priceCtx && <PriceContext ctx={priceCtx} category={hotel.category} country={hotel.country} />}
             <Link
               href={hotel.priceOnRequest ? "/contact" : `/book?type=hotel&id=${hotel.id}`}
               className="block w-full text-center py-4 bg-ink hover:bg-ink/90 text-page font-medium text-xs tracking-[0.16em] uppercase rounded-sm transition-colors mb-3"
