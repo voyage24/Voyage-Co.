@@ -31,6 +31,8 @@ import CarbonEstimate from "@/components/products/CarbonEstimate";
 import ConnectivityGuide from "@/components/products/ConnectivityGuide";
 import CurrencyCheatSheet from "@/components/products/CurrencyCheatSheet";
 import LocalHolidays from "@/components/products/LocalHolidays";
+import TypicalCosts from "@/components/products/TypicalCosts";
+import JetLag from "@/components/products/JetLag";
 import { hotelJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 export const revalidate = 60;
@@ -239,11 +241,13 @@ export default async function HotelDetailPage({ params }: { params: { id: string
             <TippingGuide country={hotel.country} />
             <ConnectivityGuide country={hotel.country} />
             <CurrencyCheatSheet country={hotel.country} />
+            <TypicalCosts country={hotel.country} />
           </div>
           <div className="space-y-4">
             {coords && <PackingList lat={coords[0]} lng={coords[1]} destinationKey={hotel.id} />}
             {coords && <CarbonEstimate lat={coords[0]} lng={coords[1]} destination={hotel.city} />}
             <BestTimeToVisit country={hotel.country} />
+            <JetLag country={hotel.country} city={hotel.city} />
             <LocalHolidays country={hotel.country} />
             <Phrasebook country={hotel.country} />
           </div>

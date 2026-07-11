@@ -11,6 +11,8 @@ import CarbonEstimate from "@/components/products/CarbonEstimate";
 import ConnectivityGuide from "@/components/products/ConnectivityGuide";
 import CurrencyCheatSheet from "@/components/products/CurrencyCheatSheet";
 import LocalHolidays from "@/components/products/LocalHolidays";
+import TypicalCosts from "@/components/products/TypicalCosts";
+import JetLag from "@/components/products/JetLag";
 
 // The shared "destination companion" block used across stays, experiences,
 // cruises and packages: map + directions + live weather (when coordinates are
@@ -56,11 +58,13 @@ export default function DestinationCompanion({
             <TippingGuide country={country} />
             <ConnectivityGuide country={country} />
             <CurrencyCheatSheet country={country} />
+            <TypicalCosts country={country} />
           </div>
           <div className="space-y-4">
             {hasCoords && <PackingList lat={coords![0]} lng={coords![1]} destinationKey={destKey} />}
             {hasCoords && <CarbonEstimate lat={coords![0]} lng={coords![1]} destination={city} />}
             <BestTimeToVisit country={country} />
+            <JetLag country={country} city={city} />
             <LocalHolidays country={country} />
             <Phrasebook country={country!} />
           </div>
