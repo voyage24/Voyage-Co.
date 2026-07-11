@@ -4,6 +4,7 @@ import DirectionsButton from "@/components/ui/DirectionsButton";
 import DestinationEssentials from "@/components/ui/DestinationEssentials";
 import PackingList from "@/components/ui/PackingList";
 import Phrasebook from "@/components/ui/Phrasebook";
+import NearestAirport from "@/components/products/NearestAirport";
 
 // The shared "destination companion" block used across stays, experiences,
 // cruises and packages: map + directions + live weather (when coordinates are
@@ -36,6 +37,7 @@ export default function DestinationCompanion({
             </div>
           </div>
           <PropertyMap lat={coords![0]} lng={coords![1]} name={name} />
+          <div className="mt-4"><NearestAirport lat={coords![0]} lng={coords![1]} /></div>
         </>
       )}
 
