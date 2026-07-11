@@ -132,6 +132,12 @@ cross-linked to `/plan`. Plus a visible FAQ accordion + `FAQPage` JSON-LD
 generated from the curated data (`lib/destination-faq.ts`) for rich results.
 All country pages are in `app/sitemap.ts`.
 
+### Price context ("is it a good deal?")
+Under the nightly price on a stay page, `PriceContext` shows how the rate
+compares to similar stays (same country + category, widening to country-only) —
+a min–median–max range bar + verdict (Great value / typical / premium).
+`lib/price-context.ts` computes it from peer `pricePerNight`; hides under 4 peers.
+
 ### Recommendations
 Two homepage rails: `RecentlyViewed` ("Continue exploring", from localStorage)
 and `Recommendations` ("Recommended for you") — the latter POSTs recently-viewed
