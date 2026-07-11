@@ -113,8 +113,10 @@ carbon estimate (`lib/carbon.ts`), upcoming holidays/festivals
 (`/api/content/holidays` — Nager.Date + `lib/holidays-fallback.ts` for the
 countries Nager lacks, incl. India) and a currency cheat-sheet
 (`/api/content/rates` — open.er-api.com, cached daily; `lib/country-meta.ts`
-maps country→ISO2+currency). All curated per country/coords and hide gracefully
-when there's no data.
+maps country→ISO2+currency), a jet-lag / time-difference helper (`JetLag`, reuses
+`lib/emergency.ts` timezones) and a typical-costs snapshot (`lib/typical-costs.ts`,
+USD prices × the live rate, shown in the guest's currency). All curated per
+country/coords and hide gracefully when there's no data.
 
 ### Recommendations
 Two homepage rails: `RecentlyViewed` ("Continue exploring", from localStorage)
