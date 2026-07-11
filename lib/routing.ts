@@ -11,25 +11,40 @@ export type Transfer = NearestAirport & { source: "precise" | "estimate"; km?: n
 
 const roundMins = (secs: number) => Math.max(5, Math.round(secs / 60 / 5) * 5);
 
+// Road route from the airport to the property, via whichever provider is
+// configured — OpenRouteService or Geoapify (both free). Returns null on no
+// key, no road route (islands), or an API error.
 async function fetchRoad(originLat: number, originLng: number, dstLat: number, dstLng: number): Promise<{ km: number; minutes: number } | null> {
-  const key = process.env.ORS_API_KEY;
-  if (!key) return null;
-  try {
-    const res = await fetch("https://api.openrouteservice.org/v2/directions/driving-car", {
-      method: "POST",
-      headers: { Authorization: key, "Content-Type": "application/json" },
-      // ORS expects [lng, lat]; route FROM airport TO property.
-      body: JSON.stringify({ coordinates: [[dstLng, dstLat], [originLng, originLat]] }),
-      cache: "no-store",
-    });
-    if (!res.ok) return null;
-    const d = await res.json();
-    const sum = d.routes?.[0]?.summary;
-    if (!sum || typeof sum.duration !== "number") return null;
-    return { km: Math.round(sum.distance / 1000), minutes: roundMins(sum.duration) };
-  } catch {
-    return null;
+  const ors = process.env.ORS_API_KEY;
+  const geoapify = process.env.GEOAPIFY_API_KEY;
+
+  if (ors) {
+    try {
+      const res = await fetch("https://api.openrouteservice.org/v2/directions/driving-car", {
+        method: "POST",
+        headers: { Authorization: ors, "Content-Type": "application/json" },
+        body: JSON.stringify({ coordinates: [[dstLng, dstLat], [originLng, originLat]] }), // ORS wants [lng, lat]
+        cache: "no-store",
+      });
+      if (res.ok) {
+        const sum = (await res.json())?.routes?.[0]?.summary;
+        if (sum && typeof sum.duration === "number") return { km: Math.round(sum.distance / 1000), minutes: roundMins(sum.duration) };
+      }
+    } catch { /* fall through */ }
   }
+
+  if (geoapify) {
+    try {
+      const url = `https://api.geoapify.com/v1/routing?waypoints=${dstLat},${dstLng}|${originLat},${originLng}&mode=drive&apiKey=${geoapify}`;
+      const res = await fetch(url, { cache: "no-store" });
+      if (res.ok) {
+        const props = (await res.json())?.features?.[0]?.properties;
+        if (props && typeof props.time === "number") return { km: Math.round(props.distance / 1000), minutes: roundMins(props.time) };
+      }
+    } catch { /* fall through */ }
+  }
+
+  return null;
 }
 
 export async function getTransfer(lat: number, lng: number): Promise<Transfer | null> {
