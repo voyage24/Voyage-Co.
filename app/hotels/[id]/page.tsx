@@ -34,6 +34,8 @@ import LocalHolidays from "@/components/products/LocalHolidays";
 import TypicalCosts from "@/components/products/TypicalCosts";
 import JetLag from "@/components/products/JetLag";
 import KnowBeforeYouGo from "@/components/products/KnowBeforeYouGo";
+import GettingAround from "@/components/products/GettingAround";
+import HealthSafety from "@/components/products/HealthSafety";
 import { hotelJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 export const revalidate = 60;
@@ -242,6 +244,7 @@ export default async function HotelDetailPage({ params }: { params: { id: string
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-start">
             <div className="space-y-4">
               <BestTimeToVisit country={hotel.country} />
+              <GettingAround country={hotel.country} />
               <TippingGuide country={hotel.country} />
               <ConnectivityGuide country={hotel.country} />
               <CurrencyCheatSheet country={hotel.country} />
@@ -249,6 +252,7 @@ export default async function HotelDetailPage({ params }: { params: { id: string
             </div>
             <div className="space-y-4">
               {coords && <PackingList lat={coords[0]} lng={coords[1]} destinationKey={hotel.id} />}
+              <HealthSafety country={hotel.country} />
               {coords && <CarbonEstimate lat={coords[0]} lng={coords[1]} destination={hotel.city} />}
               <JetLag country={hotel.country} city={hotel.city} />
               <LocalHolidays country={hotel.country} />
