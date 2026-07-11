@@ -23,12 +23,9 @@ export const metadata: Metadata = {
 };
 
 export default async function PressPage() {
-  const [destCount, bookings] = await Promise.all([
-    prisma.featuredDestination.count({ where: { published: true } }).catch(() => 0),
-    prisma.booking
-      .findMany({ where: { checkIn: { not: null }, status: { not: "cancelled" } }, select: { checkIn: true, createdAt: true } })
-      .catch(() => [] as { checkIn: string | null; createdAt: Date }[]),
-  ]);
+  const bookings = await prisma.booking
+    .findMany({ where: { checkIn: { not: null }, status: { not: "cancelled" } }, select: { checkIn: true, createdAt: true } })
+    .catch(() => [] as { checkIn: string | null; createdAt: Date }[]);
 
   // Average booking-to-check-in lead time, in days, from real bookings.
   const leadDays = bookings
@@ -43,7 +40,13 @@ export default async function PressPage() {
   // Enough real data → show the actual median; otherwise a realistic bespoke
   // planning window for a young brand. Either way it's honest and self-updating.
   const leadTime = leadDays.length >= 3 ? `~${Math.max(1, Math.round(median(leadDays) / 7))} weeks` : "3–6 weeks";
-  const destinations = destCount > 0 ? `${destCount} ${destCount === 1 ? "destination" : "destinations"}` : "Curating now";
+
+  // Soft-launch: the brand hasn't deliberately curated its launch destinations
+  // yet, so this reads "Curating now". When you're ready to show a live number,
+  // swap in the count of published Featured Destinations (admin → Destinations):
+  //   const n = await prisma.featuredDestination.count({ where: { published: true } });
+  //   const destinations = n > 0 ? `${n} destination${n === 1 ? "" : "s"}` : "Curating now";
+  const destinations = "Curating now";
 
   return <PressPageClient founded={FOUNDED} destinations={destinations} leadTime={leadTime} />;
 }
