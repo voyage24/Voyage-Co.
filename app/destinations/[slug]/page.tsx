@@ -19,6 +19,7 @@ import TypicalCosts from "@/components/products/TypicalCosts";
 import HealthSafety from "@/components/products/HealthSafety";
 import LocalHolidays from "@/components/products/LocalHolidays";
 import Phrasebook from "@/components/ui/Phrasebook";
+import SaveGuideOffline from "@/components/products/SaveGuideOffline";
 import { getSeasonality } from "@/lib/seasonality";
 import { getGettingAround } from "@/lib/getting-around";
 
@@ -113,7 +114,10 @@ export default async function DestinationPage({ params }: { params: { slug: stri
       {hasGuide && (
         <section className="mt-4 border-t border-line pt-12">
           <p className="text-[11px] tracking-[0.3em] uppercase text-gold mb-2">Travel guide</p>
-          <h2 className="font-serif text-2xl sm:text-3xl font-light text-ink mb-2">Know before you go to {country}</h2>
+          <div className="flex flex-wrap items-start justify-between gap-3 mb-2">
+            <h2 className="font-serif text-2xl sm:text-3xl font-light text-ink">Know before you go to {country}</h2>
+            <SaveGuideOffline country={country} />
+          </div>
           <p className="text-ink-muted font-light mb-8 max-w-2xl">When to visit, getting around, tipping, connectivity, currency and the practical essentials — everything our concierge would brief you on.</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 items-start">
             <BestTimeToVisit country={country} />
