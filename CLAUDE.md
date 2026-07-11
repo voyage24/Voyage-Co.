@@ -108,8 +108,16 @@ Never run `migrate dev` against production. Models are listed in schema.prisma.
 Every property page shows a Location section: map, directions, live weather,
 nearest airport, local time, emergency numbers, concierge, SOS, packing list,
 phrases, best-time-to-visit (`lib/seasonality.ts`), tipping & etiquette
-(`lib/tipping.ts`) and a flight carbon estimate (`lib/carbon.ts`). All curated
-per country/coords and hide gracefully when there's no data. The coords-dependent cards need lat/lng; the country-only cards
+(`lib/tipping.ts`), power & connectivity (`lib/connectivity.ts`) and a flight
+carbon estimate (`lib/carbon.ts`). All curated per country/coords and hide
+gracefully when there's no data.
+
+### Recommendations
+Two homepage rails: `RecentlyViewed` ("Continue exploring", from localStorage)
+and `Recommendations` ("Recommended for you") — the latter POSTs recently-viewed
+refs to `/api/content/recommendations`, which derives taste (country + category)
+and returns new same-destination-first properties. `lib/recently-viewed.ts`
+tracks views via `RecordView` on detail pages. The coords-dependent cards need lat/lng; the country-only cards
 (essentials, phrasebook) render whenever the country is known — never gate them
 on coords. Coordinates resolve via `lib/place-coords.ts` `resolveCoords(city,
 location)`: property lat/lng → curated hotel cities → the 550-airport city
