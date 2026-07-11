@@ -128,7 +128,9 @@ visible; the reference cards tuck into a collapsible `KnowBeforeYouGo` panel.
 hotels (`lib/destinations.ts` `getDestinations()`). Beyond listing stays/
 experiences/cruises it renders a server-side "Know before you go" travel guide
 reusing the country companion cards — substantial indexable content per country,
-cross-linked to `/plan`. All country pages are in `app/sitemap.ts`.
+cross-linked to `/plan`. Plus a visible FAQ accordion + `FAQPage` JSON-LD
+generated from the curated data (`lib/destination-faq.ts`) for rich results.
+All country pages are in `app/sitemap.ts`.
 
 ### Recommendations
 Two homepage rails: `RecentlyViewed` ("Continue exploring", from localStorage)
