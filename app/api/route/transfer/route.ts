@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getTransfer } from "@/lib/routing";
+import { nearestAirport } from "@/lib/nearest-airport";
+import { CITY_COORDS } from "@/lib/geo";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 15;
@@ -30,6 +32,28 @@ export async function GET(req: NextRequest) {
   const lat = parseFloat(req.nextUrl.searchParams.get("lat") || "");
   const lng = parseFloat(req.nextUrl.searchParams.get("lng") || "");
   if (Number.isNaN(lat) || Number.isNaN(lng)) return NextResponse.json({ error: "lat and lng required" }, { status: 400 });
+
+  // ?debug=1 — run the real airport→property route and show the raw ORS result.
+  if (req.nextUrl.searchParams.get("debug") === "1") {
+    const a = nearestAirport(lat, lng);
+    const dest = a ? CITY_COORDS[a.code] : null;
+    const out: Record<string, unknown> = { nearest: a, dest };
+    const ors = process.env.ORS_API_KEY;
+    if (a && dest && ors) {
+      try {
+        const r = await fetch("https://api.openrouteservice.org/v2/directions/driving-car", {
+          method: "POST",
+          headers: { Authorization: ors, "Content-Type": "application/json", Accept: "application/json" },
+          body: JSON.stringify({ coordinates: [[dest[1], dest[0]], [lng, lat]] }),
+          cache: "no-store",
+        });
+        out.status = r.status;
+        out.body = (await r.text()).slice(0, 400);
+      } catch (e) { out.error = String(e).slice(0, 200); }
+    }
+    return NextResponse.json(out);
+  }
+
   const transfer = await getTransfer(lat, lng);
   if (!transfer) return NextResponse.json({ transfer: null });
   return NextResponse.json({ transfer });
