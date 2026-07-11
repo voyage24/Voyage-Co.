@@ -30,16 +30,28 @@ export async function POST(req: Request) {
 
   const cList = Array.from(countries);
   const catList = Array.from(categories);
-  const or: object[] = [];
-  if (cList.length) or.push({ country: { in: cList } });
-  if (catList.length) or.push({ category: { in: catList } });
+  const notIn = hotelIds.length ? hotelIds : ["_none_"];
 
-  const recHotels = await prisma.hotel.findMany({
-    where: { published: true, id: { notIn: hotelIds.length ? hotelIds : ["_none_"] }, OR: or },
-    orderBy: [{ rating: "desc" }, { reviewCount: "desc" }],
-    take: 12,
-    select: { id: true, name: true, image: true, city: true, country: true },
-  });
+  // Rank same-destination properties above same-style-elsewhere ones — a guest
+  // browsing India wants more India first, then similar-style stays elsewhere.
+  const [sameCountry, sameStyle] = await Promise.all([
+    cList.length
+      ? prisma.hotel.findMany({
+          where: { published: true, id: { notIn }, country: { in: cList } },
+          orderBy: [{ rating: "desc" }, { reviewCount: "desc" }], take: 12,
+          select: { id: true, name: true, image: true, city: true, country: true },
+        })
+      : Promise.resolve([]),
+    catList.length
+      ? prisma.hotel.findMany({
+          where: { published: true, id: { notIn }, category: { in: catList }, ...(cList.length ? { country: { notIn: cList } } : {}) },
+          orderBy: [{ rating: "desc" }, { reviewCount: "desc" }], take: 8,
+          select: { id: true, name: true, image: true, city: true, country: true },
+        })
+      : Promise.resolve([]),
+  ]);
+  const seen = new Set<string>();
+  const recHotels = [...sameCountry, ...sameStyle].filter(h => (seen.has(h.id) ? false : seen.add(h.id))).slice(0, 12);
 
   const recExps = cList.length
     ? await prisma.experience.findMany({
