@@ -8,7 +8,8 @@ import HotelCard from "@/components/cards/HotelCard";
 import ExperienceCard from "@/components/cards/ExperienceCard";
 import CruiseCard from "@/components/cards/CruiseCard";
 import JsonLd from "@/components/seo/JsonLd";
-import { breadcrumbJsonLd } from "@/lib/seo";
+import { breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
+import { destinationFaqs } from "@/lib/destination-faq";
 import BestTimeToVisit from "@/components/products/BestTimeToVisit";
 import GettingAround from "@/components/products/GettingAround";
 import TippingGuide from "@/components/products/TippingGuide";
@@ -46,6 +47,7 @@ export default async function DestinationPage({ params }: { params: { slug: stri
   const country = dest.country;
 
   const hasGuide = !!getSeasonality(country) || !!getGettingAround(country);
+  const faqs = destinationFaqs(country);
 
   const [hotels, experiences, cruises] = await Promise.all([
     prisma.hotel.findMany({ where: { published: true, country }, take: 12 }),
@@ -55,7 +57,7 @@ export default async function DestinationPage({ params }: { params: { slug: stri
 
   return (
     <div className="max-w-[1500px] mx-auto px-6 lg:px-12 pt-28 pb-20">
-      <JsonLd data={[breadcrumbJsonLd([{ name: "Destinations", path: "/destinations" }, { name: country, path: `/destinations/${dest.slug}` }])]} />
+      <JsonLd data={[breadcrumbJsonLd([{ name: "Destinations", path: "/destinations" }, { name: country, path: `/destinations/${dest.slug}` }]), ...(faqs.length ? [faqJsonLd(faqs)] : [])]} />
       <Link href="/destinations" className="inline-flex items-center gap-2 text-xs tracking-[0.1em] uppercase text-ink-muted hover:text-ink mb-6 transition-colors">
         <ArrowLeft size={15} /> All destinations
       </Link>
@@ -116,6 +118,23 @@ export default async function DestinationPage({ params }: { params: { slug: stri
           <p className="text-xs text-ink-faint mt-8">
             Ready to go? <Link href="/plan" className="text-gold link-underline">Plan your {country} journey with a concierge →</Link>
           </p>
+        </section>
+      )}
+
+      {faqs.length > 0 && (
+        <section className="mt-14 border-t border-line pt-12">
+          <h2 className="font-serif text-2xl sm:text-3xl font-light text-ink mb-6">{country} travel FAQs</h2>
+          <div className="max-w-3xl divide-y divide-line border-y border-line">
+            {faqs.map((f, i) => (
+              <details key={i} className="group py-4 [&_summary::-webkit-details-marker]:hidden">
+                <summary className="flex items-start justify-between gap-4 cursor-pointer list-none">
+                  <span className="text-ink font-medium text-[15px]">{f.q}</span>
+                  <span className="text-gold text-xl leading-none shrink-0 transition-transform duration-200 group-open:rotate-45">+</span>
+                </summary>
+                <p className="text-ink-muted font-light mt-3 leading-relaxed">{f.a}</p>
+              </details>
+            ))}
+          </div>
         </section>
       )}
     </div>
