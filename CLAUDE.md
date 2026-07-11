@@ -104,6 +104,16 @@ Appearance. Save routes filter by the known setting keys.
 4. Commit + push → Vercel build runs `prisma migrate deploy` and applies it to production.
 Never run `migrate dev` against production. Models are listed in schema.prisma.
 
+### Nearest airport + transfer time
+Shown on all property/companion pages. `lib/nearest-airport.ts` finds the
+closest airport (haversine over CITY_COORDS in lib/geo.ts, names from CITIES).
+`lib/routing.ts` gets the real drive time via OpenRouteService (ORS_API_KEY) or
+Geoapify (GEOAPIFY_API_KEY), cached in RouteCache (only precise results cached;
+estimates retried). ORS needs `Accept: application/json` and `radiuses:[-1,-1]`
+(airport points sit off-road). `/api/route/transfer?lat=&lng=` + client
+`components/products/NearestAirport.tsx`. Islands with no road route keep the
+distance estimate.
+
 ### Other notable helpers
 `lib/prisma.ts` (client singleton), `lib/push.ts` (web push), `lib/webauthn.ts`
 + `lib/passkey-client.ts` (passkeys), `lib/admin/audit.ts` (audit log),
