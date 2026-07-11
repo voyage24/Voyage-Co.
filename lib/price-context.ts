@@ -38,8 +38,8 @@ export function valueBandsFor(
     if (h.priceOnRequest || h.pricePerNight <= 0) continue;
     const med = median.get(`${h.country}|${h.category}`);
     if (!med) continue;
-    if (h.pricePerNight <= med * 0.8) out.set(h.id, "value");
-    else if (h.pricePerNight >= med * 1.25) out.set(h.id, "premium");
+    if (h.pricePerNight <= med * 0.85) out.set(h.id, "value");
+    else if (h.pricePerNight >= med * 1.3) out.set(h.id, "premium");
   }
   return out;
 }
