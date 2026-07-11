@@ -24,7 +24,7 @@ import PackingList from "@/components/ui/PackingList";
 import Phrasebook from "@/components/ui/Phrasebook";
 import NearestAirport from "@/components/products/NearestAirport";
 import LocalActivities from "@/components/products/LocalActivities";
-import { getHotelCityCoords } from "@/lib/hotel-coords";
+import { resolveCoords } from "@/lib/place-coords";
 import { hotelJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 export const revalidate = 60;
@@ -76,10 +76,11 @@ export default async function HotelDetailPage({ params }: { params: { id: string
     .slice(0, 3)
     .map(x => x.h);
 
-  // Use the property's own coordinates, else fall back to its city centre so
-  // the Location map + weather still show.
-  const cityCoords = getHotelCityCoords(hotel.city);
-  const coords: [number, number] | null = hotel.lat != null && hotel.lng != null ? [hotel.lat, hotel.lng] : cityCoords;
+  // Use the property's own coordinates, else resolve from its city/location so
+  // the Location map + weather + nearest airport still show — covers every
+  // property, not just the curated city list.
+  const coords: [number, number] | null =
+    hotel.lat != null && hotel.lng != null ? [hotel.lat, hotel.lng] : resolveCoords(hotel.city, hotel.location);
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20">
@@ -208,28 +209,32 @@ export default async function HotelDetailPage({ params }: { params: { id: string
         </div>
       </div>
 
-      {coords && (
-        <section className="mt-12">
-          <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-            <h2 className="font-serif text-2xl font-light text-ink">Location</h2>
+      <section className="mt-12">
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+          <h2 className="font-serif text-2xl font-light text-ink">Location</h2>
+          {coords && (
             <div className="flex items-center gap-4">
               <DirectionsButton lat={coords[0]} lng={coords[1]} name={hotel.name} />
               <DestinationWeather lat={coords[0]} lng={coords[1]} />
             </div>
+          )}
+        </div>
+        {coords && (
+          <>
+            <PropertyMap lat={coords[0]} lng={coords[1]} name={hotel.name} />
+            <div className="mt-4"><NearestAirport lat={coords[0]} lng={coords[1]} /></div>
+          </>
+        )}
+        {/* Concierge, local time, emergency SOS + phrasebook need only the
+            country, so they show for every property even without coordinates. */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4 items-start">
+          <DestinationEssentials country={hotel.country} city={hotel.city} />
+          <div className="space-y-4">
+            {coords && <PackingList lat={coords[0]} lng={coords[1]} destinationKey={hotel.id} />}
+            <Phrasebook country={hotel.country} />
           </div>
-          <PropertyMap lat={coords[0]} lng={coords[1]} name={hotel.name} />
-          <div className="mt-4"><NearestAirport lat={coords[0]} lng={coords[1]} /></div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4 items-start">
-            <DestinationEssentials country={hotel.country} city={hotel.city} />
-            <div className="space-y-4">
-              <PackingList lat={coords[0]} lng={coords[1]} destinationKey={hotel.id} />
-              <Phrasebook country={hotel.country} />
-            </div>
-          </div>
-        </section>
-      )}
-
-      {!coords && <div className="mt-4"><Phrasebook country={hotel.country} /></div>}
+        </div>
+      </section>
 
       <FaqAndEntry faqs={faqs} entryRequirements={hotel.entryRequirements} />
 

@@ -15,6 +15,7 @@ import FaqAndEntry from "@/components/products/FaqAndEntry";
 import DestinationCompanion from "@/components/products/DestinationCompanion";
 import { PORT_COORDS } from "@/lib/cruise-ports";
 import { countryForPlace } from "@/lib/place-country";
+import { resolveCoords } from "@/lib/place-coords";
 import CompareButton from "@/components/compare/CompareButton";
 import RecordView from "@/components/products/RecordView";
 import AddToItineraryButton from "@/components/itinerary/AddToItineraryButton";
@@ -221,7 +222,7 @@ export default async function CruiseDetailPage({ params }: { params: { id: strin
       </div>
 
       <DestinationCompanion
-        coords={PORT_COORDS[cruise.departurePort] ?? null}
+        coords={PORT_COORDS[cruise.departurePort] ?? resolveCoords(cruise.departurePort)}
         country={countryForPlace(cruise.departurePort)}
         city={cruise.departurePort} name={cruise.departurePort} destKey={cruise.id}
         heading="Departure port"

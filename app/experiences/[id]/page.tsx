@@ -14,6 +14,7 @@ import DirectionsButton from "@/components/ui/DirectionsButton";
 import JsonLd from "@/components/seo/JsonLd";
 import FaqAndEntry from "@/components/products/FaqAndEntry";
 import DestinationCompanion from "@/components/products/DestinationCompanion";
+import { resolveCoords } from "@/lib/place-coords";
 import CompareButton from "@/components/compare/CompareButton";
 import RecordView from "@/components/products/RecordView";
 import AddToItineraryButton from "@/components/itinerary/AddToItineraryButton";
@@ -143,7 +144,7 @@ export default async function ExperienceDetailPage({ params }: { params: { id: s
       </div>
 
       <DestinationCompanion
-        coords={exp.lat != null && exp.lng != null ? [exp.lat, exp.lng] as [number, number] : null}
+        coords={exp.lat != null && exp.lng != null ? [exp.lat, exp.lng] as [number, number] : resolveCoords(exp.location)}
         country={exp.country} city={exp.location} name={exp.title} destKey={exp.id}
       />
 

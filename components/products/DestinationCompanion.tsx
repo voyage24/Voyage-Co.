@@ -27,15 +27,17 @@ export default function DestinationCompanion({
 
   return (
     <section className="mt-12">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+        <h2 className="font-serif text-2xl font-light text-ink">{heading}</h2>
+        {hasCoords && (
+          <div className="flex items-center gap-4">
+            <DirectionsButton lat={coords![0]} lng={coords![1]} name={name} />
+            <DestinationWeather lat={coords![0]} lng={coords![1]} />
+          </div>
+        )}
+      </div>
       {hasCoords && (
         <>
-          <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-            <h2 className="font-serif text-2xl font-light text-ink">{heading}</h2>
-            <div className="flex items-center gap-4">
-              <DirectionsButton lat={coords![0]} lng={coords![1]} name={name} />
-              <DestinationWeather lat={coords![0]} lng={coords![1]} />
-            </div>
-          </div>
           <PropertyMap lat={coords![0]} lng={coords![1]} name={name} />
           <div className="mt-4"><NearestAirport lat={coords![0]} lng={coords![1]} /></div>
         </>
