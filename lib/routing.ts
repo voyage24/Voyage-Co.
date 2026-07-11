@@ -23,7 +23,10 @@ async function fetchRoad(originLat: number, originLng: number, dstLat: number, d
       const res = await fetch("https://api.openrouteservice.org/v2/directions/driving-car", {
         method: "POST",
         headers: { Authorization: ors, "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify({ coordinates: [[dstLng, dstLat], [originLng, originLat]] }), // ORS wants [lng, lat]
+        // ORS wants [lng, lat]. radiuses [-1,-1] = snap each point to the
+        // nearest road with no distance limit (airport reference points sit on
+        // the runway, well beyond the 350m default).
+        body: JSON.stringify({ coordinates: [[dstLng, dstLat], [originLng, originLat]], radiuses: [-1, -1] }),
         cache: "no-store",
       });
       if (res.ok) {
