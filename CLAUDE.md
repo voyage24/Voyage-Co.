@@ -104,6 +104,17 @@ Appearance. Save routes filter by the known setting keys.
 4. Commit + push → Vercel build runs `prisma migrate deploy` and applies it to production.
 Never run `migrate dev` against production. Models are listed in schema.prisma.
 
+### Property coordinates (the Location / companion section)
+Every property page shows a Location section: map, directions, live weather,
+nearest airport, local time, emergency numbers, concierge, SOS, packing list,
+phrases. The coords-dependent cards need lat/lng; the country-only cards
+(essentials, phrasebook) render whenever the country is known — never gate them
+on coords. Coordinates resolve via `lib/place-coords.ts` `resolveCoords(city,
+location)`: property lat/lng → curated hotel cities → the 550-airport city
+dataset → a supplementary table of resort towns/islands/parks/renamed cities →
+fuzzy substring match. Covers all 218 property cities. When adding a property in
+a brand-new town, add it to the `EXTRA` map there so its Location shows.
+
 ### Nearest airport + transfer time
 Shown on all property/companion pages. `lib/nearest-airport.ts` finds the
 closest airport (haversine over CITY_COORDS in lib/geo.ts, names from CITIES).
