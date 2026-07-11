@@ -108,9 +108,13 @@ Never run `migrate dev` against production. Models are listed in schema.prisma.
 Every property page shows a Location section: map, directions, live weather,
 nearest airport, local time, emergency numbers, concierge, SOS, packing list,
 phrases, best-time-to-visit (`lib/seasonality.ts`), tipping & etiquette
-(`lib/tipping.ts`), power & connectivity (`lib/connectivity.ts`) and a flight
-carbon estimate (`lib/carbon.ts`). All curated per country/coords and hide
-gracefully when there's no data.
+(`lib/tipping.ts`), power & connectivity (`lib/connectivity.ts`), a flight
+carbon estimate (`lib/carbon.ts`), upcoming holidays/festivals
+(`/api/content/holidays` — Nager.Date + `lib/holidays-fallback.ts` for the
+countries Nager lacks, incl. India) and a currency cheat-sheet
+(`/api/content/rates` — open.er-api.com, cached daily; `lib/country-meta.ts`
+maps country→ISO2+currency). All curated per country/coords and hide gracefully
+when there's no data.
 
 ### Recommendations
 Two homepage rails: `RecentlyViewed` ("Continue exploring", from localStorage)
