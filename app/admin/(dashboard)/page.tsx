@@ -29,7 +29,7 @@ const QUICK = [
 const fmtDate = (d: Date | string) => new Date(d).toLocaleDateString("en-GB", { day: "numeric", month: "short" });
 
 export default async function AdminDashboardPage() {
-  const [hotel, flight, train, experience, pkg, cruise, blogPost, newsletter, newEnquiries, pendingBookings, customer, pendingReviews, recentBookings, recentEnquiries] = await Promise.all([
+  const [hotel, flight, train, experience, pkg, cruise, blogPost, newsletter, newEnquiries, pendingBookings, customer, pendingReviews, recentBookings, recentEnquiries, openFollowups] = await Promise.all([
     prisma.hotel.count(), prisma.flight.count(), prisma.train.count(), prisma.experience.count(),
     prisma.package.count(), prisma.cruise.count(), prisma.blogPost.count(), prisma.newsletterSubscriber.count(),
     prisma.enquiry.count({ where: { status: "new" } }),
@@ -38,7 +38,16 @@ export default async function AdminDashboardPage() {
     prisma.review.count({ where: { status: "pending" } }),
     prisma.booking.findMany({ orderBy: { createdAt: "desc" }, take: 6, select: { id: true, reference: true, guestName: true, itemTitle: true, status: true, createdAt: true } }),
     prisma.enquiry.findMany({ orderBy: { createdAt: "desc" }, take: 6, select: { id: true, name: true, type: true, subject: true, stage: true, createdAt: true } }),
+    prisma.followUp.findMany({ where: { done: false }, orderBy: { dueAt: "asc" }, take: 8 }).catch(() => []),
   ]);
+
+  // Resolve customer ids for follow-up emails so each links to the profile.
+  const fuEmails = Array.from(new Set(openFollowups.map(f => f.email).filter(Boolean) as string[]));
+  const fuCustomers = fuEmails.length
+    ? await prisma.customer.findMany({ where: { email: { in: fuEmails } }, select: { id: true, email: true } }).catch(() => [])
+    : [];
+  const emailToId = new Map(fuCustomers.map(c => [c.email.toLowerCase(), c.id]));
+  const startOfToday = new Date(new Date().toDateString());
 
   const counts: Record<string, number> = { hotel, flight, train, experience, package: pkg, cruise, blogPost, customer };
 
@@ -149,6 +158,31 @@ export default async function AdminDashboardPage() {
           )}
         </div>
       </div>
+
+      {/* Follow-ups due */}
+      {openFollowups.length > 0 && (
+        <div className="tile-grad-4 rounded-xl p-5 admin-rise admin-lift">
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-sm font-medium text-gray-900 flex items-center gap-2"><CalendarCheck size={15} className="text-gray-900" /> Follow-ups due</p>
+          </div>
+          <ul className="divide-y divide-gray-100">
+            {openFollowups.map(f => {
+              const overdue = f.dueAt < startOfToday;
+              const id = f.email ? emailToId.get(f.email.toLowerCase()) : undefined;
+              return (
+                <li key={f.id} className="py-2.5 flex items-center gap-3">
+                  <span className={`text-[9px] uppercase tracking-wide px-1.5 py-0.5 rounded shrink-0 ${overdue ? "bg-red-50 text-red-600" : "bg-amber-50 text-amber-700"}`}>{overdue ? "overdue" : "due"}</span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-sm text-gray-900 truncate">{f.title}</span>
+                    {f.email && <span className="block text-xs text-gray-400 truncate">{id ? <Link href={`/admin/customers/${id}`} className="hover:text-blue-600 hover:underline">{f.email}</Link> : f.email}</span>}
+                  </span>
+                  <span className={`text-xs shrink-0 ${overdue ? "text-red-600 font-medium" : "text-gray-400"}`}>{fmtDate(f.dueAt)}</span>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      )}
 
       {/* Catalogue counts */}
       <div>
