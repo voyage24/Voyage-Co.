@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
-import { getDestinations } from "@/lib/destinations";
 import PressPageClient from "@/components/pages/PressPageClient";
 
 // Facts are derived from live data so the press page never overstates a newly
-// founded (2026) brand: "destinations curated" tracks the countries we actually
-// have published stays in, and "average itinerary lead time" is computed from
-// real bookings. Both update on their own as the business grows.
+// founded (2026) brand: "destinations curated" tracks the destinations we have
+// *deliberately curated* (the Featured Destinations managed in admin), and
+// "average itinerary lead time" is computed from real bookings. Both update on
+// their own as the business grows.
 export const revalidate = 3600;
 
 const FOUNDED = "2026";
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
 
 export default async function PressPage() {
   const [destCount, bookings] = await Promise.all([
-    getDestinations().then(d => d.length).catch(() => 0),
+    prisma.featuredDestination.count({ where: { published: true } }).catch(() => 0),
     prisma.booking
       .findMany({ where: { checkIn: { not: null }, status: { not: "cancelled" } }, select: { checkIn: true, createdAt: true } })
       .catch(() => [] as { checkIn: string | null; createdAt: Date }[]),
@@ -43,7 +43,7 @@ export default async function PressPage() {
   // Enough real data → show the actual median; otherwise a realistic bespoke
   // planning window for a young brand. Either way it's honest and self-updating.
   const leadTime = leadDays.length >= 3 ? `~${Math.max(1, Math.round(median(leadDays) / 7))} weeks` : "3–6 weeks";
-  const destinations = destCount > 0 ? `${destCount} ${destCount === 1 ? "country" : "countries"}` : "Curating now";
+  const destinations = destCount > 0 ? `${destCount} ${destCount === 1 ? "destination" : "destinations"}` : "Curating now";
 
   return <PressPageClient founded={FOUNDED} destinations={destinations} leadTime={leadTime} />;
 }
