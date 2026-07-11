@@ -44,6 +44,10 @@ export interface Hotel {
   lat?: number | null;
   lng?: number | null;
   officialSite?: string | null;
+  // Computed on listing pages (lib/price-context) — a value/premium read vs
+  // same country+category peers; absent elsewhere.
+  valueBand?: "value" | "premium";
+  priceOnRequest?: boolean;
 }
 
 export interface Flight {

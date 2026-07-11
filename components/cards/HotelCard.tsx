@@ -80,7 +80,14 @@ export default function HotelCard({ hotel, priority, vertical }: { hotel: Hotel;
         {/* Price & CTA */}
         <div className="mt-auto pt-4 flex items-end justify-between border-t border-line">
           <div>
-            <p className="font-serif text-2xl font-light text-ink">{format(hotel.pricePerNight)}</p>
+            <div className="flex items-center gap-2">
+              <p className="font-serif text-2xl font-light text-ink">{format(hotel.pricePerNight)}</p>
+              {hotel.valueBand === "value" && (
+                <span className="text-[9px] font-medium tracking-[0.12em] uppercase text-emerald-600 border border-emerald-600/40 bg-emerald-500/5 px-1.5 py-0.5 rounded-sm">
+                  Great value
+                </span>
+              )}
+            </div>
             <p className="text-[11px] text-ink-faint font-light">{t("card.perNightTaxes")}</p>
           </div>
           <Link href={`/hotels/${hotel.id}`} className="px-6 py-2.5 border border-line-strong text-ink hover:bg-ink hover:text-page text-xs font-normal tracking-[0.12em] uppercase rounded-sm transition-all duration-300">
