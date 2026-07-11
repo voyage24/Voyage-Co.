@@ -279,6 +279,7 @@ model Booking {
   currency    String    @default("INR")
   status      String    @default("pending") // pending | confirmed | cancelled
   reference   String    @unique
+  shareToken  String?   @unique // capability link to share this trip with a companion
   seat        String?   // flight bookings: seat chosen at booking (e.g. "14A")
   notes       String?   @db.Text
   documents   Json      @default("[]") // [{ label, url }] — vouchers, tickets, itineraries

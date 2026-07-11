@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { FileText, MessageSquarePlus } from "lucide-react";
+import { FileText, MessageSquarePlus, Share2 } from "lucide-react";
 
 type Doc = { label: string; url: string };
 
@@ -11,6 +11,19 @@ export default function BookingActions({ reference, documents }: { reference: st
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState("");
+  const [shareMsg, setShareMsg] = useState("");
+
+  const share = async () => {
+    setShareMsg("");
+    const res = await fetch(`/api/account/trips/${reference}/share`, { method: "POST" });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || !data.url) { setShareMsg("Couldn't create the link."); return; }
+    try {
+      if (navigator.share) { await navigator.share({ title: "My trip with Voyages & Co.", url: data.url }); return; }
+      await navigator.clipboard.writeText(data.url);
+      setShareMsg("Companion link copied.");
+    } catch { setShareMsg(data.url); }
+  };
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,9 +60,15 @@ export default function BookingActions({ reference, documents }: { reference: st
           </div>
         </form>
       ) : (
-        <button onClick={() => setOpen(true)} className="inline-flex items-center gap-1.5 text-xs tracking-[0.1em] uppercase text-ink-muted hover:text-ink self-start">
-          <MessageSquarePlus size={14} /> Request a change
-        </button>
+        <div className="flex flex-wrap items-center gap-4">
+          <button onClick={() => setOpen(true)} className="inline-flex items-center gap-1.5 text-xs tracking-[0.1em] uppercase text-ink-muted hover:text-ink">
+            <MessageSquarePlus size={14} /> Request a change
+          </button>
+          <button onClick={share} className="inline-flex items-center gap-1.5 text-xs tracking-[0.1em] uppercase text-ink-muted hover:text-ink">
+            <Share2 size={14} /> Share with a companion
+          </button>
+          {shareMsg && <span className="text-xs text-gold">{shareMsg}</span>}
+        </div>
       )}
     </div>
   );
