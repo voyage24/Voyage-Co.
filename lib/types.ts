@@ -99,6 +99,8 @@ export interface Experience {
   badge?: string | null;
   lat?: number | null;
   lng?: number | null;
+  valueBand?: "value" | "premium";
+  priceOnRequest?: boolean;
 }
 
 export interface Package {

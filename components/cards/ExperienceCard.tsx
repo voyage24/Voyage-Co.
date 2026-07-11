@@ -46,7 +46,14 @@ export default function ExperienceCard({ exp, priority }: { exp: Experience; pri
         <div className="flex items-end justify-between pt-4 border-t border-line">
           <div>
             <p className="text-[10px] tracking-[0.1em] uppercase text-ink-faint font-light">{t("card.perPersonFrom")}</p>
-            <p className="font-serif text-xl font-light text-ink">{format(exp.price)}</p>
+            <div className="flex items-center gap-2">
+              <p className="font-serif text-xl font-light text-ink">{format(exp.price)}</p>
+              {exp.valueBand === "value" && (
+                <span className="text-[9px] font-medium tracking-[0.12em] uppercase text-emerald-600 border border-emerald-600/40 bg-emerald-500/5 px-1.5 py-0.5 rounded-sm">
+                  Great value
+                </span>
+              )}
+            </div>
           </div>
           <Link href={`/book?type=experience&id=${exp.id}`} className="px-5 py-2.5 border border-line-strong text-ink hover:bg-ink hover:text-page text-xs font-normal tracking-[0.12em] uppercase rounded-sm transition-all duration-300">
             {t("card.reserve")}

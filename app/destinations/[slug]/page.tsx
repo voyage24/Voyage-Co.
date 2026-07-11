@@ -57,7 +57,18 @@ export default async function DestinationPage({ params }: { params: { slug: stri
 
   return (
     <div className="max-w-[1500px] mx-auto px-6 lg:px-12 pt-28 pb-20">
-      <JsonLd data={[breadcrumbJsonLd([{ name: "Destinations", path: "/destinations" }, { name: country, path: `/destinations/${dest.slug}` }]), ...(faqs.length ? [faqJsonLd(faqs)] : [])]} />
+      <JsonLd data={[
+        breadcrumbJsonLd([{ name: "Destinations", path: "/destinations" }, { name: country, path: `/destinations/${dest.slug}` }]),
+        {
+          "@context": "https://schema.org",
+          "@type": "TouristDestination",
+          name: country,
+          description: `Luxury travel guide to ${country} — curated stays and experiences, plus when to visit, getting around, tipping, currency and the essentials.`,
+          url: `https://voyagesco.com/destinations/${dest.slug}`,
+          ...(dest.image ? { image: dest.image } : {}),
+        },
+        ...(faqs.length ? [faqJsonLd(faqs)] : []),
+      ]} />
       <Link href="/destinations" className="inline-flex items-center gap-2 text-xs tracking-[0.1em] uppercase text-ink-muted hover:text-ink mb-6 transition-colors">
         <ArrowLeft size={15} /> All destinations
       </Link>
