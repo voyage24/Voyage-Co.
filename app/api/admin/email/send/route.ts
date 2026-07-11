@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/admin/requireAdmin";
 import { logAudit } from "@/lib/admin/audit";
-import { createTransport, FROM_CONCIERGE } from "@/lib/email/transport";
+import { createTransport } from "@/lib/email/transport";
 import { renderConciergeEmailHTML, renderConciergeEmailText } from "@/lib/email/template";
+import { signatureFor } from "@/lib/email/signatures";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -21,9 +22,10 @@ export async function POST(req: NextRequest) {
   // so this can't be used to spoof arbitrary senders.
   const ownDomain = (process.env.SMTP_USER || "").split("@")[1]?.toLowerCase();
   const fromAddr = String(from || "").trim().toLowerCase();
-  const sender = ownDomain && EMAIL_RE.test(fromAddr) && fromAddr.endsWith(`@${ownDomain}`)
-    ? `"Voyages & Co. Concierge" <${fromAddr}>`
-    : FROM_CONCIERGE();
+  const useAlias = ownDomain && EMAIL_RE.test(fromAddr) && fromAddr.endsWith(`@${ownDomain}`);
+  const effectiveAddr = useAlias ? fromAddr : (process.env.SMTP_USER || "");
+  const sig = signatureFor(effectiveAddr);
+  const sender = `"${sig.name}" <${effectiveAddr}>`;
   if (!EMAIL_RE.test(recipient)) return NextResponse.json({ error: "A valid recipient email is required" }, { status: 400 });
   if (!subject || !String(subject).trim()) return NextResponse.json({ error: "Subject is required" }, { status: 400 });
   if (!message || !String(message).trim()) return NextResponse.json({ error: "Message is required" }, { status: 400 });
@@ -45,8 +47,8 @@ export async function POST(req: NextRequest) {
       ...(ccList.length ? { cc: ccList } : {}),
       ...(bccList.length ? { bcc: bccList } : {}),
       subject: String(subject).trim(),
-      text: renderConciergeEmailText({ heading, bodyText: String(message).trim(), signoff: "With warm regards," }),
-      html: renderConciergeEmailHTML({ eyebrow: "Voyages & Co. Concierge", heading, bodyHtml, signoff: "With warm regards," }),
+      text: renderConciergeEmailText({ heading, bodyText: String(message).trim(), signoff: sig.signoffText }),
+      html: renderConciergeEmailHTML({ eyebrow: sig.eyebrow, heading, bodyHtml, signoff: sig.signoffHtml }),
     });
   } catch (err) {
     console.error("Compose email failed:", err);
