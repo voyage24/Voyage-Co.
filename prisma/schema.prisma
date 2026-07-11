@@ -95,6 +95,14 @@ model InboundEmail {
   @@index([read])
 }
 
+model RouteCache {
+  key       String   @id           // "lat,lng->AIRPORT" (rounded origin)
+  km        Int
+  minutes   Int
+  source    String   @default("precise") // precise | estimate (no road route)
+  createdAt DateTime @default(now())
+}
+
 model SentEmail {
   id        String   @id @default(cuid())
   toEmail   String
