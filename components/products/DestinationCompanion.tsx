@@ -5,6 +5,9 @@ import DestinationEssentials from "@/components/ui/DestinationEssentials";
 import PackingList from "@/components/ui/PackingList";
 import Phrasebook from "@/components/ui/Phrasebook";
 import NearestAirport from "@/components/products/NearestAirport";
+import BestTimeToVisit from "@/components/products/BestTimeToVisit";
+import TippingGuide from "@/components/products/TippingGuide";
+import CarbonEstimate from "@/components/products/CarbonEstimate";
 
 // The shared "destination companion" block used across stays, experiences,
 // cruises and packages: map + directions + live weather (when coordinates are
@@ -45,9 +48,14 @@ export default function DestinationCompanion({
 
       {hasCountry ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4 items-start">
-          <DestinationEssentials country={country!} city={city} />
+          <div className="space-y-4">
+            <DestinationEssentials country={country!} city={city} />
+            <TippingGuide country={country} />
+          </div>
           <div className="space-y-4">
             {hasCoords && <PackingList lat={coords![0]} lng={coords![1]} destinationKey={destKey} />}
+            {hasCoords && <CarbonEstimate lat={coords![0]} lng={coords![1]} destination={city} />}
+            <BestTimeToVisit country={country} />
             <Phrasebook country={country!} />
           </div>
         </div>

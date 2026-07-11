@@ -25,6 +25,9 @@ import Phrasebook from "@/components/ui/Phrasebook";
 import NearestAirport from "@/components/products/NearestAirport";
 import LocalActivities from "@/components/products/LocalActivities";
 import { resolveCoords } from "@/lib/place-coords";
+import BestTimeToVisit from "@/components/products/BestTimeToVisit";
+import TippingGuide from "@/components/products/TippingGuide";
+import CarbonEstimate from "@/components/products/CarbonEstimate";
 import { hotelJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 export const revalidate = 60;
@@ -228,9 +231,14 @@ export default async function HotelDetailPage({ params }: { params: { id: string
         {/* Concierge, local time, emergency SOS + phrasebook need only the
             country, so they show for every property even without coordinates. */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4 items-start">
-          <DestinationEssentials country={hotel.country} city={hotel.city} />
+          <div className="space-y-4">
+            <DestinationEssentials country={hotel.country} city={hotel.city} />
+            <TippingGuide country={hotel.country} />
+          </div>
           <div className="space-y-4">
             {coords && <PackingList lat={coords[0]} lng={coords[1]} destinationKey={hotel.id} />}
+            {coords && <CarbonEstimate lat={coords[0]} lng={coords[1]} destination={hotel.city} />}
+            <BestTimeToVisit country={hotel.country} />
             <Phrasebook country={hotel.country} />
           </div>
         </div>
