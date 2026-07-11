@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { MessageCircle } from "lucide-react";
 import Logo from "@/components/ui/Logo";
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { readRememberedContact } from "@/components/providers/useContactDefaults";
 import { useSetting, useSettings } from "@/components/providers/SettingsProvider";
 import { useContent, useContentList } from "@/components/providers/ContentProvider";
 import TurnstileWidget from "@/components/ui/TurnstileWidget";
@@ -94,6 +95,8 @@ export default function Footer() {
   const [email, setEmail] = useState("");
   const [token, setToken] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  // Prefill from the guest's remembered email (on-device only; no network).
+  useEffect(() => { const r = readRememberedContact(); if (r?.email) setEmail(e => e || r.email); }, []);
 
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -14,12 +14,33 @@ function readLocal(): { name: string; email: string; phone: string } | null {
   try { const raw = localStorage.getItem(KEY); return raw ? JSON.parse(raw) : null; } catch { return null; }
 }
 
+// Synchronous read of remembered guest details (no network) — for lightweight
+// prefills like the global footer newsletter.
+export function readRememberedContact() {
+  return readLocal();
+}
+
 export function rememberContact(d: { name?: string; email?: string; phone?: string }) {
   try {
     const prev = readLocal() ?? { name: "", email: "", phone: "" };
     const next = { name: d.name?.trim() || prev.name, email: d.email?.trim() || prev.email, phone: d.phone?.trim() || prev.phone };
     localStorage.setItem(KEY, JSON.stringify(next));
   } catch { /* private mode / quota */ }
+}
+
+// Small remembered preferences (guest count, passengers…) — sensible defaults
+// that carry over between visits without being intrusive.
+export function getPref<T>(key: string, fallback: T): T {
+  try { const raw = localStorage.getItem(`vc-pref-${key}`); return raw != null ? (JSON.parse(raw) as T) : fallback; } catch { return fallback; }
+}
+export function setPref<T>(key: string, value: T) {
+  try { localStorage.setItem(`vc-pref-${key}`, JSON.stringify(value)); } catch { /* ignore */ }
+}
+
+// Today as YYYY-MM-DD (for date-input min, so past dates can't be chosen).
+export function todayISO(): string {
+  const d = new Date(); d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+  return d.toISOString().slice(0, 10);
 }
 
 export function useContactDefaults() {

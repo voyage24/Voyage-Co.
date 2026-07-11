@@ -6,7 +6,7 @@ import type { Flight } from "@/lib/types";
 import { useCurrency } from "@/components/providers/CurrencyProvider";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import TurnstileWidget from "@/components/ui/TurnstileWidget";
-import { useContactDefaults } from "@/components/providers/useContactDefaults";
+import { useContactDefaults, getPref, setPref, todayISO } from "@/components/providers/useContactDefaults";
 
 // "Request to book" flow for live fares (which aren't in the DB). Submits a
 // flight enquiry the concierge confirms & ticket manually.
@@ -22,6 +22,8 @@ export default function FlightBookingRequest({ flight }: { flight: Flight }) {
   const set = (k: keyof typeof form, v: string) => setForm(f => ({ ...f, [k]: v }));
   const { defaults, remember } = useContactDefaults();
   useEffect(() => { if (defaults) setForm(p => ({ ...p, name: p.name || defaults.name, email: p.email || defaults.email, phone: p.phone || defaults.phone })); }, [defaults]);
+  useEffect(() => { setForm(p => ({ ...p, passengers: getPref("passengers", p.passengers) })); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, []);
+  const today = todayISO();
 
   const route = `${flight.originCity} (${flight.origin}) → ${flight.destinationCity} (${flight.destination})`;
 
@@ -40,7 +42,7 @@ export default function FlightBookingRequest({ flight }: { flight: Flight }) {
     });
     const data = await res.json().catch(() => ({}));
     setBusy(false);
-    if (res.ok) { remember({ name: form.name, email: form.email, phone: form.phone }); setDone(true); } else setError(data.error ?? "Something went wrong.");
+    if (res.ok) { remember({ name: form.name, email: form.email, phone: form.phone }); setPref("passengers", form.passengers); setDone(true); } else setError(data.error ?? "Something went wrong.");
   };
 
   const field = "w-full bg-panel-soft border border-line rounded-sm px-3.5 py-2.5 text-sm text-ink focus:outline-none focus:border-gold";
@@ -78,7 +80,7 @@ export default function FlightBookingRequest({ flight }: { flight: Flight }) {
                   <div><label className="block text-xs tracking-[0.1em] uppercase text-ink-faint mb-1.5">Email <span className="text-gold">*</span></label><input required type="email" className={field} autoComplete="email" value={form.email} onChange={e => set("email", e.target.value)} /></div>
                   <div><label className="block text-xs tracking-[0.1em] uppercase text-ink-faint mb-1.5">Phone</label><input className={field} autoComplete="tel" value={form.phone} onChange={e => set("phone", e.target.value)} /></div>
                   <div><label className="block text-xs tracking-[0.1em] uppercase text-ink-faint mb-1.5">Passengers</label><input type="number" min={1} className={field} value={form.passengers} onChange={e => set("passengers", e.target.value)} /></div>
-                  <div className="sm:col-span-2"><label className="block text-xs tracking-[0.1em] uppercase text-ink-faint mb-1.5">Travel date</label><input type="date" className={field} value={form.date} onChange={e => set("date", e.target.value)} /></div>
+                  <div className="sm:col-span-2"><label className="block text-xs tracking-[0.1em] uppercase text-ink-faint mb-1.5">Travel date</label><input type="date" min={today} className={field} value={form.date} onChange={e => set("date", e.target.value)} /></div>
                 </div>
                 <div><label className="block text-xs tracking-[0.1em] uppercase text-ink-faint mb-1.5">Notes</label><textarea rows={2} className={field} value={form.details} onChange={e => set("details", e.target.value)} placeholder="Seat preference, frequent flyer, flexibility…" /></div>
                 <TurnstileWidget onToken={setToken} />

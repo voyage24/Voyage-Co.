@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Check, Calendar, Users } from "lucide-react";
-import { useContactDefaults } from "@/components/providers/useContactDefaults";
+import { useContactDefaults, getPref, setPref, todayISO } from "@/components/providers/useContactDefaults";
 import { useTrips } from "@/components/providers/TripsProvider";
 import { useCurrency } from "@/components/providers/CurrencyProvider";
 import { useLanguage } from "@/components/providers/LanguageProvider";
@@ -48,6 +48,13 @@ export default function BookingForm({ item, soldOut = false }: { item: BookingIt
     if (!defaults) return;
     setForm(p => ({ ...p, name: p.name || defaults.name, email: p.email || defaults.email, phone: p.phone || defaults.phone }));
   }, [defaults]);
+
+  // Remembered party size, restored on mount for date-based stays.
+  useEffect(() => {
+    if (item.needsDates) setForm(p => ({ ...p, guests: getPref("guests", p.guests) }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  const today = todayISO();
 
   const set = (k: keyof typeof form) =>
     (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -95,6 +102,7 @@ export default function BookingForm({ item, soldOut = false }: { item: BookingIt
       const data = await res.json().catch(() => ({}));
       if (!res.ok) { setError(data.error ?? "Could not complete the reservation."); setSubmitting(false); return; }
       remember({ name: form.name, email: form.email, phone: form.phone });
+      if (item.needsDates) setPref("guests", form.guests);
       // Mirror into the local "trips" list for quick reference.
       addTrip({ ref: data.reference ?? ref, type: item.type, title: item.title, subtitle: item.subtitle, image: item.image, total, guestName: form.name, bookedAt: new Date().toISOString() });
       setReference(data.reference ?? ref);
@@ -185,11 +193,11 @@ export default function BookingForm({ item, soldOut = false }: { item: BookingIt
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
               <label className={labelClass}><Calendar size={11} className="inline mr-1" />{t("hotelSearch.checkIn")} <span className="text-gold">*</span></label>
-              <input required type="date" value={form.checkIn} onChange={set("checkIn")} className={inputClass} />
+              <input required type="date" min={today} value={form.checkIn} onChange={set("checkIn")} className={inputClass} />
             </div>
             <div>
               <label className={labelClass}><Calendar size={11} className="inline mr-1" />{t("hotelSearch.checkOut")} <span className="text-gold">*</span></label>
-              <input required type="date" value={form.checkOut} onChange={set("checkOut")} className={inputClass} />
+              <input required type="date" min={form.checkIn || today} value={form.checkOut} onChange={set("checkOut")} className={inputClass} />
             </div>
             <div>
               <label className={labelClass}><Users size={11} className="inline mr-1" />{t("hotelSearch.guests")} <span className="text-gold">*</span></label>
