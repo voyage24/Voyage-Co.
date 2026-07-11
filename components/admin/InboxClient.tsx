@@ -92,13 +92,15 @@ export default function InboxClient({ initial }: { initial?: InboxData }) {
 
   // Multi-select: tick emails, then archive or delete them in one go.
   const toggleSel = (id: string) => setSel(prev => { const n = new Set(prev); if (n.has(id)) n.delete(id); else n.add(id); return n; });
-  const bulk = async (action: "archive" | "delete") => {
+  const allSelected = emails.length > 0 && sel.size === emails.length;
+  const toggleAll = () => setSel(allSelected ? new Set() : new Set(emails.map(e => e.id)));
+  const bulk = async (action: "archive" | "delete" | "read") => {
     if (action === "delete" && !confirm(`Delete ${sel.size} message${sel.size === 1 ? "" : "s"} from the site inbox?`)) return;
     setBulkBusy(true);
     await Promise.all(Array.from(sel).map(id =>
       action === "delete"
         ? fetch(`/api/admin/inbox/${id}`, { method: "DELETE" })
-        : fetch(`/api/admin/inbox/${id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ archived: true }) }),
+        : fetch(`/api/admin/inbox/${id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(action === "archive" ? { archived: true } : { read: true }) }),
     ));
     setBulkBusy(false);
     setSel(new Set());
@@ -137,13 +139,21 @@ export default function InboxClient({ initial }: { initial?: InboxData }) {
         {note && <span className="text-xs text-gray-500">{note}</span>}
       </div>
 
-      {sel.size > 0 && (
+      {emails.length > 0 && (
         <div className="flex flex-wrap items-center gap-3 mb-3 rounded-md border border-gray-200 bg-gray-50 px-3 py-2">
-          <span className="text-xs text-gray-700 font-medium">{sel.size} selected</span>
-          <button onClick={() => setSel(new Set(emails.map(e => e.id)))} className="text-xs text-gray-600 hover:text-gray-900">Select all</button>
-          <button onClick={() => bulk("archive")} disabled={bulkBusy} className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-md bg-gray-900 hover:bg-gray-800 text-white disabled:opacity-50"><Archive size={12} /> Archive</button>
-          <button onClick={() => bulk("delete")} disabled={bulkBusy} className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-md bg-red-600 hover:bg-red-700 text-white disabled:opacity-50"><Trash2 size={12} /> Delete</button>
-          <button onClick={() => setSel(new Set())} className="text-xs text-gray-500 hover:text-gray-800 ml-auto">Clear</button>
+          <label className="inline-flex items-center gap-2 text-xs text-gray-700 cursor-pointer select-none">
+            <input type="checkbox" checked={allSelected} onChange={toggleAll} className="accent-gray-900" />
+            Select all
+          </label>
+          {sel.size > 0 && (
+            <>
+              <span className="text-xs text-gray-700 font-medium">{sel.size} selected</span>
+              <button onClick={() => bulk("read")} disabled={bulkBusy} className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-md border border-gray-300 text-gray-700 hover:bg-white disabled:opacity-50"><MailOpen size={12} /> Mark read</button>
+              <button onClick={() => bulk("archive")} disabled={bulkBusy} className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-md bg-gray-900 hover:bg-gray-800 text-white disabled:opacity-50"><Archive size={12} /> Archive</button>
+              <button onClick={() => bulk("delete")} disabled={bulkBusy} className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-md bg-red-600 hover:bg-red-700 text-white disabled:opacity-50"><Trash2 size={12} /> Delete</button>
+              <button onClick={() => setSel(new Set())} className="text-xs text-gray-500 hover:text-gray-800 ml-auto">Clear</button>
+            </>
+          )}
         </div>
       )}
 

@@ -14,6 +14,8 @@ export default function ArchiveList({ emails }: { emails: Row[] }) {
   const [busy, setBusy] = useState(false);
 
   const toggleSel = (id: string) => setSel(prev => { const n = new Set(prev); if (n.has(id)) n.delete(id); else n.add(id); return n; });
+  const allSelected = emails.length > 0 && sel.size === emails.length;
+  const toggleAll = () => setSel(allSelected ? new Set() : new Set(emails.map(e => e.id)));
 
   const run = async (ids: string[], action: "restore" | "delete") => {
     if (action === "delete" && !confirm(`Delete ${ids.length} message${ids.length === 1 ? "" : "s"} permanently?`)) return;
@@ -35,15 +37,20 @@ export default function ArchiveList({ emails }: { emails: Row[] }) {
 
   return (
     <div>
-      {sel.size > 0 && (
-        <div className="flex flex-wrap items-center gap-3 mb-3 rounded-md border border-gray-200 bg-gray-50 px-3 py-2">
-          <span className="text-xs text-gray-700 font-medium">{sel.size} selected</span>
-          <button onClick={() => setSel(new Set(emails.map(e => e.id)))} className="text-xs text-gray-600 hover:text-gray-900">Select all</button>
-          <button onClick={() => run(Array.from(sel), "restore")} disabled={busy} className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-md bg-gray-900 hover:bg-gray-800 text-white disabled:opacity-50"><ArchiveRestore size={12} /> Restore</button>
-          <button onClick={() => run(Array.from(sel), "delete")} disabled={busy} className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-md bg-red-600 hover:bg-red-700 text-white disabled:opacity-50"><Trash2 size={12} /> Delete</button>
-          <button onClick={() => setSel(new Set())} className="text-xs text-gray-500 hover:text-gray-800 ml-auto">Clear</button>
-        </div>
-      )}
+      <div className="flex flex-wrap items-center gap-3 mb-3 rounded-md border border-gray-200 bg-gray-50 px-3 py-2">
+        <label className="inline-flex items-center gap-2 text-xs text-gray-700 cursor-pointer select-none">
+          <input type="checkbox" checked={allSelected} onChange={toggleAll} className="accent-gray-900" />
+          Select all
+        </label>
+        {sel.size > 0 && (
+          <>
+            <span className="text-xs text-gray-700 font-medium">{sel.size} selected</span>
+            <button onClick={() => run(Array.from(sel), "restore")} disabled={busy} className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-md bg-gray-900 hover:bg-gray-800 text-white disabled:opacity-50"><ArchiveRestore size={12} /> Restore</button>
+            <button onClick={() => run(Array.from(sel), "delete")} disabled={busy} className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-md bg-red-600 hover:bg-red-700 text-white disabled:opacity-50"><Trash2 size={12} /> Delete</button>
+            <button onClick={() => setSel(new Set())} className="text-xs text-gray-500 hover:text-gray-800 ml-auto">Clear</button>
+          </>
+        )}
+      </div>
 
       <div className="space-y-2">
         {emails.map(e => (
