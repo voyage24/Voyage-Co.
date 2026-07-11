@@ -114,8 +114,11 @@ carbon estimate (`lib/carbon.ts`), upcoming holidays/festivals
 countries Nager lacks, incl. India) and a currency cheat-sheet
 (`/api/content/rates` — open.er-api.com, cached daily; `lib/country-meta.ts`
 maps country→ISO2+currency), a jet-lag / time-difference helper (`JetLag`, reuses
-`lib/emergency.ts` timezones) and a typical-costs snapshot (`lib/typical-costs.ts`,
-USD prices × the live rate, shown in the guest's currency). All curated per
+`lib/emergency.ts` timezones), a typical-costs snapshot (`lib/typical-costs.ts`,
+USD prices × the live rate, shown in the guest's currency), a getting-around
+guide (`lib/getting-around.ts` — drive side, ride-hailing apps, transit) and a
+health & safety brief (`lib/health-safety.ts` — tap water, vaccinations pointer,
+insurance). All curated per
 country/coords and hide gracefully when there's no data. Arrival essentials
 (map, directions, weather, nearest airport, local time / concierge / SOS) stay
 visible; the reference cards tuck into a collapsible `KnowBeforeYouGo` panel.
