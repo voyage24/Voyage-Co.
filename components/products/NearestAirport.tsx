@@ -40,7 +40,7 @@ export default function NearestAirport({ lat, lng }: { lat?: number | null; lng?
           <span className="inline-flex items-center gap-1.5"><MapPin size={12} className="text-gold" /> {precise ? "" : "~"}{km} km</span>
           <span className="inline-flex items-center gap-1.5">
             {precise ? <Car size={12} className="text-gold" /> : <Clock size={12} className="text-gold" />}
-            {precise ? `${formatDuration(data.minutes)} drive` : `approx. ${formatDuration(data.minutes)} transfer`}
+            {precise ? `~${formatDuration(data.minutes)} drive` : `approx. ${formatDuration(data.minutes)} transfer`}
           </span>
         </div>
       </div>

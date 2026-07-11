@@ -9,7 +9,10 @@ import { nearestAirport, type NearestAirport } from "@/lib/nearest-airport";
 
 export type Transfer = NearestAirport & { source: "precise" | "estimate"; km?: number };
 
-const roundMins = (secs: number) => Math.max(5, Math.round(secs / 60 / 5) * 5);
+// Routing engines return free-flow times (no traffic, optimistic on rural/
+// mountain roads). Pad ~30% toward real-world conditions and round to 5 min, so
+// guest-facing transfers lean realistic rather than underquoting.
+const roundMins = (secs: number) => Math.max(5, Math.round((secs * 1.3) / 60 / 5) * 5);
 
 // Road route from the airport to the property, via whichever provider is
 // configured — OpenRouteService or Geoapify (both free). Returns null on no
@@ -54,7 +57,7 @@ export async function getTransfer(lat: number, lng: number): Promise<Transfer | 
   const a = nearestAirport(lat, lng);
   if (!a) return null;
 
-  const key = `${lat.toFixed(4)},${lng.toFixed(4)}->${a.code}`;
+  const key = `v2:${lat.toFixed(4)},${lng.toFixed(4)}->${a.code}`; // v2 = buffered times
   // Only trust cached PRECISE times — a cached "estimate" is treated as a miss
   // and retried, so a transient failure (or views before the key was set) never
   // locks a property to the estimate permanently.
