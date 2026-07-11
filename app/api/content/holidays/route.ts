@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCountryMeta } from "@/lib/country-meta";
+import { FALLBACK_HOLIDAYS } from "@/lib/holidays-fallback";
 
 export const dynamic = "force-dynamic";
 
@@ -35,7 +36,13 @@ export async function GET(req: Request) {
   const today = now.toISOString().slice(0, 10);
 
   const [thisYear, nextYear] = await Promise.all([fetchYear(year, meta.iso2), fetchYear(year + 1, meta.iso2)]);
-  const upcoming = [...thisYear, ...nextYear]
+  let all = [...thisYear, ...nextYear];
+  // Nager doesn't cover some major destinations (India, Thailand, the Gulf…) —
+  // use the curated fallback when it returns nothing.
+  if (all.length === 0 && FALLBACK_HOLIDAYS[meta.iso2]) {
+    all = FALLBACK_HOLIDAYS[meta.iso2].map(h => ({ date: h.date, name: h.name, localName: h.localName ?? h.name }));
+  }
+  const upcoming = all
     .filter(h => h.date >= today)
     .sort((a, b) => a.date.localeCompare(b.date))
     .slice(0, 5);
