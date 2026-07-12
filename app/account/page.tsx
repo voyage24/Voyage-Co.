@@ -74,9 +74,10 @@ export default async function AccountPage() {
             )}
           </div>
           <p className="text-sm text-ink-muted font-light mt-1">{customer.email}</p>
-          <div className="flex items-center gap-3 mt-1">
+          <div className="flex flex-wrap items-center gap-3 mt-1">
             <Link href="/membership" className="text-xs text-gold link-underline">{(customer.points ?? 0).toLocaleString("en-IN")} points · Membership →</Link>
             <Link href="/account/card" className="text-xs text-ink-muted link-underline">Digital card</Link>
+            <Link href="/account/wallet" className="inline-flex items-center gap-1 text-xs text-ink-muted link-underline">Travel wallet</Link>
           </div>
           <div className="mt-2"><PushSubscribe /></div>
         </div>

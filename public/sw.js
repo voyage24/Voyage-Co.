@@ -3,7 +3,7 @@
 const CACHE = "vc-cache-v4";
 const OFFLINE_URL = "/offline";
 // Caches to preserve across version bumps (user-saved offline guides).
-const KEEP = [CACHE, "vc-guides"];
+const KEEP = [CACHE, "vc-guides", "vc-wallet"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(CACHE).then((c) => c.addAll([OFFLINE_URL])));
