@@ -9,7 +9,6 @@ import { useTrips } from "@/components/providers/TripsProvider";
 import { useCurrency } from "@/components/providers/CurrencyProvider";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import NotifyMe from "@/components/booking/NotifyMe";
-import PassportScan from "@/components/booking/PassportScan";
 import SavedTravellerPicker from "@/components/booking/SavedTravellerPicker";
 import { haptic } from "@/lib/haptics";
 import SeatMap from "@/components/booking/SeatMap";
@@ -173,7 +172,6 @@ export default function BookingForm({ item, soldOut = false }: { item: BookingIt
             <label className={`${labelClass} mb-0`}>{t("booking.fullName")} <span className="text-gold">*</span></label>
             <div className="flex items-center gap-4">
               <SavedTravellerPicker onPick={name => setForm(p => ({ ...p, name }))} />
-              <PassportScan onScan={r => setForm(p => ({ ...p, name: r.fullName }))} />
             </div>
           </div>
           <input required autoComplete="name" value={form.name} onChange={set("name")} placeholder={t("booking.fullNamePlaceholder")} className={inputClass} />

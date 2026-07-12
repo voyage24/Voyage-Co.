@@ -99,6 +99,7 @@ model Customer {
   itineraries  Itinerary[]
   credentials  WebauthnCredential[]
   travellers   Traveller[]
+  documents    MemberDocument[]
   notifications MemberNotification[]
 
   @@index([verifyTokenHash])
@@ -155,6 +156,20 @@ model MemberNotification {
   body       String   @db.Text
   url        String?
   read       Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  @@index([customerId])
+}
+
+// Member document vault — passport, visa, insurance, tickets… stored in Blob,
+// listed only inside the signed-in account (capability-based access via the URL).
+model MemberDocument {
+  id         String   @id @default(cuid())
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  label      String
+  category   String   @default("Other") // Passport | Visa | Insurance | Tickets | Other
+  url        String
   createdAt  DateTime @default(now())
 
   @@index([customerId])

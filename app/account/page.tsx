@@ -14,6 +14,7 @@ import AddToCalendar from "@/components/account/AddToCalendar";
 import PushSubscribe from "@/components/ui/PushSubscribe";
 import DataControls from "@/components/account/DataControls";
 import DataSaverToggle from "@/components/account/DataSaverToggle";
+import DocumentVault from "@/components/account/DocumentVault";
 import PasskeyManager from "@/components/account/PasskeyManager";
 import PasskeyNudge from "@/components/account/PasskeyNudge";
 import OfflineTripSync from "@/components/account/OfflineTripSync";
@@ -150,6 +151,7 @@ export default async function AccountPage() {
       <OccasionsForm />
 
       <div className="mt-12"><TravellersManager /></div>
+      <div className="mt-6"><DocumentVault /></div>
       <div className="mt-6"><PasskeyManager passkeys={passkeys} /></div>
       <AppLockToggle hasPasskey={passkeys.length > 0} />
       <div className="mt-6"><DataSaverToggle /></div>

@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { Users, Trash2, Plus, ShieldCheck, X, Eye, EyeOff, Copy, Check } from "lucide-react";
-import PassportScan from "@/components/booking/PassportScan";
 import { haptic } from "@/lib/haptics";
 
 type Traveller = { id: string; fullName: string; dob: string | null; nationality: string | null; sex: string | null; passportLast4: string | null; passportExpiry: string | null };
@@ -100,7 +99,7 @@ export default function TravellersManager() {
       ) : (
         <div className="border border-line rounded-xl p-4 space-y-3">
           <div className="flex items-center justify-between">
-            <PassportScan onScan={r => setForm(p => ({ ...p, fullName: r.fullName || p.fullName, nationality: r.nationality || p.nationality, sex: r.sex || p.sex, dob: r.birthDate || p.dob, passportNumber: r.passportNumber || p.passportNumber, passportExpiry: r.expiryDate || p.passportExpiry }))} />
+            <p className="text-[11px] text-ink-faint">Enter details as shown on the passport.</p>
             <button onClick={() => { setAdding(false); setForm({ ...EMPTY }); setError(""); }} aria-label="Cancel" className="text-ink-faint hover:text-ink"><X size={16} /></button>
           </div>
           <input value={form.fullName} onChange={set("fullName")} placeholder="Full name (as on passport)" className={inputCls} />
