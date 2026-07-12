@@ -26,6 +26,7 @@ import { getPageContent } from "@/lib/page-content";
 import { getSiteSettings } from "@/lib/site-settings";
 import TripToday from "@/components/account/TripToday";
 import TripCountdownWidget from "@/components/account/TripCountdownWidget";
+import UpcomingJourneys from "@/components/account/UpcomingJourneys";
 import NotificationInbox from "@/components/account/NotificationInbox";
 
 export const dynamic = "force-dynamic";
@@ -58,8 +59,14 @@ export default async function AccountPage() {
   const today = new Date(); today.setHours(0, 0, 0, 0);
   const dated = bookings.filter(b => b.status === "confirmed" && b.checkIn);
   const active = dated.find(b => b.checkIn && b.checkOut && new Date(b.checkIn) <= today && new Date(b.checkOut) >= today);
-  const upcoming = dated.filter(b => b.checkIn && new Date(b.checkIn) >= today).sort((a, b) => new Date(a.checkIn!).getTime() - new Date(b.checkIn!).getTime())[0];
-  const todayTrip = active || upcoming || null;
+  // Every upcoming journey (any type), soonest first.
+  const upcomingAll = dated
+    .filter(b => b.checkIn && new Date(b.checkIn) >= today)
+    .sort((a, b) => new Date(a.checkIn!).getTime() - new Date(b.checkIn!).getTime());
+  const todayTrip = active || upcomingAll[0] || null;
+  const otherUpcoming = upcomingAll
+    .filter(b => b.id !== todayTrip?.id)
+    .map(b => ({ reference: b.reference, title: b.itemTitle, type: b.type, checkIn: b.checkIn, checkOut: b.checkOut }));
 
   return (
     <AppLock>
@@ -87,6 +94,7 @@ export default async function AccountPage() {
       <OfflineTripSync />
       {todayTrip && <TripCountdownWidget checkIn={todayTrip.checkIn} checkOut={todayTrip.checkOut} title={todayTrip.itemTitle} />}
       {todayTrip && <TripToday trip={{ reference: todayTrip.reference, itemTitle: todayTrip.itemTitle, type: todayTrip.type, image: todayTrip.image, checkIn: todayTrip.checkIn, checkOut: todayTrip.checkOut, status: todayTrip.status }} whatsapp={settings["contact.whatsapp"] || "919919910213"} />}
+      <UpcomingJourneys trips={otherUpcoming} />
       {passkeys.length === 0 && <PasskeyNudge />}
       <NotificationInbox />
 
