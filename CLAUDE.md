@@ -191,8 +191,13 @@ patterns), `PullToRefresh` (standalone-mode reload).
   (ADS-B derived airborne/landed) → `Booking.flightStatus`; runs via daily fan-out.
 - **Wallet pass**: `app/account/pass/[ref]` renders a QR pass (`qrcode`);
   `AddToWallet` → `/api/account/pass/[ref]/apple` (501 until Apple cert env set).
-- **Passport scan**: `PassportScan` + `lib/mrz.ts` (tesseract.js, lazy) autofills
-  the traveller name on the booking form. No passport data is stored.
+- **Document vault**: members save passport/visa/insurance/tickets in their
+  account (`MemberDocument` model, `/api/account/documents`, `DocumentVault`).
+  Files in Blob, listed only in the signed-in account. (The old tesseract OCR
+  passport scan was unreliable and was removed — details are typed manually.)
+- **Service worker**: `public/sw.js` (cache `vc-cache-vN`, bump to invalidate;
+  keeps `vc-guides` offline saves). `ServiceWorkerRegister` auto-reloads the
+  page once when a new SW activates, so deploys never leave a stale cached page.
 
 ---
 
