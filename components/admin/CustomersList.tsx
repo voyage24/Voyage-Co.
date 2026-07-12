@@ -14,16 +14,22 @@ export type CustomerRow = {
   lastLoginAt: string | Date | null;
 };
 
+const PAGE = 50;
+
 export default function CustomersList({ customers }: { customers: CustomerRow[] }) {
   const router = useRouter();
   const [query, setQuery] = useState("");
   const [busy, setBusy] = useState<string | null>(null);
+  const [page, setPage] = useState(0);
 
   const shown = customers.filter(c => {
     const q = query.trim().toLowerCase();
     if (!q) return true;
     return c.email.toLowerCase().includes(q) || (c.name ?? "").toLowerCase().includes(q);
   });
+  const pageCount = Math.max(1, Math.ceil(shown.length / PAGE));
+  const safePage = Math.min(page, pageCount - 1);
+  const pageRows = shown.slice(safePage * PAGE, safePage * PAGE + PAGE);
 
   const setTier = async (id: string, tier: string) => {
     setBusy(id);
@@ -45,7 +51,7 @@ export default function CustomersList({ customers }: { customers: CustomerRow[] 
       <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
         <input
           value={query}
-          onChange={e => setQuery(e.target.value)}
+          onChange={e => { setQuery(e.target.value); setPage(0); }}
           placeholder="Search name or email…"
           className="border border-gray-300 rounded-md px-3 py-2 text-sm w-full sm:w-72"
         />
@@ -69,7 +75,7 @@ export default function CustomersList({ customers }: { customers: CustomerRow[] 
             {shown.length === 0 && (
               <tr><td colSpan={7} className="px-4 py-8 text-center text-gray-400">No customers yet.</td></tr>
             )}
-            {shown.map(c => (
+            {pageRows.map(c => (
               <tr key={c.id} className="border-b border-gray-100 last:border-0">
                 <td className="px-4 py-3"><a href={`/admin/customers/${c.id}`} className="text-gray-900 font-medium hover:text-blue-600 hover:underline">{c.name || "View profile"}</a></td>
                 <td className="px-4 py-3 text-gray-800"><a href={`mailto:${c.email}`} className="text-blue-600 hover:underline">{c.email}</a></td>
@@ -93,6 +99,16 @@ export default function CustomersList({ customers }: { customers: CustomerRow[] 
           </tbody>
         </table>
       </div>
+
+      {pageCount > 1 && (
+        <div className="flex items-center justify-between mt-3 text-sm">
+          <span className="text-gray-500">Page {safePage + 1} of {pageCount}</span>
+          <div className="flex gap-2">
+            <button onClick={() => setPage(p => Math.max(0, p - 1))} disabled={safePage === 0} className="px-3 py-1.5 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-40">Previous</button>
+            <button onClick={() => setPage(p => Math.min(pageCount - 1, p + 1))} disabled={safePage >= pageCount - 1} className="px-3 py-1.5 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-40">Next</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
