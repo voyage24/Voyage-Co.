@@ -10,7 +10,9 @@ import { DownloadCloud, Check } from "lucide-react";
 export default function SaveGuideOffline({ country }: { country: string }) {
   const [state, setState] = useState<"idle" | "saving" | "done" | "error">("idle");
 
-  const save = async () => {
+  const save = async (e: React.MouseEvent) => {
+    // May sit inside a <summary>; don't toggle the <details> when tapped.
+    e.preventDefault(); e.stopPropagation();
     if (typeof caches === "undefined") { setState("error"); return; }
     setState("saving");
     try {

@@ -57,7 +57,7 @@ export default function DestinationCompanion({
       {hasCountry ? (
         <>
           <div className="mt-4"><DestinationEssentials country={country!} city={city} /></div>
-          <KnowBeforeYouGo>
+          <KnowBeforeYouGo country={country}>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-start">
               <div className="space-y-4">
                 <BestTimeToVisit country={country} />

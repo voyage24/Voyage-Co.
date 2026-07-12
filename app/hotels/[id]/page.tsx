@@ -260,7 +260,7 @@ export default async function HotelDetailPage({ params }: { params: { id: string
             the country, so they show for every property, always visible. */}
         <div className="mt-4"><DestinationEssentials country={hotel.country} city={hotel.city} /></div>
         {/* Everything else tucks into a collapsible so the page stays elegant. */}
-        <KnowBeforeYouGo>
+        <KnowBeforeYouGo country={hotel.country}>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-start">
             <div className="space-y-4">
               <BestTimeToVisit country={hotel.country} />
