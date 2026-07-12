@@ -1,7 +1,16 @@
+import { unstable_cache } from "next/cache";
 import { prisma } from "@/lib/prisma";
 
 export type AdminNotif = { type: string; title: string; subtitle: string; href: string; at: string };
 export type AdminNotifications = { items: AdminNotif[]; count: number; reviews: number };
+
+// Cached for 30s — the bell/badge runs on every admin navigation, so this avoids
+// re-running 7 queries per page load. 30s staleness is immaterial for a counter.
+export const getAdminNotificationsCached = unstable_cache(
+  () => getAdminNotifications(),
+  ["admin-notifications"],
+  { revalidate: 30 },
+);
 
 // Actionable items for the admin bell: pending bookings, new enquiries, and the
 // count of reviews awaiting moderation.

@@ -4,7 +4,7 @@ import { getSessionUser, SESSION_COOKIE_NAME } from "@/lib/admin/session";
 import { canAccess } from "@/lib/admin/permissions";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import AdminTopbar from "@/components/admin/AdminTopbar";
-import { getAdminNotifications } from "@/lib/admin/notifications";
+import { getAdminNotificationsCached } from "@/lib/admin/notifications";
 
 export default async function AdminDashboardLayout({ children }: { children: React.ReactNode }) {
   const token = cookies().get(SESSION_COOKIE_NAME)?.value;
@@ -17,7 +17,7 @@ export default async function AdminDashboardLayout({ children }: { children: Rea
   const path = headers().get("x-admin-path");
   if (path && path !== "/admin" && !canAccess(user.role, path)) redirect("/admin");
 
-  const notifications = await getAdminNotifications();
+  const notifications = await getAdminNotificationsCached();
 
   return (
     <div className="admin-root flex min-h-screen bg-[#f6f6f3] dark:bg-[#0b131d]">

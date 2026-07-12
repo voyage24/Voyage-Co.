@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import SavedFilterViews from "@/components/admin/SavedFilterViews";
 import { useRouter } from "next/navigation";
 import { draftReply } from "@/lib/enquiry-replies";
 import { reSubject } from "@/lib/email/compose-drafts";
@@ -41,7 +42,12 @@ export default function EnquiriesList({ enquiries }: { enquiries: EnquiryRow[] }
   const [replySubject, setReplySubject] = useState("");
   const [replyMsg, setReplyMsg] = useState("");
 
+  const [page, setPage] = useState(0);
+  const PAGE = 50;
   const shown = enquiries.filter(e => filter === "all" || e.status === filter);
+  const pageCount = Math.max(1, Math.ceil(shown.length / PAGE));
+  const safePage = Math.min(page, pageCount - 1);
+  const pageRows = shown.slice(safePage * PAGE, safePage * PAGE + PAGE);
 
   const openReply = (e: EnquiryRow) => {
     setReplyId(e.id);
@@ -117,12 +123,15 @@ export default function EnquiriesList({ enquiries }: { enquiries: EnquiryRow[] }
         {tabs.map(tb => (
           <button
             key={tb.key}
-            onClick={() => setFilter(tb.key)}
+            onClick={() => { setFilter(tb.key); setPage(0); }}
             className={`text-xs px-3 py-1.5 rounded-md border ${filter === tb.key ? "bg-gray-900 text-white border-gray-900" : "border-gray-300 text-gray-600 hover:bg-gray-50"}`}
           >
             {tb.label}
           </button>
         ))}
+      </div>
+      <div className="mb-4">
+        <SavedFilterViews storageKey="vc-views-enquiries" current={filter} onApply={v => { setFilter(v as typeof filter); setPage(0); }} />
       </div>
 
       {sel.size > 0 && (
@@ -140,7 +149,7 @@ export default function EnquiriesList({ enquiries }: { enquiries: EnquiryRow[] }
         </p>
       ) : (
         <div className="space-y-2">
-          {shown.map(e => {
+          {pageRows.map(e => {
             const open = openId === e.id;
             return (
               <div key={e.id} className={`border rounded-lg bg-white ${sel.has(e.id) ? "border-gray-900" : e.status === "new" ? "border-amber-300" : "border-gray-200"}`}>
@@ -233,6 +242,16 @@ export default function EnquiriesList({ enquiries }: { enquiries: EnquiryRow[] }
               </div>
             );
           })}
+        </div>
+      )}
+
+      {pageCount > 1 && (
+        <div className="flex items-center justify-between mt-3 text-sm">
+          <span className="text-gray-500">Page {safePage + 1} of {pageCount}</span>
+          <div className="flex gap-2">
+            <button onClick={() => setPage(p => Math.max(0, p - 1))} disabled={safePage === 0} className="px-3 py-1.5 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-40">Previous</button>
+            <button onClick={() => setPage(p => Math.min(pageCount - 1, p + 1))} disabled={safePage >= pageCount - 1} className="px-3 py-1.5 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-40">Next</button>
+          </div>
         </div>
       )}
     </div>

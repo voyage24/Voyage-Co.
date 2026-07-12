@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import SavedFilterViews from "@/components/admin/SavedFilterViews";
 import { useRouter } from "next/navigation";
 
 export type BookingRow = {
@@ -32,8 +33,14 @@ export default function BookingsList({ bookings }: { bookings: BookingRow[] }) {
   const [openId, setOpenId] = useState<string | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const [doc, setDoc] = useState({ label: "", url: "" });
+  const [page, setPage] = useState(0);
+  const PAGE = 50;
 
   const shown = bookings.filter(b => filter === "all" || b.status === filter);
+  const pageCount = Math.max(1, Math.ceil(shown.length / PAGE));
+  const safePage = Math.min(page, pageCount - 1);
+  const pageRows = shown.slice(safePage * PAGE, safePage * PAGE + PAGE);
+  const setFilterReset = (f: typeof filter) => { setFilter(f); setPage(0); };
 
   const saveDocs = async (b: BookingRow, documents: { label: string; url: string }[]) => {
     setBusy(b.id);
@@ -81,13 +88,16 @@ export default function BookingsList({ bookings }: { bookings: BookingRow[] }) {
 
   return (
     <div>
-      <div className="flex flex-wrap gap-2 mb-4">
+      <div className="flex flex-wrap gap-2 mb-3">
         {tabs.map(t => (
-          <button key={t.k} onClick={() => setFilter(t.k)}
+          <button key={t.k} onClick={() => setFilterReset(t.k)}
             className={`text-xs px-3 py-1.5 rounded-md border ${filter === t.k ? "bg-gray-900 text-white border-gray-900" : "border-gray-300 text-gray-600 hover:bg-gray-50"}`}>
             {t.label}
           </button>
         ))}
+      </div>
+      <div className="mb-4">
+        <SavedFilterViews storageKey="vc-views-bookings" current={filter} onApply={v => setFilterReset(v as typeof filter)} />
       </div>
 
       {sel.size > 0 && (
@@ -104,7 +114,7 @@ export default function BookingsList({ bookings }: { bookings: BookingRow[] }) {
         <p className="text-sm text-gray-400 border border-dashed border-gray-200 rounded-md p-8 text-center">No bookings here.</p>
       ) : (
         <div className="space-y-2">
-          {shown.map(b => {
+          {pageRows.map(b => {
             const open = openId === b.id;
             return (
               <div key={b.id} className={`border rounded-lg bg-white ${sel.has(b.id) ? "border-gray-900" : "border-gray-200"}`}>
@@ -156,6 +166,16 @@ export default function BookingsList({ bookings }: { bookings: BookingRow[] }) {
               </div>
             );
           })}
+        </div>
+      )}
+
+      {pageCount > 1 && (
+        <div className="flex items-center justify-between mt-3 text-sm">
+          <span className="text-gray-500">Page {safePage + 1} of {pageCount}</span>
+          <div className="flex gap-2">
+            <button onClick={() => setPage(p => Math.max(0, p - 1))} disabled={safePage === 0} className="px-3 py-1.5 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-40">Previous</button>
+            <button onClick={() => setPage(p => Math.min(pageCount - 1, p + 1))} disabled={safePage >= pageCount - 1} className="px-3 py-1.5 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-40">Next</button>
+          </div>
         </div>
       )}
     </div>
