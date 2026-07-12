@@ -26,6 +26,40 @@ export async function getFlightPhase(carrier: string, flightNumber: string): Pro
   }
 }
 
+export type LiveFlight = {
+  status: string | null;      // scheduled | active | landed | cancelled | delayed …
+  gate: string | null;
+  terminal: string | null;
+  baggage: string | null;     // arrival carousel
+  delayMin: number | null;    // departure delay
+};
+
+// Live gate / terminal / delay / baggage from an airline-data provider. Uses
+// AviationStack when AVIATIONSTACK_API_KEY is set (flight_iata = airline code +
+// number). Returns null when unconfigured or on error — the ADS-B phase above
+// is the keyless fallback. Any provider returning these fields can be slotted in
+// here without touching the cron or UI.
+export async function getLiveFlightDetails(airlineCode: string, flightNumber: string): Promise<LiveFlight | null> {
+  const key = process.env.AVIATIONSTACK_API_KEY;
+  if (!key || !airlineCode || !flightNumber) return null;
+  const iata = `${airlineCode}${flightNumber}`.replace(/\s+/g, "").toUpperCase();
+  try {
+    const res = await fetch(`https://api.aviationstack.com/v1/flights?access_key=${key}&flight_iata=${iata}&limit=1`, { cache: "no-store" });
+    if (!res.ok) return null;
+    const f = (await res.json())?.data?.[0];
+    if (!f) return null;
+    return {
+      status: f.flight_status ?? null,
+      gate: f.departure?.gate ?? null,
+      terminal: f.departure?.terminal ?? null,
+      baggage: f.arrival?.baggage ?? null,
+      delayMin: typeof f.departure?.delay === "number" ? f.departure.delay : null,
+    };
+  } catch {
+    return null;
+  }
+}
+
 export function statusMessage(phase: FlightPhase, title: string): { title: string; body: string } | null {
   switch (phase) {
     case "airborne": return { title: "Your flight is airborne", body: `${title} has departed and is now in the air. Track it live in your account.` };

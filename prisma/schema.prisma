@@ -308,6 +308,10 @@ model Booking {
   pointsAwarded  Boolean   @default(false)
   flightStatus   String?   // last pushed live status: scheduled | airborne | landed | delayed
   flightStatusAt DateTime?
+  flightGate     String?   // live departure gate (from a flight-data provider)
+  flightTerminal String?   // live departure terminal
+  flightBaggage  String?   // arrival baggage carousel
+  flightDelayMin Int?      // departure delay in minutes
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 

@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { getCurrentCustomer } from "@/lib/customer/session";
 import { fmtDate } from "@/lib/boarding-pass";
 import AddToWallet from "@/components/account/AddToWallet";
+import FlightTracker from "@/components/account/FlightTracker";
 
 export const dynamic = "force-dynamic";
 
@@ -55,6 +56,12 @@ export default async function PassPage({ params }: { params: { ref: string } }) 
           <AddToWallet reference={b.reference} />
         </div>
       </div>
+
+      {b.type === "flight" && (
+        <div className="mt-4">
+          <FlightTracker status={b.flightStatus} gate={b.flightGate} terminal={b.flightTerminal} baggage={b.flightBaggage} delayMin={b.flightDelayMin} updatedAt={b.flightStatusAt?.toISOString() ?? null} />
+        </div>
+      )}
 
       <p className="text-[11px] text-ink-faint text-center mt-4">Show this QR at check-in. Saved on this device for offline use.</p>
     </div>

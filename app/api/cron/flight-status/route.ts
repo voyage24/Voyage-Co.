@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getFlightPhase, statusMessage } from "@/lib/flight-status";
+import { getFlightPhase, getLiveFlightDetails, statusMessage } from "@/lib/flight-status";
 import { sendPushToCustomer } from "@/lib/push";
 
 export const maxDuration = 60;
@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
   // Confirmed flight bookings with a customer to notify.
   const bookings = await prisma.booking.findMany({
     where: { type: "flight", status: "confirmed", customerId: { not: null }, flightStatus: { not: "landed" } },
-    select: { id: true, itemId: true, itemTitle: true, customerId: true, flightStatus: true },
+    select: { id: true, itemId: true, itemTitle: true, customerId: true, flightStatus: true, flightGate: true, flightTerminal: true, flightBaggage: true, flightDelayMin: true },
     take: 100,
   });
   if (bookings.length === 0) return NextResponse.json({ ok: true, checked: 0, pushed: 0 });
@@ -34,13 +34,34 @@ export async function GET(req: NextRequest) {
   for (const b of bookings) {
     const f = flightById.get(b.itemId);
     if (!f) continue;
-    const { phase, found } = await getFlightPhase(f.airlineCode, f.flightNumber);
-    if (!found || phase === b.flightStatus) continue;
+    const [{ phase, found }, live] = await Promise.all([
+      getFlightPhase(f.airlineCode, f.flightNumber),
+      getLiveFlightDetails(f.airlineCode, f.flightNumber),
+    ]);
 
-    const msg = statusMessage(phase, b.itemTitle);
-    await prisma.booking.update({ where: { id: b.id }, data: { flightStatus: phase, flightStatusAt: new Date() } });
-    if (msg && b.customerId) {
-      await sendPushToCustomer(b.customerId, { title: msg.title, body: msg.body, url: "/account" });
+    const data: Record<string, unknown> = {};
+    const alerts: string[] = [];
+
+    // Gate / terminal / baggage / delay — from the flight-data provider (only
+    // when AVIATIONSTACK_API_KEY is configured), alerting on each real change.
+    if (live) {
+      if (live.gate && live.gate !== b.flightGate) { data.flightGate = live.gate; alerts.push(b.flightGate ? `Gate changed to ${live.gate}` : `Departure gate ${live.gate}`); }
+      if (live.terminal && live.terminal !== b.flightTerminal) { data.flightTerminal = live.terminal; alerts.push(`Terminal ${live.terminal}`); }
+      if (live.baggage && live.baggage !== b.flightBaggage) { data.flightBaggage = live.baggage; alerts.push(`Baggage at carousel ${live.baggage}`); }
+      if (typeof live.delayMin === "number" && live.delayMin >= 15 && live.delayMin !== b.flightDelayMin) { data.flightDelayMin = live.delayMin; alerts.push(`Delayed ~${live.delayMin} min`); }
+    }
+
+    // Airborne / landed — from the keyless ADS-B position feed.
+    if (found && phase !== b.flightStatus) {
+      data.flightStatus = phase; data.flightStatusAt = new Date();
+      const m = statusMessage(phase, b.itemTitle);
+      if (m) alerts.push(m.body);
+    }
+
+    if (Object.keys(data).length === 0) continue;
+    await prisma.booking.update({ where: { id: b.id }, data });
+    if (alerts.length && b.customerId) {
+      await sendPushToCustomer(b.customerId, { title: `✈️ ${b.itemTitle}`, body: alerts.join(" · "), url: "/account" });
       pushed++;
     }
   }
