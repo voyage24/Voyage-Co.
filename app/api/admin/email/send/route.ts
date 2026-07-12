@@ -14,8 +14,18 @@ export async function POST(req: NextRequest) {
   const admin = await requireAdmin(req);
   if (admin instanceof NextResponse) return admin;
 
-  const { to, subject, message, name, cc, bcc, from } = await req.json().catch(() => ({}));
+  const { to, subject, message, name, cc, bcc, from, attachments } = await req.json().catch(() => ({}));
   const recipient = String(to || "").trim();
+
+  // Attachments arrive as { filename, url } (uploaded to Blob). nodemailer
+  // fetches each by href. Keep only https URLs on our own Blob host, capped.
+  const mailAttachments = (Array.isArray(attachments) ? attachments : [])
+    .filter((a: unknown): a is { filename: string; url: string } => {
+      const o = a as { filename?: unknown; url?: unknown };
+      return typeof o?.url === "string" && /^https:\/\/[a-z0-9.-]*\.public\.blob\.vercel-storage\.com\//i.test(o.url) && typeof o?.filename === "string";
+    })
+    .slice(0, 10)
+    .map(a => ({ filename: a.filename, href: a.url }));
 
   // Optional reply-from alias: replies go out from the address the customer
   // wrote to (e.g. concierge@) — but only ever an address on our own domain,
@@ -46,6 +56,7 @@ export async function POST(req: NextRequest) {
       to: recipient,
       ...(ccList.length ? { cc: ccList } : {}),
       ...(bccList.length ? { bcc: bccList } : {}),
+      ...(mailAttachments.length ? { attachments: mailAttachments } : {}),
       subject: String(subject).trim(),
       text: renderConciergeEmailText({ heading, bodyText: String(message).trim(), signoff: sig.signoffText }),
       html: renderConciergeEmailHTML({ eyebrow: sig.eyebrow, heading, bodyHtml, signoff: sig.signoffHtml }),
