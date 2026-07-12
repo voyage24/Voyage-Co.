@@ -413,21 +413,6 @@ html.dark .vc-live-map .leaflet-control-attribution { background: rgba(10,10,12,
 }
 .mail-breathe { animation: mailBreathe 2.8s ease-in-out infinite; display: inline-block; transform-origin: left center; }
 
-/* Voyages Mail — optional dark theme, scoped to the mail app only. Broad
-   utility overrides so the whole app flips without editing every component. */
-.mail-app.dark { background: #0e1013 !important; color: #e5e7eb; }
-.mail-app.dark .bg-white { background: #191c20 !important; }
-.mail-app.dark .bg-gray-50 { background: #15181c !important; }
-.mail-app.dark .bg-gray-100 { background: #202429 !important; }
-.mail-app.dark .text-gray-900 { color: #f3f4f6 !important; }
-.mail-app.dark .text-gray-800 { color: #e5e7eb !important; }
-.mail-app.dark .text-gray-700 { color: #d1d5db !important; }
-.mail-app.dark .text-gray-600, .mail-app.dark .text-gray-500 { color: #9ca3af !important; }
-.mail-app.dark .text-gray-400 { color: #6b7280 !important; }
-.mail-app.dark .border-gray-200, .mail-app.dark .border-gray-100, .mail-app.dark .border-gray-300 { border-color: #2a2f36 !important; }
-.mail-app.dark input, .mail-app.dark textarea, .mail-app.dark select { background: #191c20 !important; color: #e5e7eb !important; border-color: #2a2f36 !important; }
-.mail-app.dark .hover\:bg-gray-50:hover { background: #22262c !important; }
-.mail-app.dark .shadow-lg, .mail-app.dark .shadow-widget { box-shadow: 0 10px 30px -12px rgba(0,0,0,0.7) !important; }
 @keyframes tabRing {
   0%   { transform: scale(0.5); opacity: 0.85; }
   100% { transform: scale(3.2); opacity: 0; }

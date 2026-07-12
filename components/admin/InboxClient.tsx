@@ -43,10 +43,14 @@ export default function InboxClient({ initial }: { initial?: InboxData }) {
   const touchStartX = useRef(0);
   const draftedRef = useRef<Set<string>>(new Set());
 
-  // Swipe-left-to-archive on touch devices.
+  // Touch gestures: swipe left to archive, swipe right to toggle read/unread.
   const onTouchStart = (id: string) => (ev: React.TouchEvent) => { touchStartX.current = ev.touches[0].clientX; setSwipeId(id); setSwipeDx(0); };
-  const onTouchMove = (ev: React.TouchEvent) => { const dx = ev.touches[0].clientX - touchStartX.current; setSwipeDx(Math.min(0, Math.max(dx, -120))); };
-  const onTouchEnd = (id: string) => () => { if (swipeDx < -80) { act(id, { archived: true }); } setSwipeId(null); setSwipeDx(0); };
+  const onTouchMove = (ev: React.TouchEvent) => { const dx = ev.touches[0].clientX - touchStartX.current; setSwipeDx(Math.max(-120, Math.min(120, dx))); };
+  const onTouchEnd = (e: Email) => () => {
+    if (swipeDx < -80) act(e.id, { archived: true });
+    else if (swipeDx > 80) { act(e.id, { read: !e.read }); if (!e.read) setUnread(u => Math.max(0, u - 1)); else setUnread(u => u + 1); }
+    setSwipeId(null); setSwipeDx(0);
+  };
 
   const plain = (e: Email) => e.bodyText || (e.bodyHtml || "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim() || e.snippet;
 
@@ -236,7 +240,10 @@ export default function InboxClient({ initial }: { initial?: InboxData }) {
             const isOpen = openId === e.id;
             return (
               <div key={e.id} className={`relative overflow-hidden border rounded-lg bg-white ${e.read ? "border-gray-200" : "border-gray-900/30"}`}>
-                {/* Swipe-to-archive reveal (phones) */}
+                {/* Swipe reveals (phones): left → read/unread, right → archive */}
+                <div className="sm:hidden absolute inset-y-0 left-0 flex items-center gap-1.5 px-4 bg-blue-700 text-white text-xs">
+                  {e.read ? <Mail size={14} /> : <MailOpen size={14} />} {e.read ? "Unread" : "Read"}
+                </div>
                 <div className="sm:hidden absolute inset-y-0 right-0 flex items-center gap-1.5 px-4 bg-gray-800 text-white text-xs">
                   <Archive size={14} /> Archive
                 </div>
@@ -245,7 +252,7 @@ export default function InboxClient({ initial }: { initial?: InboxData }) {
                   style={{ transform: swipeId === e.id ? `translateX(${swipeDx}px)` : undefined, transition: swipeId === e.id ? "none" : "transform 0.2s" }}
                   onTouchStart={onTouchStart(e.id)}
                   onTouchMove={onTouchMove}
-                  onTouchEnd={onTouchEnd(e.id)}
+                  onTouchEnd={onTouchEnd(e)}
                 >
                 <input
                   type="checkbox" checked={sel.has(e.id)} onChange={() => toggleSel(e.id)}

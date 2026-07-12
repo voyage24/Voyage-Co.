@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Mail, Send, MailCheck, Archive, LayoutTemplate, Newspaper, LogOut } from "lucide-react";
 import { canAccess } from "@/lib/admin/permissions";
-import MailThemeToggle from "@/components/admin/MailThemeToggle";
+import ThemeToggle from "@/components/ui/ThemeToggle";
 import MailAppLockToggle from "@/components/admin/MailAppLockToggle";
 
 const TABS = [
@@ -45,7 +45,7 @@ export default function MailNav({ email, role = "owner" }: { email: string; role
         <div className="flex items-center justify-between px-4 h-12">
           <span className="shimmer-white mail-breathe font-semibold text-sm tracking-[0.14em] uppercase">Voyages Mail</span>
           <div className="flex items-center gap-3">
-            <MailThemeToggle />
+            <ThemeToggle tone="light" size={16} />
             <MailAppLockToggle />
             <button onClick={logout} className="inline-flex items-center gap-1.5 text-xs text-gray-400 hover:text-white" title={email}>
               <LogOut size={14} /> <span className="hidden sm:inline">Sign out</span>
