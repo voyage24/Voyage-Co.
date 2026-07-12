@@ -18,7 +18,7 @@ export default function KnowBeforeYouGo({ children, country }: { children: React
           <p className="text-[11px] text-ink-faint mt-0.5">Best time · currency · costs · tipping · power · jet lag · holidays &amp; more</p>
         </div>
         {country && <span className="ml-auto shrink-0"><SaveGuideOffline country={country} /></span>}
-        <ChevronDown size={18} className={`shrink-0 text-ink-faint transition-transform duration-300 group-open:rotate-180 ${country ? "" : "ml-auto"}`} />
+        <ChevronDown size={18} className={`disclose-rotate shrink-0 text-ink-faint transition-transform duration-300 ${country ? "" : "ml-auto"}`} />
       </summary>
       <div className="px-5 pb-5 pt-1">{children}</div>
     </details>
