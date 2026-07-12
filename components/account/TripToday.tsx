@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { MapPin, FileText, Wallet, BookOpen, MessageCircle } from "lucide-react";
+import { MapPin, FileText, Wallet, BookOpen, MessageCircle, Siren } from "lucide-react";
 
 export type TodayTrip = {
   reference: string; itemTitle: string; type: string; image: string | null;
@@ -18,11 +18,13 @@ export default function TripToday({ trip, whatsapp }: { trip: TodayTrip; whatsap
 
   let heading = "Your next trip";
   let sub = "";
+  let onTrip = false;
   if (start && end && today >= start && today <= end) {
     const day = daysBetween(start, today) + 1;
     const total = daysBetween(start, end) + 1;
     heading = "You're on your trip";
     sub = `Day ${day} of ${total}`;
+    onTrip = true;
   } else if (start) {
     const away = daysBetween(today, start);
     sub = away === 0 ? "Starts today" : away === 1 ? "Starts tomorrow" : `In ${away} days`;
@@ -44,6 +46,15 @@ export default function TripToday({ trip, whatsapp }: { trip: TodayTrip; whatsap
         <Link href={`/account/pass/${trip.reference}`} className="inline-flex items-center gap-1.5 text-xs tracking-[0.1em] uppercase text-ink-muted hover:text-ink transition-colors"><Wallet size={14} /> Pass</Link>
         <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.itemTitle)}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-xs tracking-[0.1em] uppercase text-ink-muted hover:text-ink transition-colors"><MapPin size={14} /> Map</a>
         <a href={`https://wa.me/${whatsapp}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-xs tracking-[0.1em] uppercase text-ink-muted hover:text-ink transition-colors ml-auto"><MessageCircle size={14} /> Concierge</a>
+        {onTrip && (
+          <a
+            href={`https://wa.me/${whatsapp}?text=${encodeURIComponent(`🚨 EMERGENCY — I need urgent help during my trip (${trip.itemTitle}).`)}`}
+            target="_blank" rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 text-xs tracking-[0.1em] uppercase text-red-600 hover:text-red-700 transition-colors"
+          >
+            <Siren size={14} /> SOS
+          </a>
+        )}
       </div>
     </div>
   );

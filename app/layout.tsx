@@ -71,7 +71,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <head>
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem('theme');var s=window.matchMedia('(prefers-color-scheme: dark)').matches;if(t==='dark'||((!t||t==='system')&&s)){document.documentElement.classList.add('dark');}}catch(e){}})();`,
+            __html: `(function(){try{var t=localStorage.getItem('theme');var s=window.matchMedia('(prefers-color-scheme: dark)').matches;if(t==='dark'||((!t||t==='system')&&s)){document.documentElement.classList.add('dark');}if(localStorage.getItem('vc-data-saver')==='1'){document.documentElement.dataset.saver='1';}}catch(e){}})();`,
           }}
         />
         <link rel="stylesheet" href={fontHref} />

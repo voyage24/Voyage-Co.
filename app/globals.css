@@ -572,6 +572,13 @@ html.dark .shimmer-gold {
   .print-shadow-none { box-shadow: none !important; }
 }
 
+/* Data-saver mode: skip autoplaying video and heavy decorative motion to save
+   mobile data and battery. Images already lazy-load and are size-optimised. */
+html[data-saver="1"] video { display: none !important; }
+html[data-saver="1"] .decor,
+html[data-saver="1"] [data-heavy] { display: none !important; }
+html[data-saver="1"] * { animation-duration: 0.001s !important; animation-iteration-count: 1 !important; }
+
 @media (prefers-reduced-motion: reduce) {
   .reveal, .stagger > *, .stagger-soft > * { opacity: 1; transform: none; transition: none; }
   .page-enter { animation: none; }
