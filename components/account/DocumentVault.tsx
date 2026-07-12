@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { FolderLock, FileText, Upload, Trash2, Loader2, ExternalLink, Camera } from "lucide-react";
 
-type Doc = { id: string; label: string; category: string; url: string; createdAt: string };
+type Doc = { id: string; label: string; category: string; url: string; createdAt: string; expiry?: string | null };
 const CATEGORIES = ["Passport", "Visa", "Insurance", "Tickets", "Other"];
 
 // A private locker for travel documents (passport, visa, insurance, tickets).
@@ -13,6 +13,7 @@ export default function DocumentVault() {
   const [loaded, setLoaded] = useState(false);
   const [category, setCategory] = useState("Passport");
   const [label, setLabel] = useState("");
+  const [expiry, setExpiry] = useState("");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
   const fileRef = useRef<HTMLInputElement>(null);
@@ -30,10 +31,11 @@ export default function DocumentVault() {
     fd.append("file", file);
     fd.append("label", label.trim() || file.name);
     fd.append("category", category);
+    if (expiry && (category === "Passport" || category === "Visa")) fd.append("expiry", expiry);
     const res = await fetch("/api/account/documents", { method: "POST", body: fd });
     const d = await res.json().catch(() => ({}));
     setBusy(false);
-    if (res.ok && d.document) { setDocs(x => [d.document, ...x]); setLabel(""); }
+    if (res.ok && d.document) { setDocs(x => [d.document, ...x]); setLabel(""); setExpiry(""); }
     else setErr(d.error || "Couldn't upload.");
   };
 
@@ -59,6 +61,9 @@ export default function DocumentVault() {
           {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
         </select>
         <input value={label} onChange={e => setLabel(e.target.value)} placeholder="Label (optional)" className="flex-1 min-w-[8rem] text-sm bg-panel border border-line rounded-sm px-3 py-2 focus:outline-none focus:border-gold" />
+        {(category === "Passport" || category === "Visa") && (
+          <input type="date" value={expiry} onChange={e => setExpiry(e.target.value)} title="Expiry date (for a reminder)" className="text-sm bg-panel border border-line rounded-sm px-2 py-2 focus:outline-none focus:border-gold" />
+        )}
         <button onClick={() => camRef.current?.click()} disabled={busy} title="Take a photo of the document" className="inline-flex items-center gap-2 text-xs tracking-[0.12em] uppercase bg-ink text-page px-4 py-2.5 rounded-sm hover:bg-ink/90 disabled:opacity-50">
           {busy ? <Loader2 size={14} className="animate-spin" /> : <Camera size={14} />} {busy ? "Saving…" : "Scan"}
         </button>
@@ -82,7 +87,7 @@ export default function DocumentVault() {
               <FileText size={15} className="text-gold shrink-0" />
               <div className="min-w-0 flex-1">
                 <p className="text-sm text-ink truncate">{d.label}</p>
-                <p className="text-[11px] text-ink-faint">{d.category}</p>
+                <p className="text-[11px] text-ink-faint">{d.category}{d.expiry ? ` · expires ${d.expiry}` : ""}</p>
               </div>
               <a href={`/api/account/documents/${d.id}/file`} target="_blank" rel="noopener noreferrer" className="text-ink-muted hover:text-ink shrink-0" aria-label="Open"><ExternalLink size={15} /></a>
               <button onClick={() => del(d.id)} className="text-ink-faint hover:text-red-500 shrink-0" aria-label="Delete"><Trash2 size={15} /></button>

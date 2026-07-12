@@ -25,6 +25,8 @@ export async function POST(req: NextRequest) {
   const file = form.get("file");
   const label = String(form.get("label") || "").trim();
   const category = CATEGORIES.includes(String(form.get("category"))) ? String(form.get("category")) : "Other";
+  const expiryRaw = String(form.get("expiry") || "").trim();
+  const expiry = /^\d{4}-\d{2}-\d{2}$/.test(expiryRaw) ? expiryRaw : null;
   if (!file || !(file instanceof Blob)) return NextResponse.json({ error: "No file provided" }, { status: 400 });
 
   const type = (file as File).type || "";
@@ -39,7 +41,7 @@ export async function POST(req: NextRequest) {
   const payload = encrypt ? encryptBuffer(bytes) : bytes;
   const blob = await put(`docs/${customer.id}/${encrypt ? name + ".enc" : name}`, payload, { access: "public", addRandomSuffix: true, contentType: "application/octet-stream" });
   const doc = await prisma.memberDocument.create({
-    data: { customerId: customer.id, label: label || name, category, url: blob.url, mime: type, encrypted: encrypt },
+    data: { customerId: customer.id, label: label || name, category, url: blob.url, mime: type, encrypted: encrypt, expiry },
   });
   return NextResponse.json({ ok: true, document: doc });
 }

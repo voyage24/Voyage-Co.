@@ -6,6 +6,17 @@ export const dynamic = "force-dynamic";
 
 const TYPES = ["hotel", "package", "experience", "cruise"];
 
+// Current price of a saveable item, by type (nightly / per-person).
+async function currentPrice(type: string, id: string): Promise<number | null> {
+  try {
+    if (type === "hotel") return (await prisma.hotel.findUnique({ where: { id }, select: { pricePerNight: true } }))?.pricePerNight ?? null;
+    if (type === "experience") return (await prisma.experience.findUnique({ where: { id }, select: { price: true } }))?.price ?? null;
+    if (type === "package") return (await prisma.package.findUnique({ where: { id }, select: { pricePerPerson: true } }))?.pricePerPerson ?? null;
+    if (type === "cruise") return (await prisma.cruise.findUnique({ where: { id }, select: { pricePerPerson: true } }))?.pricePerPerson ?? null;
+  } catch { /* ignore */ }
+  return null;
+}
+
 // Returns the signed-in customer's saved items (and whether they're signed in).
 export async function GET() {
   const customer = await getCurrentCustomer();
@@ -24,9 +35,11 @@ export async function POST(req: Request) {
   if (!TYPES.includes(type) || !itemId || !itemTitle || !href) {
     return NextResponse.json({ error: "Invalid item" }, { status: 400 });
   }
+  // Capture the current price so we can flag drops later.
+  const priceAtSave = await currentPrice(type, itemId);
   await prisma.savedItem.upsert({
     where: { customerId_type_itemId: { customerId: customer.id, type, itemId } },
-    create: { customerId: customer.id, type, itemId, itemTitle, image: image || null, href },
+    create: { customerId: customer.id, type, itemId, itemTitle, image: image || null, href, priceAtSave },
     update: {},
   });
   return NextResponse.json({ ok: true });

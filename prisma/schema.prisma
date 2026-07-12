@@ -172,6 +172,7 @@ model MemberDocument {
   url        String   // Blob URL — holds AES-256-GCM ciphertext when encrypted
   mime       String?  // original content-type, needed to serve the decrypted file
   encrypted  Boolean  @default(false)
+  expiry     String?  // YYYY-MM-DD — for passport/visa expiry reminders
   createdAt  DateTime @default(now())
 
   @@index([customerId])
@@ -249,6 +250,7 @@ model SavedItem {
   itemTitle  String
   image      String?
   href       String
+  priceAtSave Int?    // price when saved, for "price dropped" alerts
   createdAt  DateTime @default(now())
 
   @@unique([customerId, type, itemId])

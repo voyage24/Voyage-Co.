@@ -5,6 +5,7 @@ import PackagesPreview from "@/components/home/PackagesPreview";
 import TestimonialsSection from "@/components/home/TestimonialsSection";
 import TrustSection from "@/components/home/TrustSection";
 import RecentlyViewed from "@/components/home/RecentlyViewed";
+import PersonalizedHome from "@/components/home/PersonalizedHome";
 import Recommendations from "@/components/home/Recommendations";
 import PressStrip from "@/components/home/PressStrip";
 import MomentsGallery from "@/components/home/MomentsGallery";
@@ -56,6 +57,7 @@ export default async function Home() {
     <>
       <JsonLd data={[organizationJsonLd(), websiteJsonLd()]} />
       <HeroSection hotels={hotels} cruises={cruises} trains={trains as any} packages={packages} experiences={experiences} />
+      <PersonalizedHome />
       <RecentlyViewed />
       <Recommendations />
       <Reveal><PopularDestinations /></Reveal>
