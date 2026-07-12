@@ -24,7 +24,8 @@ export default async function MailLayout({ children }: { children: React.ReactNo
   return (
     <div className="admin-root min-h-screen bg-[#f6f6f3]">
       <MailNav email={user.email} role={user.role} />
-      <main className="max-w-3xl mx-auto p-4 sm:p-6">{children}</main>
+      {/* Extra bottom padding on phones so the fixed bottom tab bar never covers content. */}
+      <main className="max-w-3xl mx-auto p-4 sm:p-6 pb-24 sm:pb-6">{children}</main>
     </div>
   );
 }

@@ -38,7 +38,15 @@ export default function InboxClient({ initial }: { initial?: InboxData }) {
   const [draftInfo, setDraftInfo] = useState("");
   const [ctx, setCtx] = useState<null | { id: string | null; name: string | null; tier: string | null; points: number; lifetimeValue: number; enquiryCount: number; openFollowups: number; bookings: { itemTitle: string; reference: string; status: string; checkIn: string | null }[] }>(null);
   const [query, setQuery] = useState("");
+  const [swipeId, setSwipeId] = useState<string | null>(null);
+  const [swipeDx, setSwipeDx] = useState(0);
+  const touchStartX = useRef(0);
   const draftedRef = useRef<Set<string>>(new Set());
+
+  // Swipe-left-to-archive on touch devices.
+  const onTouchStart = (id: string) => (ev: React.TouchEvent) => { touchStartX.current = ev.touches[0].clientX; setSwipeId(id); setSwipeDx(0); };
+  const onTouchMove = (ev: React.TouchEvent) => { const dx = ev.touches[0].clientX - touchStartX.current; setSwipeDx(Math.min(0, Math.max(dx, -120))); };
+  const onTouchEnd = (id: string) => () => { if (swipeDx < -80) { act(id, { archived: true }); } setSwipeId(null); setSwipeDx(0); };
 
   const plain = (e: Email) => e.bodyText || (e.bodyHtml || "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim() || e.snippet;
 
@@ -227,8 +235,18 @@ export default function InboxClient({ initial }: { initial?: InboxData }) {
           }).map(e => {
             const isOpen = openId === e.id;
             return (
-              <div key={e.id} className={`border rounded-lg bg-white ${e.read ? "border-gray-200" : "border-gray-900/30"}`}>
-                <div className="flex items-center">
+              <div key={e.id} className={`relative overflow-hidden border rounded-lg bg-white ${e.read ? "border-gray-200" : "border-gray-900/30"}`}>
+                {/* Swipe-to-archive reveal (phones) */}
+                <div className="sm:hidden absolute inset-y-0 right-0 flex items-center gap-1.5 px-4 bg-gray-800 text-white text-xs">
+                  <Archive size={14} /> Archive
+                </div>
+                <div
+                  className="relative flex items-center bg-white"
+                  style={{ transform: swipeId === e.id ? `translateX(${swipeDx}px)` : undefined, transition: swipeId === e.id ? "none" : "transform 0.2s" }}
+                  onTouchStart={onTouchStart(e.id)}
+                  onTouchMove={onTouchMove}
+                  onTouchEnd={onTouchEnd(e.id)}
+                >
                 <input
                   type="checkbox" checked={sel.has(e.id)} onChange={() => toggleSel(e.id)}
                   aria-label="Select email" className="ml-3 shrink-0 accent-gray-900"
