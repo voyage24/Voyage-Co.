@@ -56,6 +56,14 @@ role, and EVERY /api/admin route enforced centrally inside requireAdmin
 (canAccessApi). Team-management APIs use requireOwner (with an owner-bootstrap
 waiver). The last owner can never be demoted/removed.
 
+### Concierge CRM
+Per-client profile at `/admin/customers/[id]` aggregates bookings, enquiries,
+quotes and inbound/sent emails into one timeline (all email-keyed), with staff
+notes + follow-up tasks (`CustomerNote`, `FollowUp` models; APIs under
+`/api/admin/customers/{note,followup}`). Open follow-ups show on the dashboard
+home; `/api/cron/follow-up-reminders` (in the daily fan-out) pushes admins once
+about due tasks. Login is brute-force rate-limited (`lib/security/rate-limit`).
+
 ### Voyages Mail (`app/admin/mail/`)
 A self-contained mail app (own layout/nav, installable PWA via
 public/mail.webmanifest, scope /admin/mail) — deliberately no access to the
