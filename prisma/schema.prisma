@@ -119,6 +119,7 @@ model InboundEmail {
   receivedAt DateTime
   read       Boolean  @default(false)
   archived   Boolean  @default(false)
+  deleted    Boolean  @default(false)  // soft-delete: keeps the Message-ID so a re-poll won't re-import it
   createdAt  DateTime @default(now())
 
   @@index([receivedAt])

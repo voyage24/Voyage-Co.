@@ -70,7 +70,7 @@ export async function fetchInbox(limit = 40): Promise<{ ok: boolean; fetched: nu
     // Alert admin devices (notification + icon badge) when new mail arrived —
     // this is how the closed app finds out. Best-effort; never fails the fetch.
     if (added > 0) {
-      const unread = await prisma.inboundEmail.count({ where: { archived: false, read: false } }).catch(() => added);
+      const unread = await prisma.inboundEmail.count({ where: { archived: false, deleted: false, read: false } }).catch(() => added);
       await sendPushToAdmins({
         title: added === 1 ? "New mail" : `${added} new messages`,
         body: added === 1 ? "A new message arrived in Voyages Mail." : "New messages arrived in Voyages Mail.",

@@ -17,8 +17,8 @@ const addr = (s: string | null | undefined) => (s || "").match(/[\w.+-]+@[\w.-]+
 
 export async function getInboxList(): Promise<{ emails: InboxEmail[]; unread: number; configured: boolean }> {
   const [emails, unread] = await Promise.all([
-    prisma.inboundEmail.findMany({ where: { archived: false }, orderBy: { receivedAt: "desc" }, take: 60 }),
-    prisma.inboundEmail.count({ where: { archived: false, read: false } }),
+    prisma.inboundEmail.findMany({ where: { archived: false, deleted: false }, orderBy: { receivedAt: "desc" }, take: 60 }),
+    prisma.inboundEmail.count({ where: { archived: false, deleted: false, read: false } }),
   ]);
   const ourDomain = (process.env.SMTP_USER || "").split("@")[1]?.toLowerCase() || "";
   return {

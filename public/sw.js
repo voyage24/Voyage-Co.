@@ -1,7 +1,9 @@
 // Minimal service worker: precache the offline fallback and serve a cached
 // shell when the network is unavailable. Static assets are cached on the fly.
-const CACHE = "vc-cache-v3";
+const CACHE = "vc-cache-v4";
 const OFFLINE_URL = "/offline";
+// Caches to preserve across version bumps (user-saved offline guides).
+const KEEP = [CACHE, "vc-guides"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(CACHE).then((c) => c.addAll([OFFLINE_URL])));
@@ -10,7 +12,7 @@ self.addEventListener("install", (event) => {
 
 self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches.keys().then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k))))
+    caches.keys().then((keys) => Promise.all(keys.filter((k) => !KEEP.includes(k)).map((k) => caches.delete(k))))
   );
   self.clients.claim();
 });

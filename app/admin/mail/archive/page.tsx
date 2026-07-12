@@ -5,7 +5,7 @@ export const dynamic = "force-dynamic";
 
 export default async function MailArchivePage() {
   const rows = await prisma.inboundEmail.findMany({
-    where: { archived: true },
+    where: { archived: true, deleted: false },
     orderBy: { receivedAt: "desc" },
     take: 100,
     select: { id: true, fromName: true, fromEmail: true, subject: true, bodyText: true, receivedAt: true },

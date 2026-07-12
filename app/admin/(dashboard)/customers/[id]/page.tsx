@@ -22,7 +22,7 @@ export default async function CustomerDetailPage({ params }: { params: { id: str
     prisma.booking.findMany({ where: { OR: [{ customerId: customer.id }, { guestEmail: ci }] }, orderBy: { createdAt: "desc" } }),
     prisma.enquiry.findMany({ where: { email: ci }, orderBy: { createdAt: "desc" } }),
     prisma.quote.findMany({ where: { customerEmail: ci }, orderBy: { createdAt: "desc" } }),
-    prisma.inboundEmail.findMany({ where: { fromEmail: ci }, orderBy: { createdAt: "desc" }, take: 40 }),
+    prisma.inboundEmail.findMany({ where: { fromEmail: ci, deleted: false }, orderBy: { createdAt: "desc" }, take: 40 }),
     prisma.sentEmail.findMany({ where: { toEmail: ci }, orderBy: { createdAt: "desc" }, take: 40 }),
     prisma.customerNote.findMany({ where: { email: ci }, orderBy: { createdAt: "desc" } }),
     prisma.followUp.findMany({ where: { email: ci }, orderBy: [{ done: "asc" }, { dueAt: "asc" }] }),

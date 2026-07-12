@@ -11,10 +11,10 @@ export async function getAdminNotifications(): Promise<AdminNotifications> {
       prisma.booking.count({ where: { status: "pending" } }),
       prisma.enquiry.count({ where: { status: "new" } }),
       prisma.review.count({ where: { status: "pending" } }),
-      prisma.inboundEmail.count({ where: { archived: false, read: false } }).catch(() => 0),
+      prisma.inboundEmail.count({ where: { archived: false, deleted: false, read: false } }).catch(() => 0),
       prisma.booking.findMany({ where: { status: "pending" }, orderBy: { createdAt: "desc" }, take: 6, select: { guestName: true, itemTitle: true, reference: true, createdAt: true } }),
       prisma.enquiry.findMany({ where: { status: "new" }, orderBy: { createdAt: "desc" }, take: 6, select: { name: true, subject: true, type: true, createdAt: true } }),
-      prisma.inboundEmail.findMany({ where: { archived: false, read: false }, orderBy: { receivedAt: "desc" }, take: 6, select: { fromName: true, fromEmail: true, subject: true, receivedAt: true } }).catch(() => []),
+      prisma.inboundEmail.findMany({ where: { archived: false, deleted: false, read: false }, orderBy: { receivedAt: "desc" }, take: 6, select: { fromName: true, fromEmail: true, subject: true, receivedAt: true } }).catch(() => []),
     ]);
 
     const items: AdminNotif[] = [

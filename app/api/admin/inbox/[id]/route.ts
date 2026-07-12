@@ -19,6 +19,8 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
   const admin = await requireAdmin(req);
   if (admin instanceof NextResponse) return admin;
-  await prisma.inboundEmail.delete({ where: { id: params.id } }).catch(() => {});
+  // Soft-delete: keep the row (and its Message-ID) so the next IMAP poll treats
+  // it as already-seen and won't re-import the deleted message.
+  await prisma.inboundEmail.update({ where: { id: params.id }, data: { deleted: true } }).catch(() => {});
   return NextResponse.json({ ok: true });
 }
