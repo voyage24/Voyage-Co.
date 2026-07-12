@@ -204,7 +204,6 @@ export default async function HotelDetailPage({ params }: { params: { id: string
             </div>
           )}
 
-          <LocalActivities items={nearby} place={hotel.city} />
         </div>
 
         {/* Booking card */}
@@ -281,6 +280,8 @@ export default async function HotelDetailPage({ params }: { params: { id: string
           </div>
         </KnowBeforeYouGo>
       </section>
+
+      <div className="mt-14"><LocalActivities items={nearby} place={hotel.city} /></div>
 
       <FaqAndEntry faqs={faqs} entryRequirements={hotel.entryRequirements} />
 

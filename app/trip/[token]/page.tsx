@@ -3,6 +3,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { CalendarDays, MapPin, FileText, Users } from "lucide-react";
 import { prisma } from "@/lib/prisma";
+import TripCountdownWidget from "@/components/account/TripCountdownWidget";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "A Shared Trip — Voyages & Co.", robots: { index: false } };
@@ -17,9 +18,6 @@ export default async function SharedTripPage({ params }: { params: { token: stri
   if (!b) notFound();
 
   const documents = (b.documents as Doc[] | null) ?? [];
-  const daysToGo = b.checkIn && !isNaN(Date.parse(b.checkIn))
-    ? Math.ceil((new Date(b.checkIn).getTime() - Date.now()) / 86_400_000)
-    : null;
 
   return (
     <div className="max-w-xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20">
@@ -29,12 +27,7 @@ export default async function SharedTripPage({ params }: { params: { token: stri
         <p className="text-ink-muted font-light mt-2 capitalize">{b.type} · {b.status}</p>
       </div>
 
-      {daysToGo !== null && daysToGo >= 0 && (
-        <div className="text-center mb-8">
-          <span className="font-serif text-5xl font-light text-ink">{daysToGo}</span>
-          <p className="text-[11px] tracking-[0.2em] uppercase text-ink-faint mt-1">{daysToGo === 0 ? "Today" : daysToGo === 1 ? "day to go" : "days to go"}</p>
-        </div>
-      )}
+      <TripCountdownWidget checkIn={b.checkIn} checkOut={b.checkOut} title={b.itemTitle} />
 
       <div className="bg-panel border border-line rounded-2xl shadow-card p-6 sm:p-8 space-y-4">
         <Row icon={<Users size={15} className="text-gold" />} label="Guest" value={`${b.guestName}${b.guests > 1 ? ` · ${b.guests} travelling` : ""}`} />

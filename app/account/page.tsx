@@ -25,6 +25,7 @@ import Price from "@/components/ui/Price";
 import { getPageContent } from "@/lib/page-content";
 import { getSiteSettings } from "@/lib/site-settings";
 import TripToday from "@/components/account/TripToday";
+import TripCountdownWidget from "@/components/account/TripCountdownWidget";
 import NotificationInbox from "@/components/account/NotificationInbox";
 
 export const dynamic = "force-dynamic";
@@ -83,6 +84,7 @@ export default async function AccountPage() {
       </div>
 
       <OfflineTripSync />
+      {todayTrip && <TripCountdownWidget checkIn={todayTrip.checkIn} checkOut={todayTrip.checkOut} title={todayTrip.itemTitle} />}
       {todayTrip && <TripToday trip={{ reference: todayTrip.reference, itemTitle: todayTrip.itemTitle, type: todayTrip.type, image: todayTrip.image, checkIn: todayTrip.checkIn, checkOut: todayTrip.checkOut, status: todayTrip.status }} whatsapp={settings["contact.whatsapp"] || "919919910213"} />}
       {passkeys.length === 0 && <PasskeyNudge />}
       <NotificationInbox />

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { FolderLock, FileText, Upload, Trash2, Loader2, ExternalLink } from "lucide-react";
+import { FolderLock, FileText, Upload, Trash2, Loader2, ExternalLink, Camera } from "lucide-react";
 
 type Doc = { id: string; label: string; category: string; url: string; createdAt: string };
 const CATEGORIES = ["Passport", "Visa", "Insurance", "Tickets", "Other"];
@@ -16,6 +16,7 @@ export default function DocumentVault() {
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
   const fileRef = useRef<HTMLInputElement>(null);
+  const camRef = useRef<HTMLInputElement>(null);
 
   const load = () => fetch("/api/account/documents").then(r => r.json()).then(d => { if (Array.isArray(d?.documents)) setDocs(d.documents); }).finally(() => setLoaded(true));
   useEffect(() => { load(); }, []);
@@ -48,7 +49,7 @@ export default function DocumentVault() {
         <FolderLock size={18} className="text-gold mt-0.5 shrink-0" />
         <div>
           <p className="text-sm font-medium text-ink">Document vault</p>
-          <p className="text-xs text-ink-muted font-light mt-0.5">Keep your passport, visa, insurance and tickets in one place — private to your account, available on any device.</p>
+          <p className="text-xs text-ink-muted font-light mt-0.5">Scan with your camera or upload — keep your passport, visa, insurance and tickets in one place, private to your account and on any device.</p>
         </div>
       </div>
 
@@ -58,10 +59,14 @@ export default function DocumentVault() {
           {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
         </select>
         <input value={label} onChange={e => setLabel(e.target.value)} placeholder="Label (optional)" className="flex-1 min-w-[8rem] text-sm bg-panel border border-line rounded-sm px-3 py-2 focus:outline-none focus:border-gold" />
-        <button onClick={() => fileRef.current?.click()} disabled={busy} className="inline-flex items-center gap-2 text-xs tracking-[0.12em] uppercase bg-ink text-page px-4 py-2.5 rounded-sm hover:bg-ink/90 disabled:opacity-50">
-          {busy ? <Loader2 size={14} className="animate-spin" /> : <Upload size={14} />} {busy ? "Uploading…" : "Add"}
+        <button onClick={() => camRef.current?.click()} disabled={busy} title="Take a photo of the document" className="inline-flex items-center gap-2 text-xs tracking-[0.12em] uppercase bg-ink text-page px-4 py-2.5 rounded-sm hover:bg-ink/90 disabled:opacity-50">
+          {busy ? <Loader2 size={14} className="animate-spin" /> : <Camera size={14} />} {busy ? "Saving…" : "Scan"}
+        </button>
+        <button onClick={() => fileRef.current?.click()} disabled={busy} title="Upload a PDF or image" className="inline-flex items-center gap-2 text-xs tracking-[0.12em] uppercase border border-line-strong text-ink px-4 py-2.5 rounded-sm hover:bg-panel disabled:opacity-50">
+          <Upload size={14} /> Upload
         </button>
         <input ref={fileRef} type="file" accept="application/pdf,image/*" onChange={onFile} className="hidden" />
+        <input ref={camRef} type="file" accept="image/*" capture="environment" onChange={onFile} className="hidden" />
       </div>
       {err && <p className="text-xs text-red-600 mb-3">{err}</p>}
 
