@@ -22,7 +22,8 @@ export interface BookingItem {
   image?: string;
   price: number;
   priceLabel: string;
-  needsDates?: boolean;
+  needsDates?: boolean; // multi-day: check-in + check-out
+  needsDate?: boolean;  // single day: one date (experiences)
 }
 
 export default function BookingForm({ item, soldOut = false }: { item: BookingItem; soldOut?: boolean }) {
@@ -75,12 +76,15 @@ export default function BookingForm({ item, soldOut = false }: { item: BookingIt
     if (!form.name.trim() || !form.email.trim() || !form.phone.trim()) {
       setError(t("booking.fillAllFields")); return;
     }
-    if (item.needsDates) {
-      if (!form.checkIn || !form.checkOut || !form.guests || form.guests < 1) {
+    if (item.needsDates || item.needsDate) {
+      if (!form.checkIn || !form.guests || form.guests < 1) {
         setError(t("booking.fillAllFields")); return;
       }
-      if (new Date(form.checkOut) <= new Date(form.checkIn)) {
-        setError(t("booking.checkoutAfterCheckin")); return;
+      if (item.needsDates) {
+        if (!form.checkOut) { setError(t("booking.fillAllFields")); return; }
+        if (new Date(form.checkOut) <= new Date(form.checkIn)) {
+          setError(t("booking.checkoutAfterCheckin")); return;
+        }
       }
     }
 
@@ -101,7 +105,7 @@ export default function BookingForm({ item, soldOut = false }: { item: BookingIt
       const data = await res.json().catch(() => ({}));
       if (!res.ok) { setError(data.error ?? "Could not complete the reservation."); setSubmitting(false); return; }
       remember({ name: form.name, email: form.email, phone: form.phone });
-      if (item.needsDates) setPref("guests", form.guests);
+      if (item.needsDates || item.needsDate) setPref("guests", form.guests);
       // Mirror into the local "trips" list for quick reference.
       addTrip({ ref: data.reference ?? ref, type: item.type, title: item.title, subtitle: item.subtitle, image: item.image, total, guestName: form.name, bookedAt: new Date().toISOString() });
       setReference(data.reference ?? ref);
@@ -187,16 +191,18 @@ export default function BookingForm({ item, soldOut = false }: { item: BookingIt
           </div>
         </div>
 
-        {item.needsDates && (
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {(item.needsDates || item.needsDate) && (
+          <div className={`grid grid-cols-1 ${item.needsDates ? "sm:grid-cols-3" : "sm:grid-cols-2"} gap-4`}>
             <div>
-              <label className={labelClass}><Calendar size={11} className="inline mr-1" />{t("hotelSearch.checkIn")} <span className="text-gold">*</span></label>
+              <label className={labelClass}><Calendar size={11} className="inline mr-1" />{item.needsDate ? "Preferred date" : t("hotelSearch.checkIn")} <span className="text-gold">*</span></label>
               <input required type="date" min={today} value={form.checkIn} onChange={set("checkIn")} className={inputClass} />
             </div>
-            <div>
-              <label className={labelClass}><Calendar size={11} className="inline mr-1" />{t("hotelSearch.checkOut")} <span className="text-gold">*</span></label>
-              <input required type="date" min={form.checkIn || today} value={form.checkOut} onChange={set("checkOut")} className={inputClass} />
-            </div>
+            {item.needsDates && (
+              <div>
+                <label className={labelClass}><Calendar size={11} className="inline mr-1" />{t("hotelSearch.checkOut")} <span className="text-gold">*</span></label>
+                <input required type="date" min={form.checkIn || today} value={form.checkOut} onChange={set("checkOut")} className={inputClass} />
+              </div>
+            )}
             <div>
               <label className={labelClass}><Users size={11} className="inline mr-1" />{t("hotelSearch.guests")} <span className="text-gold">*</span></label>
               <input required type="number" min={1} max={12} value={form.guests} onChange={set("guests")} className={inputClass} />

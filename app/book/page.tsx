@@ -29,13 +29,13 @@ async function resolveItem(type?: string, id?: string): Promise<BookingItem | nu
     const p = await prisma.package.findUnique({ where: { id } });
     if (!p) return null;
     return { type, id, title: p.title, subtitle: p.destinations.join(" · "), image: p.image,
-      price: p.pricePerPerson, priceLabel: "booking.perPerson" };
+      price: p.pricePerPerson, priceLabel: "booking.perPerson", needsDates: true };
   }
   if (type === "experience") {
     const e = await prisma.experience.findUnique({ where: { id } });
     if (!e) return null;
     return { type, id, title: e.title, subtitle: e.location, image: e.image,
-      price: e.price, priceLabel: "booking.perPerson" };
+      price: e.price, priceLabel: "booking.perPerson", needsDate: true };
   }
   if (type === "train") {
     const t = await prisma.train.findUnique({ where: { id } });
@@ -52,7 +52,7 @@ async function resolveItem(type?: string, id?: string): Promise<BookingItem | nu
     const c = await prisma.cruise.findUnique({ where: { id } });
     if (!c) return null;
     return { type, id, title: `${c.name} · ${c.ship}`, subtitle: `${c.departurePort} · ${c.ports.join(" · ")}`, image: c.image,
-      price: c.pricePerPerson, priceLabel: "booking.perPerson" };
+      price: c.pricePerPerson, priceLabel: "booking.perPerson", needsDates: true };
   }
   return null;
 }

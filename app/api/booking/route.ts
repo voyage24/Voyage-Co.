@@ -33,9 +33,19 @@ export async function POST(req: Request) {
   if (!itemType || !itemId || !itemTitle) {
     return NextResponse.json({ error: "Missing booking item" }, { status: 400 });
   }
-  // Hotels are the only dated reservation — require dates + a valid guest count.
-  if (itemType === "hotel" && (!checkIn || !checkOut || !(Number(guests) >= 1))) {
+  // No journey is confirmed without its dates. Multi-day stays (hotel, package,
+  // cruise) need check-in + check-out; experiences need a single date. All dated
+  // bookings need a valid guest count.
+  const multiDay = itemType === "hotel" || itemType === "package" || itemType === "cruise";
+  const singleDay = itemType === "experience";
+  if (multiDay && (!checkIn || !checkOut || !(Number(guests) >= 1))) {
     return NextResponse.json({ error: "Check-in, check-out and number of guests are required" }, { status: 400 });
+  }
+  if (singleDay && (!checkIn || !(Number(guests) >= 1))) {
+    return NextResponse.json({ error: "A date and number of guests are required" }, { status: 400 });
+  }
+  if (multiDay && checkIn && checkOut && new Date(checkOut) <= new Date(checkIn)) {
+    return NextResponse.json({ error: "Check-out must be after check-in" }, { status: 400 });
   }
 
   // Reject if the item has a capacity and it's already full.

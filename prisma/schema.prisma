@@ -169,7 +169,9 @@ model MemberDocument {
   customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
   label      String
   category   String   @default("Other") // Passport | Visa | Insurance | Tickets | Other
-  url        String
+  url        String   // Blob URL — holds AES-256-GCM ciphertext when encrypted
+  mime       String?  // original content-type, needed to serve the decrypted file
+  encrypted  Boolean  @default(false)
   createdAt  DateTime @default(now())
 
   @@index([customerId])

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { put } from "@vercel/blob";
 import { prisma } from "@/lib/prisma";
 import { getCurrentCustomer } from "@/lib/customer/session";
+import { encryptBuffer, encryptionAvailable } from "@/lib/crypto";
 
 export const dynamic = "force-dynamic";
 
@@ -31,9 +32,14 @@ export async function POST(req: NextRequest) {
   if (file.size > MAX_BYTES) return NextResponse.json({ error: "File too large — keep documents under 12 MB." }, { status: 400 });
 
   const name = (file as File).name || `document-${Date.now()}`;
-  const blob = await put(`docs/${customer.id}/${name}`, file, { access: "public", addRandomSuffix: true });
+  // Encrypt the file bytes at rest (AES-256-GCM). The Blob then holds only
+  // ciphertext; it's decrypted server-side, for the owner only, on download.
+  const encrypt = encryptionAvailable();
+  const bytes = Buffer.from(await file.arrayBuffer());
+  const payload = encrypt ? encryptBuffer(bytes) : bytes;
+  const blob = await put(`docs/${customer.id}/${encrypt ? name + ".enc" : name}`, payload, { access: "public", addRandomSuffix: true, contentType: "application/octet-stream" });
   const doc = await prisma.memberDocument.create({
-    data: { customerId: customer.id, label: label || name, category, url: blob.url },
+    data: { customerId: customer.id, label: label || name, category, url: blob.url, mime: type, encrypted: encrypt },
   });
   return NextResponse.json({ ok: true, document: doc });
 }

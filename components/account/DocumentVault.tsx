@@ -49,7 +49,7 @@ export default function DocumentVault() {
         <FolderLock size={18} className="text-gold mt-0.5 shrink-0" />
         <div>
           <p className="text-sm font-medium text-ink">Document vault</p>
-          <p className="text-xs text-ink-muted font-light mt-0.5">Scan or upload <span className="text-ink">copies</span> of your documents — passport, visa, insurance, tickets. Private to your account and on any device. (Passport <span className="text-ink">numbers</span> for autofill live in Traveller details above.)</p>
+          <p className="text-xs text-ink-muted font-light mt-0.5">Scan or upload your documents — passport, visa, insurance, tickets. Encrypted and private to your account, available on any device.</p>
         </div>
       </div>
 
@@ -84,7 +84,7 @@ export default function DocumentVault() {
                 <p className="text-sm text-ink truncate">{d.label}</p>
                 <p className="text-[11px] text-ink-faint">{d.category}</p>
               </div>
-              <a href={d.url} target="_blank" rel="noopener noreferrer" className="text-ink-muted hover:text-ink shrink-0" aria-label="Open"><ExternalLink size={15} /></a>
+              <a href={`/api/account/documents/${d.id}/file`} target="_blank" rel="noopener noreferrer" className="text-ink-muted hover:text-ink shrink-0" aria-label="Open"><ExternalLink size={15} /></a>
               <button onClick={() => del(d.id)} className="text-ink-faint hover:text-red-500 shrink-0" aria-label="Delete"><Trash2 size={15} /></button>
             </li>
           ))}
