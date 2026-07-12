@@ -4,6 +4,8 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Mail, Send, MailCheck, Archive, LayoutTemplate, Newspaper, LogOut } from "lucide-react";
 import { canAccess } from "@/lib/admin/permissions";
+import MailThemeToggle from "@/components/admin/MailThemeToggle";
+import MailAppLockToggle from "@/components/admin/MailAppLockToggle";
 
 const TABS = [
   { href: "/admin/mail", label: "Inbox", Icon: Mail },
@@ -41,10 +43,14 @@ export default function MailNav({ email, role = "owner" }: { email: string; role
     <>
       <header className="sticky top-0 z-30 bg-gray-900 text-gray-100" style={{ paddingTop: "env(safe-area-inset-top)" }}>
         <div className="flex items-center justify-between px-4 h-12">
-          <span className="font-semibold text-sm tracking-[0.14em] uppercase">Voyages Mail</span>
-          <button onClick={logout} className="inline-flex items-center gap-1.5 text-xs text-gray-400 hover:text-white" title={email}>
-            <LogOut size={14} /> Sign out
-          </button>
+          <span className="shimmer-white mail-breathe font-semibold text-sm tracking-[0.14em] uppercase">Voyages Mail</span>
+          <div className="flex items-center gap-3">
+            <MailThemeToggle />
+            <MailAppLockToggle />
+            <button onClick={logout} className="inline-flex items-center gap-1.5 text-xs text-gray-400 hover:text-white" title={email}>
+              <LogOut size={14} /> <span className="hidden sm:inline">Sign out</span>
+            </button>
+          </div>
         </div>
         {/* Desktop: tabs under the header */}
         <nav className="hidden sm:flex border-t border-white/10">
