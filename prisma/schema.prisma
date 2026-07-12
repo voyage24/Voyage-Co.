@@ -311,6 +311,7 @@ model Booking {
 
   @@index([customerId])
   @@index([status])
+  @@index([createdAt])
 }
 
 model Enquiry {

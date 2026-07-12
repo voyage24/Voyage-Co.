@@ -76,6 +76,23 @@ export default async function AdminDashboardPage() {
   const todayVisits = visitMap.get(new Date().toISOString().slice(0, 10)) ?? 0;
   const weekVisits = visitDays.slice(-7).reduce((s, d) => s + d.count, 0);
 
+  // Booked value (last 14 days) + enquiry pipeline.
+  const since = new Date(); since.setDate(since.getDate() - 13); since.setHours(0, 0, 0, 0);
+  const [revBookings, stageRows] = await Promise.all([
+    prisma.booking.findMany({ where: { createdAt: { gte: since }, status: { not: "cancelled" } }, select: { total: true, createdAt: true } }).catch(() => []),
+    prisma.enquiry.groupBy({ by: ["stage"], _count: { stage: true } }).catch(() => [] as { stage: string; _count: { stage: number } }[]),
+  ]);
+  const revMap = new Map<string, number>();
+  for (let i = 0; i < 14; i++) { const d = new Date(since); d.setDate(since.getDate() + i); revMap.set(d.toISOString().slice(0, 10), 0); }
+  for (const b of revBookings) { const k = new Date(b.createdAt).toISOString().slice(0, 10); if (revMap.has(k)) revMap.set(k, (revMap.get(k) || 0) + b.total); }
+  const revenueDays = Array.from(revMap).map(([k, v]) => ({ label: new Date(k).toLocaleDateString("en-GB", { day: "numeric", month: "short" }), count: Math.round(v / 1000) }));
+  const revenueTotal = revBookings.reduce((s, b) => s + b.total, 0);
+  const STAGES = ["new", "contacted", "quoted", "won", "lost"] as const;
+  const stageCounts: Record<string, number> = { new: 0, contacted: 0, quoted: 0, won: 0, lost: 0 };
+  for (const r of stageRows) if (r.stage in stageCounts) stageCounts[r.stage] = r._count.stage;
+  const pipelineTotal = STAGES.reduce((s, k) => s + stageCounts[k], 0);
+  const STAGE_TINT: Record<string, string> = { new: "bg-slate-400", contacted: "bg-blue-400", quoted: "bg-violet-400", won: "bg-emerald-500", lost: "bg-gray-300" };
+
   const Tile = ({ href, n, label, Icon, grad }: { href: string; n: number; label: string; Icon: typeof Inbox; grad: string }) => (
     <Link href={href} className={`admin-rise admin-lift relative block rounded-xl p-5 text-gray-900 ${grad}`}>
       <Icon size={20} className="mb-3 text-gray-700" />
@@ -119,6 +136,40 @@ export default async function AdminDashboardPage() {
           </div>
         </div>
         <MiniAreaChart data={visitDays} />
+      </div>
+
+      {/* Revenue + pipeline */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="tile-grad-3 rounded-xl p-5 admin-rise admin-lift">
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-sm font-medium text-gray-900">Booked value · 14 days</p>
+            <p className="text-lg font-bold text-gray-900">₹{revenueTotal.toLocaleString("en-IN")}</p>
+          </div>
+          <MiniAreaChart data={revenueDays} format={(n) => `₹${n}k`} />
+        </div>
+        <div className="tile-grad-4 rounded-xl p-5 admin-rise admin-lift">
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-sm font-medium text-gray-900">Enquiry pipeline</p>
+            <p className="text-xs text-gray-500">{pipelineTotal} total</p>
+          </div>
+          {pipelineTotal === 0 ? (
+            <p className="text-sm text-gray-400">No enquiries yet.</p>
+          ) : (
+            <>
+              <div className="flex h-3 rounded-full overflow-hidden bg-gray-100">
+                {STAGES.map(s => stageCounts[s] > 0 && <div key={s} className={STAGE_TINT[s]} style={{ width: `${(stageCounts[s] / pipelineTotal) * 100}%` }} title={`${s}: ${stageCounts[s]}`} />)}
+              </div>
+              <div className="grid grid-cols-5 gap-2 mt-4">
+                {STAGES.map(s => (
+                  <div key={s}>
+                    <p className="text-lg font-bold text-gray-900">{stageCounts[s]}</p>
+                    <p className="text-[10px] uppercase tracking-wide text-gray-500 capitalize">{s}</p>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
       </div>
 
       {/* Recent activity */}
