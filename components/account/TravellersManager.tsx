@@ -54,10 +54,13 @@ export default function TravellersManager() {
     <div className="bg-panel border border-line rounded-2xl p-6 mt-6">
       <div className="flex items-center gap-2 mb-1">
         <Users size={16} className="text-gold" />
-        <h2 className="font-serif text-xl font-light text-ink">Travellers</h2>
+        <h2 className="font-serif text-xl font-light text-ink">Traveller details</h2>
       </div>
-      <p className="text-sm text-ink-muted font-light mb-5 flex items-center gap-1.5">
-        <ShieldCheck size={13} className="text-gold" /> Passport numbers are encrypted and only the last 4 digits are ever shown.
+      <p className="text-sm text-ink-muted font-light mb-1">
+        Save who&apos;s travelling — names and passport numbers — to autofill bookings faster.
+      </p>
+      <p className="text-xs text-ink-faint font-light mb-5 flex items-center gap-1.5">
+        <ShieldCheck size={13} className="text-gold" /> Passport numbers are encrypted (only the last 4 digits shown). For a photo or scan of a passport, use the Document Vault below.
       </p>
 
       {list.length > 0 && (

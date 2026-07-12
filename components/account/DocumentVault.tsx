@@ -49,7 +49,7 @@ export default function DocumentVault() {
         <FolderLock size={18} className="text-gold mt-0.5 shrink-0" />
         <div>
           <p className="text-sm font-medium text-ink">Document vault</p>
-          <p className="text-xs text-ink-muted font-light mt-0.5">Scan with your camera or upload — keep your passport, visa, insurance and tickets in one place, private to your account and on any device.</p>
+          <p className="text-xs text-ink-muted font-light mt-0.5">Scan or upload <span className="text-ink">copies</span> of your documents — passport, visa, insurance, tickets. Private to your account and on any device. (Passport <span className="text-ink">numbers</span> for autofill live in Traveller details above.)</p>
         </div>
       </div>
 
