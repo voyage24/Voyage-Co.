@@ -1,17 +1,34 @@
 import { prisma } from "@/lib/prisma";
 import { resolveCoords } from "@/lib/place-coords";
 import { peakSeasonCountries } from "@/lib/seasonality";
+import { affinityFor } from "@/lib/affinity";
 
 export type PriceDrop = { title: string; href: string; image: string | null; was: number; now: number; pct: number };
 export type WeatherAlt = { title: string; href: string; image: string | null; country: string };
+export type Affinity = { from: string; to: string; reason: string; href: string; image: string | null };
 export type PersonalizedHome = {
   firstName: string;
   nextTrip: { title: string; reference: string; checkIn: string; daysToGo: number } | null;
   passport: { label: string; daysToExpiry: number; expiry: string } | null;
   priceDrops: PriceDrop[];
   weather: { place: string; alternatives: WeatherAlt[] } | null;
+  affinity: Affinity | null;
   savedCount: number;
 };
+
+// "If you liked {from}, you'll love {to}" — from the country of a hotel the
+// member has saved or booked, mapped through the affinity table.
+async function affinitySuggestion(customerId: string): Promise<Affinity | null> {
+  const saved = await prisma.savedItem.findFirst({ where: { customerId, type: "hotel" }, orderBy: { createdAt: "desc" }, select: { itemId: true } });
+  let hotelId = saved?.itemId;
+  if (!hotelId) hotelId = (await prisma.booking.findFirst({ where: { customerId, type: "hotel", status: { not: "cancelled" } }, orderBy: { createdAt: "desc" }, select: { itemId: true } }))?.itemId;
+  if (!hotelId) return null;
+  const hotel = await prisma.hotel.findUnique({ where: { id: hotelId }, select: { country: true } });
+  const aff = affinityFor(hotel?.country);
+  if (!aff || !hotel?.country) return null;
+  const sample = await prisma.hotel.findFirst({ where: { published: true, country: aff.to }, orderBy: [{ rating: "desc" }, { reviewCount: "desc" }], select: { id: true, image: true } });
+  return { from: hotel.country, to: aff.to, reason: aff.reason, href: sample ? `/hotels/${sample.id}` : `/destinations`, image: sample?.image ?? null };
+}
 
 // Is the destination looking wet over the next few days? (Open-Meteo, cached.)
 async function isRainy(lat: number, lng: number): Promise<boolean> {
@@ -98,9 +115,10 @@ export async function getPersonalizedHome(customerId: string): Promise<Personali
   }
   priceDrops.sort((a, b) => b.pct - a.pct);
 
-  const [savedCount, weather] = await Promise.all([
+  const [savedCount, weather, affinity] = await Promise.all([
     prisma.savedItem.count({ where: { customerId } }),
     weatherSuggestion(customerId).catch(() => null),
+    affinitySuggestion(customerId).catch(() => null),
   ]);
 
   return {
@@ -109,6 +127,7 @@ export async function getPersonalizedHome(customerId: string): Promise<Personali
     passport,
     priceDrops: priceDrops.slice(0, 2),
     weather,
+    affinity,
     savedCount,
   };
 }

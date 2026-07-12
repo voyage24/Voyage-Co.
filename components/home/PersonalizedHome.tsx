@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { CalendarClock, BadgePercent, ShieldAlert, Bookmark, ArrowRight, CloudRain } from "lucide-react";
+import { CalendarClock, BadgePercent, ShieldAlert, Bookmark, ArrowRight, CloudRain, Compass } from "lucide-react";
 import { useCurrency } from "@/components/providers/CurrencyProvider";
 import type { PersonalizedHome as Data, PriceDrop } from "@/lib/customer/personalized-home";
 
@@ -74,6 +74,17 @@ export default function PersonalizedHome() {
         <p className="text-xs text-ink-muted mt-1">
           <span className="line-through text-ink-faint">{format(d.was)}</span> → <span className="text-ink font-medium">{format(d.now)}</span>
         </p>
+      </Link>,
+    );
+  }
+
+  if (data.affinity) {
+    cards.push(
+      <Link key="affinity" href={data.affinity.href} className="group rounded-2xl border border-line bg-panel-soft p-5 hover:border-gold/40 transition-colors">
+        <Compass size={17} className="text-gold mb-2.5" />
+        <p className="text-[11px] tracking-[0.18em] uppercase text-ink-faint">Loved {data.affinity.from}?</p>
+        <p className="text-sm font-medium text-ink mt-1">You&apos;ll adore {data.affinity.to}</p>
+        <p className="text-xs text-ink-muted mt-1 line-clamp-2">{data.affinity.reason}</p>
       </Link>,
     );
   }
