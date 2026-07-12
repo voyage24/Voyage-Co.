@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
 
   const base = "https://voyagesco.com";
   const headers: HeadersInit = secret ? { authorization: `Bearer ${secret}` } : {};
-  const jobs = ["search-alerts", "lifecycle-emails", "occasion-emails", "flight-status", "follow-up-reminders"];
+  const jobs = ["search-alerts", "lifecycle-emails", "occasion-emails", "flight-status", "follow-up-reminders", "smart-alerts"];
 
   const results = await Promise.allSettled(
     jobs.map(j => fetch(`${base}/api/cron/${j}`, { headers, cache: "no-store" }).then(r => r.json()).catch(() => ({ error: j }))),

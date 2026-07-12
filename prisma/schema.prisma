@@ -305,6 +305,10 @@ model Booking {
   documents   Json      @default("[]") // [{ label, url }] — vouchers, tickets, itineraries
   preTripSentAt  DateTime?
   postTripSentAt DateTime?
+  checkinRemindedAt  DateTime? // "check-in / trip is soon" push sent
+  weatherRemindedOn  String?   // YYYY-MM-DD of the last "rain tomorrow" push (dedupe per day)
+  fxBaseRate         Float?    // INR→destination rate last seen, for "rate improved" alerts
+  fxRemindedAt       DateTime? // last currency-improved push
   pointsAwarded  Boolean   @default(false)
   flightStatus   String?   // last pushed live status: scheduled | airborne | landed | delayed
   flightStatusAt DateTime?
