@@ -6,6 +6,7 @@ import { getEmailTemplate, bodyToHtml } from "@/lib/email/email-templates";
 import { getCurrentCustomer } from "@/lib/customer/session";
 import { getRemaining } from "@/lib/availability";
 import { notifyWhatsApp } from "@/lib/email/notify-admin";
+import { sendPushToAdmins } from "@/lib/push";
 import { verifyTurnstile, clientIp } from "@/lib/security/turnstile";
 
 function inr(n: number) {
@@ -84,6 +85,13 @@ export async function POST(req: Request) {
   }
 
   await notifyWhatsApp(`🔔 New booking ${reference}\n${name} · ${itemTitle}${typeof total === "number" && total > 0 ? ` · ₹${Math.round(total).toLocaleString("en-IN")}` : ""}`);
+
+  // Push to the admin's phone/devices too (mirrors the new-mail alerts).
+  await sendPushToAdmins({
+    title: `🔔 New booking · ${itemTitle}`,
+    body: `${name}${typeof total === "number" && total > 0 ? ` · ₹${Math.round(total).toLocaleString("en-IN")}` : ""} · ${reference}`,
+    url: "/admin/bookings",
+  }).catch(() => {});
 
   try {
     const transporter = createTransport();

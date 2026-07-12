@@ -240,32 +240,34 @@ export default function InboxClient({ initial }: { initial?: InboxData }) {
             const isOpen = openId === e.id;
             return (
               <div key={e.id} className={`relative overflow-hidden border rounded-lg bg-white ${e.read ? "border-gray-200" : "border-gray-900/30"}`}>
-                {/* Swipe reveals (phones): left → read/unread, right → archive */}
-                <div className="sm:hidden absolute inset-y-0 left-0 flex items-center gap-1.5 px-4 bg-blue-700 text-white text-xs">
-                  {e.read ? <Mail size={14} /> : <MailOpen size={14} />} {e.read ? "Unread" : "Read"}
-                </div>
-                <div className="sm:hidden absolute inset-y-0 right-0 flex items-center gap-1.5 px-4 bg-gray-800 text-white text-xs">
-                  <Archive size={14} /> Archive
-                </div>
-                <div
-                  className="relative flex items-center bg-white"
-                  style={{ transform: swipeId === e.id ? `translateX(${swipeDx}px)` : undefined, transition: swipeId === e.id ? "none" : "transform 0.2s" }}
-                  onTouchStart={onTouchStart(e.id)}
-                  onTouchMove={onTouchMove}
-                  onTouchEnd={onTouchEnd(e)}
-                >
-                <input
-                  type="checkbox" checked={sel.has(e.id)} onChange={() => toggleSel(e.id)}
-                  aria-label="Select email" className="ml-3 shrink-0 accent-gray-900"
-                />
-                <button onClick={() => open(e)} className="flex-1 min-w-0 flex items-center gap-3 px-3 py-3 text-left">
-                  {e.read ? <MailOpen size={16} className="text-gray-400 shrink-0" /> : <Mail size={16} className="text-gray-900 shrink-0" />}
-                  <span className="min-w-0 flex-1">
-                    <span className={`block text-sm truncate ${e.read ? "text-gray-700" : "text-gray-900 font-medium"}`}>{e.fromName || e.fromEmail}</span>
-                    <span className="block text-xs text-gray-500 truncate">{e.subject || "(no subject)"}</span>
-                  </span>
-                  <span className="text-xs text-gray-400 shrink-0 pr-1">{new Date(e.receivedAt).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}</span>
-                </button>
+                {/* Swipe reveals scoped to just the collapsed row (not the open body) */}
+                <div className="relative overflow-hidden">
+                  <div className="sm:hidden absolute inset-y-0 left-0 flex items-center gap-1.5 px-4 bg-blue-700 text-white text-xs">
+                    {e.read ? <Mail size={14} /> : <MailOpen size={14} />} {e.read ? "Unread" : "Read"}
+                  </div>
+                  <div className="sm:hidden absolute inset-y-0 right-0 flex items-center gap-1.5 px-4 bg-gray-800 text-white text-xs">
+                    <Archive size={14} /> Archive
+                  </div>
+                  <div
+                    className="relative flex items-center bg-white"
+                    style={{ transform: swipeId === e.id ? `translateX(${swipeDx}px)` : undefined, transition: swipeId === e.id ? "none" : "transform 0.2s" }}
+                    onTouchStart={onTouchStart(e.id)}
+                    onTouchMove={onTouchMove}
+                    onTouchEnd={onTouchEnd(e)}
+                  >
+                    <input
+                      type="checkbox" checked={sel.has(e.id)} onChange={() => toggleSel(e.id)}
+                      aria-label="Select email" className="ml-3 shrink-0 accent-gray-900"
+                    />
+                    <button onClick={() => open(e)} className="flex-1 min-w-0 flex items-center gap-3 px-3 py-3 text-left">
+                      {e.read ? <MailOpen size={16} className="text-gray-400 shrink-0" /> : <Mail size={16} className="text-gray-900 shrink-0" />}
+                      <span className="min-w-0 flex-1">
+                        <span className={`block text-sm truncate ${e.read ? "text-gray-700" : "text-gray-900 font-medium"}`}>{e.fromName || e.fromEmail}</span>
+                        <span className="block text-xs text-gray-500 truncate">{e.subject || "(no subject)"}</span>
+                      </span>
+                      <span className="text-xs text-gray-400 shrink-0 pr-1">{new Date(e.receivedAt).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}</span>
+                    </button>
+                  </div>
                 </div>
 
                 {isOpen && (

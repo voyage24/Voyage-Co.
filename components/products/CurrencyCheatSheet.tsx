@@ -67,7 +67,8 @@ export default function CurrencyCheatSheet({ country }: { country?: string | nul
       ) : (
         <p className="text-xs text-ink-muted mt-2 font-light">Live rate unavailable — check a converter before you travel.</p>
       )}
-      <p className="text-[10px] text-ink-faint mt-3 font-light">Indicative rate — cards and bureaux add a margin.</p>
+      <p className="text-[11px] text-ink-muted mt-3 font-light">Exchange at the airport, banks or licensed money changers; ATMs usually give the best rate. Cards are widely accepted in cities.</p>
+      <p className="text-[10px] text-ink-faint mt-1 font-light">Indicative rate — cards and bureaux add a margin.</p>
     </div>
   );
 }

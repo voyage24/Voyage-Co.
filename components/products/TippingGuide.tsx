@@ -12,11 +12,12 @@ export default function TippingGuide({ country }: { country?: string | null }) {
       <summary className="flex items-center gap-2 cursor-pointer list-none">
         <Coins size={16} className="text-gold" />
         <span className="text-[11px] tracking-[0.2em] uppercase text-ink-faint">Tipping &amp; etiquette</span>
-        <span className="ml-auto text-[11px] text-ink-muted group-open:hidden">{g.level}</span>
-        <span className="ml-auto text-[11px] text-gold hidden group-open:inline">Hide</span>
+        <span className="ml-auto text-[11px] text-gold uppercase tracking-[0.14em] group-open:hidden">Open</span>
+        <span className="ml-auto text-[11px] text-gold uppercase tracking-[0.14em] hidden group-open:inline">Hide</span>
       </summary>
 
-      <div className="mt-4 space-y-2.5 text-xs text-ink-muted">
+      <p className="mt-3 text-sm text-ink font-medium">{g.level}</p>
+      <div className="mt-3 space-y-2.5 text-xs text-ink-muted">
         <Row icon={<UtensilsCrossed size={13} className="text-gold" />} label="Restaurants" value={g.restaurants} />
         <Row icon={<BedDouble size={13} className="text-gold" />} label="Hotels" value={g.hotels} />
         <Row icon={<Car size={13} className="text-gold" />} label="Taxis" value={g.taxis} />
