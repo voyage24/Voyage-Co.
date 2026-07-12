@@ -23,7 +23,7 @@ async function resolveItem(type?: string, id?: string): Promise<BookingItem | nu
       title: `${f.airline} · ${f.flightNumber}`,
       subtitle: `${f.originCity} (${f.origin}) → ${f.destinationCity} (${f.destination}) · ${f.departure}–${f.arrival}`,
       price: f.price,
-      priceLabel: "booking.perGuest" };
+      priceLabel: "booking.perGuest", needsDate: true };
   }
   if (type === "package") {
     const p = await prisma.package.findUnique({ where: { id } });
@@ -46,7 +46,7 @@ async function resolveItem(type?: string, id?: string): Promise<BookingItem | nu
       title: t.name,
       subtitle: `${t.originCity} (${t.origin}) → ${t.destinationCity} (${t.destination})`,
       price: low ? low.price : 0,
-      priceLabel: "booking.perGuest" };
+      priceLabel: "booking.perGuest", needsDate: true };
   }
   if (type === "cruise") {
     const c = await prisma.cruise.findUnique({ where: { id } });

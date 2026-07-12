@@ -92,3 +92,9 @@ export function getSeasonality(country?: string | null): Season | null {
   if (!country) return null;
   return DATA[country] ?? DATA[ALIAS[country] ?? ""] ?? null;
 }
+
+// Countries whose given month (0=Jan…11=Dec) is peak/ideal — used to suggest
+// sunny alternatives when a traveller's destination is looking wet.
+export function peakSeasonCountries(month: number): string[] {
+  return Object.entries(DATA).filter(([, s]) => s.months[month] === 2).map(([c]) => c);
+}

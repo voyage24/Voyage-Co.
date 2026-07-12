@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-export type ViewedItem = { type: string; id: string; title: string; image: string; href: string };
+export type ViewedItem = { type: string; id: string; title: string; image: string; href: string; price?: number };
 
 const KEY = "vc-recently-viewed";
 const MAX = 12;

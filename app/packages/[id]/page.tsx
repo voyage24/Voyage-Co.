@@ -56,7 +56,7 @@ export default async function PackageDetailPage({ params }: { params: { id: stri
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-16">
-      <RecordView type="package" id={pkg.id} title={pkg.title} image={pkg.image} href={`/packages/${pkg.id}`} />
+      <RecordView type="package" id={pkg.id} title={pkg.title} image={pkg.image} href={`/packages/${pkg.id}`} price={pkg.priceOnRequest ? undefined : pkg.pricePerPerson} />
       <JsonLd data={[productJsonLd({ type: "package", id: pkg.id, basePath: "/packages", name: pkg.title, description: pkg.subtitle, image: pkg.image, price: pkg.pricePerPerson, priceOnRequest: pkg.priceOnRequest }, reviews), breadcrumbJsonLd([{ name: "Destinations", path: "/packages" }, { name: pkg.title, path: `/packages/${pkg.id}` }]), ...(faqs.length ? [faqJsonLd(faqs)] : [])]} />
       <div className="flex items-center justify-between mb-6">
         <Link href="/packages" className="inline-flex items-center gap-2 text-xs tracking-[0.1em] uppercase text-ink-muted hover:text-gold transition-colors">

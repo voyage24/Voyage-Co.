@@ -59,7 +59,7 @@ export default async function ExperienceDetailPage({ params }: { params: { id: s
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20">
-      <RecordView type="experience" id={exp.id} title={exp.title} image={exp.image} href={`/experiences/${exp.id}`} />
+      <RecordView type="experience" id={exp.id} title={exp.title} image={exp.image} href={`/experiences/${exp.id}`} price={exp.priceOnRequest ? undefined : exp.price} />
       <JsonLd data={[productJsonLd({ type: "experience", id: exp.id, basePath: "/experiences", name: exp.title, description: exp.description, image: exp.image, price: exp.price, priceOnRequest: exp.priceOnRequest }, reviews), breadcrumbJsonLd([{ name: "Experiences", path: "/experiences" }, { name: exp.title, path: `/experiences/${exp.id}` }]), ...(faqs.length ? [faqJsonLd(faqs)] : [])]} />
       <div className="flex items-center justify-between mb-6">
         <Link href="/experiences" className="inline-flex items-center gap-2 text-xs tracking-[0.1em] uppercase text-ink-muted hover:text-ink transition-colors">

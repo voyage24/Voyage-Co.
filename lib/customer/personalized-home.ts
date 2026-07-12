@@ -1,13 +1,50 @@
 import { prisma } from "@/lib/prisma";
+import { resolveCoords } from "@/lib/place-coords";
+import { peakSeasonCountries } from "@/lib/seasonality";
 
 export type PriceDrop = { title: string; href: string; image: string | null; was: number; now: number; pct: number };
+export type WeatherAlt = { title: string; href: string; image: string | null; country: string };
 export type PersonalizedHome = {
   firstName: string;
   nextTrip: { title: string; reference: string; checkIn: string; daysToGo: number } | null;
   passport: { label: string; daysToExpiry: number; expiry: string } | null;
   priceDrops: PriceDrop[];
+  weather: { place: string; alternatives: WeatherAlt[] } | null;
   savedCount: number;
 };
+
+// Is the destination looking wet over the next few days? (Open-Meteo, cached.)
+async function isRainy(lat: number, lng: number): Promise<boolean> {
+  try {
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&daily=precipitation_probability_max&forecast_days=5&timezone=auto`;
+    const r = await fetch(url, { next: { revalidate: 3600 } });
+    if (!r.ok) return false;
+    const probs: number[] = (await r.json())?.daily?.precipitation_probability_max ?? [];
+    return probs.filter(p => typeof p === "number" && p >= 60).length >= 2;
+  } catch { return false; }
+}
+
+// If the member's destination (upcoming hotel, else a saved hotel) looks rainy,
+// suggest a few top-rated stays in countries that are in peak season right now.
+async function weatherSuggestion(customerId: string): Promise<{ place: string; alternatives: WeatherAlt[] } | null> {
+  const booking = await prisma.booking.findFirst({ where: { customerId, type: "hotel", status: { not: "cancelled" }, checkIn: { not: null } }, orderBy: { checkIn: "asc" }, select: { itemId: true } });
+  let hotelId = booking?.itemId;
+  if (!hotelId) hotelId = (await prisma.savedItem.findFirst({ where: { customerId, type: "hotel" }, orderBy: { createdAt: "desc" }, select: { itemId: true } }))?.itemId;
+  if (!hotelId) return null;
+
+  const hotel = await prisma.hotel.findUnique({ where: { id: hotelId }, select: { city: true, country: true, lat: true, lng: true } });
+  if (!hotel) return null;
+  const coords = hotel.lat != null && hotel.lng != null ? [hotel.lat, hotel.lng] as [number, number] : resolveCoords(hotel.city, null);
+  if (!coords) return null;
+  if (!(await isRainy(coords[0], coords[1]))) return null;
+
+  const peak = peakSeasonCountries(new Date().getMonth()).filter(c => c !== hotel.country);
+  if (peak.length === 0) return null;
+  const alts = await prisma.hotel.findMany({ where: { published: true, country: { in: peak } }, orderBy: [{ rating: "desc" }, { reviewCount: "desc" }], take: 3, select: { id: true, name: true, image: true, country: true } });
+  if (alts.length === 0) return null;
+
+  return { place: hotel.city || hotel.country, alternatives: alts.map(a => ({ title: a.name, href: `/hotels/${a.id}`, image: a.image, country: a.country })) };
+}
 
 const dayDiff = (iso: string) => {
   const d = new Date(iso); if (isNaN(d.getTime())) return null;
@@ -61,13 +98,17 @@ export async function getPersonalizedHome(customerId: string): Promise<Personali
   }
   priceDrops.sort((a, b) => b.pct - a.pct);
 
-  const savedCount = await prisma.savedItem.count({ where: { customerId } });
+  const [savedCount, weather] = await Promise.all([
+    prisma.savedItem.count({ where: { customerId } }),
+    weatherSuggestion(customerId).catch(() => null),
+  ]);
 
   return {
     firstName: customer?.name?.trim().split(" ")[0] || "",
     nextTrip,
     passport,
     priceDrops: priceDrops.slice(0, 2),
+    weather,
     savedCount,
   };
 }
