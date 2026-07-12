@@ -7,7 +7,7 @@ import { guessNameFromEmail } from "@/lib/email/guess-name";
 // the page and then fetching the list in a second round-trip.
 export type InboxEmail = {
   id: string; fromName: string | null; fromEmail: string; toEmail: string | null; subject: string | null;
-  bodyText: string | null; bodyHtml: string | null; receivedAt: string; read: boolean;
+  snippet: string; receivedAt: string; read: boolean; // full body loaded lazily on open
   replyTo: string;            // the OTHER party — never our own mailbox
   replyName: string | null;   // their display name (for the greeting)
   replyFrom: string;          // our address/alias the reply should go out from
@@ -48,9 +48,10 @@ export async function getInboxList(): Promise<{ emails: InboxEmail[]; unread: nu
           replyName = nameLine || guessNameFromEmail(text, customer) || null;
         }
       }
+      const snippet = (e.bodyText || (e.bodyHtml || "").replace(/<[^>]+>/g, " ")).replace(/\s+/g, " ").trim().slice(0, 160);
       return {
         id: e.id, fromName: e.fromName, fromEmail: e.fromEmail, toEmail: e.toEmail, subject: e.subject,
-        bodyText: e.bodyText, bodyHtml: e.bodyHtml, receivedAt: e.receivedAt.toISOString(), read: e.read,
+        snippet, receivedAt: e.receivedAt.toISOString(), read: e.read,
         replyTo,
         replyName,
         replyFrom: mine ? from : (to.endsWith(`@${ourDomain}`) ? to : ""),

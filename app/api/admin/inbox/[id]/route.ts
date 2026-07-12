@@ -4,6 +4,16 @@ import { requireAdmin } from "@/lib/admin/requireAdmin";
 
 export const dynamic = "force-dynamic";
 
+// Full body of one message — loaded lazily when the email is opened, so the
+// inbox list itself stays light (snippets only).
+export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+  const admin = await requireAdmin(req);
+  if (admin instanceof NextResponse) return admin;
+  const email = await prisma.inboundEmail.findUnique({ where: { id: params.id }, select: { bodyText: true, bodyHtml: true } });
+  if (!email) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  return NextResponse.json(email);
+}
+
 // Mark read/unread or archive one message.
 export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
   const admin = await requireAdmin(req);

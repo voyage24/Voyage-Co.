@@ -7,7 +7,9 @@ import { haptic } from "@/lib/haptics";
 
 type Email = {
   id: string; fromName: string | null; fromEmail: string; toEmail?: string | null; subject: string | null;
-  bodyText: string | null; bodyHtml: string | null; receivedAt: string; read: boolean;
+  snippet: string; receivedAt: string; read: boolean;
+  // Full body is loaded lazily when the email is opened (keeps the list light).
+  bodyText?: string | null; bodyHtml?: string | null; bodyLoaded?: boolean;
   replyTo?: string; replyName?: string | null; replyFrom?: string;
 };
 type InboxData = { emails: Email[]; unread: number; configured: boolean };
@@ -38,7 +40,19 @@ export default function InboxClient({ initial }: { initial?: InboxData }) {
   const [query, setQuery] = useState("");
   const draftedRef = useRef<Set<string>>(new Set());
 
-  const plain = (e: Email) => e.bodyText || (e.bodyHtml || "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+  const plain = (e: Email) => e.bodyText || (e.bodyHtml || "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim() || e.snippet;
+
+  // Fetches the full body the first time an email is opened, caching it into the
+  // list. The list snapshot only carries snippets, so opening stays instant.
+  const ensureBody = async (e: Email): Promise<Email> => {
+    if (e.bodyLoaded) return e;
+    try {
+      const d = await fetch(`/api/admin/inbox/${e.id}`).then(r => r.json());
+      const full: Email = { ...e, bodyText: d.bodyText ?? null, bodyHtml: d.bodyHtml ?? null, bodyLoaded: true };
+      setEmails(list => list.map(x => (x.id === e.id ? full : x)));
+      return full;
+    } catch { return e; }
+  };
 
   // Draft a contextual AI reply to the received message (editable). Falls back
   // to the template server-side when the AI key isn't configured.
@@ -88,8 +102,10 @@ export default function InboxClient({ initial }: { initial?: InboxData }) {
     const who = e.replyTo || e.fromEmail;
     setCtx(null);
     if (who) fetch(`/api/admin/inbox/context?email=${encodeURIComponent(who)}`).then(r => r.json()).then(d => { if (d?.found) setCtx(d); }).catch(() => {});
-    // Auto-draft a contextual AI reply the first time this message is opened.
-    if (!draftedRef.current.has(e.id)) { draftedRef.current.add(e.id); draftReply(e); }
+    // Load the full body lazily, then auto-draft a contextual AI reply.
+    ensureBody(e).then(full => {
+      if (!draftedRef.current.has(e.id)) { draftedRef.current.add(e.id); draftReply(full); }
+    });
     if (!e.read) { setEmails(list => list.map(x => x.id === e.id ? { ...x, read: true } : x)); setUnread(u => Math.max(0, u - 1)); fetch(`/api/admin/inbox/${e.id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ read: true }) }); }
   };
 
@@ -207,7 +223,7 @@ export default function InboxClient({ initial }: { initial?: InboxData }) {
           {emails.filter(e => {
             if (!query.trim()) return true;
             const q = query.toLowerCase();
-            return (e.fromName || "").toLowerCase().includes(q) || e.fromEmail.toLowerCase().includes(q) || (e.subject || "").toLowerCase().includes(q) || (e.bodyText || "").toLowerCase().includes(q);
+            return (e.fromName || "").toLowerCase().includes(q) || e.fromEmail.toLowerCase().includes(q) || (e.subject || "").toLowerCase().includes(q) || (e.snippet || "").toLowerCase().includes(q);
           }).map(e => {
             const isOpen = openId === e.id;
             return (
@@ -230,7 +246,9 @@ export default function InboxClient({ initial }: { initial?: InboxData }) {
                 {isOpen && (
                   <div className="border-t border-gray-100 px-4 py-3">
                     <p className="text-xs text-gray-400 mb-2">{e.fromEmail} · {new Date(e.receivedAt).toLocaleString("en-GB")}</p>
-                    {e.bodyText ? (
+                    {!e.bodyLoaded ? (
+                      <div className="flex items-center gap-2 text-sm text-gray-400 py-2"><Loader2 size={14} className="animate-spin" /> Loading message…</div>
+                    ) : e.bodyText ? (
                       <div className="text-sm text-gray-700 whitespace-pre-wrap max-h-80 overflow-y-auto">{e.bodyText}</div>
                     ) : e.bodyHtml ? (
                       <iframe title="email" sandbox="" srcDoc={e.bodyHtml} className="w-full h-80 border border-gray-100 rounded" />
