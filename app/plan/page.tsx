@@ -1,6 +1,7 @@
 "use client";
 
-import PlanWizard from "@/components/plan/PlanWizard";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import TripPlanner from "@/components/trip-planner/TripPlanner";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useContent } from "@/components/providers/ContentProvider";
@@ -19,18 +20,14 @@ export default function PlanPage() {
         </p>
       </div>
 
-      {/* Primary: the Smart Trip Planner. */}
       <TripPlanner />
 
-      {/* Alternative: the guided concierge brief for those who prefer a form. */}
-      <div className="mt-16 pt-10 border-t border-line text-center mb-8">
-        <p className="text-[10px] tracking-[0.3em] uppercase text-gold mb-2">Prefer a guided brief?</p>
-        <h2 className="font-serif text-2xl sm:text-3xl font-light text-ink">Tell us your preferences</h2>
-        <p className="text-ink-muted font-light mt-2 max-w-xl mx-auto">
-          Answer a few questions and a concierge will craft a tailored proposal for you.
-        </p>
+      {/* Quiet fallback for those who'd rather answer questions than describe a trip. */}
+      <div className="mt-12 text-center">
+        <Link href="/plan/guided" className="inline-flex items-center gap-1.5 text-xs tracking-[0.14em] uppercase text-ink-muted link-underline">
+          Not sure where to start? Brief a concierge <ArrowRight size={13} />
+        </Link>
       </div>
-      <PlanWizard />
     </div>
   );
 }
