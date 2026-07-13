@@ -10,9 +10,10 @@ import type { PersonalizedHome as Data, PriceDrop } from "@/lib/customer/persona
 // A warm, personalised strip for signed-in members: a time-aware greeting plus
 // smart cards (next trip, price drops on saved journeys, passport expiry).
 // Self-fetches so the public home page stays static; renders nothing for guests.
-// On the member hub (`heading={false}`) the greeting is supplied by the page, so
-// we render just the "For you" cards and can show more of them (`limit`).
-export default function PersonalizedHome({ heading = true, limit = 3 }: { heading?: boolean; limit?: number } = {}) {
+// The greeting can be suppressed (`heading={false}`) when the page greets the
+// member elsewhere — the home page's top band, or the member hub. `bare` drops
+// the section's own max-width/padding for the hub (which supplies its own).
+export default function PersonalizedHome({ heading = true, bare = false, limit = 3 }: { heading?: boolean; bare?: boolean; limit?: number } = {}) {
   const { format } = useCurrency();
   const [data, setData] = useState<Data | null>(null);
   const [viewedDrops, setViewedDrops] = useState<PriceDrop[]>([]);
@@ -130,7 +131,7 @@ export default function PersonalizedHome({ heading = true, limit = 3 }: { headin
   }
 
   return (
-    <section className={heading ? "max-w-[1500px] mx-auto px-6 lg:px-12 pt-10 pb-2" : "pt-2"}>
+    <section className={bare ? "pt-2" : `max-w-[1500px] mx-auto px-6 lg:px-12 ${heading ? "pt-10" : "pt-8"} pb-2`}>
       <p className="text-[11px] tracking-[0.3em] uppercase text-gold mb-2">For you</p>
       {heading && (
         <h2 className="font-serif text-2xl sm:text-3xl font-light text-ink">

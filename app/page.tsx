@@ -5,6 +5,7 @@ import PackagesPreview from "@/components/home/PackagesPreview";
 import TestimonialsSection from "@/components/home/TestimonialsSection";
 import TrustSection from "@/components/home/TrustSection";
 import RecentlyViewed from "@/components/home/RecentlyViewed";
+import HomeGreeting from "@/components/home/HomeGreeting";
 import PersonalizedHome from "@/components/home/PersonalizedHome";
 import ThemedCollections from "@/components/home/ThemedCollections";
 import Recommendations from "@/components/home/Recommendations";
@@ -57,8 +58,9 @@ export default async function Home() {
   return (
     <>
       <JsonLd data={[organizationJsonLd(), websiteJsonLd()]} />
+      <HomeGreeting />
       <HeroSection hotels={hotels} cruises={cruises} trains={trains as any} packages={packages} experiences={experiences} />
-      <PersonalizedHome />
+      <PersonalizedHome heading={false} />
       <ThemedCollections />
       <RecentlyViewed />
       <Recommendations />

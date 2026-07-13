@@ -103,7 +103,7 @@ export default async function MyVoyagesPage() {
       </div>
 
       {/* Smart "For you" nudges — price drops, affinity, weather, passport. */}
-      <PersonalizedHome heading={false} limit={6} />
+      <PersonalizedHome heading={false} bare limit={6} />
 
       <div className="mt-8"><NotificationInbox /></div>
 
