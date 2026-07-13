@@ -50,6 +50,9 @@ export default function Navbar() {
   const primaryLinks: { href: string; label: string }[] = navList
     ? navList.map(x => ({ href: x.href || "#", label: x.label || "" }))
     : PRIMARY_LINKS.map(l => ({ href: l.href, label: c(l.cKey ?? "") || l.label || t(l.key ?? "") }));
+  // Always surface Group trips as a primary item, even when a custom nav list
+  // (which would otherwise omit it) is in use.
+  if (!primaryLinks.some(l => l.href === "/groups")) primaryLinks.push({ href: "/groups", label: "Group trips" });
   const secondaryLinks = SECONDARY_LINKS.map(l => ({ href: l.href, label: l.label || t(l.key ?? "") }));
   const planLabel = c("nav.planCta") || "Smart trip planner";
 

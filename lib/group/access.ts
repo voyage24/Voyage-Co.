@@ -54,12 +54,18 @@ export async function getGroupSnapshot(groupId: string, viewerId: string) {
     paid.set(e.paidById, (paid.get(e.paidById) || 0) + e.amount);
     for (const id of participants) owed.set(id, (owed.get(id) || 0) + share);
     return {
-      id: e.id, description: e.description, amount: e.amount,
+      id: e.id, description: e.description, amount: e.amount, category: e.category,
       paidById: e.paidById, paidBy: nameOf.get(e.paidById) || "A member",
       among: participants.map(id => nameOf.get(id) || "?"),
       share: Math.round(share), createdAt: e.createdAt.toISOString(),
     };
   });
+
+  // Totals grouped by category (auto-grouped spend), largest first.
+  const catMap = new Map<string, number>();
+  for (const e of expenseRows) catMap.set(e.category, (catMap.get(e.category) || 0) + e.amount);
+  const categoryTotals = Array.from(catMap.entries()).map(([category, total]) => ({ category, total })).sort((a, b) => b.total - a.total);
+  const totalSpend = expenseRows.reduce((s, e) => s + e.amount, 0);
   const balances = memberIds.map(id => ({
     customerId: id, name: nameOf.get(id) || "?",
     paid: Math.round(paid.get(id) || 0),
@@ -77,6 +83,6 @@ export async function getGroupSnapshot(groupId: string, viewerId: string) {
     ownerId: group.ownerId, isOwner: group.ownerId === viewerId,
     inviteUrl: `${base}/groups/join/${group.shareToken}`,
     members: group.members.map(m => ({ customerId: m.customerId, name: displayName(m.customer.name, m.customer.email), isOwner: m.customerId === group.ownerId })),
-    shortlist, expenses, balances, messages, photos, bookings,
+    shortlist, expenses, balances, categoryTotals, totalSpend, messages, photos, bookings,
   };
 }
