@@ -29,6 +29,7 @@ const PRIMARY_LINKS: NavLink[] = [
 // Supporting links, shown smaller beneath the primary ones.
 const SECONDARY_LINKS: NavLink[] = [
   { label: "Voyages Reserve", href: "/membership#voyages-reserve" },
+  { label: "Group trips", href: "/groups" },
   { label: "Group booking", href: "/group" },
   { label: "Refer a friend", href: "/refer" },
   { label: "Visa assistance", href: "/visa" },
