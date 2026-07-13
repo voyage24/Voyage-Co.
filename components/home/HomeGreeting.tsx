@@ -26,15 +26,15 @@ export default function HomeGreeting() {
   return (
     <div className="bg-vc-950 border-b border-white/10 animate-fade-in">
       <div className="max-w-[1500px] mx-auto px-6 lg:px-12 py-3.5 flex items-center justify-between gap-4">
-        <p className="font-serif text-lg sm:text-xl font-light leading-none">
-          <span className="text-gold">{greeting}{name ? `, ${name}` : ""}.</span>
-          <span className="hidden sm:inline text-white/50 text-base"> Welcome back to Voyages &amp; Co.</span>
+        <p className="font-serif text-lg sm:text-2xl font-light leading-none">
+          <span className="shimmer-gold-hero">{greeting}{name ? `, ${name}` : ""}.</span>
+          <span className="hidden sm:inline text-white/75 text-base"> Welcome back to <span className="shimmer-white">Voyages &amp; Co.</span></span>
         </p>
         <Link
           href="/my-voyages"
-          className="shrink-0 inline-flex items-center gap-1.5 text-[11px] tracking-[0.16em] uppercase text-white/80 hover:text-gold transition-colors"
+          className="shrink-0 inline-flex items-center gap-1.5 text-[11px] tracking-[0.16em] uppercase text-gold/90 hover:text-gold transition-colors"
         >
-          My Voyages <ArrowRight size={13} />
+          My Voyages <ArrowRight size={13} className="arrow-shimmer" />
         </Link>
       </div>
     </div>
