@@ -22,7 +22,7 @@ const QUICK_LINKS = [
   { href: "/account/wallet", label: "Travel wallet", sub: "Passes & documents", Icon: Wallet },
   { href: "/trips", label: "My trips", sub: "Bookings & itineraries", Icon: Luggage },
   { href: "/membership", label: "Membership", sub: "Points & tiers", Icon: Crown },
-  { href: "/plan", label: "Plan a journey", sub: "With a concierge", Icon: Compass },
+  { href: "/trip-planner", label: "Smart trip planner", sub: "Type it, we build it", Icon: Compass },
   { href: "/support", label: "Concierge", sub: "We're here to help", Icon: Headset },
   { href: "/account", label: "Account & settings", sub: "Profile, documents, privacy", Icon: Settings },
 ];
