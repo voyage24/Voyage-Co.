@@ -46,6 +46,7 @@ export type TripPlan =
       cost: { flights: number; hotel: number; daily: number; experiences: number; total: number; nights: number; perDaySpend: number };
       flightsHref: string;
       aiSource: string | null;
+      aiError?: string | null;
     };
 
 const MONTHS = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"];
@@ -93,9 +94,17 @@ async function usdToInr(): Promise<number> {
 }
 
 function extractJson(text: string): any | null {
-  const a = text.indexOf("{"), b = text.lastIndexOf("}");
+  // Free models often wrap JSON in ```json fences, add prose, or leave trailing
+  // commas — strip/repair those before parsing so the AII plan isn't dropped.
+  let t = text.replace(/```json\s*/gi, "").replace(/```/g, "").trim();
+  const a = t.indexOf("{"), b = t.lastIndexOf("}");
   if (a < 0 || b <= a) return null;
-  try { return JSON.parse(text.slice(a, b + 1)); } catch { return null; }
+  t = t.slice(a, b + 1);
+  const attempts = [t, t.replace(/,\s*([}\]])/g, "$1")]; // second: drop trailing commas
+  for (const cand of attempts) {
+    try { return JSON.parse(cand); } catch { /* try next */ }
+  }
+  return null;
 }
 
 // A structured, real-data itinerary when AI isn't available (or fails/parses bad).
@@ -163,17 +172,21 @@ export async function buildTripPlan(query: string): Promise<TripPlan> {
   let dayTrips: NamedPick[] = [];
   let tips: string[] = [];
   let aiSource: string | null = null;
+  let aiError: string | null = null;
 
   if (aiConfigured()) {
     const system = `You are a discerning luxury travel concierge. Design a ${days}-day itinerary for ${place}${city ? `, ${country}` : ""}${month ? `, travelling in ${month.name}` : ""}.
-Respond with ONLY minified JSON, no prose, matching exactly:
+Return ONLY a single raw JSON object — no markdown, no code fences, no commentary before or after — matching exactly:
 {"overview":string,"days":[{"title":string,"morning":string,"afternoon":string,"evening":string}],"restaurants":[{"name":string,"note":string}],"museums":[{"name":string,"note":string}],"dayTrips":[{"name":string,"note":string}],"tips":[string]}
 Rules: exactly ${days} day objects; use REAL, well-known places in ${place}; one crisp sentence per activity; 4-6 restaurants, 4-6 museums/sights, 2-4 day-trips, 3-5 practical tips; refined, warm tone; never invent our hotels.`;
     const hotelNames = hotels.map(h => h.name).join("; ") || "(none listed)";
-    const user = `Traveller's request: "${query}". Our bookable stays there: ${hotelNames}. Season note: ${season?.note || "n/a"}. Write the itinerary now as JSON.`;
+    const user = `Traveller's request: "${query}". Our bookable stays there: ${hotelNames}. Season note: ${season?.note || "n/a"}. Write the itinerary now as raw JSON only.`;
     try {
-      const r = await generateText(system, [{ role: "user", content: user }], 2000);
+      const r = await generateText(system, [{ role: "user", content: user }], 3500);
       const j = r.text ? extractJson(r.text) : null;
+      if (!r.text) aiError = `no text (${r.source}${r.error ? `: ${r.error}` : ""})`;
+      else if (!j) aiError = `unparseable (${r.source}, ${r.text.length} chars)`;
+      else if (!Array.isArray(j.days) || !j.days.length) aiError = `no days (${r.source})`;
       if (j && Array.isArray(j.days) && j.days.length) {
         aiSource = r.source;
         if (typeof j.overview === "string" && j.overview.trim()) overview = j.overview.trim();
@@ -190,7 +203,9 @@ Rules: exactly ${days} day objects; use REAL, well-known places in ${place}; one
         dayTrips = picks(j.dayTrips);
         tips = Array.isArray(j.tips) ? j.tips.filter((t: any) => typeof t === "string").slice(0, 5).map((t: string) => t.slice(0, 200)) : [];
       }
-    } catch { /* fall back to deterministic plan */ }
+    } catch (e) { aiError = `threw: ${String(e).slice(0, 100)}`; }
+  } else {
+    aiError = "no ai key";
   }
 
   // ── Estimated cost (INR base; the client converts to the guest's currency) ─
@@ -235,5 +250,6 @@ Rules: exactly ${days} day objects; use REAL, well-known places in ${place}; one
     cost: { flights: flightTotal, hotel: hotelTotal, daily: dailyTotal, experiences: expTotal, total, nights, perDaySpend },
     flightsHref: air ? `/flights?to=${air.code}` : "/flights",
     aiSource,
+    aiError,
   };
 }
