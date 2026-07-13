@@ -14,6 +14,7 @@ import FaqAndEntry from "@/components/products/FaqAndEntry";
 import CompareButton from "@/components/compare/CompareButton";
 import RecordView from "@/components/products/RecordView";
 import AddToItineraryButton from "@/components/itinerary/AddToItineraryButton";
+import ProposeToGroup from "@/components/groups/ProposeToGroup";
 import PhotoGallery from "@/components/ui/PhotoGallery";
 import HotelCard from "@/components/cards/HotelCard";
 import PropertyMap from "@/components/ui/PropertyMap";
@@ -122,6 +123,7 @@ export default async function HotelDetailPage({ params }: { params: { id: string
         </Link>
         <div className="flex flex-wrap items-center justify-end gap-x-4 gap-y-1">
           <AddToItineraryButton type="hotel" id={hotel.id} title={hotel.name} image={hotel.image} href={`/hotels/${hotel.id}`} price={hotel.priceOnRequest ? undefined : hotel.pricePerNight} label />
+          <ProposeToGroup type="hotel" id={hotel.id} title={hotel.name} image={hotel.image} href={`/hotels/${hotel.id}`} price={hotel.priceOnRequest ? undefined : hotel.pricePerNight} label />
           <CompareButton type="hotel" id={hotel.id} title={hotel.name} image={hotel.image} href={`/hotels/${hotel.id}`} label
             attrs={{ Price: hotel.priceOnRequest ? "On request" : `₹${hotel.pricePerNight.toLocaleString("en-IN")}/night`, Rating: `${hotel.rating} (${hotel.reviewCount})`, Stars: `${hotel.stars}★`, Location: hotel.location, Category: hotel.category }} />
           <SaveButton type="hotel" itemId={hotel.id} itemTitle={hotel.name} image={hotel.image} href={`/hotels/${hotel.id}`} label />

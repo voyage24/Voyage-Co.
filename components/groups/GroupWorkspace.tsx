@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   Luggage, Vote, Wallet, MessageCircle, Images, Users, Link2, Check, Trash2,
-  Heart, Send, Plus, Loader2, ArrowLeft, Plane, Ship, TrainFront, Sparkles, BedDouble, Package, ImagePlus,
+  Heart, Send, Plus, Loader2, ArrowLeft, ArrowRight, Plane, Ship, TrainFront, Sparkles, BedDouble, Package, ImagePlus,
 } from "lucide-react";
 import Price from "@/components/ui/Price";
 import type { GroupSnapshot } from "@/lib/group/access";
@@ -118,6 +118,22 @@ function VoteTab({ snap, onChange }: { snap: Snap; onChange: () => void }) {
   );
 }
 
+// Minimal set of "A pays B" transfers that zeroes out everyone's balance.
+function settleUp(balances: Snap["balances"]): { from: string; to: string; amount: number }[] {
+  const debtors = balances.filter(b => b.net < 0).map(b => ({ name: b.name, amt: -b.net })).sort((a, b) => b.amt - a.amt);
+  const creditors = balances.filter(b => b.net > 0).map(b => ({ name: b.name, amt: b.net })).sort((a, b) => b.amt - a.amt);
+  const tx: { from: string; to: string; amount: number }[] = [];
+  let i = 0, j = 0;
+  while (i < debtors.length && j < creditors.length) {
+    const pay = Math.min(debtors[i].amt, creditors[j].amt);
+    if (pay >= 1) tx.push({ from: debtors[i].name, to: creditors[j].name, amount: Math.round(pay) });
+    debtors[i].amt -= pay; creditors[j].amt -= pay;
+    if (debtors[i].amt < 1) i++;
+    if (creditors[j].amt < 1) j++;
+  }
+  return tx;
+}
+
 // ── Expenses ─────────────────────────────────────────────────────────────────
 function ExpensesTab({ snap, meId, onChange }: { snap: Snap; meId: string; onChange: () => void }) {
   const [desc, setDesc] = useState("");
@@ -135,6 +151,7 @@ function ExpensesTab({ snap, meId, onChange }: { snap: Snap; meId: string; onCha
   };
   const toggle = (id: string) => setAmong(a => a.includes(id) ? a.filter(x => x !== id) : [...a, id]);
   const del = async (id: string) => { await fetch(`/api/groups/${snap.id}/expenses/${id}`, { method: "DELETE" }); onChange(); };
+  const transfers = settleUp(snap.balances);
 
   return (
     <div>
@@ -151,6 +168,21 @@ function ExpensesTab({ snap, meId, onChange }: { snap: Snap; meId: string; onCha
             </div>
           ))}
         </div>
+        {transfers.length > 0 && (
+          <div className="mt-4 pt-3 border-t border-line">
+            <p className="text-[10px] tracking-[0.2em] uppercase text-gold mb-2">Settle up</p>
+            <ul className="space-y-1.5">
+              {transfers.map((t, i) => (
+                <li key={i} className="flex items-center gap-2 text-sm text-ink">
+                  <span className="font-medium">{t.from}</span>
+                  <ArrowRight size={13} className="text-ink-faint shrink-0" />
+                  <span className="font-medium">{t.to}</span>
+                  <Price amount={t.amount} className="ml-auto text-gold font-medium" />
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
 
       {/* Add */}

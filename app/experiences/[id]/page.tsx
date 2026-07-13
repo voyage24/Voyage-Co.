@@ -18,6 +18,7 @@ import { resolveCoords } from "@/lib/place-coords";
 import CompareButton from "@/components/compare/CompareButton";
 import RecordView from "@/components/products/RecordView";
 import AddToItineraryButton from "@/components/itinerary/AddToItineraryButton";
+import ProposeToGroup from "@/components/groups/ProposeToGroup";
 import PhotoGallery from "@/components/ui/PhotoGallery";
 import { productJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
@@ -67,6 +68,7 @@ export default async function ExperienceDetailPage({ params }: { params: { id: s
         </Link>
         <div className="flex flex-wrap items-center justify-end gap-x-4 gap-y-1">
           <AddToItineraryButton type="experience" id={exp.id} title={exp.title} image={exp.image} href={`/experiences/${exp.id}`} price={exp.priceOnRequest ? undefined : exp.price} label />
+          <ProposeToGroup type="experience" id={exp.id} title={exp.title} image={exp.image} href={`/experiences/${exp.id}`} price={exp.priceOnRequest ? undefined : exp.price} label />
           <CompareButton type="experience" id={exp.id} title={exp.title} image={exp.image} href={`/experiences/${exp.id}`} label
             attrs={{ Price: exp.priceOnRequest ? "On request" : `₹${exp.price.toLocaleString("en-IN")} pp`, Duration: exp.duration, Location: exp.location, Category: exp.category }} />
           <SaveButton type="experience" itemId={exp.id} itemTitle={exp.title} image={exp.image} href={`/experiences/${exp.id}`} label />

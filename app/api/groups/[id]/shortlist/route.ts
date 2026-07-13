@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentCustomer } from "@/lib/customer/session";
-import { getMembership } from "@/lib/group/access";
+import { getMembership, displayName } from "@/lib/group/access";
+import { notifyGroup } from "@/lib/group/notify";
 
 export const dynamic = "force-dynamic";
 
@@ -17,8 +18,11 @@ export async function POST(req: Request, { params }: { params: { id: string } })
   const existing = await prisma.groupShortlistItem.findFirst({ where: { groupId: params.id, type, itemId: id } });
   if (existing) return NextResponse.json({ ok: true, id: existing.id });
 
+  const cleanTitle = String(title).slice(0, 160);
   const created = await prisma.groupShortlistItem.create({
-    data: { groupId: params.id, type, itemId: id, title: String(title).slice(0, 160), image: image || null, href, price: typeof price === "number" ? Math.round(price) : null, addedById: customer.id },
+    data: { groupId: params.id, type, itemId: id, title: cleanTitle, image: image || null, href, price: typeof price === "number" ? Math.round(price) : null, addedById: customer.id },
   });
+  const who = displayName(customer.name, customer.email);
+  await notifyGroup(params.id, customer.id, "✨ New idea to vote on", `${who} proposed ${cleanTitle}`).catch(() => {});
   return NextResponse.json({ ok: true, id: created.id });
 }

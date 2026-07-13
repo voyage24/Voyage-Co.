@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentCustomer } from "@/lib/customer/session";
-import { getMembership } from "@/lib/group/access";
+import { getMembership, displayName } from "@/lib/group/access";
+import { notifyGroup } from "@/lib/group/notify";
 
 export const dynamic = "force-dynamic";
 
@@ -11,7 +12,7 @@ export async function POST(_req: Request, { params }: { params: { id: string; it
   if (!customer) return NextResponse.json({ error: "Please sign in" }, { status: 401 });
   if (!(await getMembership(params.id, customer.id))) return NextResponse.json({ error: "Not a member" }, { status: 403 });
 
-  const item = await prisma.groupShortlistItem.findFirst({ where: { id: params.itemId, groupId: params.id }, select: { id: true } });
+  const item = await prisma.groupShortlistItem.findFirst({ where: { id: params.itemId, groupId: params.id }, select: { id: true, title: true } });
   if (!item) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
   const existing = await prisma.groupVote.findUnique({ where: { itemId_customerId: { itemId: item.id, customerId: customer.id } } });
@@ -20,6 +21,8 @@ export async function POST(_req: Request, { params }: { params: { id: string; it
     return NextResponse.json({ ok: true, voted: false });
   }
   await prisma.groupVote.create({ data: { itemId: item.id, customerId: customer.id } });
+  const who = displayName(customer.name, customer.email);
+  await notifyGroup(params.id, customer.id, "🗳️ New vote", `${who} voted for ${item.title}`).catch(() => {});
   return NextResponse.json({ ok: true, voted: true });
 }
 

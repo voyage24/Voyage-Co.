@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentCustomer } from "@/lib/customer/session";
-import { getMembership } from "@/lib/group/access";
+import { getMembership, displayName } from "@/lib/group/access";
+import { notifyGroup } from "@/lib/group/notify";
 
 export const dynamic = "force-dynamic";
 
@@ -23,6 +24,9 @@ export async function POST(req: Request, { params }: { params: { id: string } })
   const among = Array.isArray(splitAmong) ? splitAmong.filter((x: unknown) => typeof x === "string" && memberIds.has(x)) : [];
   const split = among.length ? among : Array.from(memberIds);
 
-  await prisma.groupExpense.create({ data: { groupId: params.id, description: description.trim().slice(0, 160), amount: amt, paidById: payer, splitAmong: split } });
+  const desc = description.trim().slice(0, 160);
+  await prisma.groupExpense.create({ data: { groupId: params.id, description: desc, amount: amt, paidById: payer, splitAmong: split } });
+  const who = displayName(customer.name, customer.email);
+  await notifyGroup(params.id, customer.id, "💸 New shared expense", `${who} added “${desc}” · ₹${amt.toLocaleString("en-IN")}`).catch(() => {});
   return NextResponse.json({ ok: true });
 }
