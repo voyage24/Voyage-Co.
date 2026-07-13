@@ -182,7 +182,7 @@ Rules: exactly ${days} day objects; use REAL, well-known places in ${place}; one
     const hotelNames = hotels.map(h => h.name).join("; ") || "(none listed)";
     const user = `Traveller's request: "${query}". Our bookable stays there: ${hotelNames}. Season note: ${season?.note || "n/a"}. Write the itinerary now as raw JSON only.`;
     try {
-      const r = await generateText(system, [{ role: "user", content: user }], 3500);
+      const r = await generateText(system, [{ role: "user", content: user }], 3500, { json: true });
       const j = r.text ? extractJson(r.text) : null;
       if (!r.text) aiError = `no text (${r.source}${r.error ? `: ${r.error}` : ""})`;
       else if (!j) aiError = `unparseable (${r.source}, ${r.text.length} chars)`;

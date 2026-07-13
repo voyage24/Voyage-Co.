@@ -5,7 +5,7 @@
 export type AiMessage = { role: "user" | "assistant"; content: string };
 export type AiResult = { text: string | null; source: string; error?: string };
 
-async function anthropic(system: string, messages: AiMessage[], maxTokens: number): Promise<AiResult> {
+async function anthropic(system: string, messages: AiMessage[], maxTokens: number, _json: boolean): Promise<AiResult> {
   const key = process.env.ANTHROPIC_API_KEY;
   if (!key) return { text: null, source: "none" };
   const res = await fetch("https://api.anthropic.com/v1/messages", {
@@ -18,16 +18,18 @@ async function anthropic(system: string, messages: AiMessage[], maxTokens: numbe
   return { text: text || null, source: "anthropic" };
 }
 
-async function gemini(system: string, messages: AiMessage[], maxTokens: number): Promise<AiResult> {
+async function gemini(system: string, messages: AiMessage[], maxTokens: number, json: boolean): Promise<AiResult> {
   const key = process.env.GEMINI_API_KEY;
   if (!key) return { text: null, source: "none" };
   const models = [process.env.GEMINI_MODEL, "gemini-2.0-flash", "gemini-2.5-flash", "gemini-flash-latest", "gemini-1.5-flash"].filter(Boolean) as string[];
   const contents = messages.map(m => ({ role: m.role === "assistant" ? "model" : "user", parts: [{ text: m.content }] }));
+  const generationConfig: Record<string, unknown> = { maxOutputTokens: maxTokens };
+  if (json) generationConfig.responseMimeType = "application/json";
   let lastError = "";
   for (const model of models) {
     const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`, {
       method: "POST", headers: { "content-type": "application/json" },
-      body: JSON.stringify({ systemInstruction: { parts: [{ text: system }] }, contents, generationConfig: { maxOutputTokens: maxTokens } }),
+      body: JSON.stringify({ systemInstruction: { parts: [{ text: system }] }, contents, generationConfig }),
     });
     if (res.ok) {
       const d = await res.json();
@@ -40,12 +42,12 @@ async function gemini(system: string, messages: AiMessage[], maxTokens: number):
   return { text: null, source: "gemini", error: lastError };
 }
 
-async function groq(system: string, messages: AiMessage[], maxTokens: number): Promise<AiResult> {
+async function groq(system: string, messages: AiMessage[], maxTokens: number, json: boolean): Promise<AiResult> {
   const key = process.env.GROQ_API_KEY;
   if (!key) return { text: null, source: "none" };
   const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
     method: "POST", headers: { authorization: `Bearer ${key}`, "content-type": "application/json" },
-    body: JSON.stringify({ model: process.env.GROQ_MODEL || "llama-3.1-8b-instant", max_tokens: maxTokens, messages: [{ role: "system", content: system }, ...messages] }),
+    body: JSON.stringify({ model: process.env.GROQ_MODEL || "llama-3.1-8b-instant", max_tokens: maxTokens, messages: [{ role: "system", content: system }, ...messages], ...(json ? { response_format: { type: "json_object" } } : {}) }),
   });
   if (!res.ok) return { text: null, source: "groq", error: `${res.status}: ${(await res.text().catch(() => "")).slice(0, 140)}` };
   const d = await res.json();
@@ -58,10 +60,13 @@ export function aiConfigured(): boolean {
 
 // Runs the first configured provider that returns text. Returns the text and
 // which provider produced it, or an error summary if all configured ones failed.
-export async function generateText(system: string, messages: AiMessage[], maxTokens = 600): Promise<AiResult> {
+// `json: true` asks providers that support it (Groq, Gemini) to return strictly
+// valid JSON — weaker models otherwise emit unparseable near-JSON.
+export async function generateText(system: string, messages: AiMessage[], maxTokens = 600, opts?: { json?: boolean }): Promise<AiResult> {
+  const json = opts?.json ?? false;
   const errors: string[] = [];
   for (const call of [anthropic, gemini, groq]) {
-    const r = await call(system, messages, maxTokens).catch(e => ({ text: null, source: "error", error: String(e).slice(0, 140) } as AiResult));
+    const r = await call(system, messages, maxTokens, json).catch(e => ({ text: null, source: "error", error: String(e).slice(0, 140) } as AiResult));
     if (r.text) return r;
     if (r.error) errors.push(`${r.source} ${r.error}`);
   }
