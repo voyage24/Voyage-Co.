@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { CalendarClock, ChevronDown, Plane, TrainFront, Ship, Sparkles, Package, BedDouble } from "lucide-react";
 
-type Trip = { reference: string; title: string; type: string; checkIn: string | null; checkOut: string | null };
+type Trip = { reference: string; title: string; type: string; checkIn: string | null; checkOut: string | null; status?: string };
 
 const ICON: Record<string, typeof Plane> = { flight: Plane, train: TrainFront, cruise: Ship, experience: Sparkles, package: Package, hotel: BedDouble };
 
@@ -38,7 +38,10 @@ export default function UpcomingJourneys({ trips }: { trips: Trip[] }) {
                 <Icon size={16} className="text-gold shrink-0" />
                 <span className="min-w-0 flex-1">
                   <span className="block text-sm text-ink truncate">{t.title}</span>
-                  <span className="block text-[11px] text-ink-faint capitalize">{t.type}</span>
+                  <span className="block text-[11px] text-ink-faint capitalize">
+                    {t.type}
+                    {t.status === "pending" && <span className="ml-1.5 text-amber-600">· awaiting confirmation</span>}
+                  </span>
                 </span>
                 <span className="text-xs font-medium text-gold shrink-0">{counter(t.checkIn, t.checkOut)}</span>
               </Link>

@@ -40,8 +40,10 @@ export default async function MyVoyagesPage() {
   const firstName = customer.name?.trim().split(" ")[0] || "";
 
   // The trip in progress (today within its dates), else the soonest upcoming one.
+  // Any dated booking counts — flights, cruises, rail, experiences, packages and
+  // stays alike — whether confirmed or still pending; only cancelled are excluded.
   const today = new Date(); today.setHours(0, 0, 0, 0);
-  const dated = bookings.filter(b => b.status === "confirmed" && b.checkIn);
+  const dated = bookings.filter(b => b.status !== "cancelled" && b.checkIn);
   const active = dated.find(b => b.checkIn && b.checkOut && new Date(b.checkIn) <= today && new Date(b.checkOut) >= today);
   const upcomingAll = dated
     .filter(b => b.checkIn && new Date(b.checkIn) >= today)
@@ -49,7 +51,7 @@ export default async function MyVoyagesPage() {
   const todayTrip = active || upcomingAll[0] || null;
   const otherUpcoming = upcomingAll
     .filter(b => b.id !== todayTrip?.id)
-    .map(b => ({ reference: b.reference, title: b.itemTitle, type: b.type, checkIn: b.checkIn, checkOut: b.checkOut }));
+    .map(b => ({ reference: b.reference, title: b.itemTitle, type: b.type, checkIn: b.checkIn, checkOut: b.checkOut, status: b.status }));
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-24">

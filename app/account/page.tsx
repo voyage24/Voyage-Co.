@@ -56,8 +56,11 @@ export default async function AccountPage() {
   const settings = await getSiteSettings();
 
   // The trip in progress (today within its dates), else the soonest upcoming one.
+  // Any dated booking counts — flights, cruises, rail, experiences, packages and
+  // stays alike — whether it's confirmed or still pending confirmation; only
+  // cancelled ones are excluded.
   const today = new Date(); today.setHours(0, 0, 0, 0);
-  const dated = bookings.filter(b => b.status === "confirmed" && b.checkIn);
+  const dated = bookings.filter(b => b.status !== "cancelled" && b.checkIn);
   const active = dated.find(b => b.checkIn && b.checkOut && new Date(b.checkIn) <= today && new Date(b.checkOut) >= today);
   // Every upcoming journey (any type), soonest first.
   const upcomingAll = dated
@@ -66,7 +69,7 @@ export default async function AccountPage() {
   const todayTrip = active || upcomingAll[0] || null;
   const otherUpcoming = upcomingAll
     .filter(b => b.id !== todayTrip?.id)
-    .map(b => ({ reference: b.reference, title: b.itemTitle, type: b.type, checkIn: b.checkIn, checkOut: b.checkOut }));
+    .map(b => ({ reference: b.reference, title: b.itemTitle, type: b.type, checkIn: b.checkIn, checkOut: b.checkOut, status: b.status }));
 
   return (
     <AppLock>

@@ -36,7 +36,10 @@ export default function TripToday({ trip, whatsapp }: { trip: TodayTrip; whatsap
         {trip.image && <Image src={trip.image} alt={trip.itemTitle} fill className="object-cover opacity-60" sizes="100vw" />}
         <div className="absolute inset-0 bg-gradient-to-t from-vc-950/90 to-transparent" />
         <div className="absolute bottom-3 left-5 right-5 text-[#f4f0e9]">
-          <p className="text-[10px] tracking-[0.28em] uppercase text-gold">{heading}{sub && ` · ${sub}`}</p>
+          <p className="text-[10px] tracking-[0.28em] uppercase text-gold">
+            {heading}{sub && ` · ${sub}`}
+            {trip.status === "pending" && <span className="text-amber-300 normal-case tracking-normal"> · awaiting confirmation</span>}
+          </p>
           <p className="font-serif text-xl font-light truncate">{trip.itemTitle}</p>
         </div>
       </div>
