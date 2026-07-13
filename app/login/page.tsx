@@ -35,7 +35,7 @@ export default function LoginPage() {
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) { setError(data.error ?? "Sign in failed"); setUnverified(!!data.unverified); setLoading(false); return; }
-      router.push("/account");
+      router.push("/my-voyages");
       router.refresh();
     } catch {
       setError("Something went wrong. Please try again.");

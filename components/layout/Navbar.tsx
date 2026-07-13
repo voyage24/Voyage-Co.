@@ -33,6 +33,7 @@ const SECONDARY_LINKS: NavLink[] = [
   { label: "Refer a friend", href: "/refer" },
   { label: "Visa assistance", href: "/visa" },
   { label: "Travel insurance", href: "/insurance" },
+  { label: "My Voyages", href: "/my-voyages" },
   { key: "common.myTrips",  href: "/trips" },
   { key: "account.account", href: "/account" },
 ];

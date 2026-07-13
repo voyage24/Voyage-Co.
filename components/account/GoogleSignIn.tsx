@@ -20,7 +20,7 @@ export default function GoogleSignIn() {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ credential: response.credential }),
       });
-      if (res.ok) { router.push("/account"); router.refresh(); }
+      if (res.ok) { router.push("/my-voyages"); router.refresh(); }
     };
 
     const render = () => {

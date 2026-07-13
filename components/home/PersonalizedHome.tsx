@@ -10,7 +10,9 @@ import type { PersonalizedHome as Data, PriceDrop } from "@/lib/customer/persona
 // A warm, personalised strip for signed-in members: a time-aware greeting plus
 // smart cards (next trip, price drops on saved journeys, passport expiry).
 // Self-fetches so the public home page stays static; renders nothing for guests.
-export default function PersonalizedHome() {
+// On the member hub (`heading={false}`) the greeting is supplied by the page, so
+// we render just the "For you" cards and can show more of them (`limit`).
+export default function PersonalizedHome({ heading = true, limit = 3 }: { heading?: boolean; limit?: number } = {}) {
   const { format } = useCurrency();
   const [data, setData] = useState<Data | null>(null);
   const [viewedDrops, setViewedDrops] = useState<PriceDrop[]>([]);
@@ -128,13 +130,15 @@ export default function PersonalizedHome() {
   }
 
   return (
-    <section className="max-w-[1500px] mx-auto px-6 lg:px-12 pt-10 pb-2">
+    <section className={heading ? "max-w-[1500px] mx-auto px-6 lg:px-12 pt-10 pb-2" : "pt-2"}>
       <p className="text-[11px] tracking-[0.3em] uppercase text-gold mb-2">For you</p>
-      <h2 className="font-serif text-2xl sm:text-3xl font-light text-ink">
-        {greeting}{data.firstName ? `, ${data.firstName}` : ""}.
-      </h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
-        {cards.slice(0, 3)}
+      {heading && (
+        <h2 className="font-serif text-2xl sm:text-3xl font-light text-ink">
+          {greeting}{data.firstName ? `, ${data.firstName}` : ""}.
+        </h2>
+      )}
+      <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 ${heading ? "mt-6" : "mt-4"}`}>
+        {cards.slice(0, limit)}
       </div>
     </section>
   );

@@ -23,7 +23,7 @@ export default function PasskeySignIn() {
       });
       const d = await verifyRes.json().catch(() => ({}));
       if (!verifyRes.ok) { setError(d.error || "Sign-in failed."); return; }
-      router.push("/account");
+      router.push("/my-voyages");
       router.refresh();
     } catch {
       setError("Passkey sign-in was cancelled.");
