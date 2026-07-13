@@ -6,13 +6,17 @@ import { useRouter } from "next/navigation";
 import {
   Luggage, Vote, Wallet, MessageCircle, Images, Users, Link2, Check, Trash2,
   Heart, Send, Plus, Loader2, ArrowLeft, ArrowRight, Plane, Ship, TrainFront, Sparkles, BedDouble, Package, ImagePlus,
-  Utensils, ShoppingBag, Ticket, Car, Receipt, Gauge, Pencil,
+  Utensils, ShoppingBag, Ticket, Car, Receipt, Gauge, Pencil, Download,
 } from "lucide-react";
 import Price from "@/components/ui/Price";
 import { EXPENSE_CATEGORIES, categorizeExpense } from "@/lib/group/expense-category";
+import { CURRENCIES } from "@/lib/currency";
+import { useCurrency } from "@/components/providers/CurrencyProvider";
+import { downloadCsv } from "@/lib/csv";
 import type { GroupSnapshot } from "@/lib/group/access";
 
 const CAT_ICON: Record<string, typeof Plane> = { Hotels: BedDouble, Flights: Plane, Food: Utensils, Shopping: ShoppingBag, Activities: Ticket, Transport: Car, Other: Receipt };
+const symbolOf = (code: string) => CURRENCIES.find(c => c.code === code)?.symbol || code;
 
 type Snap = NonNullable<GroupSnapshot>;
 type Tab = "bookings" | "vote" | "expenses" | "chat" | "photos" | "members";
@@ -140,8 +144,11 @@ function settleUp(balances: Snap["balances"]): { from: string; to: string; amoun
 
 // ── Expenses ─────────────────────────────────────────────────────────────────
 function ExpensesTab({ snap, meId, onChange }: { snap: Snap; meId: string; onChange: () => void }) {
+  const { currency: displayCurrency } = useCurrency();
+  const displayCode = displayCurrency.code;
   const [desc, setDesc] = useState("");
   const [amount, setAmount] = useState("");
+  const [currency, setCurrency] = useState(displayCode || "INR");
   const [paidBy, setPaidBy] = useState(meId);
   const [among, setAmong] = useState<string[]>(snap.members.map(m => m.customerId));
   const [category, setCategory] = useState<string>("Other");
@@ -163,12 +170,18 @@ function ExpensesTab({ snap, meId, onChange }: { snap: Snap; meId: string; onCha
   const add = async () => {
     if (busy || !desc.trim() || !(Number(amount) > 0)) return;
     setBusy(true);
-    await fetch(`/api/groups/${snap.id}/expenses`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ description: desc, amount: Number(amount), category, paidById: paidBy, splitAmong: among }) });
+    await fetch(`/api/groups/${snap.id}/expenses`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ description: desc, amount: Number(amount), currency, category, paidById: paidBy, splitAmong: among }) });
     setDesc(""); setAmount(""); setCategory("Other"); setCatTouched(false); setAmong(snap.members.map(m => m.customerId));
     await onChange(); setBusy(false);
   };
   const toggle = (id: string) => setAmong(a => a.includes(id) ? a.filter(x => x !== id) : [...a, id]);
   const del = async (id: string) => { await fetch(`/api/groups/${snap.id}/expenses/${id}`, { method: "DELETE" }); onChange(); };
+
+  const exportCsv = () => {
+    const header = ["Date", "Description", "Category", "Paid by", "Split ways", "Amount (INR)", "Original amount", "Currency"];
+    const rows = snap.expenses.map(e => [e.createdAt.slice(0, 10), e.description, e.category, e.paidBy, e.among.length, e.amount, e.origAmount ?? "", e.origCurrency ?? "INR"]);
+    downloadCsv(`${snap.title.replace(/[^\w]+/g, "-")}-expenses`, [header, ...rows]);
+  };
   const transfers = settleUp(snap.balances);
 
   const budget = snap.dailyBudget || 0;
@@ -267,7 +280,10 @@ function ExpensesTab({ snap, meId, onChange }: { snap: Snap; meId: string; onCha
       <div className="rounded-2xl border border-line bg-panel p-4 mb-5">
         <div className="flex gap-2 mb-3">
           <input value={desc} onChange={e => onDesc(e.target.value)} placeholder="What was it for?" className="flex-1 min-w-0 px-3 py-2.5 rounded-lg bg-panel-soft border border-line text-ink text-sm focus:outline-none focus:border-gold" />
-          <input value={amount} onChange={e => setAmount(e.target.value.replace(/[^\d]/g, ""))} inputMode="numeric" placeholder="₹ Amount" className="w-28 px-3 py-2.5 rounded-lg bg-panel-soft border border-line text-ink text-sm focus:outline-none focus:border-gold" />
+          <input value={amount} onChange={e => setAmount(e.target.value.replace(/[^\d]/g, ""))} inputMode="numeric" placeholder="Amount" className="w-24 px-3 py-2.5 rounded-lg bg-panel-soft border border-line text-ink text-sm focus:outline-none focus:border-gold" />
+          <select value={currency} onChange={e => setCurrency(e.target.value)} className="w-24 px-2 py-2.5 rounded-lg bg-panel-soft border border-line text-ink text-sm focus:outline-none focus:border-gold" title="Currency spent in">
+            {CURRENCIES.map(c => <option key={c.code} value={c.code}>{c.code}</option>)}
+          </select>
         </div>
         <div className="flex flex-wrap gap-1.5 mb-3">
           {EXPENSE_CATEGORIES.map(cat => {
@@ -299,6 +315,11 @@ function ExpensesTab({ snap, meId, onChange }: { snap: Snap; meId: string; onCha
       </div>
 
       {/* List */}
+      {snap.expenses.length > 0 && (
+        <div className="flex justify-end mb-2">
+          <button onClick={exportCsv} className="inline-flex items-center gap-1.5 text-[11px] tracking-[0.14em] uppercase text-ink-muted hover:text-gold transition-colors"><Download size={13} /> Export CSV</button>
+        </div>
+      )}
       <div className="space-y-2">
         {snap.expenses.map(e => {
           const Icon = CAT_ICON[e.category] || Receipt;
@@ -307,7 +328,7 @@ function ExpensesTab({ snap, meId, onChange }: { snap: Snap; meId: string; onCha
               <span className="w-8 h-8 rounded-full bg-gold/10 text-gold flex items-center justify-center shrink-0"><Icon size={15} /></span>
               <div className="min-w-0 flex-1">
                 <p className="text-sm text-ink truncate">{e.description}</p>
-                <p className="text-[11px] text-ink-faint">{e.category} · {e.paidBy} paid · split {e.among.length} ways · <Price amount={e.share} />/each</p>
+                <p className="text-[11px] text-ink-faint">{e.origCurrency && e.origAmount ? `${symbolOf(e.origCurrency)}${e.origAmount.toLocaleString()} · ` : ""}{e.category} · {e.paidBy} paid · split {e.among.length} ways · <Price amount={e.share} />/each</p>
               </div>
               <Price amount={e.amount} className="text-sm font-medium text-ink shrink-0" />
               <button onClick={() => del(e.id)} className="text-ink-faint hover:text-red-500 p-1" title="Remove"><Trash2 size={14} /></button>

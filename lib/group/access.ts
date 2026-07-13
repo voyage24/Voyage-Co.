@@ -55,6 +55,7 @@ export async function getGroupSnapshot(groupId: string, viewerId: string) {
     for (const id of participants) owed.set(id, (owed.get(id) || 0) + share);
     return {
       id: e.id, description: e.description, amount: e.amount, category: e.category,
+      origCurrency: e.origCurrency, origAmount: e.origAmount,
       paidById: e.paidById, paidBy: nameOf.get(e.paidById) || "A member",
       among: participants.map(id => nameOf.get(id) || "?"),
       share: Math.round(share), createdAt: e.createdAt.toISOString(),

@@ -750,6 +750,8 @@ model GroupExpense {
   group       GroupTrip @relation(fields: [groupId], references: [id], onDelete: Cascade)
   description String
   amount      Int       // INR (site base currency)
+  origCurrency String?  // currency it was entered in, when not INR
+  origAmount   Int?     // amount in that currency, for display
   category    String    @default("Other") // Hotels | Flights | Food | Shopping | Activities | Transport | Other
   paidById    String
   splitAmong  Json      // array of customerIds sharing the cost
@@ -790,6 +792,8 @@ model PersonalExpense {
   bookingRef  String?  // optional reference of the member's booking this belongs to
   description String
   amount      Int      // INR (site base currency)
+  origCurrency String? // currency it was entered in, when not INR
+  origAmount   Int?    // amount in that currency, for display
   category    String   @default("Other")
   spentOn     String   // YYYY-MM-DD
   createdAt   DateTime @default(now())
