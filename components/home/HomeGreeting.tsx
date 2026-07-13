@@ -34,9 +34,9 @@ export default function HomeGreeting() {
         </p>
         <Link
           href="/my-voyages"
-          className="group shrink-0 inline-flex items-center gap-2 rounded-sm border border-gold/70 bg-gold/10 px-4 py-2 text-[11px] font-medium tracking-[0.16em] uppercase text-gold shadow-[0_0_16px_-4px_rgba(212,175,95,0.55)] hover:bg-gold hover:text-vc-950 hover:scale-105 active:scale-95 transition-all duration-200"
+          className="sheen group shrink-0 inline-flex items-center gap-2 rounded-sm border border-gold/70 bg-gradient-to-r from-gold/15 via-gold/25 to-gold/15 px-4 py-2 text-[11px] font-medium tracking-[0.16em] uppercase text-gold shadow-[0_0_18px_-3px_rgba(212,175,95,0.7)] hover:shadow-[0_0_26px_-1px_rgba(212,175,95,0.95)] hover:scale-105 active:scale-95 transition-all duration-200"
         >
-          My Voyages <ArrowRight size={14} className="transition-transform group-hover:translate-x-0.5" />
+          <span className="shimmer-gold-hero">My Voyages</span> <ArrowRight size={14} className="arrow-shimmer transition-transform group-hover:translate-x-0.5" />
         </Link>
       </div>
     </div>

@@ -515,6 +515,18 @@ html.dark .shimmer-gold {
   animation: goldShimmer 4.6s linear infinite;
 }
 
+/* A slow champagne glint that sweeps diagonally across a surface, so a button
+   or chip shimmers like polished gold. Pair with overflow-hidden rounded edges. */
+.sheen { position: relative; overflow: hidden; }
+.sheen::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(115deg, transparent 32%, rgba(255, 247, 216, 0.6) 50%, transparent 68%);
+  transform: translateX(-130%);
+  animation: sheenSweep 3.8s ease-in-out infinite;
+}
+@keyframes sheenSweep { 0% { transform: translateX(-130%); } 55%, 100% { transform: translateX(130%); } }
+@media (prefers-reduced-motion: reduce) { .sheen::after { animation: none; opacity: 0; } }
+
 /* Floating-control halos — a slow, breathing glow so the concierge & WhatsApp
    buttons feel like a lit atelier window rather than a loud notification. */
 .atelier-glow {
