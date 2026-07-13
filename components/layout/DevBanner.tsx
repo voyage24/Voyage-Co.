@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { X, TriangleAlert } from "lucide-react";
 
@@ -13,13 +13,31 @@ const KEY = "vc-dev-banner-dismissed";
 export default function DevBanner() {
   const pathname = usePathname();
   const [show, setShow] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     try { if (sessionStorage.getItem(KEY)) return; } catch { /* storage blocked */ }
     setShow(true);
   }, []);
 
-  if (pathname !== "/" || !show) return null;
+  const visible = pathname === "/" && show;
+
+  // Publish the banner's live height as a CSS variable so in-flow content that
+  // starts at the top of the page (the member greeting band) can sit clear of
+  // this fixed, persistent bar instead of being masked by it. Reset to 0 when
+  // the banner is dismissed or absent.
+  useEffect(() => {
+    const root = document.documentElement;
+    const el = ref.current;
+    if (!visible || !el) { root.style.setProperty("--dev-banner-h", "0px"); return; }
+    const set = () => root.style.setProperty("--dev-banner-h", `${el.offsetHeight}px`);
+    set();
+    const ro = new ResizeObserver(set);
+    ro.observe(el);
+    return () => { ro.disconnect(); root.style.setProperty("--dev-banner-h", "0px"); };
+  }, [visible]);
+
+  if (!visible) return null;
 
   const dismiss = () => {
     setShow(false);
@@ -27,7 +45,7 @@ export default function DevBanner() {
   };
 
   return (
-    <div className="fixed top-20 inset-x-0 z-40 bg-vc-950/90 backdrop-blur border-b border-gold/30">
+    <div ref={ref} className="fixed top-20 inset-x-0 z-40 bg-vc-950/90 backdrop-blur border-b border-gold/30">
       <div className="max-w-[1500px] mx-auto px-6 lg:px-12 py-2 flex items-center gap-3">
         <TriangleAlert size={15} className="text-gold shrink-0" />
         <p className="flex-1 text-[11px] sm:text-xs text-white/85 font-light leading-snug">

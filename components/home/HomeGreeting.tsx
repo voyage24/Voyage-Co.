@@ -24,7 +24,9 @@ export default function HomeGreeting() {
   if (name === null) return null;
 
   return (
-    <div className="bg-vc-950 border-b border-white/10 animate-fade-in">
+    // Sit clear of the fixed "under development" banner when it's showing
+    // (it publishes its height as --dev-banner-h) so neither masks the other.
+    <div className="bg-vc-950 border-b border-white/10 animate-fade-in" style={{ marginTop: "var(--dev-banner-h, 0px)" }}>
       <div className="max-w-[1500px] mx-auto px-6 lg:px-12 py-3.5 flex items-center justify-between gap-4">
         <p className="font-serif text-lg sm:text-2xl font-light leading-none">
           <span className="shimmer-gold-hero">{greeting}{name ? `, ${name}` : ""}.</span>
