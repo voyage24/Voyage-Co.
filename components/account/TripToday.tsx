@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { MapPin, FileText, Wallet, BookOpen, MessageCircle, Siren } from "lucide-react";
+import { MapPin, FileText, Wallet, BookOpen, MessageCircle, Siren, Receipt } from "lucide-react";
 
 export type TodayTrip = {
   reference: string; itemTitle: string; type: string; image: string | null;
@@ -47,6 +47,7 @@ export default function TripToday({ trip, whatsapp }: { trip: TodayTrip; whatsap
         <Link href={`/account/journey/${trip.reference}`} className="inline-flex items-center gap-1.5 text-xs tracking-[0.1em] uppercase text-gold hover:text-ink transition-colors"><BookOpen size={14} /> Journal</Link>
         <Link href={`/account/voucher/${trip.reference}`} className="inline-flex items-center gap-1.5 text-xs tracking-[0.1em] uppercase text-ink-muted hover:text-ink transition-colors"><FileText size={14} /> Voucher</Link>
         <Link href={`/account/pass/${trip.reference}`} className="inline-flex items-center gap-1.5 text-xs tracking-[0.1em] uppercase text-ink-muted hover:text-ink transition-colors"><Wallet size={14} /> Pass</Link>
+        <Link href={`/account/expenses?ref=${trip.reference}`} className="inline-flex items-center gap-1.5 text-xs tracking-[0.1em] uppercase text-ink-muted hover:text-ink transition-colors"><Receipt size={14} /> Spend</Link>
         <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trip.itemTitle)}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-xs tracking-[0.1em] uppercase text-ink-muted hover:text-ink transition-colors"><MapPin size={14} /> Map</a>
         <a href={`https://wa.me/${whatsapp}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-xs tracking-[0.1em] uppercase text-ink-muted hover:text-ink transition-colors ml-auto"><MessageCircle size={14} /> Concierge</a>
         {onTrip && (

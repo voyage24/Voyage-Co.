@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import {
   Luggage, Vote, Wallet, MessageCircle, Images, Users, Link2, Check, Trash2,
   Heart, Send, Plus, Loader2, ArrowLeft, ArrowRight, Plane, Ship, TrainFront, Sparkles, BedDouble, Package, ImagePlus,
-  Utensils, ShoppingBag, Ticket, Car, Receipt,
+  Utensils, ShoppingBag, Ticket, Car, Receipt, Gauge, Pencil,
 } from "lucide-react";
 import Price from "@/components/ui/Price";
 import { EXPENSE_CATEGORIES, categorizeExpense } from "@/lib/group/expense-category";
@@ -147,6 +147,15 @@ function ExpensesTab({ snap, meId, onChange }: { snap: Snap; meId: string; onCha
   const [category, setCategory] = useState<string>("Other");
   const [catTouched, setCatTouched] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [budgetInput, setBudgetInput] = useState(snap.dailyBudget ? String(snap.dailyBudget) : "");
+  const [editingBudget, setEditingBudget] = useState(false);
+  const [savingBudget, setSavingBudget] = useState(false);
+
+  const saveBudget = async () => {
+    setSavingBudget(true);
+    await fetch(`/api/groups/${snap.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ dailyBudget: budgetInput ? Number(budgetInput) : null }) });
+    setSavingBudget(false); setEditingBudget(false); await onChange();
+  };
 
   // Auto-categorise from the description as they type, until they pick manually.
   const onDesc = (v: string) => { setDesc(v); if (!catTouched) setCategory(categorizeExpense(v)); };
@@ -162,8 +171,41 @@ function ExpensesTab({ snap, meId, onChange }: { snap: Snap; meId: string; onCha
   const del = async (id: string) => { await fetch(`/api/groups/${snap.id}/expenses/${id}`, { method: "DELETE" }); onChange(); };
   const transfers = settleUp(snap.balances);
 
+  const budget = snap.dailyBudget || 0;
+  const pct = budget > 0 ? Math.min(100, Math.round((snap.todaySpend / budget) * 100)) : 0;
+  const over = budget > 0 && snap.todaySpend > budget;
+  const barColor = over ? "bg-red-500" : pct > 80 ? "bg-amber-500" : "bg-emerald-500";
+
   return (
     <div>
+      {/* Daily budget vs actual */}
+      <div className="rounded-2xl border border-line bg-panel-soft p-4 mb-5">
+        <div className="flex items-center justify-between mb-3">
+          <p className="inline-flex items-center gap-1.5 text-[10px] tracking-[0.2em] uppercase text-gold"><Gauge size={13} /> Daily budget</p>
+          {snap.isOwner && !editingBudget && (
+            <button onClick={() => setEditingBudget(true)} className="inline-flex items-center gap-1 text-[11px] text-ink-muted hover:text-ink"><Pencil size={12} /> {budget > 0 ? "Edit" : "Set budget"}</button>
+          )}
+        </div>
+        {editingBudget ? (
+          <div className="flex gap-2">
+            <input value={budgetInput} onChange={e => setBudgetInput(e.target.value.replace(/[^\d]/g, ""))} inputMode="numeric" placeholder="₹ per day" className="flex-1 px-3 py-2 rounded-lg bg-panel border border-line text-ink text-sm focus:outline-none focus:border-gold" />
+            <button onClick={saveBudget} disabled={savingBudget} className="px-4 py-2 bg-ink text-page text-xs tracking-[0.12em] uppercase rounded-sm hover:bg-ink/90 disabled:opacity-50">{savingBudget ? "…" : "Save"}</button>
+            <button onClick={() => { setEditingBudget(false); setBudgetInput(snap.dailyBudget ? String(snap.dailyBudget) : ""); }} className="px-3 py-2 border border-line text-ink-muted text-xs rounded-sm">Cancel</button>
+          </div>
+        ) : budget > 0 ? (
+          <>
+            <div className="flex items-end justify-between mb-1.5">
+              <p className="text-sm text-ink">Today: <Price amount={snap.todaySpend} className="font-medium" /> <span className="text-ink-faint">/ <Price amount={budget} /></span></p>
+              <p className={`text-xs font-medium ${over ? "text-red-500" : "text-emerald-600"}`}>{over ? <>Over by <Price amount={snap.todaySpend - budget} /></> : <><Price amount={budget - snap.todaySpend} /> left</>}</p>
+            </div>
+            <div className="h-2 rounded-full bg-panel overflow-hidden"><div className={`h-full rounded-full ${barColor} transition-all`} style={{ width: `${pct}%` }} /></div>
+            <p className="text-[11px] text-ink-faint mt-2">Averaging <Price amount={snap.dailyAverage} />/day over {snap.daysActive} {snap.daysActive === 1 ? "day" : "days"}.</p>
+          </>
+        ) : (
+          <p className="text-sm text-ink-muted font-light">No daily budget set{snap.dailyAverage > 0 ? <> — you&apos;re averaging <Price amount={snap.dailyAverage} />/day.</> : "."}</p>
+        )}
+      </div>
+
       {/* Balances */}
       <div className="rounded-2xl border border-line bg-panel-soft p-4 mb-5">
         <p className="text-[10px] tracking-[0.2em] uppercase text-gold mb-3">Who owes what</p>

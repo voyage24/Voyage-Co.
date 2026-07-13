@@ -103,6 +103,7 @@ model Customer {
   notifications MemberNotification[]
   ownedGroups      GroupTrip[]   @relation("GroupOwner")
   groupMemberships GroupMember[]
+  personalExpenses PersonalExpense[]
 
   @@index([verifyTokenHash])
   @@index([resetTokenHash])
@@ -691,6 +692,7 @@ model GroupTrip {
   ownerId     String
   owner       Customer @relation("GroupOwner", fields: [ownerId], references: [id], onDelete: Cascade)
   shareToken  String   @unique
+  dailyBudget Int?     // optional group daily spend target (INR), set by the organiser
   createdAt   DateTime @default(now())
   members   GroupMember[]
   shortlist GroupShortlistItem[]
@@ -777,4 +779,20 @@ model GroupPhoto {
   createdAt  DateTime  @default(now())
 
   @@index([groupId])
+}
+
+// A member's own travel spending log (independent of group trips), optionally
+// tagged to one of their bookings, auto-grouped by category.
+model PersonalExpense {
+  id          String   @id @default(cuid())
+  customerId  String
+  customer    Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  bookingRef  String?  // optional reference of the member's booking this belongs to
+  description String
+  amount      Int      // INR (site base currency)
+  category    String   @default("Other")
+  spentOn     String   // YYYY-MM-DD
+  createdAt   DateTime @default(now())
+
+  @@index([customerId])
 }

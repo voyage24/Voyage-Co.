@@ -66,6 +66,14 @@ export async function getGroupSnapshot(groupId: string, viewerId: string) {
   for (const e of expenseRows) catMap.set(e.category, (catMap.get(e.category) || 0) + e.amount);
   const categoryTotals = Array.from(catMap.entries()).map(([category, total]) => ({ category, total })).sort((a, b) => b.total - a.total);
   const totalSpend = expenseRows.reduce((s, e) => s + e.amount, 0);
+
+  // Daily budget vs actual — today's spend and the running daily average.
+  const dayKey = (d: Date) => d.toISOString().slice(0, 10);
+  const todayKey = new Date().toISOString().slice(0, 10);
+  const activeDays = new Set(expenseRows.map(e => dayKey(e.createdAt)));
+  const daysActive = Math.max(1, activeDays.size);
+  const todaySpend = expenseRows.filter(e => dayKey(e.createdAt) === todayKey).reduce((s, e) => s + e.amount, 0);
+  const dailyAverage = Math.round(totalSpend / daysActive);
   const balances = memberIds.map(id => ({
     customerId: id, name: nameOf.get(id) || "?",
     paid: Math.round(paid.get(id) || 0),
@@ -81,6 +89,7 @@ export async function getGroupSnapshot(groupId: string, viewerId: string) {
   return {
     id: group.id, title: group.title, destination: group.destination,
     ownerId: group.ownerId, isOwner: group.ownerId === viewerId,
+    dailyBudget: group.dailyBudget, todaySpend, dailyAverage, daysActive,
     inviteUrl: `${base}/groups/join/${group.shareToken}`,
     members: group.members.map(m => ({ customerId: m.customerId, name: displayName(m.customer.name, m.customer.email), isOwner: m.customerId === group.ownerId })),
     shortlist, expenses, balances, categoryTotals, totalSpend, messages, photos, bookings,

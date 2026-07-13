@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Wallet, Luggage, Crown, Compass, Headset, Settings, Users, ArrowRight } from "lucide-react";
+import { Wallet, Luggage, Crown, Compass, Headset, Settings, Users, Receipt, ArrowRight } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { getCurrentCustomer } from "@/lib/customer/session";
 import { getSiteSettings } from "@/lib/site-settings";
@@ -24,6 +24,7 @@ const QUICK_LINKS = [
   { href: "/membership", label: "Membership", sub: "Points & tiers", Icon: Crown },
   { href: "/plan", label: "Smart trip planner", sub: "Type it, we build it", Icon: Compass },
   { href: "/groups", label: "Group trips", sub: "Plan together", Icon: Users },
+  { href: "/account/expenses", label: "Trip expenses", sub: "Track your spending", Icon: Receipt },
   { href: "/support", label: "Concierge", sub: "We're here to help", Icon: Headset },
   { href: "/account", label: "Account & settings", sub: "Profile, documents, privacy", Icon: Settings },
 ];
