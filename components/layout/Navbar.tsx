@@ -24,12 +24,12 @@ const PRIMARY_LINKS: NavLink[] = [
   { key: "common.experiences",  cKey: "nav.experiences",  href: "/experiences" },
   { key: "common.journal",      cKey: "nav.journal",      href: "/blog" },
   { label: "Trip Tools", cKey: "nav.tripTools",           href: "/tools" },
+  { label: "Group trips", href: "/groups" },
 ];
 
 // Supporting links, shown smaller beneath the primary ones.
 const SECONDARY_LINKS: NavLink[] = [
   { label: "Voyages Reserve", href: "/membership#voyages-reserve" },
-  { label: "Group trips", href: "/groups" },
   { label: "Group booking", href: "/group" },
   { label: "Refer a friend", href: "/refer" },
   { label: "Visa assistance", href: "/visa" },
@@ -51,7 +51,7 @@ export default function Navbar() {
     ? navList.map(x => ({ href: x.href || "#", label: x.label || "" }))
     : PRIMARY_LINKS.map(l => ({ href: l.href, label: c(l.cKey ?? "") || l.label || t(l.key ?? "") }));
   const secondaryLinks = SECONDARY_LINKS.map(l => ({ href: l.href, label: l.label || t(l.key ?? "") }));
-  const planLabel = c("nav.planCta") || t("plan.title");
+  const planLabel = c("nav.planCta") || "Smart trip planner";
 
   // Lock background scroll + close on Escape while the menu is open.
   useEffect(() => {
