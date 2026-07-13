@@ -6,7 +6,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
   Sparkles, Plane, Utensils, Landmark, MapPinned, CloudSun, Coins, TramFront,
-  Loader2, Calendar, Check, ArrowRight, Star, Plus, Send, Sun,
+  Loader2, Calendar, Check, ArrowRight, Star, Plus, Send, Sun, Users,
 } from "lucide-react";
 import Price from "@/components/ui/Price";
 import { toggleItinerary } from "@/lib/itinerary-draft";
@@ -29,6 +29,7 @@ export default function TripPlanner() {
   const [added, setAdded] = useState<Record<string, boolean>>({});
   const [saveMsg, setSaveMsg] = useState("");
   const [saving, setSaving] = useState(false);
+  const [grouping, setGrouping] = useState(false);
 
   const run = async (text: string) => {
     const q = text.trim();
@@ -68,6 +69,23 @@ export default function TripPlanner() {
     setSaving(false);
     if (res.status === 401) { router.push("/login"); return; }
     setSaveMsg(res.ok ? "Saved to your account — find it under Trip planner in your itineraries." : "Couldn't save just now.");
+  };
+
+  const startGroup = async (p: OkPlan) => {
+    if (grouping) return;
+    setGrouping(true);
+    const seed = [
+      ...p.hotels.map(h => ({ type: "hotel", id: h.id, title: h.name, image: h.image, href: h.href, price: h.pricePerNight })),
+      ...p.experiences.map(e => ({ type: "experience", id: e.id, title: e.title, image: e.image, href: e.href, price: e.price })),
+    ];
+    const res = await fetch("/api/groups", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title: `${p.city || p.country} group trip`, destination: p.city || p.country, seed }),
+    });
+    if (res.status === 401) { router.push("/login?next=/plan"); return; }
+    const d = await res.json().catch(() => ({}));
+    setGrouping(false);
+    if (d.ok) router.push(`/groups/${d.id}`);
   };
 
   return (
@@ -120,7 +138,7 @@ export default function TripPlanner() {
         </div>
       )}
 
-      {plan && plan.ok && <Result p={plan} add={add} added={added} savePlan={savePlan} saving={saving} saveMsg={saveMsg} />}
+      {plan && plan.ok && <Result p={plan} add={add} added={added} savePlan={savePlan} saving={saving} saveMsg={saveMsg} startGroup={startGroup} grouping={grouping} />}
     </div>
   );
 }
@@ -155,13 +173,15 @@ function PickList({ items }: { items: { name: string; note?: string }[] }) {
   );
 }
 
-function Result({ p, add, added, savePlan, saving, saveMsg }: {
+function Result({ p, add, added, savePlan, saving, saveMsg, startGroup, grouping }: {
   p: OkPlan;
   add: (type: string, id: string, title: string, image: string, href: string, price: number) => void;
   added: Record<string, boolean>;
   savePlan: (p: OkPlan) => void;
   saving: boolean;
   saveMsg: string;
+  startGroup: (p: OkPlan) => void;
+  grouping: boolean;
 }) {
   return (
     <div className="mt-10 animate-fade-in">
@@ -312,6 +332,9 @@ function Result({ p, add, added, savePlan, saving, saveMsg }: {
         <div className="flex flex-wrap gap-3 justify-center">
           <button onClick={() => savePlan(p)} disabled={saving} className="inline-flex items-center gap-2 px-6 py-3 bg-ink text-page text-xs tracking-[0.16em] uppercase rounded-sm hover:bg-ink/90 transition-colors disabled:opacity-60">
             {saving ? <Loader2 size={15} className="animate-spin" /> : <Check size={15} />} Save to my trips
+          </button>
+          <button onClick={() => startGroup(p)} disabled={grouping} className="inline-flex items-center gap-2 px-6 py-3 border border-gold/50 text-gold text-xs tracking-[0.16em] uppercase rounded-sm hover:bg-gold/10 transition-colors disabled:opacity-60">
+            {grouping ? <Loader2 size={15} className="animate-spin" /> : <Users size={15} />} Plan as a group
           </button>
           <Link href="/itinerary" className="inline-flex items-center gap-2 px-6 py-3 border border-line-strong text-ink text-xs tracking-[0.16em] uppercase rounded-sm hover:bg-ink hover:text-page transition-all">
             Review & request a quote <ArrowRight size={14} />

@@ -21,6 +21,13 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [unverified, setUnverified] = useState(false);
   const [verified] = useState(() => typeof window !== "undefined" && new URLSearchParams(window.location.search).get("verified") === "1");
+  // Where to land after signing in — an on-site return path (e.g. a group
+  // invite), else the member hub.
+  const nextUrl = (() => {
+    if (typeof window === "undefined") return "/my-voyages";
+    const n = new URLSearchParams(window.location.search).get("next");
+    return n && n.startsWith("/") && !n.startsWith("//") ? n : "/my-voyages";
+  })();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,7 +42,7 @@ export default function LoginPage() {
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) { setError(data.error ?? "Sign in failed"); setUnverified(!!data.unverified); setLoading(false); return; }
-      router.push("/my-voyages");
+      router.push(nextUrl);
       router.refresh();
     } catch {
       setError("Something went wrong. Please try again.");
@@ -124,8 +131,8 @@ export default function LoginPage() {
             <span className="h-px flex-1 bg-line" />
           </div>
           <div className="space-y-3">
-            <GoogleSignIn />
-            <PasskeySignIn />
+            <GoogleSignIn next={nextUrl} />
+            <PasskeySignIn next={nextUrl} />
           </div>
 
           <p className="text-center text-sm text-ink-muted mt-6 font-light">

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { startAuthentication } from "@simplewebauthn/browser";
 import { Fingerprint } from "lucide-react";
 
-export default function PasskeySignIn() {
+export default function PasskeySignIn({ next = "/my-voyages" }: { next?: string }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -23,7 +23,7 @@ export default function PasskeySignIn() {
       });
       const d = await verifyRes.json().catch(() => ({}));
       if (!verifyRes.ok) { setError(d.error || "Sign-in failed."); return; }
-      router.push("/my-voyages");
+      router.push(next);
       router.refresh();
     } catch {
       setError("Passkey sign-in was cancelled.");

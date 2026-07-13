@@ -101,6 +101,8 @@ model Customer {
   travellers   Traveller[]
   documents    MemberDocument[]
   notifications MemberNotification[]
+  ownedGroups      GroupTrip[]   @relation("GroupOwner")
+  groupMemberships GroupMember[]
 
   @@index([verifyTokenHash])
   @@index([resetTokenHash])
@@ -677,4 +679,101 @@ model SiteStat {
 model DailyVisit {
   day   String @id // YYYY-MM-DD
   count Int    @default(0)
+}
+
+// ── Group trips ──────────────────────────────────────────────────────────────
+// A shared trip workspace where invited members vote on shortlisted stays,
+// split expenses, chat, share photos and see everyone's bookings.
+model GroupTrip {
+  id          String   @id @default(cuid())
+  title       String
+  destination String?
+  ownerId     String
+  owner       Customer @relation("GroupOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  shareToken  String   @unique
+  createdAt   DateTime @default(now())
+  members   GroupMember[]
+  shortlist GroupShortlistItem[]
+  expenses  GroupExpense[]
+  messages  GroupMessage[]
+  photos    GroupPhoto[]
+
+  @@index([ownerId])
+}
+
+model GroupMember {
+  id         String    @id @default(cuid())
+  groupId    String
+  group      GroupTrip @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  customerId String
+  customer   Customer  @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  role       String    @default("member") // owner | member
+  joinedAt   DateTime  @default(now())
+
+  @@unique([groupId, customerId])
+  @@index([customerId])
+}
+
+model GroupShortlistItem {
+  id        String    @id @default(cuid())
+  groupId   String
+  group     GroupTrip @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  type      String    // hotel | experience | cruise | package | flight
+  itemId    String
+  title     String
+  image     String?
+  href      String
+  price     Int?
+  addedById String
+  createdAt DateTime  @default(now())
+  votes     GroupVote[]
+
+  @@index([groupId])
+}
+
+model GroupVote {
+  id         String   @id @default(cuid())
+  itemId     String
+  item       GroupShortlistItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  customerId String
+  createdAt  DateTime @default(now())
+
+  @@unique([itemId, customerId])
+  @@index([itemId])
+}
+
+model GroupExpense {
+  id          String    @id @default(cuid())
+  groupId     String
+  group       GroupTrip @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  description String
+  amount      Int       // INR (site base currency)
+  paidById    String
+  splitAmong  Json      // array of customerIds sharing the cost
+  createdAt   DateTime  @default(now())
+
+  @@index([groupId])
+}
+
+model GroupMessage {
+  id         String    @id @default(cuid())
+  groupId    String
+  group      GroupTrip @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  customerId String
+  body       String    @db.Text
+  createdAt  DateTime  @default(now())
+
+  @@index([groupId])
+}
+
+model GroupPhoto {
+  id         String    @id @default(cuid())
+  groupId    String
+  group      GroupTrip @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  customerId String
+  url        String
+  caption    String?
+  createdAt  DateTime  @default(now())
+
+  @@index([groupId])
 }
