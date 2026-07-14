@@ -58,19 +58,19 @@ export default function PersonalExpenses({ initialRef }: { initialRef: string })
   return (
     <div>
       {/* Total + trip filter */}
-      <div className="rounded-2xl border border-line bg-gradient-to-br from-vc-950 to-[#2a1216] text-[#f4f0e9] p-5 mb-5">
+      <div className="rounded-2xl border border-gold/30 bg-panel p-5 mb-5 shadow-card">
         <div className="flex items-center justify-between">
           <p className="text-[10px] tracking-[0.28em] uppercase text-gold">{filterRef ? "This trip" : "Total spent"}</p>
-          <p className="font-serif text-3xl font-light"><Price amount={data.total} /></p>
+          <p className="font-serif text-3xl font-light text-ink"><Price amount={data.total} /></p>
         </div>
         {data.trips.length > 0 && (
-          <select value={filterRef} onChange={e => setFilterRef(e.target.value)} className="mt-3 w-full px-3 py-2 rounded-lg bg-white/10 border border-white/15 text-white text-sm focus:outline-none">
+          <select value={filterRef} onChange={e => setFilterRef(e.target.value)} className="mt-3 w-full px-3 py-2 rounded-lg bg-panel-soft border border-line text-ink text-sm focus:outline-none focus:border-gold">
             <option value="">All trips</option>
-            {data.trips.map(t => <option key={t.reference} value={t.reference} className="text-ink">{t.title}</option>)}
+            {data.trips.map(t => <option key={t.reference} value={t.reference}>{t.title}</option>)}
           </select>
         )}
         {data.expenses.length > 0 && (
-          <button onClick={exportCsv} className="mt-3 inline-flex items-center gap-1.5 text-[11px] tracking-[0.14em] uppercase text-white/70 hover:text-gold transition-colors"><Download size={13} /> Export CSV</button>
+          <button onClick={exportCsv} className="mt-3 inline-flex items-center gap-1.5 text-[11px] tracking-[0.14em] uppercase text-ink-muted hover:text-gold transition-colors"><Download size={13} /> Export CSV</button>
         )}
       </div>
 

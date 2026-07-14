@@ -203,10 +203,10 @@ function Result({ p, add, added, savePlan, saving, saveMsg, startGroup, grouping
       </div>
 
       {/* Cost estimate */}
-      <div className="mt-8 rounded-2xl border border-line bg-gradient-to-br from-vc-950 to-[#2a1216] text-[#f4f0e9] p-6">
+      <div className="mt-8 rounded-2xl border border-gold/30 bg-panel p-6 shadow-card">
         <div className="flex items-center justify-between mb-4">
           <p className="text-[10px] tracking-[0.28em] uppercase text-gold">Estimated cost · {p.travellers} {p.travellers === 1 ? "traveller" : "travellers"}</p>
-          <p className="font-serif text-3xl font-light"><Price amount={p.cost.total} /></p>
+          <p className="font-serif text-3xl font-light text-ink"><Price amount={p.cost.total} /></p>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
           {[
@@ -215,13 +215,13 @@ function Result({ p, add, added, savePlan, saving, saveMsg, startGroup, grouping
             { label: "On-ground daily", v: p.cost.daily },
             { label: "Experiences", v: p.cost.experiences },
           ].map(x => (
-            <div key={x.label} className="rounded-xl bg-white/5 px-3 py-2.5">
-              <p className="text-[11px] text-white/50">{x.label}</p>
-              <p className="font-light text-white/90 mt-0.5">{x.v > 0 ? <Price amount={x.v} /> : "—"}</p>
+            <div key={x.label} className="rounded-xl bg-panel-soft border border-line px-3 py-2.5">
+              <p className="text-[11px] text-ink-faint">{x.label}</p>
+              <p className="font-light text-ink mt-0.5">{x.v > 0 ? <Price amount={x.v} /> : "—"}</p>
             </div>
           ))}
         </div>
-        <p className="text-[11px] text-white/45 mt-3">Indicative only — flights vary with live fares; on-ground is ~<Price amount={p.cost.perDaySpend} />/person/day.</p>
+        <p className="text-[11px] text-ink-faint mt-3">Indicative only — flights vary with live fares; on-ground is ~<Price amount={p.cost.perDaySpend} />/person/day.</p>
       </div>
 
       {/* Flights */}
