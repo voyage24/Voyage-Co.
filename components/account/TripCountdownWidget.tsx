@@ -50,16 +50,16 @@ export default function TripCountdownWidget({ checkIn, checkOut, title }: { chec
   }
 
   return (
-    <div className="rounded-2xl border border-line bg-gradient-to-br from-vc-950 to-[#2a1216] text-[#f4f0e9] p-6 mb-4 shadow-card">
+    <div className="rounded-2xl border border-gold/20 bg-gradient-to-br from-vc-950 to-[#33161b] text-[#f4f0e9] p-6 mb-4 shadow-card">
       <div className="flex items-center gap-2 mb-3">
         <CalendarClock size={15} className="text-gold" />
         <p className="text-[10px] tracking-[0.28em] uppercase text-gold">{phase === "during" ? "You're on your trip" : "Countdown"}</p>
       </div>
       <div className="flex items-end gap-3">
-        <span className="font-serif text-5xl sm:text-6xl font-light leading-none">{big}</span>
-        <span className="text-sm text-white/70 pb-1.5">{small}</span>
+        <span className="font-serif text-5xl sm:text-6xl font-light leading-none text-white">{big}</span>
+        <span className="text-sm text-white/85 pb-1.5">{small}</span>
       </div>
-      <p className="text-sm text-white/60 font-light mt-2 truncate">{title}</p>
+      <p className="text-sm text-white/80 font-light mt-2 truncate">{title}</p>
       {phase === "during" && (
         <div className="mt-4 h-1.5 rounded-full bg-white/15 overflow-hidden">
           <div className="h-full rounded-full bg-gold transition-[width] duration-1000" style={{ width: `${Math.round(progress * 100)}%` }} />
