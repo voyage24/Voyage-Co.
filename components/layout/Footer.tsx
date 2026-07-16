@@ -12,51 +12,72 @@ import TurnstileWidget from "@/components/ui/TurnstileWidget";
 
 type FooterLink = { href: string; key?: string; label?: string };
 
-// Column heading translation-key → admin content-override key.
-const COL_CONTENT: Record<string, string> = {
-  "footer.discover": "footer.colDiscover",
-  "footer.maison": "footer.colMaison",
-  "footer.care": "footer.colCare",
-};
+// The footer, grouped by what a visitor is actually trying to do: browse the
+// catalogue (Discover), plan a trip (Plan), read about us (Maison), or get help
+// (Care). `id` doubles as the admin "column" label a footer-list item files
+// itself under; `fallback` covers headings with no translation yet, since t()
+// echoes an unknown key back.
+type FooterColumn = { id: string; headingKey: string; contentKey: string; fallback: string; links: FooterLink[] };
 
-const FOOTER_LINKS: Record<string, FooterLink[]> = {
-  "footer.discover": [
-    { key: "common.destinations",   href: "/packages" },
-    { key: "common.stays",          href: "/hotels" },
-    { key: "common.cruises",        href: "/cruises" },
-    { key: "common.experiences",    href: "/experiences" },
-    { key: "common.privateFlights", href: "/flights" },
-    { key: "explore.title",         href: "/explore" },
-    { key: "common.byDestination",  href: "/destinations" },
-    { key: "common.offers",         href: "/offers" },
-    { key: "common.membership",     href: "/membership" },
-    { key: "common.tripBuilder",    href: "/itinerary" },
-    { key: "common.findJourney",    href: "/quiz" },
-  ],
-  "footer.maison": [
-    { key: "common.about",    href: "/about" },
-    { key: "common.journal",  href: "/blog" },
-    { key: "common.careers",  href: "/careers" },
-    { key: "common.press",    href: "/press" },
-    { key: "common.partners", href: "/partners" },
-    { label: "Events",        href: "/events" },
-  ],
-  "footer.care": [
-    { key: "common.concierge",     href: "/contact" },
-    { key: "common.requestCallback", href: "/callback" },
-    { key: "common.giftJourney",   href: "/gift" },
-    { key: "common.conciergeServices", href: "/services" },
-    { label: "Trip tools",         href: "/tools" },
-    { label: "Live flight tracker", href: "/tools/flight-tracker" },
-    { label: "Visa assistance",    href: "/visa" },
-    { label: "Travel insurance",   href: "/insurance" },
-    { key: "common.faq",           href: "/faq" },
-    { label: "Support",            href: "/support" },
-    { key: "common.cancellations", href: "/cancellations" },
-    { key: "common.privacy",       href: "/privacy" },
-    { key: "common.terms",         href: "/terms" },
-  ],
-};
+const FOOTER_COLUMNS: FooterColumn[] = [
+  {
+    id: "discover", headingKey: "footer.discover", contentKey: "footer.colDiscover", fallback: "Discover",
+    links: [
+      { key: "common.destinations",   href: "/packages" },
+      { key: "common.stays",          href: "/hotels" },
+      { key: "common.cruises",        href: "/cruises" },
+      { key: "common.experiences",    href: "/experiences" },
+      { key: "common.privateFlights", href: "/flights" },
+      { key: "common.byDestination",  href: "/destinations" },
+      { key: "explore.title",         href: "/explore" },
+      { key: "common.offers",         href: "/offers" },
+    ],
+  },
+  {
+    // Planning tools were scattered across the other columns; gathered here.
+    id: "plan", headingKey: "footer.plan", contentKey: "footer.colPlan", fallback: "Plan",
+    links: [
+      { label: "Smart Trip Planner",  href: "/plan" },
+      { label: "Group trips",         href: "/groups" },
+      { key: "common.tripBuilder",    href: "/itinerary" },
+      { key: "common.findJourney",    href: "/quiz" },
+      { label: "Trip tools",          href: "/tools" },
+      { label: "Live flight tracker", href: "/tools/flight-tracker" },
+    ],
+  },
+  {
+    id: "maison", headingKey: "footer.maison", contentKey: "footer.colMaison", fallback: "Maison",
+    links: [
+      { key: "common.about",      href: "/about" },
+      { key: "common.journal",    href: "/blog" },
+      { key: "common.press",      href: "/press" },
+      { key: "common.careers",    href: "/careers" },
+      { key: "common.partners",   href: "/partners" },
+      { label: "Events",          href: "/events" },
+      { key: "common.membership", href: "/membership" },
+    ],
+  },
+  {
+    id: "care", headingKey: "footer.care", contentKey: "footer.colCare", fallback: "Care",
+    links: [
+      { key: "common.concierge",         href: "/contact" },
+      { key: "common.conciergeServices", href: "/services" },
+      { key: "common.requestCallback",   href: "/callback" },
+      { key: "common.giftJourney",       href: "/gift" },
+      { label: "Visa assistance",        href: "/visa" },
+      { label: "Travel insurance",       href: "/insurance" },
+      { key: "common.faq",               href: "/faq" },
+      { label: "Support",                href: "/support" },
+      { key: "common.cancellations",     href: "/cancellations" },
+    ],
+  },
+];
+
+// Legal sits with the copyright, not among the help links.
+const LEGAL: FooterLink[] = [
+  { key: "common.privacy", href: "/privacy" },
+  { key: "common.terms",   href: "/terms" },
+];
 
 const SOCIAL = [
   { label: "footer.instagram", key: "social.instagram" as const },
@@ -64,31 +85,28 @@ const SOCIAL = [
   { label: "footer.linkedin", key: "social.linkedin" as const },
 ];
 
-// Footer column heading keys, in display order, with the admin "column" label
-// that a footer-list item uses to file itself under that heading.
-const FOOTER_COLUMNS: { headingKey: string; match: string }[] = [
-  { headingKey: "footer.discover", match: "discover" },
-  { headingKey: "footer.maison", match: "maison" },
-  { headingKey: "footer.care", match: "care" },
-];
-
 export default function Footer() {
   const { t, language } = useLanguage();
   const c = useContent();
   const footerList = useContentList("list.footer");
   // A saved footer list replaces the default links; otherwise use the shipped
-  // links with their translated labels.
-  const columns: { headingKey: string; links: { href: string; label: string }[] }[] = footerList
-    ? FOOTER_COLUMNS.map(col => ({
-        headingKey: col.headingKey,
-        links: footerList
-          .filter(x => (x.column || "").trim().toLowerCase() === col.match)
-          .map(x => ({ href: x.href || "#", label: x.label || "" })),
-      }))
-    : Object.entries(FOOTER_LINKS).map(([headingKey, links]) => ({
-        headingKey,
-        links: links.map(l => ({ href: l.href, label: l.label ?? t(l.key ?? "") })),
-      }));
+  // links with their translated labels. Columns with nothing in them are dropped
+  // so a custom list can't leave an empty heading behind.
+  const columns = FOOTER_COLUMNS.map(col => ({
+    ...col,
+    links: footerList
+      ? footerList.filter(x => (x.column || "").trim().toLowerCase() === col.id).map(x => ({ href: x.href || "#", label: x.label || "" }))
+      : col.links.map(l => ({ href: l.href, label: l.label ?? t(l.key ?? "") })),
+  })).filter(col => col.links.length > 0);
+
+  // Admin override wins; then the translation; then the shipped English label
+  // (t() hands back the key itself when a heading isn't translated yet).
+  const headingFor = (col: FooterColumn) => {
+    const override = c(col.contentKey);
+    if (override) return override;
+    const translated = t(col.headingKey);
+    return translated === col.headingKey ? col.fallback : translated;
+  };
   const phone = useSetting("contact.phone") || "+91 99199 10213";
   const whatsapp = useSetting("contact.whatsapp") || "919919910213";
   const settings = useSettings();
@@ -156,9 +174,9 @@ export default function Footer() {
 
       {/* Links */}
       <div className="max-w-[1500px] mx-auto px-6 lg:px-12 py-20">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-12">
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-x-8 gap-y-12">
           {/* Brand */}
-          <div className="col-span-2 md:col-span-1">
+          <div className="col-span-2 lg:col-span-1">
             <Logo size={26} className="mb-5" />
             <p className="text-sm text-ink-muted leading-relaxed font-light max-w-xs">
               {c("footer.tagline") || t("footer.tagline")}
@@ -175,8 +193,8 @@ export default function Footer() {
           </div>
 
           {columns.map(col => (
-            <div key={col.headingKey}>
-              <h3 className="text-[10px] font-normal tracking-[0.24em] uppercase text-ink-faint mb-5">{c(COL_CONTENT[col.headingKey]) || t(col.headingKey)}</h3>
+            <div key={col.id}>
+              <h3 className="text-[10px] font-normal tracking-[0.24em] uppercase text-ink-faint mb-5">{headingFor(col)}</h3>
               <ul className="space-y-3">
                 {col.links.map((link, i) => (
                   <li key={`${link.href}-${i}`}>
@@ -192,9 +210,17 @@ export default function Footer() {
 
         {/* Bottom bar */}
         <div className="mt-16 pt-8 border-t border-line flex flex-col sm:flex-row items-center justify-between gap-5">
-          <p className="text-xs text-ink-faint font-light tracking-wide order-2 sm:order-1">
-            {c("footer.copyright") || "© 2026 Voyages & Co. (by Lighthouse Ventures) · voyagesco.com"}
-          </p>
+          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 order-2 sm:order-1">
+            <p className="text-xs text-ink-faint font-light tracking-wide">
+              {c("footer.copyright") || "© 2026 Voyages & Co. (by Lighthouse Ventures) · voyagesco.com"}
+            </p>
+            <span className="hidden sm:inline text-ink-faint/40 text-xs">·</span>
+            {LEGAL.map(l => (
+              <Link key={l.href} href={l.href} className="text-xs text-ink-faint font-light hover:text-ink transition-colors">
+                {l.label ?? t(l.key ?? "")}
+              </Link>
+            ))}
+          </div>
           <div className="flex items-center gap-6 order-1 sm:order-2">
             {SOCIAL.map(s => {
               const url = settings?.[s.key];
