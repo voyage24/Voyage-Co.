@@ -299,7 +299,9 @@ model Booking {
   checkOut    String?
   guests      Int       @default(1)
   total       Int
-  currency    String    @default("INR")
+  currency    String    @default("INR")  // the currency `total` is stored in (always the INR base)
+  quoteCurrency String?                  // the currency the guest was viewing/quoted in
+  quoteTotal    Int?                     // `total` as it was shown to them in that currency
   status      String    @default("pending") // pending | confirmed | cancelled
   reference   String    @unique
   shareToken  String?   @unique // capability link to share this trip with a companion

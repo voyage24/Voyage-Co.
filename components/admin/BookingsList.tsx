@@ -3,6 +3,7 @@
 import { useState } from "react";
 import SavedFilterViews from "@/components/admin/SavedFilterViews";
 import { useRouter } from "next/navigation";
+import { CURRENCIES } from "@/lib/currency";
 
 export type BookingRow = {
   id: string;
@@ -16,10 +17,22 @@ export type BookingRow = {
   checkOut: string | null;
   guests: number;
   total: number;
+  quoteCurrency?: string | null;
+  quoteTotal?: number | null;
   status: string;
   documents?: { label: string; url: string }[];
   createdAt: string | Date;
 };
+
+// Totals are stored in the INR base. When the guest was browsing in another
+// currency, lead with the figure they were actually quoted and keep INR beside
+// it, so what the concierge sees matches what the guest agreed to.
+function money(b: BookingRow): string {
+  const base = `₹${b.total.toLocaleString("en-IN")}`;
+  if (!b.quoteCurrency || b.quoteCurrency === "INR" || !b.quoteTotal) return base;
+  const sym = CURRENCIES.find(c => c.code === b.quoteCurrency)?.symbol ?? "";
+  return `${sym}${b.quoteTotal.toLocaleString("en-US")} ${b.quoteCurrency} · ${base}`;
+}
 
 const STATUS_STYLES: Record<string, string> = {
   pending: "bg-amber-100 text-amber-800",
@@ -133,7 +146,7 @@ export default function BookingsList({ bookings }: { bookings: BookingRow[] }) {
                     <p><span className="text-gray-400">Guest:</span> {b.guestName} · <a href={`mailto:${b.guestEmail}`} className="text-blue-600 underline">{b.guestEmail}</a>{b.guestPhone ? ` · ${b.guestPhone}` : ""}</p>
                     <p><span className="text-gray-400">Item:</span> {b.itemTitle} ({b.type})</p>
                     {(b.checkIn || b.checkOut) && <p><span className="text-gray-400">Dates:</span> {b.checkIn || "?"}{b.checkOut ? ` → ${b.checkOut}` : ""}</p>}
-                    <p><span className="text-gray-400">Guests:</span> {b.guests} · <span className="text-gray-400">Total:</span> ₹{b.total.toLocaleString("en-IN")}</p>
+                    <p><span className="text-gray-400">Guests:</span> {b.guests} · <span className="text-gray-400">Total:</span> {money(b)}</p>
 
                     {/* Documents — vouchers, tickets, itineraries the customer can download from their account */}
                     <div className="pt-2">

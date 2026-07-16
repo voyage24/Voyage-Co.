@@ -29,7 +29,8 @@ export default async function CustomerDetailPage({ params }: { params: { id: str
   ]);
 
   const events: Event[] = [
-    ...bookings.map(b => ({ kind: "Booking", date: b.createdAt, title: b.itemTitle, detail: `${b.reference} · ${money(b.total, b.currency)} · ${b.status}`, href: `/admin/bookings`, tone: "emerald" })),
+    // Lead with the figure the guest was quoted when they weren't browsing in INR.
+    ...bookings.map(b => ({ kind: "Booking", date: b.createdAt, title: b.itemTitle, detail: `${b.reference} · ${b.quoteCurrency && b.quoteCurrency !== "INR" && b.quoteTotal ? `${money(b.quoteTotal, b.quoteCurrency)} · ${money(b.total, b.currency)}` : money(b.total, b.currency)} · ${b.status}`, href: `/admin/bookings`, tone: "emerald" })),
     ...enquiries.map(e => ({ kind: "Enquiry", date: e.createdAt, title: e.subject || e.itemTitle || e.type, detail: `${e.stage}${e.message ? " · " + e.message.slice(0, 80) : ""}`, href: `/admin/enquiries`, tone: "blue" })),
     ...quotes.map(q => ({ kind: "Quote", date: q.createdAt, title: q.title, detail: `${money(q.total, q.currency)} · ${q.status}`, href: `/admin/quotes`, tone: "violet" })),
     ...inbound.map(m => ({ kind: "Email in", date: m.createdAt, title: m.subject || "(no subject)", detail: `from ${m.fromEmail}`, href: `/admin/mail`, tone: "gray" })),

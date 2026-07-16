@@ -38,7 +38,7 @@ export default function BookingForm({ item, soldOut = false }: { item: BookingIt
   const [error, setError] = useState("");
   const [token, setToken] = useState("");
   const { addTrip } = useTrips();
-  const { format } = useCurrency();
+  const { format, convert, currency } = useCurrency();
   const { t } = useLanguage();
   const { defaults, remember } = useContactDefaults();
 
@@ -99,7 +99,10 @@ export default function BookingForm({ item, soldOut = false }: { item: BookingIt
           itemType: item.type, itemId: item.id, itemTitle: item.title, image: item.image,
           checkIn: form.checkIn || null, checkOut: form.checkOut || null, guests: form.guests,
           seat: item.type === "flight" ? form.seat || null : null,
-          total, ref, turnstileToken: token,
+          // `total` is the INR base; also record what the guest was quoted in,
+          // so the concierge sees the figure the guest actually agreed to.
+          total, quoteCurrency: currency.code, quoteTotal: Math.round(convert(total)),
+          ref, turnstileToken: token,
         }),
       });
       const data = await res.json().catch(() => ({}));
