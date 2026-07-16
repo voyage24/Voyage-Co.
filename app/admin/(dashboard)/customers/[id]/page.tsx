@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import CustomerCrmPanel from "@/components/admin/CustomerCrmPanel";
 import PurgeCustomer from "@/components/admin/PurgeCustomer";
+import AdjustPoints from "@/components/admin/AdjustPoints";
 
 export const dynamic = "force-dynamic";
 
@@ -72,6 +73,8 @@ export default async function CustomerDetailPage({ params }: { params: { id: str
           </div>
         ))}
       </div>
+
+      <AdjustPoints customerId={customer.id} points={customer.points} tier={customer.tier} />
 
       {/* Notes + follow-ups (interactive) */}
       <CustomerCrmPanel
