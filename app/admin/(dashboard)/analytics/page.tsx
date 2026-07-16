@@ -17,13 +17,14 @@ function Stat({ label, value, sub, grad }: { label: string; value: string; sub?:
 }
 
 export default async function AnalyticsPage() {
-  const [bookings, enquiries, customerCount, newsletterCount, visitStat, visitDays] = await Promise.all([
+  const [bookings, enquiries, customerCount, newsletterCount, visitStat, mobileStat, desktopStat] = await Promise.all([
     prisma.booking.findMany({ select: { total: true, status: true, type: true, itemTitle: true, createdAt: true } }),
     prisma.enquiry.findMany({ select: { stage: true, createdAt: true, total: true } }),
     prisma.customer.count(),
     prisma.newsletterSubscriber.count().catch(() => 0),
     prisma.siteStat.findUnique({ where: { key: "visits" } }).catch(() => null),
-    prisma.dailyVisit.count().catch(() => 0),
+    prisma.siteStat.findUnique({ where: { key: "visits:mobile" } }).catch(() => null),
+    prisma.siteStat.findUnique({ where: { key: "visits:desktop" } }).catch(() => null),
   ]);
 
   const confirmed = bookings.filter(b => b.status === "confirmed");
@@ -131,7 +132,13 @@ export default async function AnalyticsPage() {
         </div>
       </div>
 
-      <ResetAnalytics visits={visitStat?.count ?? 0} days={visitDays} bookings={bookings.length} revenue={revenue} />
+      <ResetAnalytics
+        visits={visitStat?.count ?? 0}
+        mobile={mobileStat?.count ?? 0}
+        desktop={desktopStat?.count ?? 0}
+        bookings={bookings.length}
+        revenue={revenue}
+      />
     </div>
   );
 }

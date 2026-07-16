@@ -99,6 +99,10 @@ export default function EnquiriesList({ enquiries }: { enquiries: EnquiryRow[] }
   const [sel, setSel] = useState<Set<string>>(new Set());
   const [bulkBusy, setBulkBusy] = useState(false);
   const toggleSel = (id: string) => setSel(s => { const n = new Set(s); n.has(id) ? n.delete(id) : n.add(id); return n; });
+  // Select every enquiry matching the current search/filter — not just this
+  // page — so a whole client's enquiries can be cleared in one action.
+  const allShownSelected = shown.length > 0 && shown.every(e => sel.has(e.id));
+  const toggleAllShown = () => setSel(allShownSelected ? new Set() : new Set(shown.map(e => e.id)));
   const bulk = async (action: "handled" | "delete") => {
     if (sel.size === 0) return;
     if (action === "delete" && !confirm(`Delete ${sel.size} enquiry(ies) permanently?`)) return;
@@ -155,6 +159,13 @@ export default function EnquiriesList({ enquiries }: { enquiries: EnquiryRow[] }
       <div className="mb-4">
         <SavedFilterViews storageKey="vc-views-enquiries" current={filter} onApply={v => { setFilter(v as typeof filter); setPage(0); }} />
       </div>
+
+      {shown.length > 0 && (
+        <label className="inline-flex items-center gap-2 text-xs text-gray-600 cursor-pointer mb-3">
+          <input type="checkbox" checked={allShownSelected} onChange={toggleAllShown} className="rounded border-gray-300" />
+          Select all {shown.length}{needle ? " matching" : ""}
+        </label>
+      )}
 
       {sel.size > 0 && (
         <div className="flex flex-wrap items-center gap-2 mb-3 bg-gray-900 text-white rounded-md px-3 py-2 text-sm">
