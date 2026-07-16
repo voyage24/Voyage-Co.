@@ -3,7 +3,11 @@
 export type Dictionary = Record<string, string>;
 
 export const EN: Dictionary = {
-  "common.destinations": "Destinations",
+  // Labels /packages — our curated, bespoke journeys. Named "Journeys" rather
+  // than "Destinations" so it isn't mistaken for common.byDestination below,
+  // which links the per-country guides at /destinations. The key keeps its
+  // original name so the 36 existing translations still resolve.
+  "common.destinations": "Journeys",
   "common.stays": "Stays",
   "common.cruises": "Cruises",
   "common.flights": "Flights",
@@ -22,7 +26,9 @@ export const EN: Dictionary = {
   "common.giftJourney": "Gift a Journey",
   "common.conciergeServices": "Concierge Services",
   "common.findJourney": "Find Your Journey",
-  "common.byDestination": "Browse by Destination",
+  // Labels /destinations — a travel guide per country. English only, so every
+  // language falls back to this.
+  "common.byDestination": "Destination guides",
   "common.offers": "Offers",
   "common.membership": "Membership",
   "common.faq": "FAQ",
