@@ -43,11 +43,19 @@ export default function EnquiriesList({ enquiries }: { enquiries: EnquiryRow[] }
   const [replyMsg, setReplyMsg] = useState("");
 
   const [page, setPage] = useState(0);
+  const [q, setQ] = useState("");
   const PAGE = 50;
-  const shown = enquiries.filter(e => filter === "all" || e.status === filter);
+  // Search by name, email, phone, subject or journey — pulls up everything from
+  // one client.
+  const needle = q.trim().toLowerCase();
+  const shown = enquiries.filter(e =>
+    (filter === "all" || e.status === filter) &&
+    (!needle || [e.name, e.email, e.phone, e.subject, e.itemTitle].some(v => (v || "").toLowerCase().includes(needle))),
+  );
   const pageCount = Math.max(1, Math.ceil(shown.length / PAGE));
   const safePage = Math.min(page, pageCount - 1);
   const pageRows = shown.slice(safePage * PAGE, safePage * PAGE + PAGE);
+  const setSearch = (v: string) => { setQ(v); setPage(0); };
 
   const openReply = (e: EnquiryRow) => {
     setReplyId(e.id);
@@ -129,6 +137,20 @@ export default function EnquiriesList({ enquiries }: { enquiries: EnquiryRow[] }
             {tb.label}
           </button>
         ))}
+      </div>
+      <div className="flex flex-wrap items-center gap-2 mb-3">
+        <input
+          value={q}
+          onChange={e => setSearch(e.target.value)}
+          placeholder="Search name, email, phone, subject or journey…"
+          className="flex-1 min-w-[240px] px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:border-gray-900"
+        />
+        {needle && (
+          <>
+            <span className="text-xs text-gray-500">{shown.length} match{shown.length === 1 ? "" : "es"}</span>
+            <button onClick={() => setSearch("")} className="text-xs px-3 py-2 rounded-md border border-gray-300 text-gray-600 hover:bg-gray-50">Clear</button>
+          </>
+        )}
       </div>
       <div className="mb-4">
         <SavedFilterViews storageKey="vc-views-enquiries" current={filter} onApply={v => { setFilter(v as typeof filter); setPage(0); }} />

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import CustomerCrmPanel from "@/components/admin/CustomerCrmPanel";
+import PurgeCustomer from "@/components/admin/PurgeCustomer";
 
 export const dynamic = "force-dynamic";
 
@@ -100,6 +101,12 @@ export default async function CustomerDetailPage({ params }: { params: { id: str
           ))}
         </ol>
       )}
+
+      <PurgeCustomer
+        customerId={customer.id}
+        email={email}
+        counts={{ bookings: bookings.length, enquiries: enquiries.length, quotes: quotes.length, notes: notes.length, followups: followups.length }}
+      />
     </div>
   );
 }
