@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireOwner } from "@/lib/admin/requireAdmin";
 import { logAudit } from "@/lib/admin/audit";
+import { reversePointsForBookings } from "@/lib/loyalty";
 
 export const dynamic = "force-dynamic";
 
@@ -24,6 +25,14 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   // Records are email-keyed (guests book without an account), so match on the
   // account id and the email, case-insensitively.
   const ci = { equals: customer.email, mode: "insensitive" as const };
+
+  // Take back points earned by the journeys we're about to delete.
+  const owned = await prisma.booking.findMany({
+    where: { OR: [{ customerId: customer.id }, { guestEmail: ci }] },
+    select: { customerId: true, total: true, pointsAwarded: true },
+  });
+  await reversePointsForBookings(owned);
+
   const [bookings, enquiries, quotes, notes, followups] = await prisma.$transaction([
     prisma.booking.deleteMany({ where: { OR: [{ customerId: customer.id }, { guestEmail: ci }] } }),
     prisma.enquiry.deleteMany({ where: { email: ci } }),

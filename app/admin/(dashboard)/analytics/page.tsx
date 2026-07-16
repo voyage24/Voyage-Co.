@@ -131,7 +131,7 @@ export default async function AnalyticsPage() {
         </div>
       </div>
 
-      <ResetAnalytics visits={visitStat?.count ?? 0} days={visitDays} />
+      <ResetAnalytics visits={visitStat?.count ?? 0} days={visitDays} bookings={bookings.length} revenue={revenue} />
     </div>
   );
 }

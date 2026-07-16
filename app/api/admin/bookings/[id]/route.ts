@@ -5,6 +5,7 @@ import { logAudit } from "@/lib/admin/audit";
 import { sendPushToCustomer } from "@/lib/push";
 import { createTransport, FROM_CONCIERGE } from "@/lib/email/transport";
 import { renderConciergeEmailHTML, renderConciergeEmailText } from "@/lib/email/template";
+import { applyPoints, pointsFor, reversePointsForBookings } from "@/lib/loyalty";
 
 const STATUSES = ["pending", "confirmed", "cancelled"];
 
@@ -47,21 +48,16 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     }
   }
 
-  // Award loyalty points once, when a booking is first confirmed (1 point per
-  // ₹1,000 of value), and bump tier at thresholds.
-  if (status === "confirmed") {
+  // Points are earned by travelling, not by booking — /api/cron/award-points
+  // grants them once a journey has been completed. Cancelling a journey that had
+  // already earned its points takes them back off.
+  if (status === "cancelled") {
     const b = await prisma.booking.findUnique({ where: { id: params.id }, select: { customerId: true, total: true, pointsAwarded: true } });
-    if (b?.customerId && !b.pointsAwarded) {
-      const pts = Math.floor((b.total || 0) / 1000);
-      await prisma.$transaction([
-        prisma.customer.update({ where: { id: b.customerId }, data: { points: { increment: pts } } }),
-        prisma.booking.update({ where: { id: params.id }, data: { pointsAwarded: true } }),
-      ]);
-      const c = await prisma.customer.findUnique({ where: { id: b.customerId }, select: { points: true, tier: true } });
-      if (c) {
-        const tier = c.points >= 5000 ? "gold" : c.points >= 1500 ? "silver" : "member";
-        if (tier !== c.tier) await prisma.customer.update({ where: { id: b.customerId }, data: { tier } });
-      }
+    if (b?.customerId && b.pointsAwarded) {
+      const pts = pointsFor(b.total);
+      await applyPoints(b.customerId, -pts);
+      await prisma.booking.update({ where: { id: params.id }, data: { pointsAwarded: false } });
+      await logAudit(admin.email, "points", "booking", params.id, `−${pts} points (cancelled)`);
     }
   }
 
@@ -101,6 +97,11 @@ async function sendStatusEmail(status: string, bk: BookingLite) {
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
   const admin = await requireAdmin(req);
   if (admin instanceof NextResponse) return admin;
+  // Take back any points this journey earned — keeping them would credit a
+  // member for a journey that no longer exists.
+  const b = await prisma.booking.findUnique({ where: { id: params.id }, select: { customerId: true, total: true, pointsAwarded: true } });
+  if (b) await reversePointsForBookings([b]);
   await prisma.booking.delete({ where: { id: params.id } });
+  await logAudit(admin.email, "delete", "booking", params.id, null);
   return NextResponse.json({ ok: true });
 }
