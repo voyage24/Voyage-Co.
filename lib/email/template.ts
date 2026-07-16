@@ -21,12 +21,15 @@ export function renderConciergeEmailHTML(opts: {
   eyebrow: string;
   heading: string;
   bodyHtml: string;
-  signoff: string;
+  signoff: string;  // the closing line only, e.g. "With warm regards," — the
+                    // team and brand lines below are added here, so callers must
+                    // never pass a complete signature (that double-signs the mail)
+  team?: string;    // who it's from, e.g. "The Reservations Team"
   ctaLabel?: string;
   ctaHref?: string;
   reserveCta?: boolean; // show the "Join Voyages Reserve" band (default true)
 }) {
-  const { eyebrow, heading, bodyHtml, signoff, ctaLabel, ctaHref, reserveCta = true } = opts;
+  const { eyebrow, heading, bodyHtml, signoff, team = "The Concierge Team", ctaLabel, ctaHref, reserveCta = true } = opts;
   const reserveBand = reserveCta ? `
       <tr><td style="padding:0 40px 40px;">
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid ${GOLD};">
@@ -61,7 +64,7 @@ export function renderConciergeEmailHTML(opts: {
         </table>` : ""}
         <p style="margin:32px 0 0;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:${INK};">
           ${signoff}<br>
-          <strong>The Concierge Team</strong><br>
+          <strong>${team}</strong><br>
           <span style="color:${GOLD};">Voyages &amp; Co.</span>
         </p>
       </td></tr>
@@ -159,14 +162,14 @@ export function renderNewsletterHTML(opts: {
 </table>`;
 }
 
-export function renderConciergeEmailText(opts: { heading: string; bodyText: string; signoff: string }) {
-  const { heading, bodyText, signoff } = opts;
+export function renderConciergeEmailText(opts: { heading: string; bodyText: string; signoff: string; team?: string }) {
+  const { heading, bodyText, signoff, team = "The Concierge Team" } = opts;
   return `${heading}
 
 ${bodyText}
 
 ${signoff}
-The Concierge Team
+${team}
 Voyages & Co.
 
 --

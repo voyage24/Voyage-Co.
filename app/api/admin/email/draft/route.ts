@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/admin/requireAdmin";
 import { draftFromSubject, draftFromContent } from "@/lib/email/compose-drafts";
+import { stripTrailingSignoff } from "@/lib/email/signatures";
 import { generateText, aiConfigured } from "@/lib/ai";
 
 export const dynamic = "force-dynamic";
@@ -39,7 +40,9 @@ Context / notes: ${String(context || "none").slice(0, 800)}`;
 
   if (aiConfigured()) {
     const { text } = await generateText(SYSTEM, [{ role: "user", content: prompt }], 500);
-    if (text) return NextResponse.json({ draft: text, source: "ai" });
+    // Models sign off despite being told not to; the template does that, so drop
+    // it here rather than letting it reach the composer.
+    if (text) return NextResponse.json({ draft: stripTrailingSignoff(text), source: "ai" });
   }
 
   // No AI configured / all failed → content-aware template.

@@ -4,7 +4,7 @@ import { requireAdmin } from "@/lib/admin/requireAdmin";
 import { logAudit } from "@/lib/admin/audit";
 import { createTransport } from "@/lib/email/transport";
 import { renderConciergeEmailHTML, renderConciergeEmailText } from "@/lib/email/template";
-import { signatureFor } from "@/lib/email/signatures";
+import { signatureFor, stripTrailingSignoff } from "@/lib/email/signatures";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -47,7 +47,10 @@ export async function POST(req: NextRequest) {
 
   const first = String(name || "").trim().split(" ")[0];
   const heading = first ? `Dear ${first}` : "Hello";
-  const bodyHtml = String(message).trim().split(/\n{2,}/).map(p => `<p style="margin:0 0 16px;">${p.replace(/\n/g, "<br/>")}</p>`).join("");
+  // The template signs the email off, so drop any sign-off left at the end of
+  // the body — otherwise the message closes twice.
+  const bodyText = stripTrailingSignoff(String(message).trim());
+  const bodyHtml = bodyText.split(/\n{2,}/).map(p => `<p style="margin:0 0 16px;">${p.replace(/\n/g, "<br/>")}</p>`).join("");
 
   try {
     const transporter = createTransport();
@@ -58,8 +61,8 @@ export async function POST(req: NextRequest) {
       ...(bccList.length ? { bcc: bccList } : {}),
       ...(mailAttachments.length ? { attachments: mailAttachments } : {}),
       subject: String(subject).trim(),
-      text: renderConciergeEmailText({ heading, bodyText: String(message).trim(), signoff: sig.signoffText }),
-      html: renderConciergeEmailHTML({ eyebrow: sig.eyebrow, heading, bodyHtml, signoff: sig.signoffHtml }),
+      text: renderConciergeEmailText({ heading, bodyText, signoff: sig.opening, team: sig.team }),
+      html: renderConciergeEmailHTML({ eyebrow: sig.eyebrow, heading, bodyHtml, signoff: sig.opening, team: sig.team }),
     });
   } catch (err) {
     console.error("Compose email failed:", err);
@@ -75,7 +78,7 @@ export async function POST(req: NextRequest) {
       bcc: bccList.length ? bccList.join(", ") : null,
       fromEmail: sender.match(/<([^>]+)>/)?.[1] || sender,
       subject: String(subject).trim(),
-      bodyText: String(message).trim(),
+      bodyText,
     },
   }).catch(() => {});
 
