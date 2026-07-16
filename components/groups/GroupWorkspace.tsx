@@ -157,6 +157,10 @@ function ExpensesTab({ snap, meId, onChange }: { snap: Snap; meId: string; onCha
   const [budgetInput, setBudgetInput] = useState(snap.dailyBudget ? String(snap.dailyBudget) : "");
   const [editingBudget, setEditingBudget] = useState(false);
   const [savingBudget, setSavingBudget] = useState(false);
+  const [currencyTouched, setCurrencyTouched] = useState(false);
+
+  // Match the "spent in" currency to the one totals are shown in until picked.
+  useEffect(() => { if (!currencyTouched) setCurrency(displayCode); }, [displayCode, currencyTouched]);
 
   const saveBudget = async () => {
     setSavingBudget(true);
@@ -281,7 +285,7 @@ function ExpensesTab({ snap, meId, onChange }: { snap: Snap; meId: string; onCha
         <div className="flex gap-2 mb-3">
           <input value={desc} onChange={e => onDesc(e.target.value)} placeholder="What was it for?" className="flex-1 min-w-0 px-3 py-2.5 rounded-lg bg-panel-soft border border-line text-ink text-sm focus:outline-none focus:border-gold" />
           <input value={amount} onChange={e => setAmount(e.target.value.replace(/[^\d]/g, ""))} inputMode="numeric" placeholder="Amount" className="w-24 px-3 py-2.5 rounded-lg bg-panel-soft border border-line text-ink text-sm focus:outline-none focus:border-gold" />
-          <select value={currency} onChange={e => setCurrency(e.target.value)} className="w-24 px-2 py-2.5 rounded-lg bg-panel-soft border border-line text-ink text-sm focus:outline-none focus:border-gold" title="Currency spent in">
+          <select value={currency} onChange={e => { setCurrency(e.target.value); setCurrencyTouched(true); }} className="w-24 px-2 py-2.5 rounded-lg bg-panel-soft border border-line text-ink text-sm focus:outline-none focus:border-gold" title="Currency spent in">
             {CURRENCIES.map(c => <option key={c.code} value={c.code}>{c.code}</option>)}
           </select>
         </div>

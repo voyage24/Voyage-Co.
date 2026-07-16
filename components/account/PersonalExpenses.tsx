@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Plane, BedDouble, Utensils, ShoppingBag, Ticket, Car, Receipt, Plus, Loader2, Trash2, Download } from "lucide-react";
 import Price from "@/components/ui/Price";
 import { EXPENSE_CATEGORIES, categorizeExpense } from "@/lib/group/expense-category";
@@ -30,17 +30,40 @@ export default function PersonalExpenses({ initialRef }: { initialRef: string })
   const [spentOn, setSpentOn] = useState(today());
   const [tripRef, setTripRef] = useState(initialRef);
   const [busy, setBusy] = useState(false);
+  const [descTouched, setDescTouched] = useState(false);
+  const [currencyTouched, setCurrencyTouched] = useState(false);
+  const didInit = useRef(false);
+
+  // Keep the "spent in" currency in step with the currency totals are shown in
+  // (the provider only restores the saved choice after mount), so the amount you
+  // type and the total you see aren't in different currencies. Stops once the
+  // traveller picks a currency themselves.
+  useEffect(() => { if (!currencyTouched) setCurrency(displayCode); }, [displayCode, currencyTouched]);
 
   const load = () => fetch(`/api/account/expenses${filterRef ? `?ref=${encodeURIComponent(filterRef)}` : ""}`).then(r => r.json()).then(d => { if (d.loggedIn) setData(d); }).catch(() => {});
   useEffect(() => { load(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [filterRef]);
 
-  const onDesc = (v: string) => { setDesc(v); if (!catTouched) setCategory(categorizeExpense(v)); };
+  // Arriving from a trip ("Spend" on the trip card) — start with that trip's
+  // name as the description and let it pick its own category.
+  useEffect(() => {
+    if (!data || didInit.current) return;
+    didInit.current = true;
+    const t = initialRef ? data.trips.find(x => x.reference === initialRef) : null;
+    if (t) { setDesc(t.title); setCategory(categorizeExpense(t.title)); }
+  }, [data, initialRef]);
+
+  const tripTitle = (ref: string) => data?.trips.find(t => t.reference === ref)?.title || "";
+  // A sensible description for a category, so the field is never left empty.
+  const suggestDesc = (cat: string, ref: string) =>
+    cat === "Other" ? "" : cat === "Hotels" ? (tripTitle(ref) || "Hotel") : cat;
+
+  const onDesc = (v: string) => { setDesc(v); setDescTouched(!!v.trim()); if (!catTouched) setCategory(categorizeExpense(v)); };
 
   const add = async () => {
     if (busy || !desc.trim() || !(Number(amount) > 0)) return;
     setBusy(true);
     await fetch("/api/account/expenses", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ description: desc, amount: Number(amount), currency, category, spentOn, bookingRef: tripRef || null }) });
-    setDesc(""); setAmount(""); setCategory("Other"); setCatTouched(false); setSpentOn(today());
+    setDesc(""); setAmount(""); setCategory("Other"); setCatTouched(false); setDescTouched(false); setSpentOn(today());
     await load(); setBusy(false);
   };
   const del = async (id: string) => { await fetch(`/api/account/expenses/${id}`, { method: "DELETE" }); load(); };
@@ -103,7 +126,7 @@ export default function PersonalExpenses({ initialRef }: { initialRef: string })
         <div className="flex gap-2 mb-3">
           <input value={desc} onChange={e => onDesc(e.target.value)} placeholder="What was it for?" className="flex-1 min-w-0 px-3 py-2.5 rounded-lg bg-panel-soft border border-line text-ink text-sm focus:outline-none focus:border-gold" />
           <input value={amount} onChange={e => setAmount(e.target.value.replace(/[^\d]/g, ""))} inputMode="numeric" placeholder="Amount" className="w-24 px-3 py-2.5 rounded-lg bg-panel-soft border border-line text-ink text-sm focus:outline-none focus:border-gold" />
-          <select value={currency} onChange={e => setCurrency(e.target.value)} className="w-24 px-2 py-2.5 rounded-lg bg-panel-soft border border-line text-ink text-sm focus:outline-none focus:border-gold" title="Currency spent in">
+          <select value={currency} onChange={e => { setCurrency(e.target.value); setCurrencyTouched(true); }} className="w-24 px-2 py-2.5 rounded-lg bg-panel-soft border border-line text-ink text-sm focus:outline-none focus:border-gold" title="Currency spent in">
             {CURRENCIES.map(c => <option key={c.code} value={c.code}>{c.code}</option>)}
           </select>
         </div>
@@ -111,7 +134,7 @@ export default function PersonalExpenses({ initialRef }: { initialRef: string })
           {EXPENSE_CATEGORIES.map(cat => {
             const Icon = CAT_ICON[cat] || Receipt;
             return (
-              <button key={cat} type="button" onClick={() => { setCategory(cat); setCatTouched(true); }} className={`inline-flex items-center gap-1 text-xs rounded-full px-2.5 py-1.5 border transition-colors ${category === cat ? "border-gold bg-gold/15 text-gold" : "border-line text-ink-muted hover:border-gold"}`}>
+              <button key={cat} type="button" onClick={() => { setCategory(cat); setCatTouched(true); if (!descTouched) setDesc(suggestDesc(cat, tripRef)); }} className={`inline-flex items-center gap-1 text-xs rounded-full px-2.5 py-1.5 border transition-colors ${category === cat ? "border-gold bg-gold/15 text-gold" : "border-line text-ink-muted hover:border-gold"}`}>
                 <Icon size={12} /> {cat}
               </button>
             );
@@ -120,7 +143,7 @@ export default function PersonalExpenses({ initialRef }: { initialRef: string })
         <div className="flex flex-wrap gap-2 mb-3">
           <input type="date" value={spentOn} onChange={e => setSpentOn(e.target.value)} className="px-3 py-2 rounded-lg bg-panel-soft border border-line text-ink text-sm focus:outline-none focus:border-gold" />
           {data.trips.length > 0 && (
-            <select value={tripRef} onChange={e => setTripRef(e.target.value)} className="flex-1 min-w-0 px-3 py-2 rounded-lg bg-panel-soft border border-line text-ink text-sm focus:outline-none focus:border-gold">
+            <select value={tripRef} onChange={e => { const v = e.target.value; setTripRef(v); if (!descTouched && v && !desc.trim()) { const t = tripTitle(v); if (t) { setDesc(t); if (!catTouched) setCategory(categorizeExpense(t)); } } }} className="flex-1 min-w-0 px-3 py-2 rounded-lg bg-panel-soft border border-line text-ink text-sm focus:outline-none focus:border-gold">
               <option value="">No trip</option>
               {data.trips.map(t => <option key={t.reference} value={t.reference}>{t.title}</option>)}
             </select>
