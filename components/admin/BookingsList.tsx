@@ -47,13 +47,21 @@ export default function BookingsList({ bookings }: { bookings: BookingRow[] }) {
   const [busy, setBusy] = useState<string | null>(null);
   const [doc, setDoc] = useState({ label: "", url: "" });
   const [page, setPage] = useState(0);
+  const [q, setQ] = useState("");
   const PAGE = 50;
 
-  const shown = bookings.filter(b => filter === "all" || b.status === filter);
+  // Search by guest, email, reference or journey — the way to pull up (and then
+  // act on) everything belonging to one customer.
+  const needle = q.trim().toLowerCase();
+  const shown = bookings.filter(b =>
+    (filter === "all" || b.status === filter) &&
+    (!needle || [b.guestName, b.guestEmail, b.reference, b.itemTitle, b.guestPhone].some(v => (v || "").toLowerCase().includes(needle))),
+  );
   const pageCount = Math.max(1, Math.ceil(shown.length / PAGE));
   const safePage = Math.min(page, pageCount - 1);
   const pageRows = shown.slice(safePage * PAGE, safePage * PAGE + PAGE);
   const setFilterReset = (f: typeof filter) => { setFilter(f); setPage(0); };
+  const setSearch = (v: string) => { setQ(v); setPage(0); };
 
   const saveDocs = async (b: BookingRow, documents: { label: string; url: string }[]) => {
     setBusy(b.id);
@@ -108,6 +116,21 @@ export default function BookingsList({ bookings }: { bookings: BookingRow[] }) {
             {t.label}
           </button>
         ))}
+      </div>
+      <div className="flex flex-wrap items-center gap-2 mb-3">
+        <input
+          value={q}
+          onChange={e => setSearch(e.target.value)}
+          placeholder="Search guest, email, phone, reference or journey…"
+          className="flex-1 min-w-[240px] px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:border-gray-900"
+        />
+        {needle && (
+          <>
+            <span className="text-xs text-gray-500">{shown.length} match{shown.length === 1 ? "" : "es"}</span>
+            <button onClick={() => setSel(new Set(shown.map(b => b.id)))} className="text-xs px-3 py-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50">Select all {shown.length}</button>
+            <button onClick={() => setSearch("")} className="text-xs px-3 py-2 rounded-md border border-gray-300 text-gray-600 hover:bg-gray-50">Clear</button>
+          </>
+        )}
       </div>
       <div className="mb-4">
         <SavedFilterViews storageKey="vc-views-bookings" current={filter} onApply={v => setFilterReset(v as typeof filter)} />
