@@ -8,6 +8,7 @@ import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useContent } from "@/components/providers/ContentProvider";
 import TurnstileWidget from "@/components/ui/TurnstileWidget";
 import VoiceInput from "@/components/ui/VoiceInput";
+import FormProgress from "@/components/ui/FormProgress";
 
 function ContactContent() {
   const { t, language } = useLanguage();
@@ -94,6 +95,13 @@ function ContactContent() {
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
+              <FormProgress
+                steps={[
+                  { label: "Your details", done: !!(form.name.trim() && form.email.trim()) },
+                  { label: "Subject", done: !!form.subject },
+                  { label: "Message", done: !!form.message.trim() },
+                ]}
+              />
               <h2 className="font-serif text-2xl font-light text-ink mb-2">{t("contact.makeEnquiry")}</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>

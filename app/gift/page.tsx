@@ -5,6 +5,7 @@ import { Gift, Check } from "lucide-react";
 import { useContent } from "@/components/providers/ContentProvider";
 import { useContactDefaults } from "@/components/providers/useContactDefaults";
 import TurnstileWidget from "@/components/ui/TurnstileWidget";
+import FormProgress from "@/components/ui/FormProgress";
 
 const AMOUNTS = [25000, 50000, 100000, 250000];
 
@@ -62,6 +63,14 @@ export default function GiftPage() {
         </div>
       ) : (
         <form onSubmit={submit} className="bg-panel border border-line rounded-2xl p-6 sm:p-8 space-y-4">
+          {/* Amount is preselected, so it starts already ticked. */}
+          <FormProgress
+            steps={[
+              { label: "Amount", done: !!form.amount },
+              { label: "Your details", done: !!(form.senderName.trim() && form.senderEmail.trim()) },
+              { label: "Recipient", done: !!(form.recipientName.trim() || form.recipientEmail.trim()) },
+            ]}
+          />
           <div>
             <label className="block text-xs tracking-[0.1em] uppercase text-ink-faint mb-1.5">Amount</label>
             <div className="flex flex-wrap gap-2">

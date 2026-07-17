@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Check } from "lucide-react";
 import TurnstileWidget from "@/components/ui/TurnstileWidget";
+import FormProgress from "@/components/ui/FormProgress";
 import { useContactDefaults } from "@/components/providers/useContactDefaults";
 
 export type FieldDef = {
@@ -63,6 +64,14 @@ export default function RequestForm({
   return (
     <form id={id} onSubmit={submit} className="bg-panel border border-line rounded-2xl p-6 sm:p-8 space-y-4 scroll-mt-28">
       <h2 className="font-serif text-2xl font-light text-ink">{title}</h2>
+      {/* This form is built from a caller-supplied field list, so the second step
+          tracks whichever of those fields are actually required. */}
+      <FormProgress
+        steps={[
+          { label: "Your details", done: !!(form.name.trim() && form.email.trim()) },
+          { label: "Request", done: fields.filter(f => f.required).every(f => !!(form[f.key] || "").trim()) },
+        ]}
+      />
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div><Label>Name <span className="text-gold">*</span></Label><input required className={cls} autoComplete="name" value={form.name} onChange={e => set("name", e.target.value)} /></div>
         <div><Label>Email <span className="text-gold">*</span></Label><input required type="email" className={cls} autoComplete="email" value={form.email} onChange={e => set("email", e.target.value)} /></div>

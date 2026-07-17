@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Check, RotateCcw } from "lucide-react";
 import { useContent } from "@/components/providers/ContentProvider";
+import FormProgress from "@/components/ui/FormProgress";
 
 type Choice = { label: string; tag: string };
 const QUESTIONS: { id: string; q: string; choices: Choice[] }[] = [
@@ -67,9 +68,11 @@ export default function QuizPage() {
 
       {!done ? (
         <div className="bg-panel border border-line rounded-2xl p-6 sm:p-8">
-          <div className="flex gap-1.5 mb-6">
-            {QUESTIONS.map((_, i) => <div key={i} className={`h-1 flex-1 rounded-full ${i <= step ? "bg-gold" : "bg-line"}`} />)}
-          </div>
+          {/* A question counts as done once it's been answered. */}
+          <FormProgress
+            steps={QUESTIONS.map((_, i) => ({ done: i < step }))}
+            note={`Question ${step + 1} of ${QUESTIONS.length}`}
+          />
           <p className="font-serif text-xl font-light text-ink mb-5">{QUESTIONS[step].q}</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {QUESTIONS[step].choices.map(c => (
