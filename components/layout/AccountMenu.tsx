@@ -8,7 +8,7 @@ import { useHoverMenu } from "@/lib/useHoverMenu";
 
 export default function AccountMenu({ tone = "dark" }: { tone?: "dark" | "light" }) {
   const { t } = useLanguage();
-  const { open, setOpen, toggle, close, hoverProps } = useHoverMenu();
+  const { open, rendered, setOpen, toggle, close, hoverProps } = useHoverMenu();
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -43,14 +43,17 @@ export default function AccountMenu({ tone = "dark" }: { tone?: "dark" | "light"
           {t("account.account")}
         </span>
       )}
-      {open && (
-        <div className="animate-menu-drop absolute right-0 mt-3 w-44 bg-panel-raised border border-line shadow-luxury py-1.5 z-[60]">
-          {items.map(i => (
+      {rendered && (
+        <div className={`${open ? "animate-menu-drop" : "animate-menu-lift"} absolute right-0 mt-3 w-44 bg-panel-raised border border-line shadow-luxury py-1.5 z-[60]`}>
+          {items.map((i, idx) => (
             <Link
               key={i.href}
               href={i.href}
               onClick={close}
-              className="block px-4 py-2.5 text-sm text-ink-muted hover:text-ink hover:bg-panel-soft transition-colors"
+              // Rows cascade in behind the panel as it lands. On the way out they
+              // leave with it, rather than cascading again in reverse.
+              className={`block px-4 py-2.5 text-sm text-ink-muted hover:text-ink hover:bg-panel-soft transition-colors ${open ? "animate-menu-item" : ""}`}
+              style={open ? { animationDelay: `${60 + idx * 32}ms` } : undefined}
             >
               {i.label}
             </Link>

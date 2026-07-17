@@ -12,7 +12,7 @@ import { useHoverMenu } from "@/lib/useHoverMenu";
 export default function CurrencySelector({ tone = "dark" }: { tone?: "dark" | "light" }) {
   const { currency, setCurrencyCode } = useCurrency();
   const { t } = useLanguage();
-  const { open, setOpen, viaHover, toggle, hoverProps } = useHoverMenu();
+  const { open, rendered, setOpen, viaHover, toggle, hoverProps } = useHoverMenu();
   const [mounted, setMounted] = useState(false);
   const [query, setQuery]     = useState("");
   const [dropStyle, setDropStyle] = useState<React.CSSProperties>({});
@@ -100,12 +100,12 @@ export default function CurrencySelector({ tone = "dark" }: { tone?: "dark" | "l
         </span>
       )}
 
-      {open && mounted && createPortal(
+      {rendered && mounted && createPortal(
         <div
           ref={dropRef}
           {...hoverProps}
           style={{ ...dropStyle, position: "fixed", zIndex: 9999, display: "flex", flexDirection: "column" }}
-          className="animate-menu-drop bg-panel-raised border border-line shadow-luxury w-[300px] max-w-[92vw] overflow-hidden"
+          className={`${open ? "animate-menu-drop" : "animate-menu-lift"} bg-panel-raised border border-line shadow-luxury w-[300px] max-w-[92vw] overflow-hidden`}
         >
           <div className="p-3 border-b border-line shrink-0">
             <input

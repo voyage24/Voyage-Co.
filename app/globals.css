@@ -541,8 +541,34 @@ html.dark .shimmer-gold {
   to   { opacity: 1; transform: translateY(0); }
 }
 
+/* Closing is quicker than opening and doesn't bounce — a spring on the way out
+   reads as indecision. Panels stay mounted for MENU_EXIT_MS (lib/useHoverMenu)
+   so these can play; keep the two in step. */
+.animate-menu-lift {
+  animation: menuLift 0.16s cubic-bezier(0.4, 0, 1, 1) both;
+  transform-origin: top center;
+}
+@keyframes menuLift {
+  from { opacity: 1; transform: translateY(0) scale(1); }
+  to   { opacity: 0; transform: translateY(-6px) scale(0.98); }
+}
+.animate-panel-lift { animation: panelLift 0.16s cubic-bezier(0.4, 0, 1, 1) both; }
+@keyframes panelLift {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(-6px); }
+}
+
+/* Rows cascading in behind the panel. Delay is set inline per item. */
+.animate-menu-item { animation: menuItem 0.22s cubic-bezier(0.33, 1, 0.68, 1) both; }
+@keyframes menuItem {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .animate-menu-drop, .animate-panel-drop { animation: none; }
+  .animate-menu-drop, .animate-panel-drop,
+  .animate-menu-lift, .animate-panel-lift,
+  .animate-menu-item { animation: none; }
 }
 
 /* A slow champagne glint that sweeps diagonally across a surface, so a button
