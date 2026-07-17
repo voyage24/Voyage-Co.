@@ -52,7 +52,7 @@ export default function ForgotPasswordPage() {
               <form onSubmit={submit} className="space-y-3 text-left">
                 <div className="relative">
                   <Mail size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-faint" />
-                  <input type="email" required value={email} onChange={e => setEmail(e.target.value)} placeholder="you@example.com" className={field} />
+                  <input name="email" autoComplete="email" inputMode="email" type="email" required value={email} onChange={e => setEmail(e.target.value)} placeholder="you@example.com" className={field} />
                 </div>
                 <div className="flex justify-center"><TurnstileWidget onToken={setToken} /></div>
                 {error && <p className="text-sm text-red-600 font-light">{error}</p>}

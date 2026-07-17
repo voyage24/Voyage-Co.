@@ -1,15 +1,24 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Gift, Check } from "lucide-react";
 import { useContent } from "@/components/providers/ContentProvider";
+import { useContactDefaults } from "@/components/providers/useContactDefaults";
 import TurnstileWidget from "@/components/ui/TurnstileWidget";
 
 const AMOUNTS = [25000, 50000, 100000, 250000];
 
 export default function GiftPage() {
   const c = useContent();
+  const { defaults } = useContactDefaults();
   const [form, setForm] = useState({ senderName: "", senderEmail: "", recipientName: "", recipientEmail: "", amount: AMOUNTS[1], message: "" });
+
+  // Fill in the sender from the member's account / remembered details, without
+  // ever overwriting something already typed.
+  useEffect(() => {
+    if (!defaults) return;
+    setForm(f => ({ ...f, senderName: f.senderName || defaults.name, senderEmail: f.senderEmail || defaults.email }));
+  }, [defaults]);
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState("");
@@ -65,10 +74,12 @@ export default function GiftPage() {
             </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div><label className="block text-xs tracking-[0.1em] uppercase text-ink-faint mb-1.5">Your name <span className="text-gold">*</span></label><input required className={field} value={form.senderName} onChange={e => set("senderName", e.target.value)} /></div>
-            <div><label className="block text-xs tracking-[0.1em] uppercase text-ink-faint mb-1.5">Your email <span className="text-gold">*</span></label><input required type="email" className={field} value={form.senderEmail} onChange={e => set("senderEmail", e.target.value)} /></div>
-            <div><label className="block text-xs tracking-[0.1em] uppercase text-ink-faint mb-1.5">Recipient name</label><input className={field} value={form.recipientName} onChange={e => set("recipientName", e.target.value)} /></div>
-            <div><label className="block text-xs tracking-[0.1em] uppercase text-ink-faint mb-1.5">Recipient email</label><input type="email" className={field} value={form.recipientEmail} onChange={e => set("recipientEmail", e.target.value)} /></div>
+            {/* Only the sender's own fields autofill — the recipient is someone
+                else, so the browser must not put your details in them. */}
+            <div><label className="block text-xs tracking-[0.1em] uppercase text-ink-faint mb-1.5">Your name <span className="text-gold">*</span></label><input required name="senderName" autoComplete="name" className={field} value={form.senderName} onChange={e => set("senderName", e.target.value)} /></div>
+            <div><label className="block text-xs tracking-[0.1em] uppercase text-ink-faint mb-1.5">Your email <span className="text-gold">*</span></label><input required type="email" name="senderEmail" autoComplete="email" inputMode="email" className={field} value={form.senderEmail} onChange={e => set("senderEmail", e.target.value)} /></div>
+            <div><label className="block text-xs tracking-[0.1em] uppercase text-ink-faint mb-1.5">Recipient name</label><input name="recipientName" autoComplete="off" className={field} value={form.recipientName} onChange={e => set("recipientName", e.target.value)} /></div>
+            <div><label className="block text-xs tracking-[0.1em] uppercase text-ink-faint mb-1.5">Recipient email</label><input type="email" name="recipientEmail" autoComplete="off" inputMode="email" className={field} value={form.recipientEmail} onChange={e => set("recipientEmail", e.target.value)} /></div>
           </div>
           <div><label className="block text-xs tracking-[0.1em] uppercase text-ink-faint mb-1.5">Personal message (optional)</label><textarea rows={3} className={field} value={form.message} onChange={e => set("message", e.target.value)} /></div>
           <TurnstileWidget onToken={setToken} />

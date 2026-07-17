@@ -59,7 +59,7 @@ function ResetContent() {
                 <label className="text-[11px] font-medium text-ink-faint uppercase tracking-[0.12em] block mb-2">New password</label>
                 <div className="relative">
                   <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-faint" />
-                  <input type={show ? "text" : "password"} required value={password} onChange={e => setPassword(e.target.value)} placeholder="At least 8 characters" className={field} />
+                  <input name="new-password" autoComplete="new-password" type={show ? "text" : "password"} required value={password} onChange={e => setPassword(e.target.value)} placeholder="At least 8 characters" className={field} />
                   <button type="button" onClick={() => setShow(!show)} className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-faint hover:text-ink">
                     {show ? <EyeOff size={16} /> : <Eye size={16} />}
                   </button>
@@ -69,7 +69,7 @@ function ResetContent() {
                 <label className="text-[11px] font-medium text-ink-faint uppercase tracking-[0.12em] block mb-2">Confirm password</label>
                 <div className="relative">
                   <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-faint" />
-                  <input type={show ? "text" : "password"} required value={confirm} onChange={e => setConfirm(e.target.value)} placeholder="Re-enter your password" className={field} />
+                  <input name="confirm-password" autoComplete="new-password" type={show ? "text" : "password"} required value={confirm} onChange={e => setConfirm(e.target.value)} placeholder="Re-enter your password" className={field} />
                 </div>
               </div>
               <div className="flex justify-center"><TurnstileWidget onToken={setToken} /></div>

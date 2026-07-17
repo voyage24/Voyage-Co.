@@ -80,10 +80,11 @@ export default function LoginPage() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="text-[11px] font-medium text-ink-faint uppercase tracking-[0.12em] block mb-2">{t("login.emailLabel")}</label>
+              <label htmlFor="login-email" className="text-[11px] font-medium text-ink-faint uppercase tracking-[0.12em] block mb-2">{t("login.emailLabel")}</label>
               <div className="relative">
                 <Mail size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-faint" />
                 <input
+                  id="login-email" name="email" autoComplete="username" inputMode="email"
                   type="email" required value={email} onChange={e => setEmail(e.target.value)}
                   placeholder="you@example.com"
                   className="w-full pl-10 pr-4 py-3 rounded-sm bg-panel-soft border border-line text-sm text-ink focus:outline-none focus:border-gold transition-colors"
@@ -93,12 +94,13 @@ export default function LoginPage() {
 
             <div>
               <div className="flex items-center justify-between mb-2">
-                <label className="text-[11px] font-medium text-ink-faint uppercase tracking-[0.12em]">{t("login.passwordLabel")}</label>
+                <label htmlFor="login-password" className="text-[11px] font-medium text-ink-faint uppercase tracking-[0.12em]">{t("login.passwordLabel")}</label>
                 <Link href="/forgot" className="text-xs text-gold link-underline">{t("login.forgot")}</Link>
               </div>
               <div className="relative">
                 <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-faint" />
                 <input
+                  id="login-password" name="password" autoComplete="current-password"
                   type={showPassword ? "text" : "password"} required value={password} onChange={e => setPassword(e.target.value)}
                   placeholder="••••••••"
                   className="w-full pl-10 pr-10 py-3 rounded-sm bg-panel-soft border border-line text-sm text-ink focus:outline-none focus:border-gold transition-colors"

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import TurnstileWidget from "@/components/ui/TurnstileWidget";
+import FormProgress from "@/components/ui/FormProgress";
 import { useContactDefaults } from "@/components/providers/useContactDefaults";
 
 const BUDGETS = ["plan.budget1", "plan.budget2", "plan.budget3", "plan.budget4", "plan.budgetFlexible"];
@@ -69,13 +70,11 @@ export default function PlanWizard() {
 
   return (
     <div className="bg-panel border border-line rounded-2xl shadow-card p-6 sm:p-10 max-w-2xl mx-auto">
-      {/* Progress */}
-      <div className="flex items-center gap-2 mb-8">
-        {Array.from({ length: TOTAL_STEPS }).map((_, i) => (
-          <div key={i} className={`h-1 flex-1 rounded-full ${i < step ? "bg-gold" : "bg-line"}`} />
-        ))}
-      </div>
-      <p className="text-[11px] tracking-[0.2em] uppercase text-ink-faint mb-6">{t("plan.step")} {step} {t("plan.of")} {TOTAL_STEPS}</p>
+      {/* Progress — a step is "done" once you've moved past it. */}
+      <FormProgress
+        steps={Array.from({ length: TOTAL_STEPS }, (_, i) => ({ done: i < step - 1 }))}
+        note={`${t("plan.step")} ${step} ${t("plan.of")} ${TOTAL_STEPS}`}
+      />
 
       {step === 1 && (
         <div>

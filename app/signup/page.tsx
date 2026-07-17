@@ -69,16 +69,20 @@ export default function SignupPage() {
           <p className="text-sm text-ink-muted mb-7 font-light">{c("signup.subtitle") || t("signup.subtitle")}</p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
+            {/* autoComplete/inputMode let the browser and password managers fill
+                these, and give phones the right keyboard. */}
             {[
-              { key: "name", label: t("signup.fullName"), type: "text", placeholder: "Rahul Sharma", icon: User },
-              { key: "email", label: t("signup.emailLabel"), type: "email", placeholder: "you@example.com", icon: Mail },
-              { key: "phone", label: t("signup.mobileNumber"), type: "tel", placeholder: "+91 98765 43210", icon: Phone },
-            ].map(({ key, label, type, placeholder, icon: Icon }) => (
+              { key: "name", label: t("signup.fullName"), type: "text", placeholder: "Rahul Sharma", icon: User, autoComplete: "name", inputMode: undefined },
+              { key: "email", label: t("signup.emailLabel"), type: "email", placeholder: "you@example.com", icon: Mail, autoComplete: "email", inputMode: "email" as const },
+              { key: "phone", label: t("signup.mobileNumber"), type: "tel", placeholder: "+91 98765 43210", icon: Phone, autoComplete: "tel", inputMode: "tel" as const },
+            ].map(({ key, label, type, placeholder, icon: Icon, autoComplete, inputMode }) => (
               <div key={key}>
-                <label className="text-[11px] font-medium text-ink-faint uppercase tracking-[0.12em] block mb-2">{label} <span className="text-gold">*</span></label>
+                <label htmlFor={`signup-${key}`} className="text-[11px] font-medium text-ink-faint uppercase tracking-[0.12em] block mb-2">{label} <span className="text-gold">*</span></label>
                 <div className="relative">
                   <Icon size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-faint" />
                   <input
+                    id={`signup-${key}`} name={key}
+                    autoComplete={autoComplete} inputMode={inputMode}
                     type={type} required value={form[key as keyof typeof form]} onChange={set(key as keyof typeof form)}
                     placeholder={placeholder}
                     className="w-full pl-10 pr-4 py-3 rounded-sm bg-panel-soft border border-line text-sm text-ink focus:outline-none focus:border-gold transition-colors"
@@ -88,10 +92,11 @@ export default function SignupPage() {
             ))}
 
             <div>
-              <label className="text-[11px] font-medium text-ink-faint uppercase tracking-[0.12em] block mb-2">{t("signup.passwordLabel")} <span className="text-gold">*</span></label>
+              <label htmlFor="signup-password" className="text-[11px] font-medium text-ink-faint uppercase tracking-[0.12em] block mb-2">{t("signup.passwordLabel")} <span className="text-gold">*</span></label>
               <div className="relative">
                 <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-faint" />
                 <input
+                  id="signup-password" name="password" autoComplete="new-password"
                   type={showPassword ? "text" : "password"} required value={form.password} onChange={set("password")}
                   placeholder={t("signup.passwordPlaceholder")}
                   className="w-full pl-10 pr-10 py-3 rounded-sm bg-panel-soft border border-line text-sm text-ink focus:outline-none focus:border-gold transition-colors"

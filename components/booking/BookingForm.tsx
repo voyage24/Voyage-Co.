@@ -13,6 +13,7 @@ import SavedTravellerPicker from "@/components/booking/SavedTravellerPicker";
 import { haptic } from "@/lib/haptics";
 import SeatMap from "@/components/booking/SeatMap";
 import TurnstileWidget from "@/components/ui/TurnstileWidget";
+import FormProgress from "@/components/ui/FormProgress";
 
 export interface BookingItem {
   type: "hotel" | "flight" | "package" | "experience" | "train" | "cruise";
@@ -168,10 +169,21 @@ export default function BookingForm({ item, soldOut = false }: { item: BookingIt
   const inputClass = "w-full px-4 py-3 rounded-sm bg-panel-soft border border-line text-sm text-ink focus:outline-none focus:border-ink transition-colors";
   const labelClass = "text-[11px] font-medium text-ink-faint uppercase tracking-[0.12em] block mb-2";
 
+  // Live progress — ticks off as the traveller fills the form, so a long form
+  // shows how little is actually left. Mirrors the submit-time validation, so it
+  // can't claim a step is done when the form would reject it.
+  const dated = !!(item.needsDates || item.needsDate);
+  const steps = [
+    { label: t("booking.guestDetails"), done: !!(form.name.trim() && form.email.trim() && form.phone.trim()) },
+    ...(dated ? [{ label: item.needsDates ? t("hotelSearch.checkIn") : "Date", done: item.needsDates ? !!(form.checkIn && form.checkOut) : !!form.checkIn }] : []),
+    { label: t("booking.reserve"), done: confirmed },
+  ];
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
       {/* Form */}
       <form onSubmit={handleSubmit} className="lg:col-span-3 bg-panel border border-line rounded-2xl shadow-card p-8 space-y-5">
+        <FormProgress steps={steps} />
         <h2 className="font-serif text-2xl font-light text-ink mb-2">{t("booking.guestDetails")}</h2>
 
         <div>
