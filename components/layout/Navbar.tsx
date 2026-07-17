@@ -123,7 +123,7 @@ export default function Navbar() {
         make this fixed overlay be contained by the 80px bar (a CSS gotcha),
         collapsing it to zero height. */}
     {menuOpen && (
-        <div className="fixed inset-x-0 top-20 bottom-0 z-[45] animate-menu-drop" {...menu.hoverProps}>
+        <div className="fixed inset-x-0 top-20 bottom-0 z-[45] animate-panel-drop" {...menu.hoverProps}>
           <div className="absolute inset-0 bg-vc-950/95 backdrop-blur-xl animate-fade-in" onClick={close} />
           <div className="relative h-full overflow-y-auto overscroll-contain">
             <div className="max-w-[1100px] mx-auto px-6 lg:px-12 py-6 sm:py-14">

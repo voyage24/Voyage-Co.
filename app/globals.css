@@ -515,16 +515,35 @@ html.dark .shimmer-gold {
   animation: goldShimmer 4.6s linear infinite;
 }
 
-/* Nav panels easing down from their trigger on hover. */
+/* Nav panels springing down from their trigger on hover. The keyframes carry the
+   bounce rather than an overshooting bezier, so opacity can settle early (at 55%)
+   while the panel is still springing — an overshoot on opacity would just clip at
+   1 and read as a flicker. It drops a touch past its resting point, eases back,
+   and settles: a soft landing instead of a snap. */
 .animate-menu-drop {
-  animation: menuDrop 0.18s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation: menuDrop 0.36s cubic-bezier(0.33, 1, 0.68, 1) both;
   transform-origin: top center;
 }
 @keyframes menuDrop {
-  from { opacity: 0; transform: translateY(-6px) scale(0.985); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
+  0%   { opacity: 0; transform: translateY(-10px) scale(0.96); }
+  55%  { opacity: 1; transform: translateY(3px) scale(1.012); }
+  78%  { transform: translateY(-1px) scale(0.998); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
 }
-@media (prefers-reduced-motion: reduce) { .animate-menu-drop { animation: none; } }
+
+/* The main menu takes over the viewport, so it only fades and drifts down —
+   scaling a full-screen panel would visibly shrink the whole backdrop. */
+.animate-panel-drop {
+  animation: panelDrop 0.32s cubic-bezier(0.33, 1, 0.68, 1) both;
+}
+@keyframes panelDrop {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-menu-drop, .animate-panel-drop { animation: none; }
+}
 
 /* A slow champagne glint that sweeps diagonally across a surface, so a button
    or chip shimmers like polished gold. Pair with overflow-hidden rounded edges. */
