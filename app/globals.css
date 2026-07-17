@@ -515,6 +515,17 @@ html.dark .shimmer-gold {
   animation: goldShimmer 4.6s linear infinite;
 }
 
+/* Nav panels easing down from their trigger on hover. */
+.animate-menu-drop {
+  animation: menuDrop 0.18s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  transform-origin: top center;
+}
+@keyframes menuDrop {
+  from { opacity: 0; transform: translateY(-6px) scale(0.985); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+@media (prefers-reduced-motion: reduce) { .animate-menu-drop { animation: none; } }
+
 /* A slow champagne glint that sweeps diagonally across a surface, so a button
    or chip shimmers like polished gold. Pair with overflow-hidden rounded edges. */
 .sheen { position: relative; overflow: hidden; }

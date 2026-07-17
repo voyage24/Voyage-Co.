@@ -6,18 +6,23 @@ import { ChevronDown } from "lucide-react";
 import { LANGUAGES } from "@/lib/languages";
 import { languageFlag } from "@/lib/flags";
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { useHoverMenu } from "@/lib/useHoverMenu";
 
 export default function LanguageSelector({ tone = "dark" }: { tone?: "dark" | "light" }) {
   const { language, setLanguageCode, t } = useLanguage();
-  const [open, setOpen]       = useState(false);
+  const { open, setOpen, viaHover, toggle, hoverProps } = useHoverMenu();
   const [mounted, setMounted] = useState(false);
   const [query, setQuery]     = useState("");
   const [dropStyle, setDropStyle] = useState<React.CSSProperties>({});
 
   const wrapRef = useRef<HTMLDivElement>(null);
   const dropRef = useRef<HTMLDivElement>(null);
+  const searchRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => { setMounted(true); }, []);
+
+  // Only grab focus when opened deliberately, never on a passing hover.
+  useEffect(() => { if (open && !viaHover) searchRef.current?.focus(); }, [open, viaHover]);
 
   const calcPos = () => {
     if (!wrapRef.current) return;
@@ -70,10 +75,15 @@ export default function LanguageSelector({ tone = "dark" }: { tone?: "dark" | "l
   const maxH = (dropStyle as { maxHeight?: number }).maxHeight;
 
   return (
-    <div ref={wrapRef} className="relative group">
+    <div
+      ref={wrapRef}
+      className="relative group"
+      onPointerEnter={() => { calcPos(); hoverProps.onPointerEnter(); }}
+      onPointerLeave={hoverProps.onPointerLeave}
+    >
       <button
         type="button"
-        onClick={() => { calcPos(); setOpen(v => !v); }}
+        onClick={() => { calcPos(); toggle(); }}
         className={`inline-flex items-center gap-1 text-[13px] font-normal tracking-[0.08em] uppercase transition-all duration-200 py-2 shrink-0 hover:scale-110 active:scale-95 ${color}`}
         aria-label={t("languageSelector.selectLanguage")}
       >
@@ -90,12 +100,13 @@ export default function LanguageSelector({ tone = "dark" }: { tone?: "dark" | "l
       {open && mounted && createPortal(
         <div
           ref={dropRef}
+          {...hoverProps}
           style={{ ...dropStyle, position: "fixed", zIndex: 9999, display: "flex", flexDirection: "column" }}
-          className="bg-panel-raised border border-line shadow-luxury w-[300px] max-w-[92vw] overflow-hidden"
+          className="animate-menu-drop bg-panel-raised border border-line shadow-luxury w-[300px] max-w-[92vw] overflow-hidden"
         >
           <div className="p-3 border-b border-line shrink-0">
             <input
-              autoFocus
+              ref={searchRef}
               value={query}
               onChange={e => setQuery(e.target.value)}
               placeholder={t("languageSelector.searchPlaceholder")}

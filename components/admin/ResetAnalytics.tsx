@@ -40,8 +40,8 @@ function VisitCounters({ visits, mobile, desktop }: { visits: number; mobile: nu
       <p className="text-xs text-gray-500 mt-1">
         <strong>{visits.toLocaleString("en-IN")}</strong> total · <strong>{mobile.toLocaleString("en-IN")}</strong> mobile ·{" "}
         <strong>{desktop.toLocaleString("en-IN")}</strong> desktop. These are never deleted when you remove bookings,
-        customers or any other records — and there's no way to wipe them from here. They only count up and aren't stored
-        per-visitor, so if a figure is ever wrong you can correct it to a known number below.
+        customers or any other records — and there&rsquo;s no way to wipe them from here. They only count up and
+        aren&rsquo;t stored per-visitor, so if a figure is ever wrong you can correct it to a known number below.
       </p>
 
       {!open ? (

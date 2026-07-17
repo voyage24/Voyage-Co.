@@ -12,6 +12,7 @@ import ThemeToggle from "@/components/ui/ThemeToggle";
 import NavConverter from "@/components/layout/NavConverter";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useContent, useContentList } from "@/components/providers/ContentProvider";
+import { useHoverMenu } from "@/lib/useHoverMenu";
 
 type NavLink = { key?: string; label?: string; href: string; cKey?: string };
 
@@ -43,7 +44,11 @@ export default function Navbar() {
   const { t } = useLanguage();
   const c = useContent();
   const navList = useContentList("list.nav");
-  const [menuOpen, setMenuOpen] = useState(false);
+  // Opens on hover for mouse users; still a tap on touch. A longer delay than
+  // the small selectors — this panel takes over the screen, so a cursor merely
+  // heading for the window controls shouldn't summon it.
+  const menu = useHoverMenu({ openDelay: 180, closeDelay: 260 });
+  const menuOpen = menu.open;
 
   // A saved nav list replaces the defaults; otherwise use the shipped links with
   // their content/translation overrides.
@@ -56,15 +61,14 @@ export default function Navbar() {
   const secondaryLinks = SECONDARY_LINKS.map(l => ({ href: l.href, label: l.label || t(l.key ?? "") }));
   const planLabel = c("nav.planCta") || "Smart trip planner";
 
-  // Lock background scroll + close on Escape while the menu is open.
+  // Lock background scroll while the menu is open. (Escape is handled by the
+  // hover-menu hook.)
   useEffect(() => {
     document.body.style.overflow = menuOpen ? "hidden" : "";
-    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setMenuOpen(false); };
-    window.addEventListener("keydown", onKey);
-    return () => { document.body.style.overflow = ""; window.removeEventListener("keydown", onKey); };
+    return () => { document.body.style.overflow = ""; };
   }, [menuOpen]);
 
-  const close = () => setMenuOpen(false);
+  const close = menu.close;
   const ctaClass = "text-[10px] font-medium tracking-[0.14em] uppercase px-4 py-2.5 rounded-sm border border-white/70 text-white hover:bg-white hover:text-ink transition-all duration-200 whitespace-nowrap hover:scale-105 active:scale-95";
 
   let delay = 0; // staggered entrance for menu items
@@ -92,7 +96,8 @@ export default function Navbar() {
             <div className="hidden lg:block"><AccountMenu tone="light" /></div>
             <button
               type="button"
-              onClick={() => setMenuOpen(o => !o)}
+              {...menu.hoverProps}
+              onClick={menu.toggle}
               aria-label={menuOpen ? "Close menu" : "Open menu"}
               title={menuOpen ? "Close" : "Menu"}
               aria-expanded={menuOpen}
@@ -118,7 +123,7 @@ export default function Navbar() {
         make this fixed overlay be contained by the 80px bar (a CSS gotcha),
         collapsing it to zero height. */}
     {menuOpen && (
-        <div className="fixed inset-x-0 top-20 bottom-0 z-[45]">
+        <div className="fixed inset-x-0 top-20 bottom-0 z-[45] animate-menu-drop" {...menu.hoverProps}>
           <div className="absolute inset-0 bg-vc-950/95 backdrop-blur-xl animate-fade-in" onClick={close} />
           <div className="relative h-full overflow-y-auto overscroll-contain">
             <div className="max-w-[1100px] mx-auto px-6 lg:px-12 py-6 sm:py-14">
