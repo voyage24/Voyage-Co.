@@ -26,28 +26,33 @@ export default function ServiceRequestForm({ services }: { services: string[] })
     if (res.ok) { remember({ name: form.name, email: form.email, phone: form.phone }); setDone(true); } else setError(data.error ?? "Something went wrong.");
   };
 
+  // The service picker has a default, so it can't measure progress; the middle
+  // step tracks the parts the traveller actually fills. 100% only on submit.
+  const steps = [
+    { label: "Your details", done: !!(form.name.trim() && form.email.trim()) },
+    { label: "Request", done: !!(form.details.trim() || form.date) },
+    { label: "Submitted", done },
+  ];
+
+  const field = "w-full bg-panel-soft border border-line rounded-sm px-3.5 py-2.5 text-sm text-ink focus:outline-none focus:border-gold";
+
   if (done) {
     return (
-      <div id="request" className="bg-panel border border-line rounded-2xl p-8 text-center scroll-mt-28">
-        <Check size={22} className="text-gold mx-auto mb-3" />
-        <p className="font-serif text-xl text-ink mb-1">Request received.</p>
-        <p className="text-ink-muted font-light">Our concierge will be in touch to arrange every detail.</p>
+      <div id="request" className="bg-panel border border-line rounded-2xl p-6 sm:p-8 scroll-mt-28">
+        <FormProgress steps={steps} />
+        <div className="text-center">
+          <Check size={22} className="text-gold mx-auto mb-3" />
+          <p className="font-serif text-xl text-ink mb-1">Request received.</p>
+          <p className="text-ink-muted font-light">Our concierge will be in touch to arrange every detail.</p>
+        </div>
       </div>
     );
   }
 
-  const field = "w-full bg-panel-soft border border-line rounded-sm px-3.5 py-2.5 text-sm text-ink focus:outline-none focus:border-gold";
-
   return (
     <form id="request" onSubmit={submit} className="bg-panel border border-line rounded-2xl p-6 sm:p-8 space-y-4 scroll-mt-28">
       <h2 className="font-serif text-2xl font-light text-ink">Request a service</h2>
-      <FormProgress
-        steps={[
-          { label: "Your details", done: !!(form.name.trim() && form.email.trim()) },
-          { label: "Service", done: !!form.service },
-          { label: "Details", done: !!form.details.trim() },
-        ]}
-      />
+      <FormProgress steps={steps} />
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div><label className="block text-xs tracking-[0.1em] uppercase text-ink-faint mb-1.5">Name <span className="text-gold">*</span></label><input required className={field} autoComplete="name" value={form.name} onChange={e => set("name", e.target.value)} /></div>
         <div><label className="block text-xs tracking-[0.1em] uppercase text-ink-faint mb-1.5">Email <span className="text-gold">*</span></label><input required type="email" className={field} autoComplete="email" value={form.email} onChange={e => set("email", e.target.value)} /></div>

@@ -46,12 +46,27 @@ export default function RequestForm({
     if (res.ok) { remember({ name: form.name, email: form.email, phone: form.phone }); setDone(true); } else setError(data.error ?? "Something went wrong.");
   };
 
+  // Progress reaches 100% only when the request is actually sent — not merely
+  // when the two required fields are filled. The middle step needs a required
+  // field filled, or (when nothing extra is required) at least one field the
+  // traveller has actually typed into — a defaulted select doesn't count.
+  const requiredFilled = fields.filter(f => f.required).every(f => !!(form[f.key] || "").trim());
+  const anyTyped = fields.some(f => f.type !== "select" && !!(form[f.key] || "").trim());
+  const steps = [
+    { label: "Your details", done: !!(form.name.trim() && form.email.trim()) },
+    { label: "Request", done: requiredFilled && anyTyped },
+    { label: "Submitted", done },
+  ];
+
   if (done) {
     return (
-      <div id={id} className="bg-panel border border-line rounded-2xl p-8 text-center scroll-mt-28">
-        <Check size={22} className="text-gold mx-auto mb-3" />
-        <p className="font-serif text-xl text-ink mb-1">{successTitle}</p>
-        <p className="text-ink-muted font-light">{successText}</p>
+      <div id={id} className="bg-panel border border-line rounded-2xl p-6 sm:p-8 scroll-mt-28">
+        <FormProgress steps={steps} />
+        <div className="text-center">
+          <Check size={22} className="text-gold mx-auto mb-3" />
+          <p className="font-serif text-xl text-ink mb-1">{successTitle}</p>
+          <p className="text-ink-muted font-light">{successText}</p>
+        </div>
       </div>
     );
   }
@@ -64,14 +79,7 @@ export default function RequestForm({
   return (
     <form id={id} onSubmit={submit} className="bg-panel border border-line rounded-2xl p-6 sm:p-8 space-y-4 scroll-mt-28">
       <h2 className="font-serif text-2xl font-light text-ink">{title}</h2>
-      {/* This form is built from a caller-supplied field list, so the second step
-          tracks whichever of those fields are actually required. */}
-      <FormProgress
-        steps={[
-          { label: "Your details", done: !!(form.name.trim() && form.email.trim()) },
-          { label: "Request", done: fields.filter(f => f.required).every(f => !!(form[f.key] || "").trim()) },
-        ]}
-      />
+      <FormProgress steps={steps} />
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div><Label>Name <span className="text-gold">*</span></Label><input required className={cls} autoComplete="name" value={form.name} onChange={e => set("name", e.target.value)} /></div>
         <div><Label>Email <span className="text-gold">*</span></Label><input required type="email" className={cls} autoComplete="email" value={form.email} onChange={e => set("email", e.target.value)} /></div>

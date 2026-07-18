@@ -55,6 +55,14 @@ function ContactContent() {
 
   const inputClass = "w-full px-4 py-2.5 rounded-sm bg-panel-soft border border-line text-sm text-ink focus:outline-none focus:border-gold transition-colors";
 
+  // 100% only once the enquiry is actually sent.
+  const contactSteps = [
+    { label: "Your details", done: !!(form.name.trim() && form.email.trim()) },
+    { label: "Subject", done: !!form.subject },
+    { label: "Message", done: !!form.message.trim() },
+    { label: "Submitted", done: sent },
+  ];
+
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-16">
       <div className="text-center mb-12">
@@ -88,20 +96,17 @@ function ContactContent() {
         {/* Form */}
         <div className="lg:col-span-3 bg-panel rounded-2xl border border-line shadow-card p-8">
           {sent ? (
-            <div className="text-center py-12">
-              <h3 className="font-serif text-2xl font-light text-ink mb-2">{t("contact.messageReceived")}</h3>
-              <p className="text-ink-muted text-sm font-light">{t("contact.messageReceivedDesc")}</p>
-              <button onClick={() => setSent(false)} className="mt-5 text-xs tracking-[0.12em] uppercase text-gold link-underline">{t("contact.sendAnother")}</button>
+            <div>
+              <FormProgress steps={contactSteps} />
+              <div className="text-center py-8">
+                <h3 className="font-serif text-2xl font-light text-ink mb-2">{t("contact.messageReceived")}</h3>
+                <p className="text-ink-muted text-sm font-light">{t("contact.messageReceivedDesc")}</p>
+                <button onClick={() => setSent(false)} className="mt-5 text-xs tracking-[0.12em] uppercase text-gold link-underline">{t("contact.sendAnother")}</button>
+              </div>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
-              <FormProgress
-                steps={[
-                  { label: "Your details", done: !!(form.name.trim() && form.email.trim()) },
-                  { label: "Subject", done: !!form.subject },
-                  { label: "Message", done: !!form.message.trim() },
-                ]}
-              />
+              <FormProgress steps={contactSteps} />
               <h2 className="font-serif text-2xl font-light text-ink mb-2">{t("contact.makeEnquiry")}</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>

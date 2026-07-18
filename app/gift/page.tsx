@@ -24,6 +24,11 @@ export default function GiftPage() {
   const [done, setDone] = useState(false);
   const [error, setError] = useState("");
   const set = (k: keyof typeof form, v: string | number) => setForm(f => ({ ...f, [k]: v }));
+  const giftSteps = [
+    { label: "Amount", done: !!form.amount },
+    { label: "Your details", done: !!(form.senderName.trim() && form.senderEmail.trim()) },
+    { label: "Submitted", done },
+  ];
 
   const [token, setToken] = useState("");
   const [code, setCode] = useState("");
@@ -56,21 +61,19 @@ export default function GiftPage() {
       </div>
 
       {done ? (
-        <div className="bg-panel border border-line rounded-2xl p-8 text-center">
-          <Check size={22} className="text-gold mx-auto mb-3" />
-          <p className="font-serif text-xl text-ink mb-1">Request received.</p>
-          <p className="text-ink-muted font-light">Our concierge will email you to arrange payment and issue the gift card.</p>
+        <div className="bg-panel border border-line rounded-2xl p-6 sm:p-8">
+          <FormProgress steps={giftSteps} />
+          <div className="text-center">
+            <Check size={22} className="text-gold mx-auto mb-3" />
+            <p className="font-serif text-xl text-ink mb-1">Request received.</p>
+            <p className="text-ink-muted font-light">Our concierge will email you to arrange payment and issue the gift card.</p>
+          </div>
         </div>
       ) : (
         <form onSubmit={submit} className="bg-panel border border-line rounded-2xl p-6 sm:p-8 space-y-4">
-          {/* Amount is preselected, so it starts already ticked. */}
-          <FormProgress
-            steps={[
-              { label: "Amount", done: !!form.amount },
-              { label: "Your details", done: !!(form.senderName.trim() && form.senderEmail.trim()) },
-              { label: "Recipient", done: !!(form.recipientName.trim() || form.recipientEmail.trim()) },
-            ]}
-          />
+          {/* Amount is preselected; recipient is optional, so neither gates
+              progress. 100% only after the request is sent. */}
+          <FormProgress steps={giftSteps} />
           <div>
             <label className="block text-xs tracking-[0.1em] uppercase text-ink-faint mb-1.5">Amount</label>
             <div className="flex flex-wrap gap-2">
