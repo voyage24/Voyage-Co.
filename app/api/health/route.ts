@@ -3,17 +3,27 @@ import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
-// Lightweight keep-warm / health endpoint. Runs the cheapest possible query
-// so the (auto-suspending) database stays awake when pinged on a schedule by
-// a free external cron (e.g. cron-job.org / UptimeRobot) every few minutes —
-// avoiding the cold-start delay on the first real visit. Safe to call
-// publicly: it only does SELECT 1 and returns no data.
-export async function GET() {
+// Health check — a plain ping confirms the app is serving and DELIBERATELY does
+// NOT touch the database.
+//
+// This route used to run `SELECT 1` on every hit so a scheduled cron would keep
+// the (free-tier, auto-suspending) Neon database warm. But keeping it awake
+// around the clock burns the whole monthly compute allowance and takes the
+// database offline — which is exactly what happened. So a scheduled ping must
+// never wake the database; leave it to sleep when idle.
+//
+// Pass ?db=1 to actually probe the database — for manual diagnostics only. Do
+// NOT put ?db=1 on a schedule, or you're back to keeping it warm.
+export async function GET(req: Request) {
+  if (new URL(req.url).searchParams.get("db") !== "1") {
+    return NextResponse.json({ ok: true });
+  }
+
   const start = Date.now();
   try {
     await prisma.$queryRaw`SELECT 1`;
-    return NextResponse.json({ ok: true, ms: Date.now() - start });
+    return NextResponse.json({ ok: true, db: true, ms: Date.now() - start });
   } catch {
-    return NextResponse.json({ ok: false }, { status: 503 });
+    return NextResponse.json({ ok: false, db: false, ms: Date.now() - start }, { status: 503 });
   }
 }
