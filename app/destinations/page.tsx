@@ -3,6 +3,7 @@ import Image from "next/image";
 import type { Metadata } from "next";
 import { getDestinations } from "@/lib/destinations";
 import { getPageContent } from "@/lib/page-content";
+import { safeQuery } from "@/lib/safe-query";
 import Reveal from "@/components/ui/Reveal";
 
 export const revalidate = 300;
@@ -13,7 +14,7 @@ export const metadata: Metadata = {
 };
 
 export default async function DestinationsPage() {
-  const destinations = await getDestinations();
+  const destinations = await safeQuery(() => getDestinations(), []);
   const c = await getPageContent();
 
   return (
