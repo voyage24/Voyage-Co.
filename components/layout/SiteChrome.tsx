@@ -10,6 +10,7 @@ import ConciergeChat from "@/components/concierge/ConciergeChat";
 import CompareBar from "@/components/compare/CompareBar";
 import MobileTabBar from "@/components/layout/MobileTabBar";
 import VisitTracker from "@/components/ui/VisitTracker";
+import IntroOverlay from "@/components/home/IntroOverlay";
 
 // The admin console is a separate application surface and must not show the
 // public site's nav/footer/WhatsApp button — but it still lives under the
@@ -24,6 +25,11 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
 
   return (
     <>
+      {/* Rendered as a sibling of Navbar/main — not nested inside
+          PageTransition, whose opacity animation creates a stacking context
+          that would trap a fixed-position overlay below the fixed navbar
+          regardless of z-index. */}
+      {isHome && <IntroOverlay />}
       <div className="print:hidden"><Navbar /></div>
       {/* The navbar is a fixed solid band. Content pages set their own top
           padding; the homepage hero used to sit *under* a transparent navbar,

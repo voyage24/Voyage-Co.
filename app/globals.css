@@ -660,7 +660,8 @@ html.dark .shimmer-gold {
    mobile data and battery. Images already lazy-load and are size-optimised. */
 html[data-saver="1"] video { display: none !important; }
 html[data-saver="1"] .decor,
-html[data-saver="1"] [data-heavy] { display: none !important; }
+html[data-saver="1"] [data-heavy],
+html[data-saver="1"] .vc-intro-overlay { display: none !important; }
 html[data-saver="1"] * { animation-duration: 0.001s !important; animation-iteration-count: 1 !important; }
 
 @media (prefers-reduced-motion: reduce) {
@@ -672,6 +673,7 @@ html[data-saver="1"] * { animation-duration: 0.001s !important; animation-iterat
   .ken-burns { animation: none; }
   .atelier-glow, .wa-glow, .gold-glow { animation: none; }
   .text-shimmer { animation: none; -webkit-text-fill-color: #efe9df; color: #efe9df; }
+  .vc-intro-overlay { display: none !important; }
   .arrow-shimmer { animation: none; color: rgb(var(--gold)); }
   .admin-rise, .admin-nav-link { opacity: 1; animation: none; transform: none; }
   .chart-line { stroke-dashoffset: 0; animation: none; }

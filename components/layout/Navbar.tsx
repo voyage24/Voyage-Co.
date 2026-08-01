@@ -81,7 +81,7 @@ export default function Navbar() {
         <div className="flex items-center justify-between gap-2 min-h-20">
           {/* Wordmark */}
           <Link href="/" onClick={close} className="flex shrink-0" aria-label="Voyages & Co. home">
-            <Logo size={26} tone="light" shimmer />
+            <Logo href={null} size={26} tone="light" shimmer />
           </Link>
 
           {/* Minimal controls — single CTA, search, account (desktop), menu */}
