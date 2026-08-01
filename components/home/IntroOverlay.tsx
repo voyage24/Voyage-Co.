@@ -3,12 +3,14 @@
 import { useEffect, useState } from "react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import Logo from "@/components/ui/Logo";
+import IntroMap from "@/components/home/IntroMap";
 
 const STORAGE_KEY = "vc-intro-shown";
-const TEXT_IN_MS = 250;   // wordmark starts fading in
-const HOLD_MS = 1300;     // stays fully visible
-const TEXT_OUT_MS = 300;  // fades out just ahead of the wipe
-const WIPE_MS = 1100;     // iris-wipe duration
+const TEXT_IN_MS = 250;    // wordmark starts fading in
+const MAP_ZOOM_MS = 1700;  // how long the backdrop map takes to pull back
+const HOLD_MS = 1900;      // stays fully visible — long enough for the map's pull-back to settle
+const TEXT_OUT_MS = 300;   // fades out just ahead of the wipe
+const WIPE_MS = 1100;      // iris-wipe duration
 
 type Phase = "idle" | "text" | "textOut" | "wipe" | "done";
 
@@ -18,9 +20,10 @@ function shouldSkip(): boolean {
   return reduced || !!sessionStorage.getItem(STORAGE_KEY);
 }
 
-// A one-time cinematic open for first-time visitors: a blank beat, the
+// A one-time cinematic open for first-time visitors: a blank beat, then a
+// world map opening tight and pulling back behind the "Voyages & Co."
 // wordmark + tagline, then an iris wipe (a circular hole opening from where
-// the hero headline sits) revealing the homepage underneath. Renders in the
+// the wordmark sits) revealing the homepage underneath. Renders in the
 // initial SSR markup — already fully covering the page at first paint, no
 // flash of homepage-then-overlay — and unmounts once the wipe completes.
 // Session-scoped (sessionStorage) so it doesn't replay on every navigation
@@ -53,8 +56,12 @@ export default function IntroOverlay() {
   // A growing hole (not a shrinking mask): --vc-iris-r is the hole's radius,
   // 0% (closed — nothing revealed yet) up to 150% (open — comfortably past
   // every corner regardless of aspect ratio). Anchored where the wordmark
-  // sits, so that area opens first and the page corners open last.
+  // sits, so that area opens first and the page corners open last. Once it
+  // opens, what's still masked keeps showing the backdrop map (now settled
+  // at the same center/zoom the real hero map rests at), while the hole
+  // reveals the real homepage underneath — a continuous handoff, not a cut.
   const maskImage = "radial-gradient(circle at 50% 46%, transparent var(--vc-iris-r), black var(--vc-iris-r))";
+  const showMap = phase !== "idle";
 
   return (
     <>
@@ -62,7 +69,7 @@ export default function IntroOverlay() {
         <style>{".vc-intro-overlay{display:none!important}"}</style>
       </noscript>
       <div
-        className="vc-intro-overlay fixed inset-0 z-[300] bg-vc-950 flex items-center justify-center"
+        className="vc-intro-overlay fixed inset-0 z-[300] bg-vc-950 flex items-center justify-center overflow-hidden"
         style={{
           WebkitMaskImage: maskImage,
           maskImage,
@@ -71,7 +78,15 @@ export default function IntroOverlay() {
         } as React.CSSProperties}
         aria-hidden="true"
       >
-        <div className="text-center transition-opacity duration-500" style={{ opacity: phase === "text" ? 1 : 0 }}>
+        {showMap && (
+          <>
+            <IntroMap zoomOutMs={MAP_ZOOM_MS} />
+            {/* Vignette so the wordmark stays legible over the map regardless
+                of which part of the world is showing. */}
+            <div className="absolute inset-0 bg-gradient-to-t from-vc-950/80 via-vc-950/50 to-vc-950/60" />
+          </>
+        )}
+        <div className="relative text-center transition-opacity duration-500" style={{ opacity: phase === "text" ? 1 : 0 }}>
           <Logo href={null} tone="light" size={34} shimmer />
           <p className="mt-3 text-[11px] sm:text-[13px] tracking-[0.32em] uppercase text-white/70 font-medium">
             {t("hero.eyebrow")}
