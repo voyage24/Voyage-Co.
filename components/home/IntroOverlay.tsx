@@ -50,6 +50,12 @@ export default function IntroOverlay() {
 
   if (phase === "done") return null;
 
+  // A growing hole (not a shrinking mask): --vc-iris-r is the hole's radius,
+  // 0% (closed — nothing revealed yet) up to 150% (open — comfortably past
+  // every corner regardless of aspect ratio). Anchored where the wordmark
+  // sits, so that area opens first and the page corners open last.
+  const maskImage = "radial-gradient(circle at 50% 46%, transparent var(--vc-iris-r), black var(--vc-iris-r))";
+
   return (
     <>
       <noscript>
@@ -58,9 +64,11 @@ export default function IntroOverlay() {
       <div
         className="vc-intro-overlay fixed inset-0 z-[300] bg-vc-950 flex items-center justify-center"
         style={{
-          clipPath: phase === "wipe" ? "circle(0% at 50% 46%)" : "circle(150% at 50% 46%)",
-          transition: phase === "wipe" ? `clip-path ${WIPE_MS}ms cubic-bezier(.76,0,.24,1)` : undefined,
-        }}
+          WebkitMaskImage: maskImage,
+          maskImage,
+          ["--vc-iris-r" as string]: phase === "wipe" ? "150%" : "0%",
+          transition: phase === "wipe" ? `--vc-iris-r ${WIPE_MS}ms cubic-bezier(.76,0,.24,1)` : undefined,
+        } as React.CSSProperties}
         aria-hidden="true"
       >
         <div className="text-center transition-opacity duration-500" style={{ opacity: phase === "text" ? 1 : 0 }}>

@@ -4,6 +4,16 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Registered so the browser can smoothly interpolate this custom property —
+   a plain CSS transition can't tween between two mask-image gradient strings,
+   but it can tween a registered <percentage> referenced inside one. Powers
+   the homepage intro's iris-wipe hole (IntroOverlay.tsx). */
+@property --vc-iris-r {
+  syntax: '<percentage>';
+  inherits: false;
+  initial-value: 0%;
+}
+
 /* Flag emoji web font — Windows ships no country-flag glyphs, so emoji flags
    render as 2-letter codes there. This font (scoped to flag codepoints only via
    unicode-range, so it never touches other text) restores real flags. Applied
