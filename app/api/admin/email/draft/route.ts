@@ -24,9 +24,16 @@ export async function POST(req: NextRequest) {
   if (admin instanceof NextResponse) return admin;
 
   const { subject, name, context, incoming } = await req.json().catch(() => ({}));
-  // Strip internal item codes ("The Peninsula Shanghai (hotel/h180)") from what
-  // the AI sees, so drafts use the property name, never the code.
-  const cleanedIncoming = String(incoming || "").replace(/\s*\((?:hotel|flight|train|experience|package|cruise)\/[\w-]+\)/gi, "");
+  // Strip internal item codes ("The Peninsula Shanghai (hotel/h180)") and the
+  // "[https://...]" image placeholders mailparser leaves in bodyText (its own
+  // text conversion of HTML mail) — both are noise that misleads the model
+  // about what the message actually says.
+  const cleanedIncoming = String(incoming || "")
+    .replace(/\s*\((?:hotel|flight|train|experience|package|cruise)\/[\w-]+\)/gi, "")
+    .replace(/\[https?:\/\/[^\]]+\]/g, "")
+    .replace(/[ \t]+/g, " ")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
   const prompt = incoming
     ? `Write a reply to the following message from ${String(name || "a guest").slice(0, 100)} (subject: "${String(subject || "").slice(0, 200)}").
 ${context ? `Notes to incorporate: ${String(context).slice(0, 500)}\n` : ""}
@@ -39,7 +46,7 @@ Recipient: ${String(name || "guest").slice(0, 100)}
 Context / notes: ${String(context || "none").slice(0, 800)}`;
 
   if (aiConfigured()) {
-    const { text } = await generateText(SYSTEM, [{ role: "user", content: prompt }], 500);
+    const { text } = await generateText(SYSTEM, [{ role: "user", content: prompt }], 800);
     // Models sign off despite being told not to; the template does that, so drop
     // it here rather than letting it reach the composer.
     if (text) return NextResponse.json({ draft: stripTrailingSignoff(text), source: "ai" });

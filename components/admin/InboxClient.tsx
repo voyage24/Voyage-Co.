@@ -52,7 +52,12 @@ export default function InboxClient({ initial }: { initial?: InboxData }) {
     setSwipeId(null); setSwipeDx(0);
   };
 
-  const plain = (e: Email) => e.bodyText || (e.bodyHtml || "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim() || e.snippet;
+  // bodyText is mailparser's own text conversion of the HTML when there's no
+  // native plain-text part (true of most marketing email) — it renders every
+  // <img> as a bracketed "[https://...]" placeholder, which is mostly noise
+  // for a human and actively misleading context for the AI reply draft below.
+  const stripImagePlaceholders = (s: string) => s.replace(/\[https?:\/\/[^\]]+\]/g, "").replace(/[ \t]+/g, " ").replace(/\n{3,}/g, "\n\n").trim();
+  const plain = (e: Email) => stripImagePlaceholders(e.bodyText || (e.bodyHtml || "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim() || e.snippet);
 
   // Fetches the full body the first time an email is opened, caching it into the
   // list. The list snapshot only carries snippets, so opening stays instant.
@@ -275,10 +280,14 @@ export default function InboxClient({ initial }: { initial?: InboxData }) {
                     <p className="text-xs text-gray-400 mb-2">{e.fromEmail} · {new Date(e.receivedAt).toLocaleString("en-GB")}</p>
                     {!e.bodyLoaded ? (
                       <div className="flex items-center gap-2 text-sm text-gray-400 py-2"><Loader2 size={14} className="animate-spin" /> Loading message…</div>
+                    ) : e.bodyHtml ? (
+                      // Prefer real HTML so images/formatting render — bodyText is
+                      // mailparser's own text conversion of the HTML (bracketed
+                      // "[url]" placeholders where images were), not a native
+                      // plain-text part, so it reads worse than the HTML itself.
+                      <iframe title="email" sandbox="" srcDoc={e.bodyHtml} className="w-full h-80 border border-gray-100 rounded" />
                     ) : e.bodyText ? (
                       <div className="text-sm text-gray-700 whitespace-pre-wrap max-h-80 overflow-y-auto">{e.bodyText}</div>
-                    ) : e.bodyHtml ? (
-                      <iframe title="email" sandbox="" srcDoc={e.bodyHtml} className="w-full h-80 border border-gray-100 rounded" />
                     ) : <p className="text-sm text-gray-400">(empty message)</p>}
 
                     {ctx && (
