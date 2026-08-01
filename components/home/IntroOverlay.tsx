@@ -89,8 +89,8 @@ export default function IntroOverlay() {
           </>
         )}
         <div className="relative text-center transition-opacity duration-500" style={{ opacity: phase === "text" ? 1 : 0 }}>
-          <Logo href={null} tone="light" size={isMobile ? 64 : 104} shimmer shimmerVariant={isMobile ? "gold" : "gold-hero"} />
-          <p className={`mt-5 text-base sm:text-xl tracking-[0.32em] uppercase font-bold ${isMobile ? "shimmer-gold" : "shimmer-gold-hero"}`}>
+          <Logo href={null} tone="light" size={isMobile ? 64 : 104} shimmer shimmerVariant="white" />
+          <p className="mt-5 text-base sm:text-xl tracking-[0.32em] uppercase font-bold shimmer-white">
             {t("hero.eyebrow")}
           </p>
         </div>
