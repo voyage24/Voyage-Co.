@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import Logo from "@/components/ui/Logo";
 import IntroMap from "@/components/home/IntroMap";
+import { useIsMobile } from "@/lib/useIsMobile";
 
 const STORAGE_KEY = "vc-intro-shown";
 const TEXT_IN_MS = 250;    // wordmark starts fading in
@@ -30,6 +31,7 @@ function shouldSkip(): boolean {
 // back to "/", and skipped entirely for prefers-reduced-motion.
 export default function IntroOverlay() {
   const { t } = useLanguage();
+  const isMobile = useIsMobile();
   // Computed once via the lazy initializer — a pure read, so it's safe if
   // React Strict Mode invokes it twice in dev. Deciding here (not inside the
   // effect below) keeps the sessionStorage *write* separate from the read:
@@ -87,8 +89,8 @@ export default function IntroOverlay() {
           </>
         )}
         <div className="relative text-center transition-opacity duration-500" style={{ opacity: phase === "text" ? 1 : 0 }}>
-          <Logo href={null} tone="light" size={34} shimmer />
-          <p className="mt-3 text-[11px] sm:text-[13px] tracking-[0.32em] uppercase text-white/70 font-medium">
+          <Logo href={null} tone="light" size={isMobile ? 46 : 68} shimmer />
+          <p className="mt-4 text-sm sm:text-lg tracking-[0.32em] uppercase text-white/70 font-medium">
             {t("hero.eyebrow")}
           </p>
         </div>
