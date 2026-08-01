@@ -9,6 +9,7 @@ export default function LoginForm() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [idle] = useState(() => typeof window !== "undefined" && new URLSearchParams(window.location.search).get("reason") === "idle");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,6 +44,11 @@ export default function LoginForm() {
         <h1 className="text-xl font-semibold text-gray-900">Admin Login</h1>
         <p className="text-sm text-gray-500 mt-1">Voyages & Co. content console</p>
       </div>
+      {idle && !error && (
+        <p className="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded px-3 py-2">
+          You were signed out after a period of inactivity.
+        </p>
+      )}
       {error && (
         <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded px-3 py-2">{error}</p>
       )}

@@ -282,6 +282,7 @@ model CustomerSession {
   customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
   expiresAt  DateTime
   createdAt  DateTime @default(now())
+  lastSeenAt DateTime @default(now())
 }
 
 model Booking {
@@ -375,12 +376,13 @@ model AdminUser {
 }
 
 model AdminSession {
-  id        String    @id @default(cuid())
-  tokenHash String    @unique
-  userId    String
-  user      AdminUser @relation(fields: [userId], references: [id], onDelete: Cascade)
-  expiresAt DateTime
-  createdAt DateTime  @default(now())
+  id         String    @id @default(cuid())
+  tokenHash  String    @unique
+  userId     String
+  user       AdminUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt  DateTime
+  createdAt  DateTime  @default(now())
+  lastSeenAt DateTime  @default(now())
 }
 
 model Hotel {

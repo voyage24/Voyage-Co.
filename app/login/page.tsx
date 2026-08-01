@@ -21,6 +21,7 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [unverified, setUnverified] = useState(false);
   const [verified] = useState(() => typeof window !== "undefined" && new URLSearchParams(window.location.search).get("verified") === "1");
+  const [idle] = useState(() => typeof window !== "undefined" && new URLSearchParams(window.location.search).get("reason") === "idle");
   // Where to land after signing in — an on-site return path (e.g. a group
   // invite), else the member hub.
   const nextUrl = (() => {
@@ -75,6 +76,11 @@ export default function LoginPage() {
           {verified && (
             <div className="mb-5 rounded-sm border border-gold/40 bg-gold/10 px-4 py-3 text-sm text-ink font-light">
               Your email is confirmed. Please sign in to continue.
+            </div>
+          )}
+          {idle && (
+            <div className="mb-5 rounded-sm border border-gold/40 bg-gold/10 px-4 py-3 text-sm text-ink font-light">
+              You were signed out after a period of inactivity. Please sign in again.
             </div>
           )}
 

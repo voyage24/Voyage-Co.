@@ -5,6 +5,7 @@ import { canAccess } from "@/lib/admin/permissions";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import AdminTopbar from "@/components/admin/AdminTopbar";
 import { getAdminNotificationsCached } from "@/lib/admin/notifications";
+import IdleLogout from "@/components/IdleLogout";
 
 export default async function AdminDashboardLayout({ children }: { children: React.ReactNode }) {
   const token = cookies().get(SESSION_COOKIE_NAME)?.value;
@@ -21,6 +22,7 @@ export default async function AdminDashboardLayout({ children }: { children: Rea
 
   return (
     <div className="admin-root flex min-h-screen bg-[#f6f6f3] dark:bg-[#0b131d]">
+      <IdleLogout timeoutMs={30 * 60 * 1000} logoutPath="/api/admin/auth/logout" loginPath="/admin/login" />
       <AdminSidebar role={user.role} />
       <div className="flex-1 flex flex-col min-w-0">
         <AdminTopbar email={user?.email ?? ""} notifications={notifications} role={user.role} />

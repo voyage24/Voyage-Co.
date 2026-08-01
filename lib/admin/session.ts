@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma";
 
 const SESSION_COOKIE_NAME = "admin_session";
 const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
+const IDLE_TIMEOUT_MS = 30 * 60 * 1000; // auto-logout after 30 min of inactivity
+const LAST_SEEN_UPDATE_THRESHOLD_MS = 60 * 1000; // don't write lastSeenAt on every single request
 
 function hashToken(token: string): string {
   const secret = process.env.SESSION_COOKIE_SECRET ?? "";
@@ -30,9 +32,19 @@ export async function getSessionUser(token: string | undefined) {
     include: { user: true },
   });
   if (!session) return null;
-  if (session.expiresAt < new Date()) {
+  const now = new Date();
+  if (session.expiresAt < now) {
     await prisma.adminSession.delete({ where: { id: session.id } });
     return null;
+  }
+  // Idle timeout — signed out after 30 minutes with no requests, independent
+  // of the 7-day absolute session length.
+  if (now.getTime() - session.lastSeenAt.getTime() > IDLE_TIMEOUT_MS) {
+    await prisma.adminSession.delete({ where: { id: session.id } });
+    return null;
+  }
+  if (now.getTime() - session.lastSeenAt.getTime() > LAST_SEEN_UPDATE_THRESHOLD_MS) {
+    await prisma.adminSession.update({ where: { id: session.id }, data: { lastSeenAt: now } }).catch(() => {});
   }
   return session.user;
 }
