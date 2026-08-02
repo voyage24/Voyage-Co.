@@ -109,32 +109,36 @@ export default function SearchWidget({
   }, []);
 
   return (
-    <div>
+    <div className="max-w-4xl mx-auto">
       {/* Tab strip — plain underlined text links, separate from the form card
           below (rather than a boxed row fused to it), so the picker reads as
           a light-touch selector instead of part of one big control. A
-          translucent pill backing keeps it legible over any photo/map. */}
-      <div
-        ref={tabsRef}
-        className="inline-flex items-center gap-4 overflow-x-auto scrollbar-none max-w-full bg-panel-raised/95 backdrop-blur-sm rounded-full px-4 py-2 shadow-card mb-3"
-      >
-        {TABS.map(tab => {
-          const isActive = active === tab.id;
-          return (
-            <button
-              key={tab.id}
-              onClick={() => setActive(tab.id)}
-              className={`shrink-0 text-[11px] font-normal tracking-[0.08em] uppercase whitespace-nowrap pb-0.5 border-b-2 transition-colors duration-200 ${
-                isActive ? "border-ink text-ink font-medium" : "border-transparent text-ink-faint hover:text-ink-muted"
-              }`}
-            >
-              {t(tab.labelKey)}
-            </button>
-          );
-        })}
+          translucent pill backing keeps it legible over any photo/map.
+          Centered above the (now narrower) form card rather than pinned to
+          the left edge. */}
+      <div className="flex justify-center mb-3">
+        <div
+          ref={tabsRef}
+          className="inline-flex items-center gap-4 overflow-x-auto scrollbar-none max-w-full bg-panel-raised/95 backdrop-blur-sm rounded-full px-4 py-2 shadow-card"
+        >
+          {TABS.map(tab => {
+            const isActive = active === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActive(tab.id)}
+                className={`shrink-0 text-[11px] font-normal tracking-[0.08em] uppercase whitespace-nowrap pb-0.5 border-b-2 transition-colors duration-200 ${
+                  isActive ? "border-ink text-ink font-medium" : "border-transparent text-ink-faint hover:text-ink-muted"
+                }`}
+              >
+                {t(tab.labelKey)}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
-      {/* Search form — its own compact card */}
+      {/* Search form — its own compact card, narrower than the full hero row */}
       <div className="bg-panel-raised rounded-sm shadow-widget border border-line p-4">
         {active === "flights"     && <FlightSearch defaultFrom={flightFrom} defaultTo={flightTo} onRouteChange={onFlightRouteChange} />}
         {active === "hotels"      && <HotelSearch cities={hotelCities} defaultCity={hotelCity} onCitySelect={onHotelCitySelect} />}
