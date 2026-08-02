@@ -24,6 +24,7 @@ import TravellersManager from "@/components/account/TravellersManager";
 import Price from "@/components/ui/Price";
 import { getPageContent } from "@/lib/page-content";
 import { getSiteSettings } from "@/lib/site-settings";
+import { resolveBookingCoords } from "@/lib/booking-coords";
 import TripToday from "@/components/account/TripToday";
 import TripCountdownWidget from "@/components/account/TripCountdownWidget";
 import UpcomingJourneys from "@/components/account/UpcomingJourneys";
@@ -67,6 +68,7 @@ export default async function AccountPage() {
     .filter(b => b.checkIn && new Date(b.checkIn) >= today)
     .sort((a, b) => new Date(a.checkIn!).getTime() - new Date(b.checkIn!).getTime());
   const todayTrip = active || upcomingAll[0] || null;
+  const tripLocation = todayTrip ? await resolveBookingCoords(todayTrip.type, todayTrip.itemId) : null;
   const otherUpcoming = upcomingAll
     .filter(b => b.id !== todayTrip?.id)
     .map(b => ({ reference: b.reference, title: b.itemTitle, type: b.type, checkIn: b.checkIn, checkOut: b.checkOut, status: b.status }));
@@ -95,7 +97,12 @@ export default async function AccountPage() {
       </div>
 
       <OfflineTripSync />
-      {todayTrip && <TripCountdownWidget checkIn={todayTrip.checkIn} checkOut={todayTrip.checkOut} title={todayTrip.itemTitle} />}
+      {todayTrip && (
+        <TripCountdownWidget
+          checkIn={todayTrip.checkIn} checkOut={todayTrip.checkOut} title={todayTrip.itemTitle}
+          lat={tripLocation?.coords[0]} lng={tripLocation?.coords[1]} locationLabel={tripLocation?.label}
+        />
+      )}
       {todayTrip && <TripToday trip={{ reference: todayTrip.reference, itemTitle: todayTrip.itemTitle, type: todayTrip.type, image: todayTrip.image, checkIn: todayTrip.checkIn, checkOut: todayTrip.checkOut, status: todayTrip.status }} whatsapp={settings["contact.whatsapp"] || "919919910213"} />}
       <UpcomingJourneys trips={otherUpcoming} />
       {passkeys.length === 0 && <PasskeyNudge />}

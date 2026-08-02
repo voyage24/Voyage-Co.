@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { CalendarDays, MapPin, FileText, Users } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import TripCountdownWidget from "@/components/account/TripCountdownWidget";
+import { resolveBookingCoords } from "@/lib/booking-coords";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "A Shared Trip — Voyages & Co.", robots: { index: false } };
@@ -18,6 +19,7 @@ export default async function SharedTripPage({ params }: { params: { token: stri
   if (!b) notFound();
 
   const documents = (b.documents as Doc[] | null) ?? [];
+  const tripLocation = await resolveBookingCoords(b.type, b.itemId);
 
   return (
     <div className="max-w-xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20">
@@ -27,7 +29,10 @@ export default async function SharedTripPage({ params }: { params: { token: stri
         <p className="text-ink-muted font-light mt-2 capitalize">{b.type} · {b.status}</p>
       </div>
 
-      <TripCountdownWidget checkIn={b.checkIn} checkOut={b.checkOut} title={b.itemTitle} />
+      <TripCountdownWidget
+        checkIn={b.checkIn} checkOut={b.checkOut} title={b.itemTitle}
+        lat={tripLocation?.coords[0]} lng={tripLocation?.coords[1]} locationLabel={tripLocation?.label}
+      />
 
       <div className="bg-panel border border-line rounded-2xl shadow-card p-6 sm:p-8 space-y-4">
         <Row icon={<Users size={15} className="text-gold" />} label="Guest" value={`${b.guestName}${b.guests > 1 ? ` · ${b.guests} travelling` : ""}`} />

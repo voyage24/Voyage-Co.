@@ -2,12 +2,20 @@
 
 import { useEffect, useState } from "react";
 import { CalendarClock } from "lucide-react";
+import DestinationWeather from "@/components/ui/DestinationWeather";
 
 // Interactive trip day-counter. Before the trip it counts down (days, then
 // hours:minutes in the final stretch); during the trip it shows "Day X of Y"
 // with a live progress bar. Updates on its own. Renders nothing once the trip
-// has passed or dates are missing.
-export default function TripCountdownWidget({ checkIn, checkOut, title }: { checkIn: string | null; checkOut: string | null; title: string }) {
+// has passed or dates are missing. lat/lng/locationLabel (resolved server-side
+// via lib/booking-coords.ts) are optional — when present, live destination
+// weather shows alongside the countdown.
+export default function TripCountdownWidget({
+  checkIn, checkOut, title, lat, lng, locationLabel,
+}: {
+  checkIn: string | null; checkOut: string | null; title: string;
+  lat?: number | null; lng?: number | null; locationLabel?: string | null;
+}) {
   const [now, setNow] = useState<number | null>(null);
   useEffect(() => {
     setNow(Date.now());
@@ -63,6 +71,12 @@ export default function TripCountdownWidget({ checkIn, checkOut, title }: { chec
       {phase === "during" && (
         <div className="mt-4 h-1.5 rounded-full bg-line overflow-hidden">
           <div className="h-full rounded-full bg-gold transition-[width] duration-1000" style={{ width: `${Math.round(progress * 100)}%` }} />
+        </div>
+      )}
+      {lat != null && lng != null && (
+        <div className="mt-4">
+          {locationLabel && <p className="text-[10px] tracking-[0.16em] uppercase text-ink-faint mb-1.5">Weather in {locationLabel}</p>}
+          <DestinationWeather lat={lat} lng={lng} />
         </div>
       )}
     </div>
