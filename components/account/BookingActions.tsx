@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FileText, MessageSquarePlus, Share2 } from "lucide-react";
 
 type Doc = { label: string; url: string };
@@ -12,17 +12,38 @@ export default function BookingActions({ reference, documents }: { reference: st
   const [done, setDone] = useState(false);
   const [error, setError] = useState("");
   const [shareMsg, setShareMsg] = useState("");
+  const [shareUrl, setShareUrl] = useState("");
+  const [qr, setQr] = useState("");
+  const [shareBusy, setShareBusy] = useState(false);
+  const [canNativeShare, setCanNativeShare] = useState(false);
+  useEffect(() => { setCanNativeShare(typeof navigator !== "undefined" && !!navigator.share); }, []);
 
+  // Fetches (or reuses) the companion link, then renders a QR code alongside
+  // it — scanning is often easier in person than reading out a URL, and it
+  // doesn't require the recipient to have shared a phone number/app.
   const share = async () => {
-    setShareMsg("");
-    const res = await fetch(`/api/account/trips/${reference}/share`, { method: "POST" });
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok || !data.url) { setShareMsg("Couldn't create the link."); return; }
+    if (shareUrl) return; // already open
+    setShareMsg(""); setShareBusy(true);
     try {
-      if (navigator.share) { await navigator.share({ title: "My trip with Voyages & Co.", url: data.url }); return; }
-      await navigator.clipboard.writeText(data.url);
-      setShareMsg("Companion link copied.");
-    } catch { setShareMsg(data.url); }
+      const res = await fetch(`/api/account/trips/${reference}/share`, { method: "POST" });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.url) { setShareMsg("Couldn't create the link."); return; }
+      setShareUrl(data.url);
+      const QRCode = (await import("qrcode")).default;
+      setQr(await QRCode.toDataURL(data.url, { margin: 1, width: 180, color: { dark: "#221d16", light: "#f9f6f0" } }));
+    } catch {
+      setShareMsg("Couldn't create the link.");
+    } finally {
+      setShareBusy(false);
+    }
+  };
+
+  const copyLink = async () => {
+    try { await navigator.clipboard.writeText(shareUrl); setShareMsg("Link copied."); } catch { /* clipboard unavailable */ }
+  };
+
+  const nativeShare = async () => {
+    try { await navigator.share({ title: "My trip with Voyages & Co.", url: shareUrl }); } catch { /* user cancelled */ }
   };
 
   const submit = async (e: React.FormEvent) => {
@@ -60,14 +81,30 @@ export default function BookingActions({ reference, documents }: { reference: st
           </div>
         </form>
       ) : (
-        <div className="flex flex-wrap items-center gap-4">
-          <button onClick={() => setOpen(true)} className="inline-flex items-center gap-1.5 text-xs tracking-[0.1em] uppercase text-ink-muted hover:text-ink">
-            <MessageSquarePlus size={14} /> Request a change
-          </button>
-          <button onClick={share} className="inline-flex items-center gap-1.5 text-xs tracking-[0.1em] uppercase text-ink-muted hover:text-ink">
-            <Share2 size={14} /> Share with a companion
-          </button>
-          {shareMsg && <span className="text-xs text-gold">{shareMsg}</span>}
+        <div className="flex flex-col gap-3">
+          <div className="flex flex-wrap items-center gap-4">
+            <button onClick={() => setOpen(true)} className="inline-flex items-center gap-1.5 text-xs tracking-[0.1em] uppercase text-ink-muted hover:text-ink">
+              <MessageSquarePlus size={14} /> Request a change
+            </button>
+            <button onClick={share} disabled={shareBusy} className="inline-flex items-center gap-1.5 text-xs tracking-[0.1em] uppercase text-ink-muted hover:text-ink disabled:opacity-50">
+              <Share2 size={14} /> {shareBusy ? "Preparing…" : "Share with a companion"}
+            </button>
+            {shareMsg && <span className="text-xs text-gold">{shareMsg}</span>}
+          </div>
+
+          {shareUrl && (
+            <div className="flex items-center gap-3 bg-panel-soft border border-line rounded-lg p-3">
+              {qr && <img src={qr} alt="QR code linking to this trip" width={72} height={72} className="rounded shrink-0" />}
+              <div className="min-w-0 flex-1">
+                <p className="text-xs text-ink-muted font-light mb-1.5">Scan to view, or send this link</p>
+                <div className="flex items-center gap-2">
+                  <input readOnly value={shareUrl} onFocus={e => e.target.select()} className="flex-1 min-w-0 text-xs bg-panel border border-line rounded px-2 py-1.5 text-ink-muted truncate" />
+                  <button onClick={copyLink} className="text-xs text-gold shrink-0 hover:underline">Copy</button>
+                  {canNativeShare && <button onClick={nativeShare} className="text-xs text-gold shrink-0 hover:underline">Share…</button>}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
