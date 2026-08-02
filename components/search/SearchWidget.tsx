@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Plane, Hotel, Train, Sparkles, Package, Anchor, Car, Route, Timer } from "lucide-react";
 import FlightSearch from "./FlightSearch";
 import HotelSearch from "./HotelSearch";
 import TrainSearch from "./TrainSearch";
@@ -16,15 +15,15 @@ import { useLanguage } from "@/components/providers/LanguageProvider";
 
 // Alphabetical by label, so the order stays sensible as more tabs get added.
 const TABS = [
-  { id: "airportCabs",     labelKey: "searchTabs.airportCabs",     icon: Car },
-  { id: "packages",        labelKey: "searchTabs.packages",        icon: Package },
-  { id: "cruises",         labelKey: "searchTabs.cruises",         icon: Anchor },
-  { id: "experiences",     labelKey: "searchTabs.experiences",     icon: Sparkles },
-  { id: "flights",         labelKey: "searchTabs.flights",         icon: Plane },
-  { id: "hourlyStays",     labelKey: "searchTabs.hourlyStays",     icon: Timer },
-  { id: "hotels",          labelKey: "searchTabs.hotels",          icon: Hotel },
-  { id: "outstationCabs",  labelKey: "searchTabs.outstationCabs",  icon: Route },
-  { id: "trains",          labelKey: "searchTabs.trains",          icon: Train },
+  { id: "airportCabs",     labelKey: "searchTabs.airportCabs" },
+  { id: "packages",        labelKey: "searchTabs.packages" },
+  { id: "cruises",         labelKey: "searchTabs.cruises" },
+  { id: "experiences",     labelKey: "searchTabs.experiences" },
+  { id: "flights",         labelKey: "searchTabs.flights" },
+  { id: "hourlyStays",     labelKey: "searchTabs.hourlyStays" },
+  { id: "hotels",          labelKey: "searchTabs.hotels" },
+  { id: "outstationCabs",  labelKey: "searchTabs.outstationCabs" },
+  { id: "trains",          labelKey: "searchTabs.trains" },
 ] as const;
 
 export type TabId = typeof TABS[number]["id"];
@@ -110,34 +109,33 @@ export default function SearchWidget({
   }, []);
 
   return (
-    // Warm atelier card on the cream canvas.
-    <div className="bg-panel-raised rounded-sm shadow-widget overflow-visible border border-line">
-      {/* Tab bar */}
-      <div className="rounded-t-sm overflow-hidden border-b border-line">
-        <div ref={tabsRef} className="flex overflow-x-auto scrollbar-none">
-          {TABS.map(tab => {
-            const Icon = tab.icon;
-            const isActive = active === tab.id;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => setActive(tab.id)}
-                className={`flex items-center gap-1.5 px-3.5 py-2.5 text-[10px] font-normal tracking-[0.12em] uppercase whitespace-nowrap transition-all duration-200 border-b -mb-px hover:scale-105 active:scale-95 ${
-                  isActive
-                    ? "border-ink text-ink bg-panel-soft font-medium"
-                    : "border-transparent text-ink-faint hover:text-ink-muted hover:bg-panel-soft/50"
-                }`}
-              >
-                <Icon size={13} />
-                {t(tab.labelKey)}
-              </button>
-            );
-          })}
-        </div>
+    <div>
+      {/* Tab strip — plain underlined text links, separate from the form card
+          below (rather than a boxed row fused to it), so the picker reads as
+          a light-touch selector instead of part of one big control. A
+          translucent pill backing keeps it legible over any photo/map. */}
+      <div
+        ref={tabsRef}
+        className="flex items-center gap-5 overflow-x-auto scrollbar-none w-fit max-w-full bg-panel-raised/95 backdrop-blur-sm rounded-full px-5 py-2.5 shadow-card mb-3"
+      >
+        {TABS.map(tab => {
+          const isActive = active === tab.id;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setActive(tab.id)}
+              className={`shrink-0 text-[11px] font-normal tracking-[0.08em] uppercase whitespace-nowrap pb-0.5 border-b-2 transition-colors duration-200 ${
+                isActive ? "border-ink text-ink font-medium" : "border-transparent text-ink-faint hover:text-ink-muted"
+              }`}
+            >
+              {t(tab.labelKey)}
+            </button>
+          );
+        })}
       </div>
 
-      {/* Search form */}
-      <div className="p-4">
+      {/* Search form — its own compact card */}
+      <div className="bg-panel-raised rounded-sm shadow-widget border border-line p-4">
         {active === "flights"     && <FlightSearch defaultFrom={flightFrom} defaultTo={flightTo} onRouteChange={onFlightRouteChange} />}
         {active === "hotels"      && <HotelSearch cities={hotelCities} defaultCity={hotelCity} onCitySelect={onHotelCitySelect} />}
         {active === "cruises"     && <CruiseSearch />}
