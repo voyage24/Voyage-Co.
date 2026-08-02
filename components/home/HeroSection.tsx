@@ -181,11 +181,11 @@ export default function HeroSection({
         ) : activeTab === "outstationCabs" ? (
           outstationCabs.length > 0
             ? <OutstationCabMapBackground cabs={outstationCabs} />
-            : <PhotoHeroBackground src="https://images.unsplash.com/photo-1764605206511-7a649d9df63b?w=1600&h=900&fit=crop" alt="Private car for an intercity journey" />
+            : <PhotoHeroBackground src="https://images.unsplash.com/photo-1740990556921-6131d2a9d16c?w=1600&h=900&fit=crop" alt="Coastal highway for an intercity journey" />
         ) : activeTab === "hourlyStays" ? (
           hourlyStays.length > 0
             ? <HourlyStayMapBackground stays={hourlyStays} />
-            : <PhotoHeroBackground src="https://images.unsplash.com/photo-1702255489644-392758161f1f?w=1600&h=900&fit=crop" alt="Bright day-use hotel room" />
+            : <PhotoHeroBackground src="https://images.unsplash.com/photo-1731336478850-6bce7235e320?w=1600&h=900&fit=crop" alt="Elegant day-use hotel room" />
         ) : (
           <DestinationMap from={from} to={to} onSelectDestination={setTo} bottomInset={isMobile ? 0 : 0.42} />
         )}
