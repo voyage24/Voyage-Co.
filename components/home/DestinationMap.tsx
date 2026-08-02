@@ -8,31 +8,8 @@ import { useIsMobile } from "@/lib/useIsMobile";
 import { getCoords } from "@/lib/geo";
 import { CITIES } from "@/lib/mock-data";
 import type { City } from "@/lib/types";
-
-// Airports plotted as clickable points — lets the map double as a quick
-// worldwide destination picker, not just a route visualiser.
-const POPULAR_DESTINATION_CODES = [
-  // South Asia & Middle East
-  "DEL", "BOM", "BLR", "GOI", "DXB", "AUH", "RUH", "JED", "DOH", "IST", "TLV",
-  // Africa
-  "CAI", "JNB", "CPT", "NBO", "LOS", "CMN",
-  // Europe
-  "LHR", "CDG", "FRA", "MAD", "FCO", "AMS", "ZRH", "VIE", "ATH", "LIS", "PRG", "BUD", "ARN", "WAW",
-  // The Americas
-  "JFK", "LAX", "SFO", "ORD", "MIA", "YYZ", "YVR", "GRU", "EZE", "MEX",
-  // Southeast & East Asia
-  "SIN", "BKK", "KUL", "CGK", "MNL", "HKG", "ICN", "PEK", "PVG", "HND", "NRT", "TPE", "KTM", "CMB",
-  // Oceania
-  "SYD", "AKL", "DPS", "HNL",
-];
-
-// Key-less Esri World Imagery — real satellite/terrain earth imagery (natural
-// greens, blues and mountains) rather than a flat grey basemap. The same
-// imagery serves both themes; dark mode is darkened in CSS to read as an
-// elegant night view while staying natural.
-const IMAGERY_URL = "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
-const LABELS_URL = "https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}";
-const IMAGERY_ATTR = 'Imagery &copy; <a href="https://www.esri.com">Esri</a>, Maxar, Earthstar Geographics';
+import { POPULAR_DESTINATION_CODES } from "@/lib/popular-destination-codes";
+import { MAP_IMAGERY_URL as IMAGERY_URL, MAP_LABELS_URL as LABELS_URL, MAP_IMAGERY_ATTR as IMAGERY_ATTR } from "@/lib/map-tiles";
 
 /**
  * A real, interactive Leaflet slippy map that plots the traveller's chosen

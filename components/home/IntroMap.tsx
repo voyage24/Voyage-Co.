@@ -4,13 +4,7 @@ import { useEffect, useRef } from "react";
 import type * as L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { useIsMobile } from "@/lib/useIsMobile";
-
-// Same key-less Esri imagery as the real hero map (DestinationMap) — reused
-// here rather than imported, since this map is a stripped-down, read-only
-// decorative variant, not the interactive one.
-const IMAGERY_URL = "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
-const LABELS_URL = "https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}";
-const IMAGERY_ATTR = 'Imagery &copy; <a href="https://www.esri.com">Esri</a>, Maxar, Earthstar Geographics';
+import { MAP_IMAGERY_URL as IMAGERY_URL, MAP_LABELS_URL as LABELS_URL, MAP_IMAGERY_ATTR as IMAGERY_ATTR } from "@/lib/map-tiles";
 
 const CENTER: [number, number] = [22, 12];
 

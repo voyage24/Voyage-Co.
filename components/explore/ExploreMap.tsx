@@ -1,63 +1,105 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { getWorldMap, getWorldDotsSVG } from "@/lib/world-map-singleton";
+import type * as L from "leaflet";
+import "leaflet/dist/leaflet.css";
+import { MousePointerClick } from "lucide-react";
 import { getCoords } from "@/lib/geo";
 import { CITIES } from "@/lib/mock-data";
+import { POPULAR_DESTINATION_CODES } from "@/lib/popular-destination-codes";
+import { MAP_IMAGERY_URL, MAP_LABELS_URL, MAP_IMAGERY_ATTR } from "@/lib/map-tiles";
+import { useIsMobile } from "@/lib/useIsMobile";
 import type { City } from "@/lib/types";
 
-const CODES = [
-  "DEL","BOM","BLR","GOI","DXB","AUH","RUH","JED","DOH","IST","TLV",
-  "CAI","JNB","CPT","NBO","LOS","CMN",
-  "LHR","CDG","FRA","MAD","FCO","AMS","ZRH","VIE","ATH","LIS","PRG","BUD","ARN","WAW",
-  "JFK","LAX","SFO","ORD","MIA","YYZ","YVR","GRU","EZE","MEX",
-  "SIN","BKK","KUL","CGK","MNL","HKG","ICN","PEK","PVG","HND","NRT","TPE","KTM","CMB",
-  "SYD","AKL","DPS","HNL",
-];
-
+/**
+ * A real, interactive Leaflet world map for browsing destinations — same
+ * satellite imagery and "click to zoom" scroll-lock convention as the hero's
+ * DestinationMap, but standalone (no from/to search state): every popular
+ * destination is plotted, and clicking one goes straight to its hotels.
+ */
 export default function ExploreMap() {
   const router = useRouter();
-  const map = useMemo(() => getWorldMap(), []);
-  const dotsSVG = useMemo(() => getWorldDotsSVG(), []);
-  const { width, height } = map.image;
+  const isMobile = useIsMobile();
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const mapRef = useRef<L.Map | null>(null);
+  const [zoomActive, setZoomActive] = useState(false);
   const [hovered, setHovered] = useState<City | null>(null);
 
-  const points = useMemo(() => {
-    return CODES.map(code => {
-      const city = CITIES.find(c => c.code === code);
-      if (!city) return null;
-      const [lat, lng] = getCoords(city.code, city.country);
-      const pin = map.getPin({ lat, lng });
-      return pin ? { city, x: pin.x, y: pin.y } : null;
-    }).filter((p): p is { city: City; x: number; y: number } => !!p);
-  }, [map]);
+  useEffect(() => {
+    let disposed = false;
+    let map: L.Map | null = null;
 
-  const go = (city: City) => router.push(`/hotels?city=${encodeURIComponent(city.name)}`);
+    import("leaflet").then(mod => {
+      const Lm = (mod.default ?? mod) as typeof L;
+      if (disposed || !containerRef.current) return;
+
+      map = Lm.map(containerRef.current, {
+        center: [22, 12],
+        zoom: isMobile ? 1 : 2,
+        minZoom: 1,
+        maxZoom: 10,
+        zoomControl: true,
+        zoomSnap: 0, // smooth fractional zoom for modifier-scroll
+        scrollWheelZoom: false, // handled manually (modifier + scroll only)
+        attributionControl: true,
+        worldCopyJump: true,
+      });
+      mapRef.current = map;
+      map.zoomControl?.setPosition("topright");
+      // "Click to zoom": scroll/trackpad zoom activates once the map is
+      // clicked (so plain page-scrolling over it never zooms by accident).
+      map.on("click", () => { map!.scrollWheelZoom.enable(); setZoomActive(true); });
+      map.getContainer().addEventListener("mouseleave", () => { map!.scrollWheelZoom.disable(); setZoomActive(false); });
+
+      Lm.tileLayer(MAP_IMAGERY_URL, { attribution: MAP_IMAGERY_ATTR, detectRetina: false, maxZoom: 19, className: "vc-tiles-base" }).addTo(map);
+      Lm.tileLayer(MAP_LABELS_URL, { detectRetina: false, maxZoom: 19, className: "vc-tiles-ref", opacity: 0.9 }).addTo(map);
+
+      for (const code of POPULAR_DESTINATION_CODES) {
+        const city = CITIES.find(c => c.code === code);
+        if (!city) continue;
+        const coords = getCoords(city.code, city.country);
+        const marker = Lm.circleMarker(coords, {
+          radius: 4, color: "#d8c48f", weight: 1, fillColor: "#e9dcb4", fillOpacity: 0.85,
+        });
+        marker.on("mouseover", () => { marker.setStyle({ radius: 6, fillOpacity: 1 }); setHovered(city); });
+        marker.on("mouseout", () => { marker.setStyle({ radius: 4, fillOpacity: 0.85 }); setHovered(h => (h?.code === city.code ? null : h)); });
+        marker.on("click", () => router.push(`/hotels?city=${encodeURIComponent(city.name)}`));
+        marker.addTo(map);
+      }
+
+      setTimeout(() => map?.invalidateSize(), 0);
+    });
+
+    return () => {
+      disposed = true;
+      map?.remove();
+      mapRef.current = null;
+    };
+    // Created once on mount (reads isMobile's value at that point only) —
+    // recreating the whole map on every breakpoint crossing would blink the
+    // tiles/markers and reset the traveller's own pan/zoom.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
-    <div className="relative w-full rounded-2xl overflow-hidden border border-vc-700" style={{ aspectRatio: `${width} / ${height}`, background: "radial-gradient(135% 100% at 50% 6%, #4b4f55 0%, #3a3e43 45%, #26282c 100%)" }}>
-      <div className="absolute inset-0 [&>svg]:w-full [&>svg]:h-full" dangerouslySetInnerHTML={{ __html: dotsSVG }} />
-      <svg viewBox={`0 0 ${width} ${height}`} className="absolute inset-0 w-full h-full" preserveAspectRatio="xMidYMid slice">
-        {points.map(({ city, x, y }) => (
-          <g
-            key={city.code}
-            className="dest-dot"
-            role="button"
-            aria-label={`Explore stays in ${city.name}`}
-            style={{ cursor: "pointer", pointerEvents: "auto" }}
-            onClick={() => go(city)}
-            onMouseEnter={() => setHovered(city)}
-            onMouseLeave={() => setHovered(h => (h?.code === city.code ? null : h))}
-          >
-            <circle cx={x} cy={y} r={2.6} fill="transparent" />
-            <circle cx={x} cy={y} r={0.4} fill="#f4f0e9" opacity={0.6} />
-          </g>
-        ))}
-      </svg>
+    <div className="relative w-full aspect-[2/1] rounded-2xl overflow-hidden border border-line">
+      <div
+        ref={containerRef}
+        className="absolute inset-0 h-full w-full vc-live-map"
+        style={{ background: "radial-gradient(140% 115% at 50% 55%, #1c3a4a 0%, #122a37 55%, #0b1a24 100%)" }}
+      />
+
+      <div
+        aria-hidden
+        className="glass-pill glass-pill-pulse pointer-events-none absolute top-3 right-14 z-[1000] flex items-center gap-1.5 text-[11px] tracking-wide px-3 py-1.5 transition-opacity duration-300"
+        style={{ opacity: zoomActive ? 0 : 1 }}
+      >
+        <MousePointerClick size={13} /> Click to zoom
+      </div>
 
       {/* Hovered city label */}
-      <div className="absolute left-4 bottom-4 pointer-events-none">
+      <div className="absolute left-4 bottom-4 z-[1000] pointer-events-none">
         {hovered ? (
           <div className="bg-vc-950/80 backdrop-blur-sm px-4 py-2.5 border border-gold/30">
             <p className="text-[10px] tracking-[0.2em] uppercase text-gold">{hovered.country}</p>
