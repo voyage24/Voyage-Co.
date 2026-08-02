@@ -83,7 +83,7 @@ export default async function PackageDetailPage({ params }: { params: { id: stri
                 { label: "Duration", value: pkg.duration },
                 { label: "Destinations", value: pkg.destinations.join(", ") },
                 { label: "Category", value: pkg.category },
-                { label: "Price", value: pkg.priceOnRequest ? "On request" : `From ₹${pkg.pricePerPerson.toLocaleString("en-IN")} per person` },
+                { label: "Price", value: pkg.priceOnRequest ? "On request" : `From INR ${pkg.pricePerPerson.toLocaleString("en-IN")} per person` },
               ],
               paragraphs: [
                 pkg.highlights.length ? `Highlights: ${pkg.highlights.join(" · ")}` : "",
