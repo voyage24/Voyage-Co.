@@ -35,7 +35,7 @@ export default function AirportCabsPageClient({ cabs }: { cabs: AirportCab[] }) 
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-16">
-      <div className="relative rounded-2xl overflow-hidden p-6 sm:p-10 mb-10 border border-vc-700 min-h-[280px] flex flex-col justify-center">
+      <div className="relative rounded-2xl overflow-hidden p-6 sm:p-10 mb-10 border border-vc-700 min-h-[560px] flex flex-col justify-center">
         <Image
           src="https://images.unsplash.com/photo-1648095856098-bfca5185fe59?w=1600&h=800&fit=crop"
           alt="" fill sizes="100vw" priority className="object-cover"
