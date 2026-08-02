@@ -14,16 +14,17 @@ import HourlyStaySearch from "./HourlyStaySearch";
 import type { City } from "@/lib/types";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 
+// Alphabetical by label, so the order stays sensible as more tabs get added.
 const TABS = [
-  { id: "flights",         labelKey: "searchTabs.flights",         icon: Plane },
-  { id: "hotels",          labelKey: "searchTabs.hotels",          icon: Hotel },
-  { id: "cruises",         labelKey: "searchTabs.cruises",         icon: Anchor },
-  { id: "trains",          labelKey: "searchTabs.trains",          icon: Train },
-  { id: "experiences",     labelKey: "searchTabs.experiences",     icon: Sparkles },
-  { id: "packages",        labelKey: "searchTabs.packages",        icon: Package },
   { id: "airportCabs",     labelKey: "searchTabs.airportCabs",     icon: Car },
-  { id: "outstationCabs",  labelKey: "searchTabs.outstationCabs",  icon: Route },
+  { id: "packages",        labelKey: "searchTabs.packages",        icon: Package },
+  { id: "cruises",         labelKey: "searchTabs.cruises",         icon: Anchor },
+  { id: "experiences",     labelKey: "searchTabs.experiences",     icon: Sparkles },
+  { id: "flights",         labelKey: "searchTabs.flights",         icon: Plane },
   { id: "hourlyStays",     labelKey: "searchTabs.hourlyStays",     icon: Timer },
+  { id: "hotels",          labelKey: "searchTabs.hotels",          icon: Hotel },
+  { id: "outstationCabs",  labelKey: "searchTabs.outstationCabs",  icon: Route },
+  { id: "trains",          labelKey: "searchTabs.trains",          icon: Train },
 ] as const;
 
 export type TabId = typeof TABS[number]["id"];
@@ -49,14 +50,16 @@ export default function SearchWidget({
     onActiveTabChange?.(tab);
   };
 
-  // On phones the tab row overflows; gently auto-scroll it back and forth so
-  // travellers see there's more than just Flights. Pauses on touch/hover.
+  // With 9 tabs the row now overflows on most screens, not just phones;
+  // gently auto-scroll it back and forth so travellers see there's more than
+  // just Flights. Pauses on touch/hover. The step() loop below only ever
+  // moves the row when it actually overflows, so this is a no-op on any
+  // screen wide enough to show every tab at once.
   const tabsRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const el = tabsRef.current;
     if (!el) return;
     if (typeof window === "undefined") return;
-    if (!window.matchMedia("(max-width: 767px)").matches) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     // Keep the position in a float accumulator and re-measure overflow every
