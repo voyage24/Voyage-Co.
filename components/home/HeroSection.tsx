@@ -177,7 +177,7 @@ export default function HeroSection({
         ) : activeTab === "airportCabs" ? (
           airportCabs.length > 0
             ? <AirportCabMapBackground cabs={airportCabs} />
-            : <PhotoHeroBackground src="https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=1600&h=900&fit=crop" alt="Private chauffeur waiting at arrivals" />
+            : <PhotoHeroBackground src="https://images.unsplash.com/photo-1648095856098-bfca5185fe59?w=1600&h=900&fit=crop" alt="Plane descending over the highway toward the airport" />
         ) : activeTab === "outstationCabs" ? (
           outstationCabs.length > 0
             ? <OutstationCabMapBackground cabs={outstationCabs} />
