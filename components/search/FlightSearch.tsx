@@ -551,7 +551,7 @@ function DateRangeField({
   return (
     <div ref={wrapRef} className="relative shrink-0">
       <div
-        className="h-full flex flex-col justify-center bg-panel border border-line rounded-xl px-4 py-3 w-full lg:w-[200px] cursor-pointer"
+        className="h-full flex flex-col justify-center bg-panel border border-line rounded-xl px-4 py-2.5 w-full lg:w-[200px] cursor-pointer"
         onClick={() => { calcDropPos(); setOpen(v => !v); }}
       >
         <label className="text-[10px] tracking-[0.14em] uppercase text-ink-faint mb-1 block font-medium truncate">
@@ -683,7 +683,7 @@ export default function FlightSearch({
     router.push(`/contact?${p.toString()}`);
   };
 
-  const fieldCls = "bg-panel border border-line rounded-xl px-4 py-3";
+  const fieldCls = "bg-panel border border-line rounded-xl px-4 py-2.5";
   const labelCls = "text-[10px] tracking-[0.14em] uppercase text-ink-faint mb-1 block font-medium truncate";
 
   return (
@@ -715,11 +715,11 @@ export default function FlightSearch({
           {legs.map((leg, i) => (
             <div key={i} className="flex flex-col lg:flex-row gap-2">
               <div className="flex flex-1 min-w-0 bg-panel border border-line relative">
-                <div className="flex-1 px-4 py-3 min-w-0">
+                <div className="flex-1 px-4 py-2.5 min-w-0">
                   <AirportInput label={`${t("flightSearch.from")} ${i + 1}`} value={leg.from} onChange={c => updateLeg(i, { from: c })} exclude={leg.to?.code} />
                 </div>
                 <div className="w-px bg-line shrink-0 my-3" />
-                <div className="flex-1 px-4 py-3 min-w-0">
+                <div className="flex-1 px-4 py-2.5 min-w-0">
                   <AirportInput label={`${t("flightSearch.to")} ${i + 1}`} value={leg.to} onChange={c => updateLeg(i, { to: c })} exclude={leg.from?.code} />
                 </div>
               </div>
@@ -761,7 +761,7 @@ export default function FlightSearch({
           <>
             {/* From / To */}
             <div className="flex flex-1 min-w-0 bg-panel border border-line relative">
-              <div className="flex-1 px-4 py-3 min-w-0">
+              <div className="flex-1 px-4 py-2.5 min-w-0">
                 <AirportInput label={t("flightSearch.from")} value={from} onChange={setFrom} exclude={to?.code} />
               </div>
 
@@ -779,7 +779,7 @@ export default function FlightSearch({
                 </button>
               </div>
 
-              <div className="flex-1 px-4 py-3 min-w-0">
+              <div className="flex-1 px-4 py-2.5 min-w-0">
                 <AirportInput label={t("flightSearch.to")} value={to} onChange={setTo} exclude={from?.code} />
               </div>
             </div>
@@ -869,7 +869,7 @@ export default function FlightSearch({
             type="button"
             onClick={requestMultiCity}
             disabled={!multiCityComplete}
-            className="flex items-center gap-2 px-8 py-3 bg-ink hover:bg-ink/90 disabled:opacity-40 disabled:cursor-not-allowed text-page font-medium tracking-[0.12em] uppercase rounded-sm transition-all duration-200 text-xs hover:scale-105 active:scale-95 disabled:hover:scale-100"
+            className="flex items-center gap-2 px-7 py-2.5 bg-ink hover:bg-ink/90 disabled:opacity-40 disabled:cursor-not-allowed text-page font-medium tracking-[0.12em] uppercase rounded-sm transition-all duration-200 text-xs hover:scale-105 active:scale-95 disabled:hover:scale-100"
           >
             <Search size={15} /> {t("flightSearch.requestItinerary")}
           </button>
@@ -883,7 +883,7 @@ export default function FlightSearch({
             type="button"
             onClick={search}
             disabled={!from || !to}
-            className="flex items-center gap-2 px-8 py-3 bg-ink hover:bg-ink/90 disabled:opacity-40 disabled:cursor-not-allowed text-page font-medium tracking-[0.12em] uppercase rounded-sm transition-all duration-200 text-xs hover:scale-105 active:scale-95 disabled:hover:scale-100"
+            className="flex items-center gap-2 px-7 py-2.5 bg-ink hover:bg-ink/90 disabled:opacity-40 disabled:cursor-not-allowed text-page font-medium tracking-[0.12em] uppercase rounded-sm transition-all duration-200 text-xs hover:scale-105 active:scale-95 disabled:hover:scale-100"
           >
             <Search size={15} /> {t("flightSearch.searchFlights")}
           </button>

@@ -122,13 +122,13 @@ export default function SearchWidget({
               <button
                 key={tab.id}
                 onClick={() => setActive(tab.id)}
-                className={`flex items-center gap-2 px-5 py-4 text-[11px] font-normal tracking-[0.16em] uppercase whitespace-nowrap transition-all duration-200 border-b -mb-px hover:scale-105 active:scale-95 ${
+                className={`flex items-center gap-1.5 px-3.5 py-2.5 text-[10px] font-normal tracking-[0.12em] uppercase whitespace-nowrap transition-all duration-200 border-b -mb-px hover:scale-105 active:scale-95 ${
                   isActive
                     ? "border-ink text-ink bg-panel-soft font-medium"
                     : "border-transparent text-ink-faint hover:text-ink-muted hover:bg-panel-soft/50"
                 }`}
               >
-                <Icon size={15} />
+                <Icon size={13} />
                 {t(tab.labelKey)}
               </button>
             );
@@ -137,7 +137,7 @@ export default function SearchWidget({
       </div>
 
       {/* Search form */}
-      <div className="p-5">
+      <div className="p-4">
         {active === "flights"     && <FlightSearch defaultFrom={flightFrom} defaultTo={flightTo} onRouteChange={onFlightRouteChange} />}
         {active === "hotels"      && <HotelSearch cities={hotelCities} defaultCity={hotelCity} onCitySelect={onHotelCitySelect} />}
         {active === "cruises"     && <CruiseSearch />}

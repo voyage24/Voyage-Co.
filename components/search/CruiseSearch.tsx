@@ -15,7 +15,7 @@ export default function CruiseSearch() {
   const [duration, setDuration] = useState("Any");
   const [guests, setGuests] = useState(2);
 
-  const fieldCls = "flex-1 bg-panel border border-line rounded-xl px-4 py-3";
+  const fieldCls = "flex-1 bg-panel border border-line rounded-xl px-4 py-2.5";
   const labelCls = "text-[10px] tracking-[0.16em] uppercase text-ink-faint mb-1 block truncate";
 
   const search = () => {
@@ -62,7 +62,7 @@ export default function CruiseSearch() {
       <div className="flex justify-end">
         <button
           onClick={search}
-          className="flex items-center gap-2 px-8 py-3 bg-ink hover:bg-ink/90 text-page font-medium tracking-[0.12em] uppercase rounded-sm transition-all duration-200 text-xs hover:scale-105 active:scale-95"
+          className="flex items-center gap-2 px-7 py-2.5 bg-ink hover:bg-ink/90 text-page font-medium tracking-[0.12em] uppercase rounded-sm transition-all duration-200 text-xs hover:scale-105 active:scale-95"
         >
           <Search size={15} /> {t("cruiseSearch.findCruises")}
         </button>

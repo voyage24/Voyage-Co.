@@ -118,7 +118,7 @@ export default function TrainSearch() {
 
   const swap = () => { const temp = from; setFrom(to); setTo(temp); };
 
-  const fieldCls = "flex-1 bg-panel border border-line rounded-xl px-4 py-3";
+  const fieldCls = "flex-1 bg-panel border border-line rounded-xl px-4 py-2.5";
   const labelCls = "text-[10px] tracking-[0.16em] uppercase text-ink-faint mb-1 block truncate";
 
   return (
@@ -126,7 +126,7 @@ export default function TrainSearch() {
       <div className="flex flex-col lg:flex-row gap-2">
         {/* From / To */}
         <div className="flex flex-1 bg-panel border border-line rounded-xl overflow-visible relative">
-          <div className="flex-1 px-4 py-3 min-w-0">
+          <div className="flex-1 px-4 py-2.5 min-w-0">
             <StationAutocomplete label={t("flightSearch.from")} value={from} onChange={setFrom} />
           </div>
 
@@ -143,7 +143,7 @@ export default function TrainSearch() {
             </button>
           </div>
 
-          <div className="flex-1 px-4 py-3 min-w-0">
+          <div className="flex-1 px-4 py-2.5 min-w-0">
             <StationAutocomplete label={t("flightSearch.to")} value={to} onChange={setTo} />
           </div>
         </div>
@@ -197,7 +197,7 @@ export default function TrainSearch() {
             p.set("class", tClass);
             router.push(`/trains?${p.toString()}`);
           }}
-          className="flex items-center gap-2 px-8 py-3 bg-ink hover:bg-ink/90 disabled:opacity-40 disabled:cursor-not-allowed text-page font-medium tracking-[0.12em] uppercase rounded-sm transition-all duration-200 text-xs hover:scale-105 active:scale-95 disabled:hover:scale-100"
+          className="flex items-center gap-2 px-7 py-2.5 bg-ink hover:bg-ink/90 disabled:opacity-40 disabled:cursor-not-allowed text-page font-medium tracking-[0.12em] uppercase rounded-sm transition-all duration-200 text-xs hover:scale-105 active:scale-95 disabled:hover:scale-100"
         >
           <Search size={15} /> {t("trainSearch.searchTrains")}
         </button>
