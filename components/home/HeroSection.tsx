@@ -19,6 +19,7 @@ const ExperienceMapBackground = dynamic(() => import("@/components/home/Experien
 const AirportCabMapBackground = dynamic(() => import("@/components/home/AirportCabMapBackground"), { ssr: false, loading: mapLoading });
 const OutstationCabMapBackground = dynamic(() => import("@/components/home/OutstationCabMapBackground"), { ssr: false, loading: mapLoading });
 const HourlyStayMapBackground = dynamic(() => import("@/components/home/HourlyStayMapBackground"), { ssr: false, loading: mapLoading });
+import PhotoHeroBackground from "@/components/home/PhotoHeroBackground";
 import type { City, Hotel, Cruise, Train, Package, Experience, AirportCab, OutstationCab, HourlyStay } from "@/lib/types";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useSetting } from "@/components/providers/SettingsProvider";
@@ -174,11 +175,17 @@ export default function HeroSection({
         ) : activeTab === "experiences" ? (
           <ExperienceMapBackground experiences={experiences} />
         ) : activeTab === "airportCabs" ? (
-          <AirportCabMapBackground cabs={airportCabs} />
+          airportCabs.length > 0
+            ? <AirportCabMapBackground cabs={airportCabs} />
+            : <PhotoHeroBackground src="https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=1600&h=900&fit=crop" alt="Private chauffeur waiting at arrivals" />
         ) : activeTab === "outstationCabs" ? (
-          <OutstationCabMapBackground cabs={outstationCabs} />
+          outstationCabs.length > 0
+            ? <OutstationCabMapBackground cabs={outstationCabs} />
+            : <PhotoHeroBackground src="https://images.unsplash.com/photo-1764605206511-7a649d9df63b?w=1600&h=900&fit=crop" alt="Private car for an intercity journey" />
         ) : activeTab === "hourlyStays" ? (
-          <HourlyStayMapBackground stays={hourlyStays} />
+          hourlyStays.length > 0
+            ? <HourlyStayMapBackground stays={hourlyStays} />
+            : <PhotoHeroBackground src="https://images.unsplash.com/photo-1702255489644-392758161f1f?w=1600&h=900&fit=crop" alt="Bright day-use hotel room" />
         ) : (
           <DestinationMap from={from} to={to} onSelectDestination={setTo} bottomInset={isMobile ? 0 : 0.42} />
         )}
