@@ -19,6 +19,7 @@ import { resolveCoords } from "@/lib/place-coords";
 import CompareButton from "@/components/compare/CompareButton";
 import RecordView from "@/components/products/RecordView";
 import AddToItineraryButton from "@/components/itinerary/AddToItineraryButton";
+import DownloadPdfButton from "@/components/account/DownloadPdfButton";
 import { productJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 export const revalidate = 60;
@@ -68,6 +69,28 @@ export default async function PackageDetailPage({ params }: { params: { id: stri
             attrs={{ Price: pkg.priceOnRequest ? "On request" : `₹${pkg.pricePerPerson.toLocaleString("en-IN")} pp`, Duration: pkg.duration, Destinations: String(pkg.destinations.length), Category: pkg.category }} />
           <SaveButton type="package" itemId={pkg.id} itemTitle={pkg.title} image={pkg.image} href={`/packages/${pkg.id}`} label />
           <ShareButton title={pkg.title} text={pkg.subtitle || pkg.title} path={`/packages/${pkg.id}`} label />
+          <DownloadPdfButton
+            label="Itinerary PDF"
+            data={{
+              filename: `${pkg.title.replace(/[^\w\s-]/g, "").replace(/\s+/g, "-")}-itinerary.pdf`,
+              subtitle: "Journey Dossier",
+              image: pkg.image,
+              headingLabel: pkg.subtitle,
+              heading: pkg.title,
+              intro: `${pkg.duration} · ${pkg.destinations.join(", ")}`,
+              rows: [
+                { label: "Duration", value: pkg.duration },
+                { label: "Destinations", value: pkg.destinations.join(", ") },
+                { label: "Category", value: pkg.category },
+                { label: "Price", value: pkg.priceOnRequest ? "On request" : `From ₹${pkg.pricePerPerson.toLocaleString("en-IN")} per person` },
+              ],
+              paragraphs: [
+                pkg.highlights.length ? `Highlights: ${pkg.highlights.join(" · ")}` : "",
+                pkg.includes.length ? `What's included: ${pkg.includes.join(" · ")}` : "",
+              ].filter(Boolean),
+              footer: "An illustrative itinerary — your concierge will confirm exact daily arrangements ahead of departure.",
+            }}
+          />
         </div>
       </div>
 
