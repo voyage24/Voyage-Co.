@@ -23,6 +23,9 @@ export default async function DestinationsPage() {
         <p className="text-[11px] tracking-[0.3em] uppercase text-gold mb-3">{c("destinations.eyebrow")}</p>
         <h1 className="font-serif text-3xl sm:text-5xl font-light text-ink mb-3">{c("destinations.title")}</h1>
         <p className="text-ink-muted font-light max-w-xl mx-auto">{c("destinations.intro")}</p>
+        <Link href="/destinations/compare" className="inline-block mt-4 text-xs tracking-[0.14em] uppercase text-gold link-underline">
+          Compare two destinations →
+        </Link>
       </div>
 
       <Reveal stagger className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">

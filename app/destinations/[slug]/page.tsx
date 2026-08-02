@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { ArrowLeft } from "lucide-react";
@@ -11,6 +12,7 @@ import JsonLd from "@/components/seo/JsonLd";
 import { breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 import { destinationFaqs } from "@/lib/destination-faq";
 import BestTimeToVisit from "@/components/products/BestTimeToVisit";
+import SeasonalPriceIndicator from "@/components/products/SeasonalPriceIndicator";
 import GettingAround from "@/components/products/GettingAround";
 import TippingGuide from "@/components/products/TippingGuide";
 import ConnectivityGuide from "@/components/products/ConnectivityGuide";
@@ -70,14 +72,21 @@ export default async function DestinationPage({ params }: { params: { slug: stri
         },
         ...(faqs.length ? [faqJsonLd(faqs)] : []),
       ]} />
+      <div className="relative -mx-6 lg:-mx-12 h-[38vh] sm:h-[48vh] mb-8 overflow-hidden">
+        <Image src={dest.image} alt={country} fill sizes="100vw" className="object-cover ken-burns" priority />
+        <div className="absolute inset-0 bg-gradient-to-t from-vc-950/85 via-vc-950/25 to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 px-6 lg:px-12 pb-6 max-w-[1500px] mx-auto">
+          <p className="text-[11px] tracking-[0.3em] uppercase text-gold mb-2">Destination</p>
+          <h1 className="font-serif text-4xl sm:text-6xl font-light text-white">{country}</h1>
+        </div>
+      </div>
+
       <Link href="/destinations" className="inline-flex items-center gap-2 text-xs tracking-[0.1em] uppercase text-ink-muted hover:text-ink mb-6 transition-colors">
         <ArrowLeft size={15} /> All destinations
       </Link>
 
       <div className="mb-10">
-        <p className="text-[11px] tracking-[0.3em] uppercase text-gold mb-2">Destination</p>
-        <h1 className="font-serif text-4xl sm:text-5xl font-light text-ink">{country}</h1>
-        <p className="text-ink-muted font-light mt-3 max-w-2xl">The finest stays, experiences and voyages we&apos;ve curated across {country}.</p>
+        <p className="text-ink-muted font-light max-w-2xl">The finest stays, experiences and voyages we&apos;ve curated across {country}.</p>
       </div>
 
       {hotels.length > 0 && (
@@ -121,6 +130,7 @@ export default async function DestinationPage({ params }: { params: { slug: stri
           <p className="text-ink-muted font-light mb-8 max-w-2xl">When to visit, getting around, tipping, connectivity, currency and the practical essentials — everything our concierge would brief you on.</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 items-start">
             <BestTimeToVisit country={country} />
+            <SeasonalPriceIndicator country={country} />
             <GettingAround country={country} />
             <HealthSafety country={country} />
             <TippingGuide country={country} />

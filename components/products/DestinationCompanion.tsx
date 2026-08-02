@@ -6,6 +6,7 @@ import PackingList from "@/components/ui/PackingList";
 import Phrasebook from "@/components/ui/Phrasebook";
 import NearestAirport from "@/components/products/NearestAirport";
 import BestTimeToVisit from "@/components/products/BestTimeToVisit";
+import SeasonalPriceIndicator from "@/components/products/SeasonalPriceIndicator";
 import TippingGuide from "@/components/products/TippingGuide";
 import CarbonEstimate from "@/components/products/CarbonEstimate";
 import ConnectivityGuide from "@/components/products/ConnectivityGuide";
@@ -61,6 +62,7 @@ export default function DestinationCompanion({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-start">
               <div className="space-y-4">
                 <BestTimeToVisit country={country} />
+                <SeasonalPriceIndicator country={country} />
                 <GettingAround country={country} />
                 <TippingGuide country={country} />
                 <ConnectivityGuide country={country} />

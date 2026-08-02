@@ -27,6 +27,7 @@ import NearestAirport from "@/components/products/NearestAirport";
 import LocalActivities from "@/components/products/LocalActivities";
 import { resolveCoords } from "@/lib/place-coords";
 import BestTimeToVisit from "@/components/products/BestTimeToVisit";
+import SeasonalPriceIndicator from "@/components/products/SeasonalPriceIndicator";
 import TippingGuide from "@/components/products/TippingGuide";
 import CarbonEstimate from "@/components/products/CarbonEstimate";
 import ConnectivityGuide from "@/components/products/ConnectivityGuide";
@@ -265,6 +266,7 @@ export default async function HotelDetailPage({ params }: { params: { id: string
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-start">
             <div className="space-y-4">
               <BestTimeToVisit country={hotel.country} />
+              <SeasonalPriceIndicator country={hotel.country} />
               <GettingAround country={hotel.country} />
               <TippingGuide country={hotel.country} />
               <ConnectivityGuide country={hotel.country} />
