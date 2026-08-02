@@ -55,7 +55,8 @@ export async function POST(req: Request) {
   // cruise) need check-in + check-out; experiences need a single date. All dated
   // bookings need a valid guest count.
   const multiDay = itemType === "hotel" || itemType === "package" || itemType === "cruise";
-  const singleDay = itemType === "experience" || itemType === "flight" || itemType === "train";
+  const singleDay = itemType === "experience" || itemType === "flight" || itemType === "train"
+    || itemType === "airport-cab" || itemType === "outstation-cab" || itemType === "hourly-stay";
   if (multiDay && (!checkIn || !checkOut || !(Number(guests) >= 1))) {
     return NextResponse.json({ error: "Check-in, check-out and number of guests are required" }, { status: 400 });
   }

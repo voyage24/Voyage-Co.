@@ -54,6 +54,24 @@ async function resolveItem(type?: string, id?: string): Promise<BookingItem | nu
     return { type, id, title: `${c.name} · ${c.ship}`, subtitle: `${c.departurePort} · ${c.ports.join(" · ")}`, image: c.image,
       price: c.pricePerPerson, priceLabel: "booking.perPerson", needsDates: true };
   }
+  if (type === "airport-cab") {
+    const c = await prisma.airportCab.findUnique({ where: { id } });
+    if (!c) return null;
+    return { type, id, title: c.title, subtitle: `${c.city} · ${c.vehicleType}`, image: c.image,
+      price: c.price, priceLabel: "booking.perTrip", needsDate: true };
+  }
+  if (type === "outstation-cab") {
+    const c = await prisma.outstationCab.findUnique({ where: { id } });
+    if (!c) return null;
+    return { type, id, title: c.title, subtitle: `${c.originCity} → ${c.destinationCity} · ${c.tripType}`, image: c.image,
+      price: c.price, priceLabel: "booking.perTrip", needsDate: true };
+  }
+  if (type === "hourly-stay") {
+    const s = await prisma.hourlyStay.findUnique({ where: { id } });
+    if (!s) return null;
+    return { type, id, title: s.title, subtitle: `${s.city} · ${s.hours}-hour day use`, image: s.image,
+      price: s.price, priceLabel: "booking.perStay", needsDate: true };
+  }
   return null;
 }
 
@@ -81,7 +99,11 @@ export default async function BookPage({
     item.type === "flight" ? "/flights" :
     item.type === "package" ? "/packages" :
     item.type === "experience" ? "/experiences" :
-    item.type === "cruise" ? "/cruises" : "/trains";
+    item.type === "cruise" ? "/cruises" :
+    item.type === "train" ? "/trains" :
+    item.type === "airport-cab" ? "/airport-cabs" :
+    item.type === "outstation-cab" ? "/outstation-cabs" :
+    item.type === "hourly-stay" ? "/hourly-stays" : "/";
 
   const remaining = await getRemaining(item.type, item.id);
   const soldOut = remaining !== null && remaining <= 0;

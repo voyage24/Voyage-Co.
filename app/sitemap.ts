@@ -10,6 +10,7 @@ const STATIC_PATHS = [
   "", "/hotels", "/flights", "/trains", "/experiences", "/packages", "/cruises",
   "/blog", "/plan", "/about", "/contact", "/careers", "/press", "/partners",
   "/help", "/privacy", "/terms", "/destinations",
+  "/airport-cabs", "/outstation-cabs", "/hourly-stays",
 ];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -22,13 +23,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }));
 
   try {
-    const [hotels, packages, experiences, cruises, posts, destinations] = await Promise.all([
+    const [hotels, packages, experiences, cruises, posts, destinations, airportCabs, outstationCabs, hourlyStays] = await Promise.all([
       prisma.hotel.findMany({ where: { published: true }, select: { id: true } }),
       prisma.package.findMany({ where: { published: true }, select: { id: true } }),
       prisma.experience.findMany({ where: { published: true }, select: { id: true } }),
       prisma.cruise.findMany({ where: { published: true }, select: { id: true } }),
       prisma.blogPost.findMany({ where: { published: true }, select: { slug: true } }),
       getDestinations().catch(() => []),
+      prisma.airportCab.findMany({ where: { published: true }, select: { id: true } }),
+      prisma.outstationCab.findMany({ where: { published: true }, select: { id: true } }),
+      prisma.hourlyStay.findMany({ where: { published: true }, select: { id: true } }),
     ]);
     const dyn: MetadataRoute.Sitemap = [
       ...destinations.map(d => ({ url: `${SITE}/destinations/${d.slug}`, lastModified: now, changeFrequency: "weekly" as const, priority: 0.8 })),
@@ -37,6 +41,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       ...experiences.map(e => ({ url: `${SITE}/experiences/${e.id}`, lastModified: now, priority: 0.6 })),
       ...cruises.map(c => ({ url: `${SITE}/cruises/${c.id}`, lastModified: now, priority: 0.6 })),
       ...posts.map(b => ({ url: `${SITE}/blog/${b.slug}`, lastModified: now, priority: 0.5 })),
+      ...airportCabs.map(c => ({ url: `${SITE}/airport-cabs/${c.id}`, lastModified: now, priority: 0.6 })),
+      ...outstationCabs.map(c => ({ url: `${SITE}/outstation-cabs/${c.id}`, lastModified: now, priority: 0.6 })),
+      ...hourlyStays.map(s => ({ url: `${SITE}/hourly-stays/${s.id}`, lastModified: now, priority: 0.6 })),
     ];
     return [...staticRoutes, ...dyn];
   } catch {

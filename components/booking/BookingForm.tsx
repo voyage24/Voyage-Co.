@@ -16,7 +16,7 @@ import TurnstileWidget from "@/components/ui/TurnstileWidget";
 import FormProgress from "@/components/ui/FormProgress";
 
 export interface BookingItem {
-  type: "hotel" | "flight" | "package" | "experience" | "train" | "cruise";
+  type: "hotel" | "flight" | "package" | "experience" | "train" | "cruise" | "airport-cab" | "outstation-cab" | "hourly-stay";
   id: string;
   title: string;
   subtitle: string;

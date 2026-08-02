@@ -31,6 +31,9 @@ const FOOTER_COLUMNS: FooterColumn[] = [
       { key: "common.byDestination",  href: "/destinations" },
       { key: "explore.title",         href: "/explore" },
       { key: "common.offers",         href: "/offers" },
+      { label: "Airport Cabs",        href: "/airport-cabs" },
+      { label: "Outstation Cabs",     href: "/outstation-cabs" },
+      { label: "Hourly Stays",        href: "/hourly-stays" },
     ],
   },
   {

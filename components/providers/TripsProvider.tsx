@@ -4,7 +4,7 @@ import { createContext, useContext, useEffect, useState, useCallback } from "rea
 
 export interface Trip {
   ref: string;
-  type: "hotel" | "flight" | "package" | "experience" | "train" | "cruise";
+  type: "hotel" | "flight" | "package" | "experience" | "train" | "cruise" | "airport-cab" | "outstation-cab" | "hourly-stay";
   title: string;
   subtitle: string;
   image?: string;

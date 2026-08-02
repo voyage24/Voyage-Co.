@@ -26,6 +26,9 @@ const PRIMARY_LINKS: NavLink[] = [
   { key: "common.journal",      cKey: "nav.journal",      href: "/blog" },
   { label: "Trip Tools", cKey: "nav.tripTools",           href: "/tools" },
   { label: "Group trips", href: "/groups" },
+  { label: "Airport Cabs", href: "/airport-cabs" },
+  { label: "Outstation Cabs", href: "/outstation-cabs" },
+  { label: "Hourly Stays", href: "/hourly-stays" },
 ];
 
 // Supporting links, shown smaller beneath the primary ones.
@@ -56,9 +59,13 @@ export default function Navbar() {
   const primaryLinks: { href: string; label: string }[] = navList
     ? navList.map(x => ({ href: x.href || "#", label: x.label || "" }))
     : PRIMARY_LINKS.map(l => ({ href: l.href, label: c(l.cKey ?? "") || l.label || t(l.key ?? "") }));
-  // Always surface Group trips as a primary item, even when a custom nav list
-  // (which would otherwise omit it) is in use.
+  // Always surface Group trips (and the Transport & Stays trio) as primary
+  // items, even when a custom nav list (which would otherwise omit them) is
+  // in use.
   if (!primaryLinks.some(l => l.href === "/groups")) primaryLinks.push({ href: "/groups", label: "Group trips" });
+  if (!primaryLinks.some(l => l.href === "/airport-cabs")) primaryLinks.push({ href: "/airport-cabs", label: "Airport Cabs" });
+  if (!primaryLinks.some(l => l.href === "/outstation-cabs")) primaryLinks.push({ href: "/outstation-cabs", label: "Outstation Cabs" });
+  if (!primaryLinks.some(l => l.href === "/hourly-stays")) primaryLinks.push({ href: "/hourly-stays", label: "Hourly Stays" });
   const secondaryLinks = SECONDARY_LINKS.map(l => ({ href: l.href, label: l.label || t(l.key ?? "") }));
   const planLabel = c("nav.planCta") || "Smart trip planner";
 

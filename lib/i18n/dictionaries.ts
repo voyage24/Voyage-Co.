@@ -561,6 +561,8 @@ export const EN: Dictionary = {
   "booking.perNight": "per night",
   "booking.perGuest": "per guest",
   "booking.perPerson": "per person",
+  "booking.perTrip": "per trip",
+  "booking.perStay": "per stay",
   "booking.nothingToReserve": "Nothing to reserve",
   "booking.itemNotFound": "We couldn't find the item you were trying to book.",
   "booking.returnHome": "Return Home",

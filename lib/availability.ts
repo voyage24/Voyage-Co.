@@ -10,6 +10,9 @@ export async function getRemaining(type: string, itemId: string): Promise<number
   else if (type === "package") cap = (await prisma.package.findUnique({ where: { id: itemId }, select: { availableUnits: true } }))?.availableUnits;
   else if (type === "experience") cap = (await prisma.experience.findUnique({ where: { id: itemId }, select: { availableUnits: true } }))?.availableUnits;
   else if (type === "cruise") cap = (await prisma.cruise.findUnique({ where: { id: itemId }, select: { availableUnits: true } }))?.availableUnits;
+  else if (type === "airport-cab") cap = (await prisma.airportCab.findUnique({ where: { id: itemId }, select: { availableUnits: true } }))?.availableUnits;
+  else if (type === "outstation-cab") cap = (await prisma.outstationCab.findUnique({ where: { id: itemId }, select: { availableUnits: true } }))?.availableUnits;
+  else if (type === "hourly-stay") cap = (await prisma.hourlyStay.findUnique({ where: { id: itemId }, select: { availableUnits: true } }))?.availableUnits;
   else cap = null; // flights/trains: no cap
 
   if (cap == null) return null;
