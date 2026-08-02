@@ -117,6 +117,55 @@ export interface Package {
   badge?: string | null;
 }
 
+export interface AirportCab {
+  id: string;
+  title: string;
+  city: string;
+  vehicleType: string;
+  capacity: string;
+  includes: string[];
+  category: string;
+  price: number;
+  image: string;
+  description: string;
+  badge?: string | null;
+  priceOnRequest?: boolean;
+}
+
+export interface OutstationCab {
+  id: string;
+  title: string;
+  originCity: string;
+  destinationCity: string;
+  vehicleType: string;
+  tripType: string;
+  distanceKm?: number | null;
+  durationEstimate?: string | null;
+  includes: string[];
+  category: string;
+  price: number;
+  image: string;
+  description: string;
+  badge?: string | null;
+  priceOnRequest?: boolean;
+}
+
+export interface HourlyStay {
+  id: string;
+  title: string;
+  city: string;
+  location: string;
+  hours: number;
+  amenities: string[];
+  category: string;
+  price: number;
+  image: string;
+  description: string;
+  badge?: string | null;
+  rating?: number | null;
+  priceOnRequest?: boolean;
+}
+
 export interface BlogPost {
   slug: string;
   title: string;
