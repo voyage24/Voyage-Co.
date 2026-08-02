@@ -44,7 +44,12 @@ async function loadImage(src: string): Promise<{ url: string; fmt: "JPEG" | "PNG
 // Generates a real, downloadable PDF in the browser (works on phones, unlike
 // window.print() which silently no-ops in many mobile / in-app browsers).
 // jsPDF is imported lazily so it never weighs down the main bundle.
-export default function DownloadPdfButton({ data, label = "Download PDF" }: { data: PdfData; label?: string }) {
+// `compact`: hides the text label below the sm breakpoint (icon-only on
+// phones) — for use alongside several other icon buttons in a crowded action
+// row (property/package/etc. detail pages). Leave it off where this button is
+// the sole, standalone action (invoice/voucher/journey pages), where the full
+// label is the point.
+export default function DownloadPdfButton({ data, label = "Download PDF", compact = false }: { data: PdfData; label?: string; compact?: boolean }) {
   const [busy, setBusy] = useState(false);
 
   const make = async () => {
@@ -164,9 +169,10 @@ export default function DownloadPdfButton({ data, label = "Download PDF" }: { da
     <button
       onClick={make}
       disabled={busy}
+      aria-label={busy ? "Preparing" : label}
       className="inline-flex items-center gap-1.5 text-xs tracking-[0.1em] uppercase text-ink-muted rounded px-3 py-1.5 border border-transparent hover:bg-panel-soft hover:text-ink hover:border-line active:bg-gold/20 active:text-ink disabled:opacity-50 transition-colors print:hidden"
     >
-      <Download size={15} /> {busy ? "Preparing…" : label}
+      <Download size={15} /> <span className={compact ? "hidden sm:inline" : undefined}>{busy ? "Preparing…" : label}</span>
     </button>
   );
 }

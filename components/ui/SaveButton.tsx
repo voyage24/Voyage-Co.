@@ -45,7 +45,7 @@ export default function SaveButton({
       className="inline-flex items-center gap-2 text-xs tracking-[0.12em] uppercase text-ink-muted hover:text-ink transition-colors disabled:opacity-50"
     >
       <Heart size={16} className={saved ? "fill-gold text-gold" : ""} />
-      {label && <span>{saved ? "Saved" : "Save"}</span>}
+      {label && <span className="hidden sm:inline">{saved ? "Saved" : "Save"}</span>}
     </button>
   );
 }

@@ -13,10 +13,11 @@ export default function CompareButton({ label, ...item }: CompareItem & { label?
       type="button"
       onClick={() => toggleCompare(item)}
       aria-pressed={active}
+      aria-label={active ? "Comparing" : "Compare"}
       className={`inline-flex items-center gap-1.5 text-xs tracking-[0.1em] uppercase transition-colors ${active ? "text-gold" : "text-ink-muted hover:text-ink"}`}
     >
       {active ? <Check size={15} /> : <GitCompareArrows size={15} />}
-      {label && (active ? "Comparing" : "Compare")}
+      {label && <span className="hidden sm:inline">{active ? "Comparing" : "Compare"}</span>}
     </button>
   );
 }

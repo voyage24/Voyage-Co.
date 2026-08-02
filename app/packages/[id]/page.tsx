@@ -71,6 +71,7 @@ export default async function PackageDetailPage({ params }: { params: { id: stri
           <ShareButton title={pkg.title} text={pkg.subtitle || pkg.title} path={`/packages/${pkg.id}`} label />
           <DownloadPdfButton
             label="Itinerary PDF"
+            compact
             data={{
               filename: `${pkg.title.replace(/[^\w\s-]/g, "").replace(/\s+/g, "-")}-itinerary.pdf`,
               subtitle: "Journey Dossier",

@@ -34,7 +34,7 @@ export default function ShareButton({
       className="inline-flex items-center gap-2 text-xs tracking-[0.12em] uppercase text-ink-muted hover:text-ink transition-colors"
     >
       {copied ? <Check size={16} className="text-gold" /> : <Share2 size={16} />}
-      {label && <span>{copied ? "Copied" : "Share"}</span>}
+      {label && <span className="hidden sm:inline">{copied ? "Copied" : "Share"}</span>}
     </button>
   );
 }

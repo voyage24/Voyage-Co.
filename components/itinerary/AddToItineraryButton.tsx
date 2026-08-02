@@ -12,9 +12,10 @@ export default function AddToItineraryButton({ label, ...item }: ItineraryEntry 
   return (
     <span className="inline-flex items-center gap-2">
       <button type="button" onClick={() => toggleItinerary(item)} aria-pressed={active}
+        aria-label={active ? "In itinerary" : "Add to itinerary"}
         className={`inline-flex items-center gap-1.5 text-xs tracking-[0.1em] uppercase transition-colors ${active ? "text-gold" : "text-ink-muted hover:text-ink"}`}>
         {active ? <Check size={15} /> : <Route size={15} />}
-        {label && (active ? "In itinerary" : "Add to itinerary")}
+        {label && <span className="hidden sm:inline">{active ? "In itinerary" : "Add to itinerary"}</span>}
       </button>
       {active && <Link href="/itinerary" className="text-[11px] tracking-[0.1em] uppercase text-gold link-underline">View</Link>}
     </span>
