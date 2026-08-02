@@ -16,7 +16,10 @@ const CruiseMapBackground = dynamic(() => import("@/components/home/CruiseMapBac
 const RailMapBackground = dynamic(() => import("@/components/home/RailMapBackground"), { ssr: false, loading: mapLoading });
 const PackageMapBackground = dynamic(() => import("@/components/home/PackageMapBackground"), { ssr: false, loading: mapLoading });
 const ExperienceMapBackground = dynamic(() => import("@/components/home/ExperienceMapBackground"), { ssr: false, loading: mapLoading });
-import type { City, Hotel, Cruise, Train, Package, Experience } from "@/lib/types";
+const AirportCabMapBackground = dynamic(() => import("@/components/home/AirportCabMapBackground"), { ssr: false, loading: mapLoading });
+const OutstationCabMapBackground = dynamic(() => import("@/components/home/OutstationCabMapBackground"), { ssr: false, loading: mapLoading });
+const HourlyStayMapBackground = dynamic(() => import("@/components/home/HourlyStayMapBackground"), { ssr: false, loading: mapLoading });
+import type { City, Hotel, Cruise, Train, Package, Experience, AirportCab, OutstationCab, HourlyStay } from "@/lib/types";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useSetting } from "@/components/providers/SettingsProvider";
 import { useIsMobile } from "@/lib/useIsMobile";
@@ -37,6 +40,9 @@ const TAB_CONTENT_KEY: Record<string, string> = {
   trains: "trains",
   experiences: "experiences",
   packages: "packages",
+  airportCabs: "airportCabs",
+  outstationCabs: "outstationCabs",
+  hourlyStays: "hourlyStays",
 };
 
 // Primary quick-link CTA per search tab — label and destination both follow
@@ -49,16 +55,22 @@ const TAB_EXPLORE_LINK: Record<TabId, { labelKey: string; href: string }> = {
   trains:      { labelKey: "hero.exploreRailJourneys",     href: "/trains" },
   experiences: { labelKey: "hero.exploreExperiences",      href: "/experiences" },
   packages:    { labelKey: "hero.exploreBespokeJourneys",  href: "/packages" },
+  airportCabs:    { labelKey: "hero.exploreAirportCabs",     href: "/airport-cabs" },
+  outstationCabs: { labelKey: "hero.exploreOutstationCabs",  href: "/outstation-cabs" },
+  hourlyStays:    { labelKey: "hero.exploreHourlyStays",     href: "/hourly-stays" },
 };
 
 export default function HeroSection({
-  hotels, cruises, trains, packages, experiences,
+  hotels, cruises, trains, packages, experiences, airportCabs, outstationCabs, hourlyStays,
 }: {
   hotels: Hotel[];
   cruises: Cruise[];
   trains: Train[];
   packages: Package[];
   experiences: Experience[];
+  airportCabs: AirportCab[];
+  outstationCabs: OutstationCab[];
+  hourlyStays: HourlyStay[];
 }) {
   const { t } = useLanguage();
   // Start empty so the flight search isn't pre-stuck on a route; the traveller
@@ -161,6 +173,12 @@ export default function HeroSection({
           <PackageMapBackground packages={packages} />
         ) : activeTab === "experiences" ? (
           <ExperienceMapBackground experiences={experiences} />
+        ) : activeTab === "airportCabs" ? (
+          <AirportCabMapBackground cabs={airportCabs} />
+        ) : activeTab === "outstationCabs" ? (
+          <OutstationCabMapBackground cabs={outstationCabs} />
+        ) : activeTab === "hourlyStays" ? (
+          <HourlyStayMapBackground stays={hourlyStays} />
         ) : (
           <DestinationMap from={from} to={to} onSelectDestination={setTo} bottomInset={isMobile ? 0 : 0.42} />
         )}

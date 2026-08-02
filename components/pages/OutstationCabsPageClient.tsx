@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import OutstationCabCard from "@/components/cards/OutstationCabCard";
 import Reveal from "@/components/ui/Reveal";
@@ -11,9 +11,27 @@ const TRIP_TYPES = ["All", "One-way", "Round-trip"];
 export default function OutstationCabsPageClient({ cabs }: { cabs: OutstationCab[] }) {
   const [tripType, setTripType] = useState("All");
   const [sortBy, setSortBy] = useState("Price: Low");
+  const [from, setFrom] = useState("");
+  const [to, setTo] = useState("");
+
+  // Pre-fill from URL search params (e.g. arriving from the hero search widget).
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const f = params.get("from");
+    const t = params.get("to");
+    const tt = params.get("tripType");
+    if (f) setFrom(f);
+    if (t) setTo(t);
+    if (tt) {
+      const found = TRIP_TYPES.find(x => x.toLowerCase() === tt.toLowerCase());
+      if (found) setTripType(found);
+    }
+  }, []);
 
   const filtered = cabs
     .filter(c => tripType === "All" || c.tripType === tripType)
+    .filter(c => !from || c.originCity.toLowerCase() === from.toLowerCase())
+    .filter(c => !to || c.destinationCity.toLowerCase() === to.toLowerCase())
     .sort((a, b) => (sortBy === "Price: Low" ? a.price - b.price : b.price - a.price));
 
   const pill = (active: boolean) =>
@@ -46,7 +64,14 @@ export default function OutstationCabsPageClient({ cabs }: { cabs: OutstationCab
       </div>
 
       <div className="flex items-center justify-between mb-5 gap-3">
-        <p className="text-sm text-ink-muted font-light whitespace-nowrap shrink-0">{filtered.length} routes</p>
+        <div className="flex items-center gap-2 min-w-0">
+          <p className="text-sm text-ink-muted font-light whitespace-nowrap shrink-0">{filtered.length} routes</p>
+          {(from || to) && (
+            <button onClick={() => { setFrom(""); setTo(""); }} className="text-[11px] tracking-wide px-2.5 py-1 rounded-full bg-panel-soft text-ink-muted hover:text-ink whitespace-nowrap shrink-0">
+              {from || "Any"} → {to || "Any"} ×
+            </button>
+          )}
+        </div>
         <div className="flex gap-2 overflow-x-auto scrollbar-none min-w-0">
           {(["Price: Low", "Price: High"] as const).map(s => (
             <button
@@ -66,7 +91,7 @@ export default function OutstationCabsPageClient({ cabs }: { cabs: OutstationCab
         ) : (
           <div className="col-span-3 text-center py-20">
             <p className="font-serif text-2xl font-light text-ink mb-2">No routes match those filters.</p>
-            <button onClick={() => setTripType("All")} className="mt-3 text-xs tracking-[0.12em] uppercase text-gold hover:underline">
+            <button onClick={() => { setTripType("All"); setFrom(""); setTo(""); }} className="mt-3 text-xs tracking-[0.12em] uppercase text-gold hover:underline">
               Clear filters
             </button>
           </div>

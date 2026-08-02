@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import HourlyStayCard from "@/components/cards/HourlyStayCard";
 import Reveal from "@/components/ui/Reveal";
@@ -11,9 +11,20 @@ const DURATIONS = ["All", 3, 6, 12] as const;
 export default function HourlyStaysPageClient({ stays }: { stays: HourlyStay[] }) {
   const [hours, setHours] = useState<"All" | 3 | 6 | 12>("All");
   const [sortBy, setSortBy] = useState("Price: Low");
+  const [city, setCity] = useState("");
+
+  // Pre-fill from URL search params (e.g. arriving from the hero search widget).
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const c = params.get("city");
+    const h = params.get("hours");
+    if (c) setCity(c);
+    if (h === "3" || h === "6" || h === "12") setHours(Number(h) as 3 | 6 | 12);
+  }, []);
 
   const filtered = stays
     .filter(s => hours === "All" || s.hours === hours)
+    .filter(s => !city || s.city.toLowerCase() === city.toLowerCase())
     .sort((a, b) => (sortBy === "Price: Low" ? a.price - b.price : b.price - a.price));
 
   const pill = (active: boolean) =>
@@ -46,7 +57,14 @@ export default function HourlyStaysPageClient({ stays }: { stays: HourlyStay[] }
       </div>
 
       <div className="flex items-center justify-between mb-5 gap-3">
-        <p className="text-sm text-ink-muted font-light whitespace-nowrap shrink-0">{filtered.length} stays</p>
+        <div className="flex items-center gap-2 min-w-0">
+          <p className="text-sm text-ink-muted font-light whitespace-nowrap shrink-0">{filtered.length} stays</p>
+          {city && (
+            <button onClick={() => setCity("")} className="text-[11px] tracking-wide px-2.5 py-1 rounded-full bg-panel-soft text-ink-muted hover:text-ink whitespace-nowrap shrink-0">
+              in {city} ×
+            </button>
+          )}
+        </div>
         <div className="flex gap-2 overflow-x-auto scrollbar-none min-w-0">
           {(["Price: Low", "Price: High"] as const).map(s => (
             <button
@@ -66,7 +84,7 @@ export default function HourlyStaysPageClient({ stays }: { stays: HourlyStay[] }
         ) : (
           <div className="col-span-3 text-center py-20">
             <p className="font-serif text-2xl font-light text-ink mb-2">No stays match those filters.</p>
-            <button onClick={() => setHours("All")} className="mt-3 text-xs tracking-[0.12em] uppercase text-gold hover:underline">
+            <button onClick={() => { setHours("All"); setCity(""); }} className="mt-3 text-xs tracking-[0.12em] uppercase text-gold hover:underline">
               Clear filters
             </button>
           </div>

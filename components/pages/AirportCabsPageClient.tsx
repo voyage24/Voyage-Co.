@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import AirportCabCard from "@/components/cards/AirportCabCard";
 import Reveal from "@/components/ui/Reveal";
@@ -11,9 +11,23 @@ const CATEGORIES = ["All", "Sedan", "SUV", "Luxury Sedan", "Van"];
 export default function AirportCabsPageClient({ cabs }: { cabs: AirportCab[] }) {
   const [category, setCategory] = useState("All");
   const [sortBy, setSortBy] = useState("Price: Low");
+  const [city, setCity] = useState("");
+
+  // Pre-fill from URL search params (e.g. arriving from the hero search widget).
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const c = params.get("city");
+    const vehicle = params.get("vehicle");
+    if (c) setCity(c);
+    if (vehicle) {
+      const found = CATEGORIES.find(x => x.toLowerCase() === vehicle.toLowerCase());
+      if (found) setCategory(found);
+    }
+  }, []);
 
   const filtered = cabs
     .filter(c => category === "All" || c.vehicleType === category)
+    .filter(c => !city || c.city.toLowerCase() === city.toLowerCase())
     .sort((a, b) => (sortBy === "Price: Low" ? a.price - b.price : b.price - a.price));
 
   const pill = (active: boolean) =>
@@ -46,7 +60,14 @@ export default function AirportCabsPageClient({ cabs }: { cabs: AirportCab[] }) 
       </div>
 
       <div className="flex items-center justify-between mb-5 gap-3">
-        <p className="text-sm text-ink-muted font-light whitespace-nowrap shrink-0">{filtered.length} transfers</p>
+        <div className="flex items-center gap-2 min-w-0">
+          <p className="text-sm text-ink-muted font-light whitespace-nowrap shrink-0">{filtered.length} transfers</p>
+          {city && (
+            <button onClick={() => setCity("")} className="text-[11px] tracking-wide px-2.5 py-1 rounded-full bg-panel-soft text-ink-muted hover:text-ink whitespace-nowrap shrink-0">
+              in {city} ×
+            </button>
+          )}
+        </div>
         <div className="flex gap-2 overflow-x-auto scrollbar-none min-w-0">
           {(["Price: Low", "Price: High"] as const).map(s => (
             <button
@@ -66,7 +87,7 @@ export default function AirportCabsPageClient({ cabs }: { cabs: AirportCab[] }) 
         ) : (
           <div className="col-span-3 text-center py-20">
             <p className="font-serif text-2xl font-light text-ink mb-2">No transfers match those filters.</p>
-            <button onClick={() => setCategory("All")} className="mt-3 text-xs tracking-[0.12em] uppercase text-gold hover:underline">
+            <button onClick={() => { setCategory("All"); setCity(""); }} className="mt-3 text-xs tracking-[0.12em] uppercase text-gold hover:underline">
               Clear filters
             </button>
           </div>

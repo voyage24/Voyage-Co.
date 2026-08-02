@@ -1,23 +1,29 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Plane, Hotel, Train, Sparkles, Package, Anchor } from "lucide-react";
+import { Plane, Hotel, Train, Sparkles, Package, Anchor, Car, Route, Timer } from "lucide-react";
 import FlightSearch from "./FlightSearch";
 import HotelSearch from "./HotelSearch";
 import TrainSearch from "./TrainSearch";
 import ExperienceSearch from "./ExperienceSearch";
 import PackageSearch from "./PackageSearch";
 import CruiseSearch from "./CruiseSearch";
+import AirportCabSearch from "./AirportCabSearch";
+import OutstationCabSearch from "./OutstationCabSearch";
+import HourlyStaySearch from "./HourlyStaySearch";
 import type { City } from "@/lib/types";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 
 const TABS = [
-  { id: "flights",     labelKey: "searchTabs.flights",     icon: Plane },
-  { id: "hotels",      labelKey: "searchTabs.hotels",      icon: Hotel },
-  { id: "cruises",     labelKey: "searchTabs.cruises",     icon: Anchor },
-  { id: "trains",      labelKey: "searchTabs.trains",      icon: Train },
-  { id: "experiences", labelKey: "searchTabs.experiences", icon: Sparkles },
-  { id: "packages",    labelKey: "searchTabs.packages",    icon: Package },
+  { id: "flights",         labelKey: "searchTabs.flights",         icon: Plane },
+  { id: "hotels",          labelKey: "searchTabs.hotels",          icon: Hotel },
+  { id: "cruises",         labelKey: "searchTabs.cruises",         icon: Anchor },
+  { id: "trains",          labelKey: "searchTabs.trains",          icon: Train },
+  { id: "experiences",     labelKey: "searchTabs.experiences",     icon: Sparkles },
+  { id: "packages",        labelKey: "searchTabs.packages",        icon: Package },
+  { id: "airportCabs",     labelKey: "searchTabs.airportCabs",     icon: Car },
+  { id: "outstationCabs",  labelKey: "searchTabs.outstationCabs",  icon: Route },
+  { id: "hourlyStays",     labelKey: "searchTabs.hourlyStays",     icon: Timer },
 ] as const;
 
 export type TabId = typeof TABS[number]["id"];
@@ -135,6 +141,9 @@ export default function SearchWidget({
         {active === "trains"      && <TrainSearch />}
         {active === "experiences" && <ExperienceSearch />}
         {active === "packages"    && <PackageSearch />}
+        {active === "airportCabs"    && <AirportCabSearch cities={hotelCities ?? []} />}
+        {active === "outstationCabs" && <OutstationCabSearch cities={hotelCities ?? []} />}
+        {active === "hourlyStays"    && <HourlyStaySearch cities={hotelCities ?? []} />}
       </div>
     </div>
   );

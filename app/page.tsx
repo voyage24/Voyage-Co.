@@ -30,17 +30,20 @@ async function getHomeData() {
     prisma.package.findMany({ where: { published: true }, orderBy: [{ featured: "desc" }, { createdAt: "asc" }] }),
     prisma.experience.findMany({ where: { published: true } }),
     prisma.testimonial.findMany({ where: { published: true }, orderBy: { sortOrder: "asc" } }),
+    prisma.airportCab.findMany({ where: { published: true } }),
+    prisma.outstationCab.findMany({ where: { published: true } }),
+    prisma.hourlyStay.findMany({ where: { published: true } }),
     ]);
   } catch (error) {
     if (process.env.NODE_ENV !== "production") {
       console.warn("Homepage catalog data unavailable; rendering with empty local data.", error);
     }
-    return [[], [], [], [], [], []];
+    return [[], [], [], [], [], [], [], [], []];
   }
 }
 
 export default async function Home() {
-  const [hotels, cruises, trains, packages, experiences, testimonials] = await getHomeData();
+  const [hotels, cruises, trains, packages, experiences, testimonials, airportCabs, outstationCabs, hourlyStays] = await getHomeData();
   const homeFaq = await getCollection("homeFaq");
 
   // Real figures for the stats band.
@@ -59,7 +62,10 @@ export default async function Home() {
     <>
       <JsonLd data={[organizationJsonLd(), websiteJsonLd()]} />
       <HomeGreeting />
-      <HeroSection hotels={hotels} cruises={cruises} trains={trains as any} packages={packages} experiences={experiences} />
+      <HeroSection
+        hotels={hotels} cruises={cruises} trains={trains as any} packages={packages} experiences={experiences}
+        airportCabs={airportCabs} outstationCabs={outstationCabs} hourlyStays={hourlyStays}
+      />
       <PersonalizedHome heading={false} />
       <ThemedCollections />
       <RecentlyViewed />
