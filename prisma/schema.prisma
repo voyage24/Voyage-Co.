@@ -501,6 +501,73 @@ model Package {
   updatedAt      DateTime @updatedAt
 }
 
+model AirportCab {
+  id             String   @id
+  title          String
+  city           String
+  vehicleType    String
+  capacity       String
+  includes       String[]
+  category       String
+  price          Int
+  image          String
+  description    String   @db.Text
+  badge          String?
+  published      Boolean  @default(true)
+  featured       Boolean  @default(false)
+  availableUnits Int?
+  priceOnRequest Boolean  @default(false)
+  faqs           Json?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model OutstationCab {
+  id               String   @id
+  title            String
+  originCity       String
+  destinationCity  String
+  vehicleType      String
+  tripType         String   // "One-way" | "Round-trip"
+  distanceKm       Int?
+  durationEstimate String?
+  includes         String[]
+  category         String
+  price            Int
+  image            String
+  description      String   @db.Text
+  badge            String?
+  published        Boolean  @default(true)
+  featured         Boolean  @default(false)
+  availableUnits   Int?
+  priceOnRequest   Boolean  @default(false)
+  faqs             Json?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model HourlyStay {
+  id             String   @id
+  title          String
+  city           String
+  location       String
+  hours          Int      // duration of this day-use package, e.g. 3 / 6 / 12
+  amenities      String[]
+  category       String
+  price          Int
+  image          String
+  description    String   @db.Text
+  badge          String?
+  rating         Float?
+  published      Boolean  @default(true)
+  featured       Boolean  @default(false)
+  availableUnits Int?
+  priceOnRequest Boolean  @default(false)
+  faqs           Json?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
 model Cruise {
   id             String   @id
   name           String
