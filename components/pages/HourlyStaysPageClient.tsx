@@ -34,7 +34,7 @@ export default function HourlyStaysPageClient({ stays }: { stays: HourlyStay[] }
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-16">
       <div className="relative rounded-2xl overflow-hidden p-6 sm:p-10 mb-10 border border-vc-700 min-h-[280px] flex flex-col justify-center">
         <Image
-          src="https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=1600&h=800&fit=crop"
+          src="https://images.unsplash.com/photo-1702255489644-392758161f1f?w=1600&h=800&fit=crop"
           alt="" fill sizes="100vw" priority className="object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-vc-950/90 via-vc-950/70 to-vc-950/30" />
