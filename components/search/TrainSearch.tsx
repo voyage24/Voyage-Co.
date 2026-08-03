@@ -78,7 +78,7 @@ function StationAutocomplete({
           onChange={e => { setQuery(e.target.value); setOpen(true); }}
           onFocus={() => setOpen(true)}
           placeholder={t("trainSearch.cityOrStation")}
-          className="w-full bg-transparent text-base text-ink placeholder:text-ink-faint focus:outline-none font-light"
+          className="w-full bg-transparent text-base text-ink placeholder:text-ink-faint focus:outline-none font-light truncate"
         />
       )}
       {open && (isMobile ? (

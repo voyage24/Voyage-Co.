@@ -380,7 +380,7 @@ export const EN: Dictionary = {
   "experienceSearch.people": "People",
   "experienceSearch.findExperiences": "Find Experiences",
 
-  "packageSearch.destinationPlaceholder": "Where would you like to journey?",
+  "packageSearch.destinationPlaceholder": "Where to?",
   "packageSearch.findJourneys": "Find Journeys",
 
   "listing.refine": "Refine",

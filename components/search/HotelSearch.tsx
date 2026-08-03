@@ -61,7 +61,7 @@ function CityAutocomplete({
           onChange={e => { onChange(e.target.value); setOpen(true); }}
           onFocus={() => setOpen(true)}
           placeholder={t("hotelSearch.cityOrHotel")}
-          className="w-full bg-transparent text-base text-ink placeholder:text-ink-faint focus:outline-none font-light"
+          className="w-full bg-transparent text-base text-ink placeholder:text-ink-faint focus:outline-none font-light truncate"
         />
       )}
       {open && (isMobile ? (

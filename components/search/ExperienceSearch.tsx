@@ -26,7 +26,7 @@ export default function ExperienceSearch() {
             value={destination}
             onChange={e => setDestination(e.target.value)}
             placeholder={t("experienceSearch.destinationPlaceholder")}
-            className="w-full bg-transparent text-sm text-ink placeholder:text-ink-faint focus:outline-none font-light"
+            className="w-full bg-transparent text-sm text-ink placeholder:text-ink-faint focus:outline-none font-light truncate"
           />
         </div>
 

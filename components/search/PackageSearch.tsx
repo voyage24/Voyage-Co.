@@ -28,7 +28,7 @@ export default function PackageSearch() {
             value={destination}
             onChange={e => setDestination(e.target.value)}
             placeholder={t("packageSearch.destinationPlaceholder")}
-            className="w-full bg-transparent text-sm text-ink placeholder:text-ink-faint focus:outline-none font-light"
+            className="w-full bg-transparent text-sm text-ink placeholder:text-ink-faint focus:outline-none font-light truncate"
           />
         </div>
 

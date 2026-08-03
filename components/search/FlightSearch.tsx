@@ -258,7 +258,7 @@ function AirportInput({
             onFocus={handleFocus}
             placeholder={focused ? t("flightSearch.typeCityOrCode") : t("flightSearch.cityOrAirport")}
             autoComplete="off"
-            className="w-full bg-transparent text-base text-ink placeholder:text-ink-faint focus:outline-none font-light leading-tight cursor-text"
+            className="w-full bg-transparent text-base text-ink placeholder:text-ink-faint focus:outline-none font-light leading-tight cursor-text truncate"
           />
         )}
         {value && focused && !isMobile && (
