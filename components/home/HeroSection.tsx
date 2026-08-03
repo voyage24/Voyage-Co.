@@ -229,9 +229,12 @@ export default function HeroSection({
 
       {/* Quick links — kept out of the fading headline block and given their
           own compact, always-visible row so they stay reachable instead of
-          disappearing while the map is in focus. */}
+          disappearing while the map is in focus. Aligned to the same
+          max-w-4xl column as the (now centered, narrower) search widget
+          below, so the two read as one aligned group instead of the button
+          sitting off to the left of a centered card. */}
       <div className="relative w-full max-w-[1500px] mx-auto px-6 lg:px-12 pb-3">
-        <div className="flex flex-wrap gap-3">
+        <div className="max-w-4xl mx-auto flex flex-wrap gap-3">
           <Link
             href={TAB_EXPLORE_LINK[activeTab].href}
             className="inline-flex items-center justify-center px-5 py-2 text-[11px] tracking-[0.16em] uppercase font-medium bg-ink text-page hover:bg-ink/90 sm:bg-white sm:text-vc-950 sm:hover:bg-white/90 transition-all duration-200 hover:scale-105 active:scale-95"
