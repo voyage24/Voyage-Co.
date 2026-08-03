@@ -25,7 +25,9 @@ function StationAutocomplete({
   const [query, setQuery] = useState(value ? `${value.name} (${value.code})` : ""); // display value
   const [search, setSearch] = useState(""); // mobile sheet search
   const [open, setOpen] = useState(false);
+  const [focused, setFocused] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (value) setQuery(`${value.name} (${value.code})`);
@@ -34,11 +36,18 @@ function StationAutocomplete({
   useEffect(() => {
     if (isMobile) return; // mobile sheet manages its own dismissal
     const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+      if (ref.current && !ref.current.contains(e.target as Node)) { setOpen(false); setFocused(false); }
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, [isMobile]);
+
+  // Move real keyboard focus into the input once it mounts (it's only
+  // rendered while focused — see below — so a plain click on the idle
+  // display needs to hand focus off manually).
+  useEffect(() => {
+    if (focused && !isMobile) inputRef.current?.focus();
+  }, [focused, isMobile]);
 
   const term = isMobile ? search : query;
   const matches = term.length > 1
@@ -49,8 +58,9 @@ function StationAutocomplete({
       ).slice(0, 6)
     : STATIONS.slice(0, 6);
 
-  const pick = (s: Station) => { onChange(s); setQuery(`${s.name} (${s.code})`); setOpen(false); setSearch(""); };
-  const close = () => { setOpen(false); setSearch(""); };
+  const pick = (s: Station) => { onChange(s); setQuery(`${s.name} (${s.code})`); setOpen(false); setFocused(false); setSearch(""); };
+  const close = () => { setOpen(false); setFocused(false); setSearch(""); };
+  const handleFocus = () => { setFocused(true); setOpen(true); };
 
   const items = matches.map(s => (
     <button
@@ -72,14 +82,22 @@ function StationAutocomplete({
         <button type="button" onClick={() => { setSearch(""); setOpen(true); }} className="w-full text-left bg-transparent text-base font-light leading-tight truncate">
           {query ? <span className="text-ink">{query}</span> : <span className="text-ink-faint">{t("trainSearch.cityOrStation")}</span>}
         </button>
-      ) : (
+      ) : focused ? (
+        // Only rendered while actively editing — an <input>'s own value/
+        // placeholder text doesn't reliably ellipsis in every browser, so
+        // the idle (unfocused) state below uses a plain truncating button.
         <input
+          ref={inputRef}
           value={query}
           onChange={e => { setQuery(e.target.value); setOpen(true); }}
-          onFocus={() => setOpen(true)}
+          onFocus={handleFocus}
           placeholder={t("trainSearch.cityOrStation")}
-          className="w-full bg-transparent text-base text-ink placeholder:text-ink-faint focus:outline-none font-light truncate"
+          className="w-full bg-transparent text-base text-ink placeholder:text-ink-faint focus:outline-none font-light"
         />
+      ) : (
+        <button type="button" onClick={handleFocus} className="w-full text-left bg-transparent text-base font-light leading-tight truncate">
+          {query ? <span className="text-ink">{query}</span> : <span className="text-ink-faint">{t("trainSearch.cityOrStation")}</span>}
+        </button>
       )}
       {open && (isMobile ? (
         <MobilePickerSheet title={label} query={search} onQueryChange={setSearch} onClose={close} searchPlaceholder={t("trainSearch.cityOrStation")}>
