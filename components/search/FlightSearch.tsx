@@ -10,6 +10,7 @@ import type { City } from "@/lib/types";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useIsMobile } from "@/lib/useIsMobile";
 import MobilePickerSheet from "@/components/ui/MobilePickerSheet";
+import { useDropUp } from "@/lib/useDropUp";
 
 // Stable English values — used as the API query param / state value, so
 // only their displayed labels (via CABIN_LABEL_KEYS) are translated.
@@ -611,16 +612,7 @@ export default function FlightSearch({
   const [airline, setAirline] = useState(defaultAirline ?? "");
   const [showCabin, setShowCabin] = useState(false);
   const cabinRef = useRef<HTMLDivElement>(null);
-  const cabinDropRef = useRef<HTMLDivElement>(null);
-  const [cabinDropStyle, setCabinDropStyle] = useState<React.CSSProperties>({});
-  const calcCabinDropPos = () => {
-    if (!cabinRef.current) return;
-    const r = cabinRef.current.getBoundingClientRect();
-    // Opens upward — the field sits near the bottom of the hero, so there's
-    // reliably more clearance above it (into the map/photo) than below it
-    // (the popover used to run past the viewport's bottom edge).
-    setCabinDropStyle({ bottom: window.innerHeight - r.top + 8, left: "auto", right: window.innerWidth - r.right, width: 256 });
-  };
+  const { style: cabinDropStyle, dropRef: cabinDropRef } = useDropUp(cabinRef, showCabin, 256);
 
   const sortedAirlines = useMemo(
     () => [...AIRLINES].sort((a, b) => a.name.localeCompare(b.name)),
@@ -655,23 +647,8 @@ export default function FlightSearch({
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
-  }, []);
-
-  // Portaled to <body> (position: fixed) so it floats freely over the page —
-  // as a plain absolutely-positioned child of the (short) search card it used
-  // to spill well past the card's bottom edge onto whatever sat behind it.
-  useEffect(() => {
-    if (!showCabin) return;
-    calcCabinDropPos();
-    const reposition = () => calcCabinDropPos();
-    window.addEventListener("scroll", reposition, true);
-    window.addEventListener("resize", reposition);
-    return () => {
-      window.removeEventListener("scroll", reposition, true);
-      window.removeEventListener("resize", reposition);
-    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [showCabin]);
+  }, []);
 
   const swap = () => { const prevFrom = from; setFrom(to); setTo(prevFrom); };
 
@@ -845,7 +822,7 @@ export default function FlightSearch({
           {showCabin && createPortal(
             <div
               ref={cabinDropRef}
-              style={{ ...cabinDropStyle, position: "fixed", zIndex: 9999 }}
+              style={cabinDropStyle}
               className="max-w-[90vw] bg-panel-raised border border-line rounded-xl shadow-luxury p-5 animate-slide-up space-y-5"
             >
               <div className="flex items-center justify-between">

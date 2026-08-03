@@ -1,11 +1,13 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { Calendar, Users, Search, ChevronDown } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useIsMobile } from "@/lib/useIsMobile";
 import MobilePickerSheet from "@/components/ui/MobilePickerSheet";
+import { useDropUp } from "@/lib/useDropUp";
 
 function CityAutocomplete({
   cities, value, onChange, onSelect,
@@ -26,14 +28,19 @@ function CityAutocomplete({
   const matches = term.length > 0
     ? cities.filter(c => c.toLowerCase().includes(term.toLowerCase()))
     : cities;
+  const { style: dropStyle, dropRef } = useDropUp(ref, open && !isMobile, 256);
 
   useEffect(() => {
     if (isMobile) return; // mobile sheet manages its own dismissal
     const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) { setOpen(false); setFocused(false); }
+      const target = e.target as Node;
+      const insideField = ref.current?.contains(target);
+      const insideDrop = dropRef.current?.contains(target);
+      if (!insideField && !insideDrop) { setOpen(false); setFocused(false); }
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isMobile]);
 
   // Move real keyboard focus into the input once it mounts (it's only
@@ -87,10 +94,11 @@ function CityAutocomplete({
           <div className="py-1">{items}</div>
         </MobilePickerSheet>
       ) : (
-        matches.length > 0 && (
-          <div className="absolute top-full left-0 mt-2 w-64 max-w-[90vw] max-h-72 overflow-y-auto bg-panel-raised border border-line rounded-xl shadow-widget z-50">
+        matches.length > 0 && createPortal(
+          <div ref={dropRef} style={dropStyle} className="max-w-[90vw] max-h-72 overflow-y-auto bg-panel-raised border border-line rounded-xl shadow-luxury">
             {items}
-          </div>
+          </div>,
+          document.body
         )
       ))}
     </div>
@@ -113,13 +121,18 @@ export default function HotelSearch({
   const [guests, setGuests] = useState(2);
   const [showGuests, setShowGuests] = useState(false);
   const guestRef = useRef<HTMLDivElement>(null);
+  const { style: guestDropStyle, dropRef: guestDropRef } = useDropUp(guestRef, showGuests, 256);
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (guestRef.current && !guestRef.current.contains(e.target as Node)) setShowGuests(false);
+      const target = e.target as Node;
+      const insideField = guestRef.current?.contains(target);
+      const insideDrop = guestDropRef.current?.contains(target);
+      if (!insideField && !insideDrop) setShowGuests(false);
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fieldCls = "flex-1 bg-panel border border-line rounded-xl px-4 py-2.5";
@@ -164,8 +177,8 @@ export default function HotelSearch({
               <ChevronDown size={13} className={`text-ink-faint transition-transform shrink-0 ${showGuests ? "rotate-180" : ""}`} />
             </div>
           </div>
-          {showGuests && (
-            <div className="absolute top-full left-0 mt-2 w-64 max-w-[90vw] bg-panel-raised border border-line rounded-xl shadow-widget z-50 p-5 animate-slide-down space-y-4">
+          {showGuests && createPortal(
+            <div ref={guestDropRef} style={guestDropStyle} className="max-w-[90vw] bg-panel-raised border border-line rounded-xl shadow-luxury p-5 animate-slide-up space-y-4">
               {[
                 { key: "rooms", labelKey: "hotelSearch.rooms", value: rooms, set: setRooms, min: 1, max: 8 },
                 { key: "guests", labelKey: "hotelSearch.guests", value: guests, set: setGuests, min: 1, max: 16 },
@@ -182,7 +195,8 @@ export default function HotelSearch({
               <button onClick={() => setShowGuests(false)} className="w-full py-2.5 bg-ink text-page text-xs font-medium tracking-[0.12em] uppercase rounded-sm hover:bg-ink/90 transition-colors">
                 {t("hotelSearch.apply")}
               </button>
-            </div>
+            </div>,
+            document.body
           )}
         </div>
       </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { ArrowLeftRight, Search, Calendar, ChevronDown } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { STATIONS } from "@/lib/mock-data";
@@ -8,6 +9,7 @@ import type { Station } from "@/lib/types";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useIsMobile } from "@/lib/useIsMobile";
 import MobilePickerSheet from "@/components/ui/MobilePickerSheet";
+import { useDropUp } from "@/lib/useDropUp";
 
 // `tClass` state stores the English code and is sent as the API query param;
 // only the displayed label is translated, via this lookup.
@@ -28,6 +30,7 @@ function StationAutocomplete({
   const [focused, setFocused] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const { style: dropStyle, dropRef } = useDropUp(ref, open && !isMobile, 288);
 
   useEffect(() => {
     if (value) setQuery(`${value.name} (${value.code})`);
@@ -36,10 +39,14 @@ function StationAutocomplete({
   useEffect(() => {
     if (isMobile) return; // mobile sheet manages its own dismissal
     const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) { setOpen(false); setFocused(false); }
+      const target = e.target as Node;
+      const insideField = ref.current?.contains(target);
+      const insideDrop = dropRef.current?.contains(target);
+      if (!insideField && !insideDrop) { setOpen(false); setFocused(false); }
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isMobile]);
 
   // Move real keyboard focus into the input once it mounts (it's only
@@ -104,10 +111,11 @@ function StationAutocomplete({
           <div className="py-1">{items}</div>
         </MobilePickerSheet>
       ) : (
-        matches.length > 0 && (
-          <div className="absolute top-full left-0 mt-2 w-72 max-w-[90vw] bg-panel-raised border border-line rounded-xl shadow-widget z-50 overflow-hidden">
+        matches.length > 0 && createPortal(
+          <div ref={dropRef} style={dropStyle} className="max-w-[90vw] bg-panel-raised border border-line rounded-xl shadow-luxury overflow-hidden">
             {items}
-          </div>
+          </div>,
+          document.body
         )
       ))}
     </div>
@@ -125,13 +133,18 @@ export default function TrainSearch() {
   const [tClass, setTClass] = useState("3A");
   const [showClass, setShowClass] = useState(false);
   const classRef = useRef<HTMLDivElement>(null);
+  const { style: classDropStyle, dropRef: classDropRef } = useDropUp(classRef, showClass, 256);
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (classRef.current && !classRef.current.contains(e.target as Node)) setShowClass(false);
+      const target = e.target as Node;
+      const insideField = classRef.current?.contains(target);
+      const insideDrop = classDropRef.current?.contains(target);
+      if (!insideField && !insideDrop) setShowClass(false);
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const swap = () => { const temp = from; setFrom(to); setTo(temp); };
@@ -182,8 +195,8 @@ export default function TrainSearch() {
               <ChevronDown size={13} className={`text-ink-faint transition-transform shrink-0 ${showClass ? "rotate-180" : ""}`} />
             </div>
           </div>
-          {showClass && (
-            <div className="absolute top-full left-0 mt-2 w-64 max-w-[90vw] bg-panel-raised border border-line rounded-xl shadow-widget z-50 p-4 animate-slide-down">
+          {showClass && createPortal(
+            <div ref={classDropRef} style={classDropStyle} className="max-w-[90vw] bg-panel-raised border border-line rounded-xl shadow-luxury p-4 animate-slide-up">
               <p className="text-[10px] tracking-[0.14em] uppercase text-ink-faint mb-3">{t("trainSearch.chooseClass")}</p>
               <div className="grid grid-cols-2 gap-1.5">
                 {TRAIN_CLASSES.map(c => (
@@ -194,7 +207,8 @@ export default function TrainSearch() {
                   </button>
                 ))}
               </div>
-            </div>
+            </div>,
+            document.body
           )}
         </div>
       </div>
