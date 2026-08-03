@@ -6,9 +6,12 @@ import { resolveCoords } from "@/lib/place-coords";
 import type { OutstationCab } from "@/lib/types";
 
 /**
- * Hero background for the Outstation Cabs search tab — cycles through a
- * handful of routes, plotting each one's origin-to-destination journey on
- * the live map, in place of the world destination map or a static photo.
+ * Hero background for the Outstation Cabs search tab — plots a featured
+ * route's origin-to-destination journey on the live map, in place of the
+ * world destination map or a static photo. The traveller can browse other
+ * routes via the slide indicators below; it no longer auto-advances (the
+ * map used to fly to a new route every few seconds on its own, which read
+ * as the map randomly zooming around).
  */
 export default function OutstationCabMapBackground({ cabs }: { cabs: OutstationCab[] }) {
   const [index, setIndex] = useState(0);
@@ -26,12 +29,6 @@ export default function OutstationCabMapBackground({ cabs }: { cabs: OutstationC
     return () => clearTimeout(hideTimer.current);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  useEffect(() => {
-    if (cabs.length < 2) return;
-    const timer = setInterval(() => setIndex(i => (i + 1) % cabs.length), 5500);
-    return () => clearInterval(timer);
-  }, [cabs.length]);
 
   const current = cabs[index];
 

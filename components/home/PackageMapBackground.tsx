@@ -5,10 +5,12 @@ import PackageRouteMap from "@/components/home/PackageRouteMap";
 import type { Package } from "@/lib/types";
 
 /**
- * Hero background for the Bespoke Journeys search tab — cycles through a
- * handful of featured curated itineraries, plotting each one's actual
- * multi-city route on the interactive world map, in place of the generic
- * flights destination map.
+ * Hero background for the Bespoke Journeys search tab — plots a featured
+ * curated itinerary's actual multi-city route on the interactive world map,
+ * in place of the generic flights destination map. The traveller can browse
+ * other itineraries via the slide indicators below; it no longer
+ * auto-advances (the map used to fly to a new itinerary every few seconds
+ * on its own, which read as the map randomly zooming around).
  */
 export default function PackageMapBackground({ packages }: { packages: Package[] }) {
   const [index, setIndex] = useState(0);
@@ -29,11 +31,6 @@ export default function PackageMapBackground({ packages }: { packages: Package[]
     return () => clearTimeout(hideTimer.current);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  useEffect(() => {
-    const timer = setInterval(() => setIndex(i => (i + 1) % packages.length), 5500);
-    return () => clearInterval(timer);
-  }, [packages.length]);
 
   const current = packages[index];
   if (!current) return null;

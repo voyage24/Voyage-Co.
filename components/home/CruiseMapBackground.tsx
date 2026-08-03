@@ -5,10 +5,12 @@ import CruiseRouteMap from "@/components/home/CruiseRouteMap";
 import type { Cruise } from "@/lib/types";
 
 /**
- * Hero background for the Cruises search tab — cycles through every voyage
- * in the catalogue, plotting each one's actual itinerary (departure port
- * through every port of call) on the interactive world map, in place of the
- * destination map or a static photo.
+ * Hero background for the Cruises search tab — plots a featured voyage's
+ * actual itinerary (departure port through every port of call) on the
+ * interactive world map, in place of the destination map or a static photo.
+ * The traveller can browse other voyages via the slide indicators below;
+ * it no longer auto-advances (the map used to fly to a new voyage every
+ * few seconds on its own, which read as the map randomly zooming around).
  */
 export default function CruiseMapBackground({ cruises }: { cruises: Cruise[] }) {
   const [index, setIndex] = useState(0);
@@ -29,11 +31,6 @@ export default function CruiseMapBackground({ cruises }: { cruises: Cruise[] }) 
     return () => clearTimeout(hideTimer.current);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  useEffect(() => {
-    const timer = setInterval(() => setIndex(i => (i + 1) % cruises.length), 5500);
-    return () => clearInterval(timer);
-  }, [cruises.length]);
 
   const current = cruises[index];
   if (!current) return null;

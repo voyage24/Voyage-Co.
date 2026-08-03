@@ -5,10 +5,12 @@ import RailRouteMap from "@/components/home/RailRouteMap";
 import type { Train } from "@/lib/types";
 
 /**
- * Hero background for the Rail Journeys search tab — cycles through a
- * handful of featured trains, plotting each one's origin-to-destination
- * route on a zoomed-in India map, in place of the world destination map or
- * a static photo.
+ * Hero background for the Rail Journeys search tab — plots a featured
+ * train's origin-to-destination route on a zoomed-in India map, in place of
+ * the world destination map or a static photo. The traveller can browse
+ * other trains via the slide indicators below; it no longer auto-advances
+ * (the map used to fly to a new route every few seconds on its own, which
+ * read as the map randomly zooming around).
  */
 export default function RailMapBackground({ trains }: { trains: Train[] }) {
   const [index, setIndex] = useState(0);
@@ -29,11 +31,6 @@ export default function RailMapBackground({ trains }: { trains: Train[] }) {
     return () => clearTimeout(hideTimer.current);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  useEffect(() => {
-    const timer = setInterval(() => setIndex(i => (i + 1) % trains.length), 5500);
-    return () => clearInterval(timer);
-  }, [trains.length]);
 
   const current = trains[index];
   if (!current) return null;
