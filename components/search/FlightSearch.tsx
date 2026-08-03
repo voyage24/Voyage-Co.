@@ -189,6 +189,13 @@ function AirportInput({
 
   useEffect(() => { setMounted(true); }, []);
 
+  // Move real keyboard focus into the input once it mounts (it's only
+  // rendered while focused — see below — so a plain click on the idle
+  // display needs to hand focus off manually).
+  useEffect(() => {
+    if (focused && !isMobile) inputRef.current?.focus();
+  }, [focused, isMobile]);
+
   const calcDropPos = () => {
     if (!wrapRef.current) return;
     const r = wrapRef.current.getBoundingClientRect();
@@ -234,13 +241,6 @@ function AirportInput({
   const handleSelect = (city: City) => { onChange(city); setQuery(""); setOpen(false); setFocused(false); };
   const close = () => { setOpen(false); setFocused(false); setQuery(""); };
 
-  // On mobile the field is a read-only trigger (tapping opens the picker
-  // without the keyboard), so it always shows the chosen airport, never the
-  // live query — that lives in the dropdown's opt-in search box instead.
-  const displayText = isMobile
-    ? (value ? `${value.name} · ${value.code}` : "")
-    : (focused ? query : (value ? `${value.name} · ${value.code}` : ""));
-
   return (
     <div ref={wrapRef} className="min-w-0 w-full">
       <p className="text-[10px] tracking-[0.14em] uppercase text-ink-faint mb-1 font-medium select-none truncate">{label}</p>
@@ -249,17 +249,25 @@ function AirportInput({
           <button type="button" onClick={handleFocus} className="w-full text-left bg-transparent text-base font-light leading-tight truncate">
             {value ? <span className="text-ink">{value.name} · {value.code}</span> : <span className="text-ink-faint">{t("flightSearch.cityOrAirport")}</span>}
           </button>
-        ) : (
+        ) : focused ? (
+          // Only rendered while actively typing — an <input>'s own value/
+          // placeholder text doesn't reliably ellipsis in every browser, so
+          // the idle (unfocused) state below uses a plain truncating span
+          // instead of trying to display the chosen airport via the input.
           <input
             ref={inputRef}
             type="text"
-            value={displayText}
+            value={query}
             onChange={handleChange}
             onFocus={handleFocus}
-            placeholder={focused ? t("flightSearch.typeCityOrCode") : t("flightSearch.cityOrAirport")}
+            placeholder={t("flightSearch.typeCityOrCode")}
             autoComplete="off"
-            className="w-full bg-transparent text-base text-ink placeholder:text-ink-faint focus:outline-none font-light leading-tight cursor-text truncate"
+            className="w-full bg-transparent text-base text-ink placeholder:text-ink-faint focus:outline-none font-light leading-tight cursor-text"
           />
+        ) : (
+          <button type="button" onClick={handleFocus} className="w-full text-left bg-transparent text-base font-light leading-tight truncate">
+            {value ? <span className="text-ink">{value.name} · {value.code}</span> : <span className="text-ink-faint">{t("flightSearch.cityOrAirport")}</span>}
+          </button>
         )}
         {value && focused && !isMobile && (
           <button type="button" onMouseDown={e => e.preventDefault()} onClick={() => { setQuery(""); inputRef.current?.focus(); }} className="shrink-0 text-ink-faint hover:text-ink">
