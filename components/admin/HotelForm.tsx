@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import ImageUploadField from "@/components/admin/ImageUploadField";
+import ImageListUploadField from "@/components/admin/ImageListUploadField";
 import FaqEditor from "@/components/admin/FaqEditor";
 
 interface HotelData {
@@ -51,7 +52,7 @@ export default function HotelForm({ initial }: { initial?: HotelData }) {
   const isEdit = !!initial?.id;
 
   const set = <K extends keyof HotelData>(key: K, value: HotelData[K]) => setForm(p => ({ ...p, [key]: value }));
-  const setList = (key: "images" | "amenities" | "highlights", text: string) =>
+  const setList = (key: "amenities" | "highlights", text: string) =>
     set(key, text.split("\n").map(s => s.trim()).filter(Boolean));
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -139,10 +140,7 @@ export default function HotelForm({ initial }: { initial?: HotelData }) {
 
       <ImageUploadField label="Main Image" value={form.image} onChange={v => set("image", v)} />
 
-      <div>
-        <label className={labelClass}>Additional Images (one URL per line)</label>
-        <textarea rows={3} className={inputClass} value={form.images.join("\n")} onChange={e => setList("images", e.target.value)} />
-      </div>
+      <ImageListUploadField label="Additional Images (gallery)" value={form.images} onChange={v => set("images", v)} />
 
       <div>
         <label className={labelClass}>Amenities (one per line)</label>
