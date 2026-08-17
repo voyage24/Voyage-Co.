@@ -1,0 +1,19 @@
+{
+  "name": "Voyages Admin",
+  "short_name": "Voyages Admin",
+  "description": "Voyages & Co. — admin console.",
+  "start_url": "/admin",
+  "scope": "/admin",
+  "display": "standalone",
+  "background_color": "#0b131d",
+  "theme_color": "#1c0a0d",
+  "icons": [
+    { "src": "/logo-navy.png", "sizes": "any", "type": "image/png" },
+    { "src": "/logo-white.png", "sizes": "any", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Bookings", "short_name": "Bookings", "url": "/admin/bookings" },
+    { "name": "Enquiries", "short_name": "Enquiries", "url": "/admin/enquiries" },
+    { "name": "Voyages Mail", "short_name": "Mail", "url": "/admin/mail" }
+  ]
+}
