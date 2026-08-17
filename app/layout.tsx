@@ -21,6 +21,13 @@ import DevBanner from "@/components/layout/DevBanner";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://voyagesco.com"),
+  // A plain static file (public/site.webmanifest), not Next's manifest.ts
+  // file-convention — that convention injects its <link rel="manifest">
+  // through a separate mechanism that a nested layout's own
+  // metadata.manifest field can't override (confirmed: it silently no-ops),
+  // which is exactly what broke /admin's own manifest. A regular metadata
+  // field, by contrast, participates in normal parent→child overriding.
+  manifest: "/site.webmanifest",
   title: "Voyages & Co. — A Sense of Place",
   description: "Voyages & Co. is a private travel atelier crafting extraordinary journeys — singular stays, wellness retreats and cultural immersions in the world's most remarkable places.",
   keywords: "luxury travel, bespoke journeys, private villas, wellness retreats, luxury hotels, voyages and co",
