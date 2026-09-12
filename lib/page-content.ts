@@ -152,10 +152,34 @@ export const PAGE_REGISTRY: ContentPage[] = [
     ],
   },
   {
-    page: "cancellations", label: "Cancellation Policy", path: "/cancellations",
+    page: "cancellations", label: "Cancellation & Refund Policy", path: "/cancellations",
     fields: [
       { key: "cancellations.eyebrow", label: "Eyebrow" },
       { key: "cancellations.title", label: "Title" },
+    ],
+  },
+  {
+    page: "paymentPolicy", label: "Bookings & Payment Policy", path: "/payment-policy",
+    fields: [
+      { key: "paymentPolicy.eyebrow", label: "Eyebrow" },
+      { key: "paymentPolicy.title", label: "Title" },
+      { key: "paymentPolicy.intro", label: "Intro", type: "textarea" },
+    ],
+  },
+  {
+    page: "deliveryPolicy", label: "Travel Fulfilment / Delivery Policy", path: "/delivery-policy",
+    fields: [
+      { key: "deliveryPolicy.eyebrow", label: "Eyebrow" },
+      { key: "deliveryPolicy.title", label: "Title" },
+      { key: "deliveryPolicy.intro", label: "Intro", type: "textarea" },
+    ],
+  },
+  {
+    page: "pricing", label: "Packages & Services Pricing", path: "/pricing",
+    fields: [
+      { key: "pricing.eyebrow", label: "Eyebrow" },
+      { key: "pricing.title", label: "Title" },
+      { key: "pricing.intro", label: "Intro", type: "textarea" },
     ],
   },
   {
@@ -363,14 +387,26 @@ export const PAGE_DEFAULTS: Record<string, string> = {
 
   "terms.eyebrow": "Legal",
   "terms.title": "Terms of Service",
-  "terms.intro": "Welcome to Voyages & Co. Please read these Terms of Service carefully before using our services. These terms constitute a legally binding agreement between you and Voyages & Co. Ltd.",
+  "terms.intro": "Welcome to Voyages & Co. Please read these Terms of Service carefully before using our services. These terms constitute a legally binding agreement between you and Voyages & Co.",
 
   "privacy.eyebrow": "Legal",
   "privacy.title": "Privacy Policy",
-  "privacy.intro": "Voyages & Co. Ltd. (\"Voyages & Co.\", \"we\", \"us\") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, and safeguard your information when you use our services at voyagesco.com.",
+  "privacy.intro": "Voyages & Co. (\"we\", \"us\") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, and safeguard your information when you use our services at voyagesco.com.",
 
   "cancellations.eyebrow": "Legal",
-  "cancellations.title": "Cancellation Policy",
+  "cancellations.title": "Cancellation & Refund Policy",
+
+  "paymentPolicy.eyebrow": "Legal",
+  "paymentPolicy.title": "Bookings & Payment Policy",
+  "paymentPolicy.intro": "This policy explains how bookings are confirmed, how and when payment is collected, and how we protect your payment information when you book with Voyages & Co.",
+
+  "deliveryPolicy.eyebrow": "Legal",
+  "deliveryPolicy.title": "Travel Fulfilment & Delivery Policy",
+  "deliveryPolicy.intro": "Voyages & Co. arranges travel services rather than physical goods — this policy explains how your booking confirmation, tickets and travel documents are delivered to you.",
+
+  "pricing.eyebrow": "Commercial",
+  "pricing.title": "Packages & Services Pricing",
+  "pricing.intro": "How pricing works across our packages, stays, flights, cruises, rail journeys and bespoke experiences.",
 
   "gift.eyebrow": "The gift of travel",
   "gift.title": "Gift a journey",
@@ -442,7 +478,7 @@ export const PAGE_DEFAULTS: Record<string, string> = {
   "footer.colDiscover": "Discover",
   "footer.colMaison": "Maison",
   "footer.colCare": "Care",
-  "footer.copyright": "© 2026 Voyages & Co. (by Lighthouse Ventures) · voyagesco.com",
+  "footer.copyright": "© 2026 Voyages & Co. · voyagesco.com",
 };
 
 export const PAGE_CONTENT_KEYS = new Set(Object.keys(PAGE_DEFAULTS));

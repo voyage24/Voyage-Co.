@@ -6,7 +6,7 @@ import {
   LayoutDashboard, BarChart3, CalendarCheck, Inbox, FileText, Star, Users,
   BedDouble, Plane, TrainFront, Sparkles, Package, Ship, Newspaper, MapPin,
   Quote, Award, Image as ImageIcon, Store, FolderOpen, Mail, Gift, Tag, Bell,
-  Palette, UserCog, Settings, LayoutTemplate, LayoutGrid, History, Send, Car, Route, Timer, type LucideIcon,
+  Palette, UserCog, Settings, LayoutTemplate, LayoutGrid, History, Send, Car, Route, Timer, CreditCard, type LucideIcon,
 } from "lucide-react";
 import { canAccess } from "@/lib/admin/permissions";
 
@@ -78,6 +78,7 @@ const SECTION_DEFS: { title: string | null; items: { href: string; label: string
     title: "Configuration",
     items: [
       { href: "/admin/appearance", label: "Appearance", icon: Palette },
+      { href: "/admin/payments", label: "Payments", icon: CreditCard },
       { href: "/admin/team", label: "Team", icon: UserCog },
       { href: "/admin/activity", label: "Activity log", icon: History },
       { href: "/admin/settings", label: "Settings", icon: Settings },

@@ -31,6 +31,20 @@ export const SETTING_DEFAULTS = {
   // Refer-a-friend reward, in loyalty points, credited when a referred friend
   // confirms their account.
   "referral.points": "500",
+  // Legal/business identity — shown on About, Terms, Privacy and other
+  // compliance pages, and needed for payment-gateway (Razorpay etc.) KYC.
+  // Editable here so it never needs a code change again (e.g. once a GSTIN
+  // is issued). Blank fields (gstin) hide their row rather than show "N/A".
+  "business.entityName": "Voyages & Co.",
+  "business.entityType": "Sole Proprietorship",
+  "business.address": "112/3, Prabhat Road, Pune 411004, Maharashtra, India",
+  "business.gstin": "",
+  // Payment gateway — which provider is active + its publishable/public key
+  // (safe to store here; never a secret). The matching secret key lives in a
+  // Vercel env var named by convention `<PROVIDER>_KEY_SECRET` (e.g.
+  // RAZORPAY_KEY_SECRET) — see app/admin/(dashboard)/payments.
+  "payment.provider": "",
+  "payment.publicKey": "",
 } as const;
 
 export type SettingKey = keyof typeof SETTING_DEFAULTS;

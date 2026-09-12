@@ -101,6 +101,29 @@ export default function AppearanceForm({ initial }: { initial: SiteSettings }) {
       </section>
 
       <section className="border border-gray-200 rounded-lg p-5 bg-white">
+        <h2 className={sectionTitle}>Business &amp; legal details</h2>
+        <p className="text-xs text-gray-400 mb-3">Shown on About, Terms, Privacy and the other compliance pages — and needed for payment-gateway KYC. Leave GSTIN blank until one is issued; it stays hidden on the site rather than showing a placeholder.</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label className="block text-xs text-gray-500 mb-1">Registered/trading name</label>
+            <input value={s["business.entityName"]} onChange={e => set("business.entityName", e.target.value)} className={input} />
+          </div>
+          <div>
+            <label className="block text-xs text-gray-500 mb-1">Entity type</label>
+            <input value={s["business.entityType"]} onChange={e => set("business.entityType", e.target.value)} placeholder="Sole Proprietorship" className={input} />
+          </div>
+          <div className="sm:col-span-2">
+            <label className="block text-xs text-gray-500 mb-1">Registered address</label>
+            <input value={s["business.address"]} onChange={e => set("business.address", e.target.value)} className={input} />
+          </div>
+          <div>
+            <label className="block text-xs text-gray-500 mb-1">GSTIN (optional — blank hides this field)</label>
+            <input value={s["business.gstin"]} onChange={e => set("business.gstin", e.target.value)} placeholder="Not yet registered" className={input} />
+          </div>
+        </div>
+      </section>
+
+      <section className="border border-gray-200 rounded-lg p-5 bg-white">
         <h2 className={sectionTitle}>Homepage hero text</h2>
         <p className="text-xs text-gray-400 mb-3">Leave blank to use the built-in (translated) copy.</p>
         <div className="space-y-3">

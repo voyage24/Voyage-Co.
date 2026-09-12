@@ -105,6 +105,22 @@ Static defaults live in code; admin edits are stored as *overrides* in the
 `lib/site-settings.ts` — `SETTING_DEFAULTS` + `getSiteSettings()`; edited via
 Appearance. Save routes filter by the known setting keys.
 
+### Legal entity & compliance pages
+Voyages & Co. is its **own legal entity** — a sole proprietorship, not
+operated under any other company. Registered address and entity type live in
+`business.*` site settings (Appearance → "Business & legal details"), shown
+on `/about` and used across the legal pages; GSTIN is blank until one is
+issued (blank hides the field rather than showing a placeholder — never
+invent one). Legal/compliance pages, all footer-linked together under
+"Legal": `/privacy`, `/terms`, `/cancellations` (Cancellation & Refund),
+`/payment-policy` (Bookings & Payment), `/delivery-policy` (Travel
+Fulfilment & Delivery — "delivery" here means booking confirmation/documents,
+since this is a service, not physical goods), plus `/pricing` (Packages &
+Services Pricing, linked from Discover). All follow the same pattern as
+`/terms`: numbered sections from `lib/i18n/dictionaries.ts`, with
+eyebrow/title/intro admin-overridable via `lib/page-content.ts`
+`PAGE_REGISTRY`/`PAGE_DEFAULTS`.
+
 ### Database changes (Prisma)
 1. Edit `prisma/schema.prisma`.
 2. Create a migration SQL file under `prisma/migrations/<timestamp>_name/migration.sql`.
@@ -228,7 +244,16 @@ Vercel Blob, Turnstile, VAPID (push), WebAuthn (passkeys). Real values live in
 Vercel + `.env.local` only.
 
 ## Deferred / not built yet
-- **Payments / deposits** — intentionally not built (no payment account yet).
+- **Payment collection / checkout** — Admin → Payments (owner-only) lets the
+  owner pick a gateway (Razorpay/Stripe/PayU/Instamojo/other) and store its
+  public key (`lib/payment-providers.ts`, `payment.*` in site settings, saved
+  via the dedicated `/api/admin/payments` — deliberately kept out of the
+  generic `/api/admin/settings`, which staff can reach). The gateway's secret
+  key is a Vercel env var, never the database — same convention as SMTP/
+  Amadeus/Turnstile. This is config only: bookings still don't run an actual
+  checkout/payment-collection flow (no order creation, webhook verification,
+  or reconciling a payment with a `Booking` row) — that's a separate, larger
+  piece of work for once a real merchant account exists to test against.
 - **Translations editor** — 36-language dictionaries are still edited in code.
 
 ---

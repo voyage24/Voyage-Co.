@@ -14,6 +14,8 @@ const RULES: { prefix: string; min: AdminRole }[] = [
   // Owner-only: account/team management.
   { prefix: "/admin/settings", min: "owner" },
   { prefix: "/admin/team", min: "owner" },
+  { prefix: "/admin/payments", min: "owner" }, // payment-gateway config
+
   // Manager+: oversight & broadcast tools.
   { prefix: "/admin/activity", min: "manager" },
   { prefix: "/admin/analytics", min: "manager" },
@@ -59,6 +61,7 @@ const API_OVERRIDES: { prefix: string; min: AdminRole }[] = [
   { prefix: "/api/admin/email", min: "trainee" },          // compose send/draft
   { prefix: "/api/admin/search", min: "trainee" },         // topbar search
   { prefix: "/api/admin/settings", min: "staff" },         // site appearance save
+  { prefix: "/api/admin/payments", min: "owner" },         // payment-gateway config
   { prefix: "/api/admin/upload", min: "staff" },
   { prefix: "/api/admin/media", min: "staff" },
   { prefix: "/api/admin/page-content", min: "staff" },

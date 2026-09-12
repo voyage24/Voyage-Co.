@@ -31,6 +31,7 @@ const FOOTER_COLUMNS: FooterColumn[] = [
       { key: "common.byDestination",  href: "/destinations" },
       { key: "explore.title",         href: "/explore" },
       { key: "common.offers",         href: "/offers" },
+      { label: "Pricing",             href: "/pricing" },
       { label: "Airport Cabs",        href: "/airport-cabs" },
       { label: "Outstation Cabs",     href: "/outstation-cabs" },
       { label: "Hourly Stays",        href: "/hourly-stays" },
@@ -71,15 +72,19 @@ const FOOTER_COLUMNS: FooterColumn[] = [
       { label: "Travel insurance",       href: "/insurance" },
       { key: "common.faq",               href: "/faq" },
       { label: "Support",                href: "/support" },
-      { key: "common.cancellations",     href: "/cancellations" },
     ],
   },
 ];
 
-// Legal sits with the copyright, not among the help links.
+// Legal/compliance pages sit with the copyright, not among the help links —
+// kept together in one place since these are exactly what a payment
+// gateway's KYC review looks for in the footer.
 const LEGAL: FooterLink[] = [
-  { key: "common.privacy", href: "/privacy" },
-  { key: "common.terms",   href: "/terms" },
+  { key: "common.privacy",        href: "/privacy" },
+  { key: "common.terms",          href: "/terms" },
+  { key: "common.cancellations",  href: "/cancellations" },
+  { label: "Payment Policy",      href: "/payment-policy" },
+  { label: "Delivery Policy",     href: "/delivery-policy" },
 ];
 
 const SOCIAL = [
@@ -215,7 +220,7 @@ export default function Footer() {
         <div className="mt-16 pt-8 border-t border-line flex flex-col sm:flex-row items-center justify-between gap-5">
           <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 order-2 sm:order-1">
             <p className="text-xs text-ink-faint font-light tracking-wide">
-              {c("footer.copyright") || "© 2026 Voyages & Co. (by Lighthouse Ventures) · voyagesco.com"}
+              {c("footer.copyright") || "© 2026 Voyages & Co. · voyagesco.com"}
             </p>
             <span className="hidden sm:inline text-ink-faint/40 text-xs">·</span>
             {LEGAL.map(l => (

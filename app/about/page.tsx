@@ -3,12 +3,18 @@
 import Link from "next/link";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useContent, useContentList } from "@/components/providers/ContentProvider";
+import { useSetting } from "@/components/providers/SettingsProvider";
 import { resolveIcon } from "@/lib/icon-map";
 import TeamSection from "@/components/collections/TeamSection";
 
 export default function AboutPage() {
   const { t } = useLanguage();
   const c = useContent();
+  const entityName = useSetting("business.entityName") || "Voyages & Co.";
+  const entityType = useSetting("business.entityType") || "Sole Proprietorship";
+  const address = useSetting("business.address") || "112/3, Prabhat Road, Pune 411004, Maharashtra, India";
+  const gstin = useSetting("business.gstin");
+  const email = useSetting("contact.email") || "hello@voyagesco.com";
   const VALUES = [
     { icon: "Target", title: t("about.value1Title"), desc: t("about.value1Desc") },
     { icon: "Globe", title: t("about.value2Title"), desc: t("about.value2Desc") },
@@ -56,6 +62,31 @@ export default function AboutPage() {
       </div>
 
       <TeamSection />
+
+      {/* Business details — required for payment-gateway KYC and general transparency */}
+      <div className="bg-panel-soft rounded-2xl p-8 mb-12 border border-line">
+        <h2 className="font-serif text-2xl font-light text-ink mb-5">Business Details</h2>
+        <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 text-sm">
+          <div>
+            <dt className="text-[10px] tracking-[0.16em] uppercase text-ink-faint mb-1">Operated by</dt>
+            <dd className="text-ink-muted font-light">{entityName} ({entityType})</dd>
+          </div>
+          <div>
+            <dt className="text-[10px] tracking-[0.16em] uppercase text-ink-faint mb-1">Registered address</dt>
+            <dd className="text-ink-muted font-light">{address}</dd>
+          </div>
+          {gstin && (
+            <div>
+              <dt className="text-[10px] tracking-[0.16em] uppercase text-ink-faint mb-1">GSTIN</dt>
+              <dd className="text-ink-muted font-light">{gstin}</dd>
+            </div>
+          )}
+          <div>
+            <dt className="text-[10px] tracking-[0.16em] uppercase text-ink-faint mb-1">Contact</dt>
+            <dd className="text-ink-muted font-light"><a href={`mailto:${email}`} className="text-gold link-underline">{email}</a></dd>
+          </div>
+        </dl>
+      </div>
 
       {/* CTA */}
       <div className="text-center bg-vc-800 rounded-2xl p-12 border border-vc-700">

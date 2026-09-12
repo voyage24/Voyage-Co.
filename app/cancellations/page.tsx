@@ -32,6 +32,14 @@ export default function CancellationsPage() {
         { headingKey: "cancellations.journey.tier4.heading", textKey: "cancellations.journey.tier4.text" },
       ],
     },
+    {
+      titleKey: "cancellations.refund.title",
+      content: [
+        { headingKey: "cancellations.refund.method.heading", textKey: "cancellations.refund.method.text" },
+        { headingKey: "cancellations.refund.timeline.heading", textKey: "cancellations.refund.timeline.text" },
+        { headingKey: "cancellations.refund.partner.heading", textKey: "cancellations.refund.partner.text" },
+      ],
+    },
   ];
 
   return (

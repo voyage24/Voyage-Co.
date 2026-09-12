@@ -14,7 +14,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
   }
 
-  const keys = Object.keys(SETTING_DEFAULTS);
+  // Payment-gateway config is owner-only (see lib/admin/permissions.ts) and
+  // saved through /api/admin/payments instead — excluded here so a staff-tier
+  // admin (who can reach this route) can't change it by posting the key
+  // directly, bypassing the page-level gate.
+  const keys = Object.keys(SETTING_DEFAULTS).filter(k => !k.startsWith("payment."));
   const entries = Object.entries(body).filter(([k]) => keys.includes(k));
 
   await Promise.all(

@@ -9,7 +9,8 @@ export const revalidate = 3600;
 const STATIC_PATHS = [
   "", "/hotels", "/flights", "/trains", "/experiences", "/packages", "/cruises",
   "/blog", "/plan", "/about", "/contact", "/careers", "/press", "/partners",
-  "/help", "/privacy", "/terms", "/destinations",
+  "/help", "/privacy", "/terms", "/cancellations", "/payment-policy",
+  "/delivery-policy", "/pricing", "/destinations",
   "/airport-cabs", "/outstation-cabs", "/hourly-stays",
 ];
 
