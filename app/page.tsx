@@ -72,9 +72,9 @@ export default async function Home() {
       <Recommendations />
       <Reveal><PopularDestinations /></Reveal>
       <Reveal variant="left"><SignatureExperiences /></Reveal>
-      <Reveal><StatsBand stats={stats} /></Reveal>
+      <StatsBand stats={stats} />
       <Reveal variant="right"><PackagesPreview packages={packages} /></Reveal>
-      <Reveal><PressStrip /></Reveal>
+      <PressStrip />
       <Reveal variant="zoom"><TestimonialsSection testimonials={testimonials} /></Reveal>
       <Reveal><MomentsGallery /></Reveal>
       <Reveal><TrustSection /></Reveal>
