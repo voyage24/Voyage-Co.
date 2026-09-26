@@ -32,6 +32,7 @@ export default function RequestForm({
   const [done, setDone] = useState(false);
   const [error, setError] = useState("");
   const [token, setToken] = useState("");
+  const [website, setWebsite] = useState(""); // honeypot — real visitors never see this field
   const set = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }));
   const { defaults, remember } = useContactDefaults();
   useEffect(() => { if (defaults) setForm(p => ({ ...p, name: p.name || defaults.name, email: p.email || defaults.email, phone: p.phone || defaults.phone })); }, [defaults]);
@@ -40,7 +41,7 @@ export default function RequestForm({
     e.preventDefault();
     if (busy) return;
     setError(""); setBusy(true);
-    const res = await fetch(endpoint, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...form, turnstileToken: token }) });
+    const res = await fetch(endpoint, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...form, turnstileToken: token, website }) });
     const data = await res.json().catch(() => ({}));
     setBusy(false);
     if (res.ok) { remember({ name: form.name, email: form.email, phone: form.phone }); setDone(true); } else setError(data.error ?? "Something went wrong.");
@@ -80,6 +81,11 @@ export default function RequestForm({
     <form id={id} onSubmit={submit} className="bg-panel border border-line rounded-2xl p-6 sm:p-8 space-y-4 scroll-mt-28">
       <h2 className="font-serif text-2xl font-light text-ink">{title}</h2>
       <FormProgress steps={steps} />
+      <input
+        type="text" name="website" value={website} onChange={e => setWebsite(e.target.value)}
+        tabIndex={-1} autoComplete="off" aria-hidden="true"
+        style={{ position: "absolute", left: "-9999px", width: 1, height: 1, opacity: 0 }}
+      />
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div><Label>Name <span className="text-gold">*</span></Label><input required className={cls} autoComplete="name" value={form.name} onChange={e => set("name", e.target.value)} /></div>
         <div><Label>Email <span className="text-gold">*</span></Label><input required type="email" className={cls} autoComplete="email" value={form.email} onChange={e => set("email", e.target.value)} /></div>
