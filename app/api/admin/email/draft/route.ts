@@ -48,7 +48,7 @@ Recipient: ${String(name || "guest").slice(0, 100)}
 Context / notes: ${String(context || "none").slice(0, 800)}`;
 
   if (aiConfigured()) {
-    const { text } = await generateText(SYSTEM, [{ role: "user", content: prompt }], 1200, { keyless: true });
+    const { text } = await generateText(SYSTEM, [{ role: "user", content: prompt }], 1200);
     // Models sign off despite being told not to; the template does that, so drop
     // it here rather than letting it reach the composer.
     if (text) return NextResponse.json({ draft: stripTrailingSignoff(text), source: "ai" });
