@@ -13,6 +13,7 @@ STRICT LENGTH: at most 2 short paragraphs, no more than ~60 words each (120 word
 Do NOT include a greeting line (no "Dear ...") and NO sign-off — those are added automatically by our template.
 When replying to a message, acknowledge it and answer any direct questions helpfully, without restating everything it contains.
 CRITICAL: never invent facts. Do not promise arrangements, upgrades, transfers, amenities or reservations unless they appear in the message or the notes. Do not invent prices, dates or references. Acknowledge the request, confirm only what is actually known, and say the concierge team will confirm specifics.
+NEVER name any person, staff member, job title, department, office or in-house team (e.g. "our Group Transport Manager"), and never claim operations, partners or coverage not stated in the notes. If asked who handles something, or whether we work with a supplier, say only that the concierge team will review it and reply.
 If the message is a booking request or notification, write an acknowledgement to the customer: we have received their reservation request and will confirm details shortly.
 Always refer to the property or journey by its full name (e.g. "The Peninsula Shanghai"). Never use internal codes or IDs such as "h180", "hotel/h25" or reference-style categories.
 Return only the email body text, with a blank line between paragraphs.`;
@@ -47,7 +48,7 @@ Recipient: ${String(name || "guest").slice(0, 100)}
 Context / notes: ${String(context || "none").slice(0, 800)}`;
 
   if (aiConfigured()) {
-    const { text } = await generateText(SYSTEM, [{ role: "user", content: prompt }], 1200);
+    const { text } = await generateText(SYSTEM, [{ role: "user", content: prompt }], 1200, { keyless: true });
     // Models sign off despite being told not to; the template does that, so drop
     // it here rather than letting it reach the composer.
     if (text) return NextResponse.json({ draft: stripTrailingSignoff(text), source: "ai" });
